@@ -1,0 +1,105 @@
+#ifndef __GAME_ENUM__ 
+#define __GAME_ENUM__ 
+
+#define BIT64(n) (1ULL << (n))
+
+typedef enum{
+  ENT_NONE,
+  ENT_PLAYER,
+  ENT_TILE,
+  ENT_DONE
+}EntityType;
+
+typedef enum{
+  STATE_NONE,//if ent_t is properly initalized to {0} this is already set
+  STATE_SPAWN,//Should only be set after NONE
+  STATE_IDLE, //should be able to move freely between these ==>
+  STATE_DIE,//<===== In MOST cases. Should not be able to go down from DIE
+  STATE_END,//sentinel entity state should never be this or greater
+}EntityState;
+
+typedef enum{
+  PARAM_NONE,
+  PARAM_TURN,
+  PARAM_SCORE,
+  PARAM_LEVEL,
+  PARAM_ENT,
+  PARAM_POS,
+  PARAM_NAME,
+  PARAM_STATE,
+  PARAM_ALL,
+}GameObjectParam;
+
+typedef enum{
+  LVL_TUT,
+  LVL_BASIC,
+  LVL_ALL,
+}Levels;
+
+typedef enum{
+  TILE_EMPTY,
+  TILE_SUCCESS,
+  TILE_ISSUES,
+  TILE_NO_ENTRY,
+  TILE_COLLISION,
+  TILE_OCCUPIED,
+  TILE_REACHABLE,
+  TILE_BORDER,
+  TILE_OUT_OF_BOUNDS,
+  TILE_ERROR,
+  TILE_TIMING,
+  TILE_UNREACHABLE
+}TileStatus;
+
+typedef enum{
+  ACT_NONE,
+  ACT_MOVE,
+  ACT_DONE
+}ActionType;
+
+typedef enum{
+  TURN_NONE = -1,
+  TURN_MAIN,
+  TURN_POST,
+  TURN_END,
+  TURN_ALL,
+}TurnPhase;
+
+typedef enum{
+  ACT_STATUS_NONE,
+  ACT_STATUS_BUILD,
+  ACT_STATUS_QUEUED,
+  ACT_STATUS_NEXT,
+  ACT_STATUS_RUNNING,
+  ACT_STATUS_TAKEN,
+  ACT_STATUS_ERROR,
+  ACT_STATUS_BLOCK,
+  ACT_STATUS_BAD_DATA,
+  ACT_STATUS_MISQUEUE,
+  ACT_STATUS_FULL,
+  ACT_STATUS_BAD_ATTACK,
+  ACT_STATUS_RESOURCE,
+  ACT_STATUS_INVALID,
+  ACT_STATUS_WAIT,
+  ACT_STATUS_DONE
+}ActionStatus;
+
+typedef enum{
+  BEHAVIOR_SUCCESS,
+  BEHAVIOR_FAILURE,
+  BEHAVIOR_RUNNING
+}BehaviorStatus;
+
+typedef enum{
+  IR_NONE,
+  IR_CRITICAL_FAIL,
+  IR_FAIL,
+  IR_ALMOST,
+  IR_SUCCESS,
+  IR_TOTAL_SUCC,
+  IR_MAX,
+  IR_DONE
+}InteractResult;
+
+#endif
+
