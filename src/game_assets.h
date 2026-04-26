@@ -14,19 +14,17 @@
 #define FLOAT_TEXT_SIZE 54
 #define FLOAT_TEXT_SPACING 2
 
-typedef enum{
-  CHAR_PLAYER,
-  CHAR_DONE
-}CharacterSprite;
-
 typedef struct sprite_s sprite_t;
 typedef struct sprite_slice_s sprite_slice_t;
 
 typedef struct sub_texture_s {
-  int           tag;
+  const char*   name;
+  const char*   tag;
+  int           index;
   int           originX, originY;
   int           positionX, positionY;
   int           sourceWidth, sourceHeight;
+  int           dur;
   float         scale;
 } sub_texture_t;
 
@@ -50,8 +48,8 @@ typedef enum{
 }RenderLayer;
 
 struct sprite_slice_s{
-  int       id;
-  uint64_t  uid;
+  uint32_t  hash, tag, group;
+  int       index, dur;
   SheetID   sheet;
   Vector2   center, offset;
   Rectangle bounds;
@@ -69,6 +67,20 @@ static sub_texture_t* TEXTURES[SHEET_ALL];
 static sprite_sheet_data_t SHEETS[SHEET_ALL];
 void SpriteLoadSubTextures(sub_texture_t* data, SheetID id, int sheet_cap);
 
+typedef struct{
+  int               num_frames, cur_index;
+  sprite_slice_t    *frames;
+  int               duration;
+  int               elapsed;
+  float             speed;
+}anim_t;
+
+typedef struct{
+  int       num_seq, cur_seq;
+  uint32_t  groups;
+  anim_t    *anims;
+}anim_player_t;
+
 void SpriteLoadSlicedTextures();
 //SPRITE_T===>
 struct sprite_s{
@@ -82,8 +94,9 @@ struct sprite_s{
 };
 
 void DrawSlice(sprite_slice_t*, Vector2 position,float rot);
-sprite_t* InitSpriteByID(int id, SheetID);
+sprite_t* InitSpriteByTag(char *name, SheetID);
 sprite_t* InitSpriteByIndex(int index, sprite_sheet_data_t* spritesheet);
+anim_player_t* InitAnimGroup(char*, SheetID);
 bool FreeSprite(sprite_t* s);
 void DrawSprite(sprite_t* s);
 void DrawSpriteAtPos(sprite_t*s , Vector2 pos);

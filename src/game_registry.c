@@ -9,10 +9,13 @@ void TestComponents(void){
 
   Entity e = EntityCreate(&world.manager);
 
-  sprite_t* s = InitSpriteByID(CHAR_PLAYER, SHEET_CHAR);
+  sprite_t* s = InitSpriteByTag("character", SHEET_CHAR);
   s->pos = Vector2XY(500, 200);
   s->is_visible = true;
   RegisterSprite(&world.sprites, e, *s);
+
+  anim_player_t* a = InitAnimGroup("character", SHEET_CHAR);
+
   Entity c = EntityCreate(&world.manager);
   
   camera_t* cam = InitCamera(2.f, .0f, Vector2Scale(ROOM_SIZE,0.5f));
@@ -22,7 +25,7 @@ void TestComponents(void){
   RegisterInput(&world.input, e, *gi);
   RegisterCameraFollow(&world.view, e, *ctx);
   RegisterCamera(&world.cam, c, *cam);
-
+  RegisterAnim(&world.anim, e, *a);
   EntityTest(100);
 }
 
@@ -41,6 +44,12 @@ uint32_t RegisterEntity(component_t* c, Entity e){
   c->sparse[e.id] = i;
 
   return i;
+}
+
+void RegisterAnim(anim_c* c, Entity e, anim_player_t a){
+  uint32_t i = RegisterEntity(&c->map, e);
+  c->dense[i] = a;
+
 }
 
 void RegisterCamera(camera_c* c, Entity e, camera_t s){

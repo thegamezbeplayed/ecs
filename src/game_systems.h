@@ -22,6 +22,10 @@ typedef struct{
 }input_st;
 
 typedef struct{
+  float   global_speed;
+}animate_st;
+
+typedef struct{
   size_t    size;
   SystemFn  tick[64];
 }schedule_step_t;
@@ -37,6 +41,7 @@ struct system_pool_s{
   scheduler_t schedule;
 };
 
+void InitAnimateSystem(animate_st*);
 void InitInputSystem(input_st*);
 void InitRenderSystem(render_st*);
 void InitCameraSystem(camera_st* c);

@@ -1,41 +1,26 @@
 #include "game_assets.h"
-#include "game_utils.h"
-#include "game_math.h"
+#include "game_strings.h"
+//#include "game_math.h"
 #include "game_tools.h"
-#include "screens.h"
+//#include "screens.h"
 #include "character_asset.h"
 
 void InitResources(){
   TEXTURES[SHEET_CHAR] = CHAR_SPRITES;
   Image spritesImg = LoadImage(TextFormat("resources/%s",CHAR_IMAGE_PATH)); 
   SHEETS[SHEET_CHAR].sprite_sheet = GameMalloc("",sizeof(Texture2D));
-  SpriteLoadSubTextures(CHAR_SPRITES,SHEET_CHAR,CHAR_DONE);
+  SpriteLoadSubTextures(CHAR_SPRITES,SHEET_CHAR, NUM_CHAR);
   *SHEETS[SHEET_CHAR].sprite_sheet = LoadTextureFromImage(spritesImg);
 
 }
 
-sprite_slice_t* InitSliceByID(int id, SheetID s){
-  sprite_slice_t* spr = GameCalloc("InitSlice", 1, sizeof(sprite_slice_t));
-  sprite_sheet_data_t* data = &SHEETS[s];
-
-  for (int i = 0; i < data->num_sprites; i++){
-    if(data->sprites[i]->id != id)
-      continue;
-
-    spr = data->sprites[i];
-    return spr;
-  }
-
-  return NULL;
-
-}
-
-sprite_t* InitSpriteByID(int id, SheetID s){
+sprite_t* InitSpriteByTag(char *name, SheetID s){
   sprite_t* spr = GameCalloc("InitSprite", 1, sizeof(sprite_t));
   sprite_sheet_data_t* data = &SHEETS[s];
 
+  uint32_t hash = hash_str_32(name);
   for (int i = 0; i < data->num_sprites; i++){
-    if(data->sprites[i]->id != id)
+    if(data->sprites[i]->tag != hash)
       continue;
 
     spr->slice = data->sprites[i];
@@ -47,6 +32,64 @@ sprite_t* InitSpriteByID(int id, SheetID s){
   }
 
   return NULL;
+
+}
+
+void AnimAddGroup(anim_player_t* a, sprite_slice_t* s, int index, int count){
+  anim_t* anim = &a->anims[index];
+
+  sprite_slice_t* as = &anim->frames[anim->num_frames++];
+  memcpy(as, s, sizeof(sprite_slice_t));
+}
+
+anim_player_t* InitAnimGroup(char* tag, SheetID s){
+  anim_player_t* ap = GameCalloc("InitAnimGroup", 1, sizeof(anim_player_t));
+  sprite_sheet_data_t* data = &SHEETS[s];
+  uint32_t hash = hash_str_32(tag);
+
+  sprite_slice_t *found[128];
+
+  int num_groups = 0;
+  int count = 0;
+  int largest = 0;
+  for (int i = 0; i < data->num_sprites; i++){
+    if(data->sprites[i]->tag != hash)
+      continue;
+
+    if(data->sprites[i]->group == 0)
+      continue;
+
+    if(data->sprites[i]->index > largest)
+      largest = data->sprites[i]->index;
+
+    if(data->sprites[i]->index == 0){
+      ap->groups |= data->sprites[i]->group;
+      num_groups++;
+
+    }
+
+    found[count++] = data->sprites[i];
+  }
+
+  if(num_groups == 0)
+    return NULL;
+
+  ap->anims = GameCalloc("InitAnimGroup", num_groups, sizeof(anim_t));
+  for (int i = 0; i < num_groups; i++)
+    ap->anims[i].frames = GameCalloc("AnimAddGroup", count, sizeof(sprite_slice_t));
+
+  largest+=1;
+  int index = -1;
+  for (int i = 0; i < count; i++){ 
+    if(found[i]->index == 0)
+      index++;
+
+    AnimAddGroup(ap, found[i], index, largest);
+  
+  }
+  ap->num_seq = index;
+
+  return  ap;
 
 }
 
@@ -106,7 +149,12 @@ void SpriteLoadSubTextures(sub_texture_t* data, SheetID id, int sheet_cap){
 
     spr->sheet = id;
     spr->scale = sprData.scale == 0? 1: sprData.scale;
-    spr->id = sprData.tag;
+    spr->hash  = hash_str_32(sprData.name);
+
+    spr->tag = hash_str_32( sub_string(sprData.tag, ",", 0));
+    spr->group = hash_str_32( sub_string(sprData.tag, ",", 1));
+    spr->index = sprData.index;
+    
     spr->center = center;// Vector2Scale(offset,spr->scale);
     spr->offset = VECTOR2_ZERO;//offset;//center;//Vector2Scale(center,spr->scale);
     spr->bounds = bounds;

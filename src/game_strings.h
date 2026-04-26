@@ -34,6 +34,30 @@ static char* SubString(char* base, char* delim, int at){
   }
 }
 
+static char* sub_string(const char* base, const char* delim, int at) {
+    int index = 0;
+
+    char* str = GameCalloc("SubString", MAX_LINE_LEN, sizeof(char));
+    strcpy(str, base);
+
+    char* token = strtok(str, delim);
+
+    while (token != NULL) {
+        if (index == at) {
+            char* result = GameCalloc("SubStringResult", strlen(token) + 1, sizeof(char));
+            strcpy(result, token);
+            GameFree("sub_string", str);
+            return result;
+        }
+
+        token = strtok(NULL, delim);
+        index++;
+    }
+
+    GameFree("sub_string", str);
+    return NULL; // SAFE: explicitly signal not found
+}
+
 static char* StringSplit(char* str, char delimiter){
   char* token = strtok(str, &delimiter);
 

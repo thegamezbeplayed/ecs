@@ -55,6 +55,11 @@ typedef struct{
   component_t    map;
 }input_c;
 
+typedef struct{
+  anim_player_t dense[MAX_COMPONENTS];
+  component_t   map;
+}anim_c;
+
 static void ComponentInit(component_t* c){
   c->size = 0;
 }
@@ -66,5 +71,10 @@ static void CameraInit(camera_c* c){
 static void SpriteInit(sprite_c* c){
   ComponentInit(&c->map);
 }
+
+static void AnimInit(anim_c* c){
+  ComponentInit(&c->map);
+}
+
 
 #endif

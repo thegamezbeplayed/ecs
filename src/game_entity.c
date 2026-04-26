@@ -41,14 +41,14 @@ bool EntityValid(EntityManager* em, Entity e) {
 void EntityTestSpawn(Cell pos){
   Entity e = EntityCreate(&world.manager);
 
-  sprite_t* s = InitSpriteByID(CHAR_PLAYER, SHEET_CHAR);
+  sprite_t* s = InitSpriteByTag("character", SHEET_CHAR);
   s->pos = cell_to_vec(pos, 16);
   s->is_visible = true;
   RegisterSprite(&world.sprites, e, *s);
 }
 
 void EntityTest(int count){
-  choice_pool_t* cp = InitChoicePool(count*3, ChooseByWeight);
+  choice_pool_t* cp = InitChoicePool(4*count*count, ChooseByWeight);
 
   for (int x = -count; x < count; x++){
     for (int y = -count; y < count; y++){

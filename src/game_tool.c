@@ -18,7 +18,7 @@ void HashFree(hash_map_t* m) {
 }
 
 void* HashGet(hash_map_t* m, hash_key_t key) {
-    uint64_t h = Hash64(key);
+    uint64_t h = hash_64(key);
     uint32_t mask = m->cap - 1;
 
     for (uint32_t i = 0; i < m->cap; i++) {
@@ -45,7 +45,7 @@ void HashExpand(hash_map_t* m){
     if (e->state != 1)
       continue;
 
-    uint64_t h = Hash64(e->key);
+    uint64_t h = hash_64(e->key);
     uint32_t mask = new_cap - 1;
 
     size_t idx = h  & mask;
@@ -67,7 +67,7 @@ void HashPut(hash_map_t* m, hash_key_t key, void* value) {
     if(m->count * 4 > m->cap*3) // load factor < 0.5
       return;
      
-    uint64_t h = Hash64(key);
+    uint64_t h = hash_64(key);
     uint32_t mask = m->cap - 1;
     hash_slot_t* tomb = NULL;
 
@@ -96,7 +96,7 @@ void HashPut(hash_map_t* m, hash_key_t key, void* value) {
 }
 
 void HashRemove(hash_map_t* m, hash_key_t key) {
-    uint64_t h = Hash64(key);
+    uint64_t h = hash_64(key);
     uint32_t mask = m->cap - 1;
 
     for (uint32_t i = 0; i < m->cap; i++) {

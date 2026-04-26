@@ -12,6 +12,7 @@ typedef struct{
   behavior_c      behaviorS;
   sprite_c        sprites;
   input_c         input;
+  anim_c          anim;
 }component_registry_t;
 
 bool HasSprite(sprite_c* c, Entity e);
@@ -24,6 +25,7 @@ static sprite_t* SpriteGet(sprite_c* c, Entity e) {
 }
 
 void RegisterSprite(sprite_c* c, Entity e, sprite_t s);
+void RegisterAnim(anim_c* c, Entity e, anim_player_t a);
 void RegisterInput(input_c* c, Entity e, input_t s);
 void RegisterCamera(camera_c* c, Entity e, camera_t s);
 void RegisterCameraFollow(camera_follow_c* c, Entity e, camera_ctx_t s);

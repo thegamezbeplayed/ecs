@@ -136,7 +136,7 @@ static uint64_t GenerateSeed() {
     return (uint64_t)time(NULL);
 }
 
-static inline uint64_t Hash64(uint64_t x) {
+static inline uint64_t hash_64(uint64_t x) {
     x ^= x >> 33;
     x *= 0xff51afd7ed558ccdULL;
     x ^= x >> 33;
@@ -181,14 +181,17 @@ static inline uint32_t hash_combine_32(uint32_t h, uint32_t v)
 }
 
 static uint32_t hash_str_32(const char *str) {
-    uint32_t hash = 5381; // djb2 starting seed
-    int c;
-    while ((c = *str++))
-        hash = ((hash << 5) + hash) + (uint32_t)c; // hash * 33 + c
-    return hash;
+  if(!str)
+    return 0;
+
+  uint32_t hash = 5381; // djb2 starting seed
+  int c;
+  while ((c = *str++))
+    hash = ((hash << 5) + hash) + (uint32_t)c; // hash * 33 + c
+  return hash;
 }
 
-static inline uint64_t hash_string_64(const char* s) {
+static inline uint64_t hash_str_64(const char* s) {
     uint64_t h = 1469598103934665603ULL; // FNV offset basis
     while (*s) {
         h ^= (uint8_t)(*s++);

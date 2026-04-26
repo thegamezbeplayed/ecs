@@ -35,8 +35,6 @@ void InputTurn(system_pool_t* s, component_registry_t* c){
 }
 
 void InitInputSystem(input_st*){
-
   RegisterScheduleStep(UPDATE_FRAME, InputSystem);
   RegisterScheduleStep(UPDATE_FIXED, InputTurn);
-
 }

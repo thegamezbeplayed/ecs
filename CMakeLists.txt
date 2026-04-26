@@ -23,16 +23,26 @@ FetchContent_MakeAvailable(raylib)
 add_executable(${PROJECT_NAME})
 
 target_compile_options(${PROJECT_NAME} PRIVATE
-    -fsanitize=address
-    -fno-omit-frame-pointer
+    -pg
+    -O1
     -g
-    -rdynamic
 )
 
 target_link_options(${PROJECT_NAME} PRIVATE
-    -fsanitize=address
-    -rdynamic
+    -pg
 )
+
+#target_compile_options(${PROJECT_NAME} PRIVATE
+#    -fsanitize=address
+#    -fno-omit-frame-pointer
+#    -g
+#    -rdynamic
+#)
+
+#target_link_options(${PROJECT_NAME} PRIVATE
+#    -fsanitize=address
+#    -rdynamic
+#)
 add_subdirectory(src)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 add_subdirectory(resources)
@@ -43,7 +53,7 @@ target_include_directories(${PROJECT_NAME}
     ${raylib_SOURCE_DIR}/src
     includes
 )
-add_compile_options(-pg -g -O0)
+#add_compile_options(-pg -g -O0)
 if("${PLATFORM}" MATCHES "Web")
     add_custom_command(
         TARGET ${PROJECT_NAME} PRE_BUILD
