@@ -22,7 +22,7 @@ typedef struct {
 void EntityInit(EntityManager* em);
 Entity EntityCreate(EntityManager* em);
 void EntityTest(int count);
-
+bool EntityValid(EntityManager* em, Entity e);
 
 typedef bool (*StateComparator)(int a, int b);
 

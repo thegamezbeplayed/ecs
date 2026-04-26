@@ -7,13 +7,23 @@
 
 game_process_t game_process;
 
-void Subscribe(EventType event, EventCallback cb, void* data){
-  event_sub_t* sub = EventSubscribe(BUS, event, cb, data);
-  sub->uid = -1;
+void Notification(notification hash, EventCallback cb, void* data){
+  event_sub_t* sub = EventSubscribe(BUS, hash, cb, data);
+
 }
 
+void Subscribe(char* event, EventCallback cb, void* data){
+  notification hash = hash_str_64(event);
+  event_sub_t* sub = EventSubscribe(BUS, hash, cb, data);
+  sub->eid = -1;
+}
 
-void ScheduleEvent(EventType type, void* data, uint64_t uid, TimeFrame tf, int step){
+void TargetSubscribe(notification hash, EventCallback cb, void* data, int id){
+  event_sub_t* sub = EventSubscribe(BUS, hash, cb, data);
+  sub->eid = id;
+}
+
+void ScheduleEvent(char* event, void* data, uint64_t uid, TimeFrame tf, int step){
   switch(tf){
     case TF_TURN:
 //      step += WorldGetTurn();
@@ -26,30 +36,19 @@ void ScheduleEvent(EventType type, void* data, uint64_t uid, TimeFrame tf, int s
       break;
   }
 
-  event_t* event = GameCalloc("ScheduleEvent",1, sizeof(event_t));
+  event_t* ev = InitEvent(game_process.notifications, event, data, uid);
 
-  *event = (event_t){
-    .type = type,
-    .data = data,
-    .iuid = uid,
-    .max  = -1,
-    .timing = tf,
-    .scheduled = step,
-  };
+    ev->timing = tf,
+    ev->scheduled = step,
 
-  EventSchedule(BUS, event);
+  EventSchedule(BUS, ev);
 }
 
-void GameEvent(EventType type, void* data, uint64_t uid){
-  event_t event = {
-    .type = type,
-    .data = data,
-    .iuid = uid,
-    .max  = -1
-  };
+void GameEvent(char* event, void* data, uint64_t uid){
+  event_t* ev = InitEvent(game_process.notifications, event, data, uid);
 
   if(BUS->count)
-    EventEmit(BUS, &event);
+    EventEmit(BUS, ev);
 }
 
 bool TogglePause(void){
@@ -128,7 +127,8 @@ void InitGameEvents(){
   game_process.children[SCREEN_GAMEPLAY].process = PROCESS_LEVEL;
   game_process.game_frames = 0; 
 
-  BUS = InitEventBus(64);
+  game_process.bus[SCREEN_GAMEPLAY] = InitEventBus(64);
+  game_process.notifications = InitNotifications(64);
 }
 
 bool GameTransitionScreen(){

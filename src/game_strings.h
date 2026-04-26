@@ -76,8 +76,5 @@ typedef struct{
   choice_pool_t     *picker;
 }announce_string_p;
 
-static  announce_string_p ANNOUNCE_STRINGS[EVENT_NONE] = {
-};
-
-const char* StringGetAnnouncement(EventType type);
+const char* StringGetAnnouncement(notification type);
 #endif

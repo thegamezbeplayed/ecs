@@ -25,6 +25,22 @@ static int ComponentGetFirst(int* entities, size_t size){
     return entities[0];
 }
 
+static Entity* ComponentGetEntity(EntityManager* em, component_t* c, int i){
+  int index = c->sparse[i];
+
+  if(EntityValid(em, c->entities[index]))
+    return &c->entities[index];
+
+  return NULL;
+
+}
+
+static int ComponentByEntity(component_t* c, int e){
+  int index = c->sparse[e];
+
+  return index;
+}
+
 typedef struct{
   rigid_body_t    dense[MAX_COMPONENTS];
   component_t     map;
@@ -59,6 +75,11 @@ typedef struct{
   anim_player_t dense[MAX_COMPONENTS];
   component_t   map;
 }anim_c;
+
+typedef struct{
+  position_t  dense[MAX_COMPONENTS];
+  component_t map;
+}position_c;
 
 static void ComponentInit(component_t* c){
   c->size = 0;

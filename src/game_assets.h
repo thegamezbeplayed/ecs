@@ -4,7 +4,7 @@
 //#include "raylib.h"
 #include <stdlib.h>
 #include <string.h>
-#include "game_define.h"
+#include "game_utils.h"
 #include "game_types.h"
 
 #define MAX_ANIM_FRAMES 4
@@ -48,7 +48,8 @@ typedef enum{
 }RenderLayer;
 
 struct sprite_slice_s{
-  uint32_t  hash, tag, group;
+  uint32_t  hash, tag;
+  uint64_t  group;
   int       index, dur;
   SheetID   sheet;
   Vector2   center, offset;
@@ -67,20 +68,40 @@ static sub_texture_t* TEXTURES[SHEET_ALL];
 static sprite_sheet_data_t SHEETS[SHEET_ALL];
 void SpriteLoadSubTextures(sub_texture_t* data, SheetID id, int sheet_cap);
 
+typedef struct anim_player_s anim_player_t;
+typedef bool (*AnimCallback)(anim_player_t*);
+
+typedef enum{
+  ANIM_NONE,
+  ANIM_PLAY,
+  ANIM_DONE
+}AnimState;
+
 typedef struct{
-  int               num_frames, cur_index;
+  uint64_t          group;
+  int               cap, seq, num_frames, cur_index;
   sprite_slice_t    *frames;
   int               duration;
   int               elapsed;
   float             speed;
+  bool              loop;
+  AnimState         state;
+  AnimCallback      on_end;
 }anim_t;
 
-typedef struct{
-  int       num_seq, cur_seq;
-  uint32_t  groups;
-  anim_t    *anims;
-}anim_player_t;
+struct anim_player_s{
+  int         num_seq, cur_seq, next;
+  uint32_t    groups;
+  anim_t      *anims;
+  hash_map_t  map;
+};
 
+anim_t* AnimGet(anim_player_t* a, hash_key_t key);
+void AnimSetSequence(anim_player_t* ap, anim_t* a);
+void AnimEvent(event_t*, void*);
+sprite_slice_t* AnimGetFrame(anim_player_t* player);
+void AnimPlay(anim_player_t*, float);
+void AnimEvent(event_t* ev, void* data);
 void SpriteLoadSlicedTextures();
 //SPRITE_T===>
 struct sprite_s{
@@ -89,7 +110,7 @@ struct sprite_s{
   sprite_slice_t*   slice;
   bool              is_visible;
   float             rot;
-  Vector2           pos, offset, dest;
+  Vector2           offset, dest;
   RenderLayer       layer;
 };
 

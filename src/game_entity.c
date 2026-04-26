@@ -38,11 +38,12 @@ bool EntityValid(EntityManager* em, Entity e) {
     em->generation[e.id] == e.generation;
 }
 
-void EntityTestSpawn(Cell pos){
+void EntityTestSpawn(Cell c){
   Entity e = EntityCreate(&world.manager);
 
+  position_t *pos = InitPosition(c);
+  RegisterPos(&world.pos, e, *pos);
   sprite_t* s = InitSpriteByTag("character", SHEET_CHAR);
-  s->pos = cell_to_vec(pos, 16);
   s->is_visible = true;
   RegisterSprite(&world.sprites, e, *s);
 }
@@ -68,6 +69,4 @@ void EntityTest(int count){
     count--;
 
   }
-
-  DO_NOTHING();
 }

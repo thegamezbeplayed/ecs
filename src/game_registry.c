@@ -9,10 +9,7 @@ void TestComponents(void){
 
   Entity e = EntityCreate(&world.manager);
 
-  sprite_t* s = InitSpriteByTag("character", SHEET_CHAR);
-  s->pos = Vector2XY(500, 200);
-  s->is_visible = true;
-  RegisterSprite(&world.sprites, e, *s);
+  position_t* p = InitPosition(CELL_NEW(4, 3));
 
   anim_player_t* a = InitAnimGroup("character", SHEET_CHAR);
 
@@ -26,15 +23,16 @@ void TestComponents(void){
   RegisterCameraFollow(&world.view, e, *ctx);
   RegisterCamera(&world.cam, c, *cam);
   RegisterAnim(&world.anim, e, *a);
-  EntityTest(100);
+  RegisterPos(&world.pos, e, *p);
+  EntityTest(150);
 }
 
 void InitComponents(void){
+  RegisterSystems();
   EntityInit(&world.manager);
   SpriteInit(&world.sprites);
   CameraInit(&world.cam);
   TestComponents();
-  RegisterSystems();
 }
 
 uint32_t RegisterEntity(component_t* c, Entity e){
@@ -46,9 +44,17 @@ uint32_t RegisterEntity(component_t* c, Entity e){
   return i;
 }
 
+void RegisterPos(position_c* c, Entity e, position_t pos){
+  uint32_t i = RegisterEntity(&c->map, e);
+  c->dense[i] = pos;
+
+}
+
 void RegisterAnim(anim_c* c, Entity e, anim_player_t a){
   uint32_t i = RegisterEntity(&c->map, e);
   c->dense[i] = a;
+  for (int j = 0; j < a.num_seq; j++)  
+  RegisterAnimation(&run.anim, a.anims[j].group);
 
 }
 
@@ -85,6 +91,9 @@ void RegisterSystems(void){
   InitRenderSystem(&run.render);
   InitCameraSystem(&run.cam);
   InitInputSystem(&run.input);
+  InitPositionSystem(&run.pos);
+  InitAnimateSystem(&run.anim);
+  InitPhysicsSystem(&run.phys);
 }
 
 void RegisterScheduleStep(UpdateType u, SystemFn fn){

@@ -127,6 +127,7 @@ static hash_slot_t* HashNext(hash_iter_t* it) {
 void HashInit(hash_map_t* m, uint32_t cap);
 void HashFree(hash_map_t* m);
 void HashClear(hash_map_t* m);
+hash_key_t HashKey(hash_map_t* m, hash_key_t key);
 void* HashGet(hash_map_t* m, hash_key_t key);
 void HashPut(hash_map_t* m, hash_key_t key, void* value);
 void HashRemove(hash_map_t* m, hash_key_t key);

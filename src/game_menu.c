@@ -425,11 +425,6 @@ void ElementRender(ui_element_t* e){
           e->value->p->val, e->value->p->min, e->value->p->max);
       break;
     case UI_ICON:
-      DrawRectangleLinesEx(e->bounds, 1.5f,LIGHTGRAY);
-      if(e->value && e->value->s != NULL){
-        state = GuiLabel(e->bounds, NULL);
-        DrawSpriteAtPos(e->value->s, e->value->s->pos);
-      }
       break;
     case UI_STATUSBAR:
       GuiStatusBar(e->bounds, e->text);
@@ -691,14 +686,6 @@ bool ElementToggleChildren(ui_element_t* e){
 bool ElementShowIcon(ui_element_t* e){
   if(!e->value || e->value->s == NULL)
     return false;
-        
-  e->value->s->pos.x = e->bounds.x + e->spacing[UI_PADDING_LEFT];
-  e->value->s->pos.y = e->bounds.y + e->spacing[UI_PADDING_TOP];
-
-  if(e->owner && e->index >= e->owner->num_children - 1)
-    ElementResize(e->owner);
-
-  return e->value->s->is_visible = true;
 }
 
 bool ElementShowTooltip(ui_element_t* e){
@@ -854,11 +841,6 @@ void ElementSyncVal(ui_element_t* e, FetchRate poll){
         PrintSyncLine(ev->l[i], poll);
       break;
     case VAL_ICO:
-      ev->get_val(ev, ev->context);
-      if(ev->s){
-        ev->s->pos.x = e->bounds.x + e->spacing[UI_PADDING_LEFT];
-        ev->s->pos.y = e->bounds.y + e->spacing[UI_PADDING_TOP];
-      }
       break;
     default:
 

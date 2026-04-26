@@ -17,7 +17,7 @@ void InitGameplayScreen(void){
 
 void PreUpdate(void){
   GameProcessStep();
-  WorldPreUpdate();
+  SystemsStep(UPDATE_PRE);
 }
 
 void FixedUpdate(void){

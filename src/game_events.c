@@ -1,4 +1,4 @@
-#include "game_utils.h"
+#include "game_process.h"
 
 payload_t* InitPayload(int count, param_t params[count]){
   payload_t* p = GameCalloc("InitPayload", 1, sizeof(payload_t));
@@ -25,7 +25,7 @@ payload_t* InitPayloadSingle(param_t param){
   return p;
 }
 
-cooldown_t* InitCooldown(int dur, EventType type, CooldownCallback on_end_callback, void* params){
+cooldown_t* InitCooldown(int dur, notification type, CooldownCallback on_end_callback, void* params){
   cooldown_t* cd = malloc(sizeof(cooldown_t)); 
 
   *cd = (cooldown_t){
@@ -61,7 +61,7 @@ int AddTimer(timers_t* pool, cooldown_t* cd){
   
   for (int i = 0; i < MAX_EVENTS; i++){
     if(pool->cooldown_used[i]){
-      if(pool->cooldowns[i].type == EVENT_NONE){
+      if(pool->cooldowns[i].type <= 0){
         pool->cooldowns[i] = *cd;
         pool->cooldown_used[i] = true;
         return i;
@@ -85,13 +85,13 @@ timers_t* InitTimers(){
 
   for(int i = 0; i < MAX_EVENTS; i++){
     ev->cooldown_used[i] = false;
-    ev->cooldowns[i].type = EVENT_NONE;
+    ev->cooldowns[i].type = -1;
   }
 
   return ev;
 }
 
-int GetEventIndex(timers_t* pool, EventType type){
+int GetEventIndex(timers_t* pool, notification type){
   for(int i = 0; i<MAX_EVENTS; i++){
     if(!pool->cooldown_used[i])
       continue;
@@ -107,7 +107,7 @@ int GetEventIndex(timers_t* pool, EventType type){
 }
 
 
-bool CheckTimer(timers_t* pool, EventType type){
+bool CheckTimer(timers_t* pool, notification type){
   for(int i = 0; i<MAX_EVENTS; i++){
     if(!pool->cooldown_used[i])
       continue;
@@ -124,7 +124,7 @@ bool CheckTimer(timers_t* pool, EventType type){
   return false;
 }
 
-void ResetTimer(timers_t* pool, EventType type){
+void ResetTimer(timers_t* pool, notification type){
   for (int i = 0; i < MAX_EVENTS; i++){
     if(!pool->cooldown_used[i])
       continue;
@@ -138,7 +138,7 @@ void ResetTimer(timers_t* pool, EventType type){
 
 }
 
-void StartEvent(timers_t* pool, EventType type){
+void StartEvent(timers_t* pool, notification type){
   for (int i = 0; i < MAX_EVENTS; i++){
     if(!pool->cooldown_used[i])
       continue;
@@ -153,12 +153,12 @@ void StepTimers(timers_t* pool){
     if(!pool->cooldown_used[i])
       continue;
 
-    if(pool->cooldowns[i].type == EVENT_NONE)
+    if(pool->cooldowns[i].type <= 0)
       continue;
 
     if(pool->cooldowns[i].is_complete && !pool->cooldowns[i].is_recycled){
       pool->cooldowns[i]=(cooldown_t){0};
-      pool->cooldowns[i].type = EVENT_NONE;
+      pool->cooldowns[i].type = -1;
       pool->cooldown_used[i] = false;
       continue;
     }
@@ -189,6 +189,17 @@ void StepTimers(timers_t* pool){
     if(pool->cooldowns[i].on_step)
       pool->cooldowns[i].on_step(pool->cooldowns[i].on_step_params);
   }
+}
+
+event_t* InitEvent(notification_pool_t* p, char* name, void* data, int uid){
+  event_t* ev = GameCalloc("InitEvent",1,sizeof(event_t));
+  notification_t* n = RegisterNotification(p, name);
+
+  uint64_t guid = MakeGUID(name, uid);
+  *ev = (event_t){
+    guid, n->hash, -1, 0, data, uid
+  };
+  return ev;
 }
 
 event_bus_t* InitEventBus(int cap){
@@ -241,7 +252,7 @@ void EventBusStep(event_bus_t* bus){
   */
 }
 
-event_sub_t* EventSubscribe(event_bus_t* bus, EventType event, EventCallback cb, void* u_data){
+event_sub_t* EventSubscribe(event_bus_t* bus, notification event, EventCallback cb, void* u_data){
   EventBusEnsureCap(bus);
 
   event_sub_t* sub =  &bus->subs[bus->count++];
@@ -259,7 +270,7 @@ void EventRemove(event_bus_t* bus, uint64_t id){
 
   int index = -1;
   for (int i = 0; i < bus->count; i++) {
-    if (bus->subs[i].uid != id)
+    if (bus->subs[i].eid != id)
       continue;
     index = i;
     break;
@@ -300,8 +311,8 @@ void EventEmit(event_bus_t* bus, event_t* e){
     if(e->max != -1 && e->calls >= e->max)
       break;
 
-    if (bus->subs[i].uid != -1
-       && bus->subs[i].uid != e->iuid)
+    if (bus->subs[i].eid != -1
+       && bus->subs[i].eid != e->eid)
       continue;
 
     bus->subs[i].cb(e, bus->subs[i].user_data);
@@ -309,7 +320,7 @@ void EventEmit(event_bus_t* bus, event_t* e){
   }
 
   if(e->max != -1 && e->calls >= e->max)
-    EventRemove(bus, e->iuid);
+    EventRemove(bus, e->uid);
 }
 
 uint64_t EventSchedule(event_bus_t* bus, event_t* e){
@@ -322,4 +333,43 @@ uint64_t EventSchedule(event_bus_t* bus, event_t* e){
   HashPut(&bus->scheduled, gouid, e);
   return gouid;
   */
+}
+
+notification_t* NotificationGet(notification_pool_t* p, hash_key_t key ){
+  if(p->count == 0)
+   return 0;
+
+  return HashGet(&p->map, key);
+}
+
+notification NotificationCheck(notification_pool_t* p, hash_key_t key ){
+  if(p->count == 0)
+   return 0; 
+  
+  return HashKey(&p->map, key);
+}
+
+notification_pool_t* InitNotifications(int cap){
+  notification_pool_t* n = GameCalloc("InitNotifications", 1, sizeof(notification_pool_t));
+
+  n->cap = cap;
+  HashInit(&n->map, next_pow2_int(cap*2));
+
+  return n;
+}
+
+notification_t* RegisterNotification(notification_pool_t* p, char* name){
+  notification n = hash_str_64(name);
+  hash_key_t key = NotificationCheck(p, n);
+  notification_t* notif = NULL;
+  
+  if(key > 0)
+    return NotificationGet(p, key);
+  
+  notif = GameCalloc("RegisterNotification", 1, sizeof(notification_t));
+  notif->hash = n;
+  strcpy(notif->name, name);
+  HashPut(&p->map, n, notif);
+
+  return notif; 
 }

@@ -49,16 +49,17 @@ typedef struct{
 }child_process_t;
 
 typedef struct{
-  GameScreen     screen;
-  int            game_frames;
-  child_process_t children[SCREEN_DONE];
-  GameScreen     next[SCREEN_DONE];
-  GameState      state[SCREEN_DONE];//TODO each screen needs a state
-  event_bus_t    *bus[SCREEN_DONE];
-  int            album_id[SCREEN_DONE];
-  UpdateFn       init[SCREEN_DONE];
-  UpdateFn       update_steps[SCREEN_DONE][UPDATE_DONE];
-  UpdateFn       finish[SCREEN_DONE];
+  GameScreen           screen;
+  int                  game_frames;
+  child_process_t      children[SCREEN_DONE];
+  GameScreen           next[SCREEN_DONE];
+  GameState            state[SCREEN_DONE];
+  notification_pool_t* notifications;
+  event_bus_t          *bus[SCREEN_DONE];
+  int                  album_id[SCREEN_DONE];
+  UpdateFn             init[SCREEN_DONE];
+  UpdateFn             update_steps[SCREEN_DONE][UPDATE_DONE];
+  UpdateFn             finish[SCREEN_DONE];
 }game_process_t;
 
 extern game_process_t game_process;
@@ -70,11 +71,12 @@ bool GameTransitionScreen();
 void GameProcessEnd();
 //===WORLD_T===>
 
-void WorldAnnounce(EventType, Vector2 pos);
-
-void Subscribe(EventType event, EventCallback cb, void* data);
-void ScheduleEvent(EventType type, void* data, uint64_t uid, TimeFrame, int);
-void GameEvent(EventType, void*, uint64_t);
+void WorldAnnounce(notification, Vector2 pos);
+void Notification(notification, EventCallback, void*);
+void TargetSubscribe(notification, EventCallback cb, void* data, int);
+void Subscribe(char*, EventCallback cb, void* data);
+void ScheduleEvent(char*, void* data, uint64_t uid, TimeFrame, int);
+void GameEvent(char*, void*, uint64_t);
 void WorldInitOnce();
 void WorldPreUpdate();
 void WorldFixedUpdate();
@@ -86,5 +88,14 @@ static int WorldGetTime(){
 }
 
 const char* GetLevelString(void);
+
+static uint64_t MakeGUID(char* str, int index){
+  uint64_t hash = hash_str_64(str);
+
+  uint64_t uid = hash_combine_64(hash, hash_64_from_int(index));
+
+  return hash_combine_64(uid, hash_64_from_int(WorldGetTime()));
+}
+
 #endif
 

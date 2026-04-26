@@ -1,6 +1,7 @@
 #include "game_strings.h"
 
-const char* StringGetAnnouncement(EventType type){
+const char* StringGetAnnouncement(notification type){
+/*
   announce_string_p *asp = &ANNOUNCE_STRINGS[type];
 
   bool ready = false;
@@ -20,5 +21,7 @@ const char* StringGetAnnouncement(EventType type){
     return ANNOUNCE_STRINGS[type].pool[0].str;
 
   return ANNOUNCE_STRINGS[type].pool[c->id].str;
+*/
+ 
 }
 

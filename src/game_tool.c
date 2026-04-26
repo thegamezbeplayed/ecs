@@ -17,6 +17,24 @@ void HashFree(hash_map_t* m) {
     memset(m, 0, sizeof(*m));
 }
 
+hash_key_t HashKey(hash_map_t* m, hash_key_t key) {
+  uint32_t mask = m->cap - 1;
+  uint64_t h = hash_64(key);
+
+  for (uint32_t i = 0; i < m->cap; i++) {
+    hash_slot_t* s = &m->slots[(h + i) & mask];
+
+    if (s->state == 0)
+      return 0;
+
+    if (s->state == 1 && s->key == key)
+      return s->key;
+  }
+
+  return 0;
+
+}
+
 void* HashGet(hash_map_t* m, hash_key_t key) {
     uint64_t h = hash_64(key);
     uint32_t mask = m->cap - 1;

@@ -24,23 +24,43 @@ void InitRenderSystem(render_st* r){
 void RenderSystem(system_pool_t* s, component_registry_t* c){
   render_st *r = &s->render;
   camera_c* cc = &c->cam;
+  position_c* pos = &c->pos;
 
+  EntityManager *em = &c->manager;
   camera_t* cam = CameraGetActive(cc);
   if(!cam->camera)
     return;
 
   sprite_c* spr = &c->sprites;
+  anim_c* a = &c->anim;
   BeginDrawing();
   BeginTextureMode(r->tex);
   DrawRectangleLinesEx(cam->bounds, 1.5f, RED);
   BeginMode2D(*cam->camera);
+  ClearBackground(BLACK);
   Draw2DGrid(16, GetScreenWidth()*4, GetScreenHeight()*4);
 
-  ClearBackground(BLACK);
+  for(int i = 0; i < a->map.size; i++){
+    anim_player_t* ap = &a->dense[i];
+    Entity* e = ComponentGetEntity(em, &a->map, i);
+    int pidx = ComponentByEntity(&pos->map, e->id);
+    position_t* p = &pos->dense[pidx];
+
+    sprite_slice_t* frame = AnimGetFrame(ap);
+    DrawSlice(frame, p->vpos, 0);
+
+  }
+
   for (uint32_t i = 0; i < spr->map.size; i++) {
     sprite_t* s = &spr->dense[i];
+    Entity* e = ComponentGetEntity(em, &spr->map, i);
+    if(!e)
+      continue;
 
-    DrawSprite(s);
+    int pidx = ComponentByEntity(&pos->map, e->id);
+    position_t* p = &pos->dense[pidx];
+
+    DrawSpriteAtPos(s, p->vpos);
   }
   
   EndMode2D();
@@ -56,18 +76,16 @@ void RenderSystem(system_pool_t* s, component_registry_t* c){
 
 void CameraSync(system_pool_t* s, component_registry_t* c){
   camera_st* cs = &s->cam;
-  sprite_c* spr = &c->sprites;
   camera_c* cam = &c->cam; 
   camera_follow_c* f = &c->view; 
+  position_c* pos = &c->pos;
+
+
   for(int i = 0; i < cam->map.size && f->map.size; i++){
-    Entity e = f->map.entities[i];
-
+    position_t* p = &pos->dense[i];
     camera_t* ac = &cam->dense[i];
-    if(!HasSprite(spr, e))
-      continue;
 
-    sprite_t* espr = SpriteGet(spr, e);
-    ScreenCameraSync(ac, espr->pos);
+    ScreenCameraSync(ac, p->vpos);
   }
 }
 

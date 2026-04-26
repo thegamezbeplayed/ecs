@@ -1,11 +1,8 @@
 #ifndef __GAME_UTIL__
 #define __GAME_UTIL__
 
-#include <assert.h>
-#include <stdlib.h>
-#include <string.h>
 #include "game_common.h"
-#include <stdint.h>
+#include "game_define.h"
 
 #define MAX_BEHAVIOR_TREE 12
 #define MAX_EVENTS 512
@@ -30,28 +27,20 @@ static inline void DO_NOTHING(void){}
 static inline bool BOOL_DO_NOTHING(){return false;}
 static inline const char* CHAR_DO_NOTHING(){return "\0";}
 
+typedef uint64_t notification;
+    
+typedef struct{
+  char          name[MAX_NAME_LEN];
+  notification  hash;
+}notification_t;
+
+typedef struct{
+  int         count, cap;
+  hash_map_t  map;
+}notification_pool_t;
+notification_pool_t* InitNotifications(int cap);
+notification_t* RegisterNotification(notification_pool_t*, char*);
 //====EVENTS===>
-typedef enum{
-  EVENT_TILE_COLLISION,
-  EVENT_TILE_MOVE,
-  EVENT_TILE_DIST,
-  EVENT_TILE_END,
-  EVENT_GAME_PROCESS,
-  EVENT_INTERACTION,
-  EVENT_PLAY_SFX,
-  EVENT_SONG_END,
-  EVENT_SONG_FADE_IN,
-  EVENT_SONG_FADE_OUT,
-  EVENT_WAIT,
-  EVENT_FINISH,
-  EVENT_ENT_ACTION,
-  EVENT_ENT_MOVE,
-  EVENT_ENT_DIE,
-  EVENT_ENTER_CELL,
-  EVENT_TURN_END,
-  EVENT_LEVEL_END,
-  EVENT_NONE,
-} EventType;
 
 typedef enum{
   TF_NONE,
@@ -66,9 +55,9 @@ typedef void (*EventCallback)(
 );
 
 typedef struct {
-    EventType      event;
+    notification   event;
     EventCallback  cb;
-    uint64_t       uid;
+    int            eid;
     void*          user_data;
 } event_sub_t;
 
@@ -80,28 +69,26 @@ typedef struct {
 
 struct event_s{
   uint64_t          uid;
-  EventType         type;
+  notification      type;
   int               max, calls;
   void*             data;
-  uint64_t          iuid;
+  int               eid;
   TimeFrame         timing;
   int               scheduled;
 };
-
+event_t* InitEvent(notification_pool_t*, char*, void*, int);
 event_bus_t* InitEventBus(int cap);
 void EventBusStep(event_bus_t* bus);
-event_sub_t* EventSubscribe(event_bus_t* bus, EventType event, EventCallback cb, void* u_data);
+event_sub_t* EventSubscribe(event_bus_t* bus, notification event, EventCallback cb, void* u_data);
 void EventEmit(event_bus_t* bus, event_t*);
 void EventRemove(event_bus_t* bus, uint64_t id);
 uint64_t EventSchedule(event_bus_t* bus, event_t* e);
 
-
 typedef void (*CooldownCallback)(void* );
-
 
 typedef struct{
   uint64_t          uid;
-  EventType         type;
+  notification         type;
   int               duration;
   int               elapsed;
   bool              is_complete;
@@ -112,7 +99,7 @@ typedef struct{
   CooldownCallback  on_step;
 }cooldown_t;
 
-cooldown_t* InitCooldown(int dur, EventType, CooldownCallback on_end_callback, void* params);
+cooldown_t* InitCooldown(int dur, notification, CooldownCallback on_end_callback, void* params);
 void UnloadCooldown(cooldown_t* cd);
 
 typedef struct{
@@ -124,9 +111,10 @@ timers_t* InitTimers();
 void UnloadTimers(timers_t* ev);
 int AddTimer(timers_t* pool, cooldown_t* cd);
 void StepTimers(timers_t* pool);
-void StartTimer(timers_t* pool, EventType type);
-void ResetTimer(timers_t* pool, EventType type);
-bool CheckTimer(timers_t* pool, EventType type);
+void StartTimer(timers_t* pool, notification type);
+void ResetTimer(timers_t* pool, notification type);
+bool CheckTimer(timers_t* pool, notification type);
+
 
 //<===BEHAVIOR TREES
 

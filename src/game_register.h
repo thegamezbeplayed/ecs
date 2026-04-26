@@ -13,6 +13,7 @@ typedef struct{
   sprite_c        sprites;
   input_c         input;
   anim_c          anim;
+  position_c      pos;
 }component_registry_t;
 
 bool HasSprite(sprite_c* c, Entity e);
@@ -24,6 +25,7 @@ static sprite_t* SpriteGet(sprite_c* c, Entity e) {
     return &c->dense[c->map.sparse[e.id]];
 }
 
+void RegisterPos(position_c* c, Entity e, position_t pos);
 void RegisterSprite(sprite_c* c, Entity e, sprite_t s);
 void RegisterAnim(anim_c* c, Entity e, anim_player_t a);
 void RegisterInput(input_c* c, Entity e, input_t s);
