@@ -46,6 +46,19 @@ void EntityTestSpawn(Cell c){
   sprite_t* s = InitSpriteByTag("character", SHEET_CHAR);
   s->is_visible = true;
   RegisterSprite(&world.sprites, e, *s);
+
+  Vector2 size = RectSize(s->slice->bounds);
+
+  float radius = Vector2Length(size);
+
+  rigid_body_t* rb = InitRigidBody(pos->vpos, SHAPE_CIRCLE, radius, 0.f);
+  RigidBodyHasForce(rb, 4);
+  force_t* bump = ForceBump(VEC_BOTH(0.25f));
+  RigidBodySetPos(rb, pos->vpos);
+
+  RigidBodyGiveForce(rb, bump);
+  RegisterRigidBody(&world.bodies, e, *rb);
+
 }
 
 void EntityTest(int count){

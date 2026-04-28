@@ -67,7 +67,7 @@ struct action_key_s{
 };
 
 struct input_s{
-  int             turn;
+  int             turn, frames;
   Cell            step;
   char            move[MAX_NAME_LEN];
   action_key_t    actions[ACT_DONE];

@@ -25,16 +25,14 @@ payload_t* InitPayloadSingle(param_t param){
   return p;
 }
 
-cooldown_t* InitCooldown(int dur, notification type, CooldownCallback on_end_callback, void* params){
-  cooldown_t* cd = malloc(sizeof(cooldown_t)); 
+cooldown_t* InitCooldown(int dur, notification type){
+  cooldown_t* cd = GameCalloc("InitCooldown", 1, sizeof(cooldown_t)); 
 
   *cd = (cooldown_t){
     .type = type,
       .is_complete = false,
       .duration = dur,
       .elapsed = 0,
-      .on_end_params = params,
-      .on_end = on_end_callback// ? on_end_callback : DO_NOTHING
   };
   
   return cd;
@@ -80,7 +78,7 @@ int AddTimer(timers_t* pool, cooldown_t* cd){
 }
 
 timers_t* InitTimers(){
-  timers_t* ev = malloc(sizeof(timers_t));
+  timers_t* ev = GameMalloc("InitTimers", sizeof(timers_t));
   *ev =  (timers_t) { 0 };
 
   for(int i = 0; i < MAX_EVENTS; i++){
@@ -372,4 +370,62 @@ notification_t* RegisterNotification(notification_pool_t* p, char* name){
   HashPut(&p->map, n, notif);
 
   return notif; 
+}
+
+hash_key_t RegisterInteraction(interactions* p, interaction_t*entry){
+  hash_key_t key = hash_event(entry->source, entry->target, entry->type);
+
+  HashPut(p, key, entry);
+
+  return key;
+} 
+
+interaction_t* InteractionsGetEntry(hash_map_t* m, hash_key_t key){
+  return HashGet(m, key);
+}
+
+void InitInteractions(hash_map_t* m, int cap){
+
+  HashInit(m, cap);
+}
+
+interaction_t* InitInteraction(uint32_t a, uint32_t b, char* type, int dur){
+  interaction_t* i = GameCalloc("InitInteraction", 1, sizeof(interaction_t));
+
+  notification n = GameNotification(type);
+  cooldown_t* cd = InitCooldown(dur, n);
+
+  i->timer = cd;
+  i->source = a;
+  i->target = b;
+
+
+  return i;
+}
+
+void InteractionStep(interactions* p){
+  hash_iter_t iter;
+
+  HashStart(p, &iter);
+
+  hash_slot_t* s = NULL;
+
+  while((s = HashNext(&iter))){
+    interaction_t* intact = s->value;
+
+    if(intact->timer->elapsed >= intact->timer->duration){
+      HashRemove(p, s->key);
+      continue;
+    }
+    intact->timer->elapsed++;
+
+  }
+}
+
+bool InteractionCheck(interactions* p, uint32_t a, uint32_t b, char* type){
+  notification n = hash_str_64(type);
+
+  hash_key_t key = hash_event(a, b, n);
+
+  return (InteractionsGetEntry(p, key) != NULL);
 }

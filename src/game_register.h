@@ -8,9 +8,9 @@ typedef struct{
   camera_c        cam;
   camera_follow_c view;
   EntityManager   manager;
-  rigid_body_c    rigid_bodies;
-  behavior_c      behaviorS;
+  behavior_c      behaviors;
   sprite_c        sprites;
+  rigid_body_c    bodies;
   input_c         input;
   anim_c          anim;
   position_c      pos;
@@ -25,6 +25,7 @@ static sprite_t* SpriteGet(sprite_c* c, Entity e) {
     return &c->dense[c->map.sparse[e.id]];
 }
 
+void RegisterRigidBody(rigid_body_c*, Entity, rigid_body_t);
 void RegisterPos(position_c* c, Entity e, position_t pos);
 void RegisterSprite(sprite_c* c, Entity e, sprite_t s);
 void RegisterAnim(anim_c* c, Entity e, anim_player_t a);

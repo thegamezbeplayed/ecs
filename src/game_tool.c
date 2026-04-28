@@ -1,10 +1,10 @@
 #include "game_tools.h"
 static int TOTAL_SIZE = 0;
 void HashInit(hash_map_t* m, uint32_t cap) {
-    assert((cap & (cap - 1)) == 0); // power of two
-    m->cap = cap;
-    m->count = 0;
-    m->slots = GameCalloc("HashInit", cap, sizeof(hash_slot_t));
+  assert((cap & (cap - 1)) == 0); // power of two
+  m->cap = cap;
+  m->count = 0;
+  m->slots = GameCalloc("HashInit", cap, sizeof(hash_slot_t));
 }
 
 void HashClear(hash_map_t* m){
@@ -13,8 +13,8 @@ void HashClear(hash_map_t* m){
 }
 
 void HashFree(hash_map_t* m) {
-    GameFree("HashFree", m->slots);
-    memset(m, 0, sizeof(*m));
+  GameFree("HashFree", m->slots);
+  memset(m, 0, sizeof(*m));
 }
 
 hash_key_t HashKey(hash_map_t* m, hash_key_t key) {
@@ -36,20 +36,19 @@ hash_key_t HashKey(hash_map_t* m, hash_key_t key) {
 }
 
 void* HashGet(hash_map_t* m, hash_key_t key) {
-    uint64_t h = hash_64(key);
-    uint32_t mask = m->cap - 1;
+  uint64_t h = hash_64(key);
+  uint32_t mask = m->cap - 1;
 
-    for (uint32_t i = 0; i < m->cap; i++) {
-        hash_slot_t* s = &m->slots[(h + i) & mask];
+  for (uint32_t i = 0; i < m->cap; i++) {
+    hash_slot_t* s = &m->slots[(h + i) & mask];
+    if (s->state == 0)
+      return NULL;
 
-        if (s->state == 0)
-            return NULL;
+    if (s->state == 1 && s->key == key)
+      return s->value;
+  }
 
-        if (s->state == 1 && s->key == key)
-            return s->value;
-    }
-
-    return NULL;
+  return NULL;
 }
 
 void HashExpand(hash_map_t* m){
@@ -82,54 +81,54 @@ void HashExpand(hash_map_t* m){
 }
 
 void HashPut(hash_map_t* m, hash_key_t key, void* value) {
-    if(m->count * 4 > m->cap*3) // load factor < 0.5
+  if(m->count * 4 > m->cap*3) // load factor < 0.5
+    return;
+
+  uint64_t h = hash_64(key);
+  uint32_t mask = m->cap - 1;
+  hash_slot_t* tomb = NULL;
+
+  for (uint32_t i = 0; i < m->cap; i++) {
+    hash_slot_t* s = &m->slots[(h + i) & mask];
+
+    if (s->state == 1 && s->key == key) {
+      s->value = value;
       return;
-     
-    uint64_t h = hash_64(key);
-    uint32_t mask = m->cap - 1;
-    hash_slot_t* tomb = NULL;
-
-    for (uint32_t i = 0; i < m->cap; i++) {
-        hash_slot_t* s = &m->slots[(h + i) & mask];
-
-        if (s->state == 1 && s->key == key) {
-            s->value = value;
-            return;
-        }
-
-        if (s->state == 2 && !tomb)
-            tomb = s;
-
-        if (s->state == 0) {
-            s = tomb ? tomb : s;
-            s->key = key;
-            s->value = value;
-            s->state = 1;
-            m->count++;
-            return;
-        }
     }
 
-    assert(0 && "HashPut failed");
+    if (s->state == 2 && !tomb)
+      tomb = s;
+
+    if (s->state == 0) {
+      s = tomb ? tomb : s;
+      s->key = key;
+      s->value = value;
+      s->state = 1;
+      m->count++;
+      return;
+    }
+  }
+
+  assert(0 && "HashPut failed");
 }
 
 void HashRemove(hash_map_t* m, hash_key_t key) {
-    uint64_t h = hash_64(key);
-    uint32_t mask = m->cap - 1;
+  uint64_t h = hash_64(key);
+  uint32_t mask = m->cap - 1;
 
-    for (uint32_t i = 0; i < m->cap; i++) {
-        hash_slot_t* s = &m->slots[(h + i) & mask];
+  for (uint32_t i = 0; i < m->cap; i++) {
+    hash_slot_t* s = &m->slots[(h + i) & mask];
 
-        if (s->state == 0)
-            return;
+    if (s->state == 0)
+      return;
 
-        if (s->state == 1 && s->key == key) {
-            s->state = 2; // tombstone
-            s->value = NULL;
-            m->count--;
-            return;
-        }
+    if (s->state == 1 && s->key == key) {
+      s->state = 2; // tombstone
+      s->value = NULL;
+      m->count--;
+      return;
     }
+  }
 }
 
 void* GameCalloc(const char* func, int count, size_t size){
@@ -184,27 +183,27 @@ void GameFree(const char* func, void* ptr){
 
 void* GameRealloc(const char* func, void* ptr, size_t new_size)
 {
-    if (!ptr)
-        return GameMalloc(func, new_size);
+  if (!ptr)
+    return GameMalloc(func, new_size);
 
-    // Move back to header
-    size_t* raw = ((size_t*)ptr) - 1;
-    size_t old_size = *raw;
+  // Move back to header
+  size_t* raw = ((size_t*)ptr) - 1;
+  size_t old_size = *raw;
 
-    // Allocate new memory with header
-    size_t* new_raw = realloc(raw, new_size + sizeof(size_t));
-    if (!new_raw) return NULL;
+  // Allocate new memory with header
+  size_t* new_raw = realloc(raw, new_size + sizeof(size_t));
+  if (!new_raw) return NULL;
 
-    *new_raw = new_size;
+  *new_raw = new_size;
 
-    TOTAL_SIZE += new_size;
-    TOTAL_SIZE -= old_size;
+  TOTAL_SIZE += new_size;
+  TOTAL_SIZE -= old_size;
 
-    double mb = TOTAL_SIZE / (1024.0*1024.0);
-    double gb = TOTAL_SIZE / (1024.0*1024.0*1024.0);
-//    TraceLog(LOG_INFO,"%s realloc: %zu bytes (old %zu). Total %.2f MB (%.2f GB)\n",
-   //        func, new_size, old_size, mb, gb);
+  double mb = TOTAL_SIZE / (1024.0*1024.0);
+  double gb = TOTAL_SIZE / (1024.0*1024.0*1024.0);
+  //    TraceLog(LOG_INFO,"%s realloc: %zu bytes (old %zu). Total %.2f MB (%.2f GB)\n",
+  //        func, new_size, old_size, mb, gb);
 
-    return (void*)(new_raw + 1);
+  return (void*)(new_raw + 1);
 };
 

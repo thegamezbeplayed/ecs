@@ -6,9 +6,9 @@ position_t* InitPosition(Cell pos){
   p->pos = pos;
   p->last_pos = p->facing = CELL_UNSET;
 
-  p->vpos = cell_to_vec(pos, CELL_WIDTH);
+  p->last_vpos = p->vpos = cell_to_vec(pos, CELL_WIDTH);
 
-  p->last_vpos = p->dir = VEC_UNSET;
+  p->dir = VEC_UNSET;
 
   return p;
 

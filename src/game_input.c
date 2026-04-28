@@ -33,10 +33,14 @@ BehaviorStatus InputActionMove(input_t* gi, KeyboardKey k){
       dir = CELL_DOWN;
       break;
     default:
+      return BEHAVIOR_FAILURE;
       break;
   }
 
   gi->step = dir;
+
+  GameEvent("INPUT_MOVE", gi, PLAYER);
+  return BEHAVIOR_SUCCESS;
 }
 
 
@@ -52,11 +56,8 @@ input_t* InitInput(void){
 bool InputCheck(input_t* gi, int turn){
   if(IsKeyDown(KEY_SPACE))
       DO_NOTHING();
-  
-  if(turn == gi->turn)
-    return false;
 
-  gi->step = CELL_UNSET;
+//  gi->step = CELL_UNSET;
   for(int i = 0; i < ACT_DONE; i++){
     action_key_t akey = gi->actions[i];
 
@@ -66,7 +67,10 @@ bool InputCheck(input_t* gi, int turn){
       if(!IsKeyDown(k))
         continue;
 
-      akey.fn(gi, k);
+      if(akey.fn(gi, k)==BEHAVIOR_SUCCESS)
+        return true;
     }
   }
+
+  return false;
 }

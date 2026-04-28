@@ -25,8 +25,7 @@ static int ComponentGetFirst(int* entities, size_t size){
     return entities[0];
 }
 
-static Entity* ComponentGetEntity(EntityManager* em, component_t* c, int i){
-  int index = c->sparse[i];
+static Entity* ComponentGetEntity(EntityManager* em, component_t* c, int index){
 
   if(EntityValid(em, c->entities[index]))
     return &c->entities[index];
@@ -41,6 +40,7 @@ static int ComponentByEntity(component_t* c, int e){
   return index;
 }
 
+//2D PHYSICS
 typedef struct{
   rigid_body_t    dense[MAX_COMPONENTS];
   component_t     map;

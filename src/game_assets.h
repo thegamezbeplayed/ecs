@@ -96,6 +96,10 @@ struct anim_player_s{
   hash_map_t  map;
 };
 
+static Vector2 AnimSize(anim_player_t* a){
+  return RectSize(a->anims[a->cur_seq].frames[0].bounds);
+}
+
 anim_t* AnimGet(anim_player_t* a, hash_key_t key);
 void AnimSetSequence(anim_player_t* ap, anim_t* a);
 void AnimEvent(event_t*, void*);

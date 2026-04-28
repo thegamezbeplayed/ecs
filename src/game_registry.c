@@ -9,12 +9,27 @@ void TestComponents(void){
 
   Entity e = EntityCreate(&world.manager);
 
+  PLAYER = e.id;
   position_t* p = InitPosition(CELL_NEW(4, 3));
 
   anim_player_t* a = InitAnimGroup("character", SHEET_CHAR);
+ 
+  Vector2 size = AnimSize(a);
 
+  float radius = Vector2Length(size);
+  rigid_body_t* rb = InitRigidBody(p->vpos, SHAPE_CIRCLE, radius/4, 0.f);
+
+  RigidBodyHasForce(rb, 16);
   Entity c = EntityCreate(&world.manager);
-  
+ 
+  force_t* bump = ForceBump(VEC_BOTH(0.25f));
+  force_t* steer = ForceFromVec2(FORCE_STEERING, VEC_BOTH(0.25f));
+
+  steer->friction = VEC_BOTH(.67f);
+  steer->threshold = 0.067f;
+  RigidBodyGiveForce(rb, bump);
+  RigidBodyGiveForce(rb, steer);
+  RigidBodySetPos(rb, p->vpos); 
   camera_t* cam = InitCamera(2.f, .0f, Vector2Scale(ROOM_SIZE,0.5f));
 
   input_t* gi = InitInput();
@@ -24,7 +39,8 @@ void TestComponents(void){
   RegisterCamera(&world.cam, c, *cam);
   RegisterAnim(&world.anim, e, *a);
   RegisterPos(&world.pos, e, *p);
-  EntityTest(150);
+  RegisterRigidBody(&world.bodies, e, *rb);
+  EntityTest(10);
 }
 
 void InitComponents(void){
@@ -42,6 +58,11 @@ uint32_t RegisterEntity(component_t* c, Entity e){
   c->sparse[e.id] = i;
 
   return i;
+}
+
+void RegisterRigidBody(rigid_body_c* c, Entity e, rigid_body_t b){
+  uint32_t i = RegisterEntity(&c->map, e);
+  c->dense[i] = b;
 }
 
 void RegisterPos(position_c* c, Entity e, position_t pos){
@@ -96,9 +117,22 @@ void RegisterSystems(void){
   InitPhysicsSystem(&run.phys);
 }
 
+void RegisterScheduleState(UpdateType u, SystemFn fn){
+
+  run.schedule.states[u].tick[run.schedule.states[u].size++] = fn;
+}
+
 void RegisterScheduleStep(UpdateType u, SystemFn fn){
 
   run.schedule.steps[u].tick[run.schedule.steps[u].size++] = fn;
+}
+
+void SystemsState(GameState u){
+  schedule_step_t* s = &run.schedule.states[u];
+
+  for(int i = 0; i < s->size; i++)
+    s->tick[i](&run, &world);
+
 }
 
 void SystemsStep(UpdateType u){

@@ -1,5 +1,6 @@
 #ifndef __GAME_TYPES__
 #define __GAME_TYPES__
+
 #include "game_tools.h" 
 
 #define ParamRead(o, T) ((T*)((o)->data))

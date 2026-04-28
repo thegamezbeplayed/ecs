@@ -1,6 +1,7 @@
 #ifndef __GAME_UTIL__
 #define __GAME_UTIL__
 
+#include "game_types.h"
 #include "game_common.h"
 #include "game_define.h"
 
@@ -88,7 +89,7 @@ typedef void (*CooldownCallback)(void* );
 
 typedef struct{
   uint64_t          uid;
-  notification         type;
+  notification      type;
   int               duration;
   int               elapsed;
   bool              is_complete;
@@ -99,7 +100,7 @@ typedef struct{
   CooldownCallback  on_step;
 }cooldown_t;
 
-cooldown_t* InitCooldown(int dur, notification, CooldownCallback on_end_callback, void* params);
+cooldown_t* InitCooldown(int dur, notification);
 void UnloadCooldown(cooldown_t* cd);
 
 typedef struct{
@@ -115,7 +116,20 @@ void StartTimer(timers_t* pool, notification type);
 void ResetTimer(timers_t* pool, notification type);
 bool CheckTimer(timers_t* pool, notification type);
 
+//INTERACTIONS_T===>
+typedef struct {
+  notification    type;
+  uint32_t        source, target;
+  cooldown_t*     timer;
+} interaction_t;
 
+typedef hash_map_t interactions;
+
+void InitInteractions(hash_map_t* m, int cap);
+hash_key_t RegisterInteraction(interactions*, interaction_t*);       
+interaction_t* InitInteraction(uint32_t, uint32_t, char*, int);
+bool InteractionCheck(interactions* p, uint32_t a, uint32_t b, char* type);
+void InteractionStep(interactions*);
 //<===BEHAVIOR TREES
 
 //forward declare
@@ -162,5 +176,21 @@ choice_pool_t* StartChoice(choice_pool_t** pool, int size, ChoiceFn fn, bool* re
 void EndChoice(choice_pool_t* pool, bool reset);
 choice_pool_t* InitChoicePool(int size, ChoiceFn fn);
 bool AddChoice(choice_pool_t *pool, int id, int score, void *ctx, OnChosen fn);  
+
+typedef bool (*StateComparator)(int a, int b);
+
+typedef struct{
+  int             state;
+  StateComparator can;
+  int             required;
+}state_change_requirement_t;
+
+static state_change_requirement_t CAN_CHANGE[STATE_END+1] = {
+  {STATE_NONE, NEVER, STATE_END},
+  {STATE_SPAWN, LESS_THAN, STATE_SPAWN},
+  {STATE_IDLE, LESS_THAN, STATE_DIE},
+  {STATE_DIE, LESS_THAN, STATE_DIE},
+  {STATE_END, EQUAL_TO, STATE_DIE},
+};
 
 #endif

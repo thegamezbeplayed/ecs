@@ -13,6 +13,7 @@ Camera2D camera = { 0 };
 void InitGameplayScreen(void){
   InitGameEvents();
   InitComponents();
+  GameSetState(GAME_READY);
 }
 
 void PreUpdate(void){

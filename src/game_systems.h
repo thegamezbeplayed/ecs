@@ -19,11 +19,13 @@ typedef struct{
 typedef struct{
   DataType  type;
 }position_st;
+void OnPositionEvent(event_t* ev, void* data);
 
 typedef struct{
   bool  step;
   int   turn;
 }input_st;
+void OnInputEvent(event_t* ev, void* data);
 
 typedef struct{
   float       global_speed;
@@ -41,6 +43,7 @@ typedef struct{
 }schedule_step_t;
 
 typedef struct{
+  schedule_step_t states[GAME_DONE];
   schedule_step_t steps[UPDATE_DONE];
 }scheduler_t;
 
@@ -63,6 +66,8 @@ void InitRenderSystem(render_st*);
 void InitCameraSystem(camera_st* c);
 void RenderSystem(system_pool_t*, component_registry_t*); 
 void RegisterSystems(void);
+void SystemsState(GameState);
 void SystemsStep(UpdateType);
 void RegisterScheduleStep(UpdateType, SystemFn);
+void RegisterScheduleState(UpdateType, SystemFn);
 #endif

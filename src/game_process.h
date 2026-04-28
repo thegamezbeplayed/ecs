@@ -32,9 +32,11 @@ typedef enum{
   GAME_NONE,
   GAME_LOADING,
   GAME_READY,
+  GAME_RUNNING,
   GAME_PAUSE,
   GAME_FINISHED,
-  GAME_OVER
+  GAME_OVER,
+  GAME_DONE
 }GameState;
 
 void GameSetState(GameState state);
@@ -55,14 +57,14 @@ typedef struct{
   GameScreen           next[SCREEN_DONE];
   GameState            state[SCREEN_DONE];
   notification_pool_t* notifications;
+  interactions         interactions;
   event_bus_t          *bus[SCREEN_DONE];
   int                  album_id[SCREEN_DONE];
-  UpdateFn             init[SCREEN_DONE];
+  UpdateFn             phase[SCREEN_DONE][GAME_DONE];
   UpdateFn             update_steps[SCREEN_DONE][UPDATE_DONE];
-  UpdateFn             finish[SCREEN_DONE];
 }game_process_t;
+extern game_process_t GP;
 
-extern game_process_t game_process;
 void InitGameEvents();
 void InitGameProcess();
 void GameProcessStep();
@@ -73,6 +75,7 @@ void GameProcessEnd();
 
 void WorldAnnounce(notification, Vector2 pos);
 void Notification(notification, EventCallback, void*);
+void SubscribeEntity(char*, EventCallback, void*, int);
 void TargetSubscribe(notification, EventCallback cb, void* data, int);
 void Subscribe(char*, EventCallback cb, void* data);
 void ScheduleEvent(char*, void* data, uint64_t uid, TimeFrame, int);
@@ -84,7 +87,19 @@ void WorldPostUpdate();
 void WorldRender();
 Rectangle WorldRoomBounds();
 static int WorldGetTime(){
-  return game_process.game_frames;
+  return GP.game_frames;
+}
+
+static notification GameNotification(char* str){
+  notification_t* n = RegisterNotification(GP.notifications, str);
+}
+
+static void GameInteraction(interaction_t* entry){
+
+  RegisterInteraction(&GP.interactions, entry);
+}
+static bool GameCheckInteraction(uint32_t a, uint32_t b, char* type){
+  return InteractionCheck(&GP.interactions, a, b, type);
 }
 
 const char* GetLevelString(void);

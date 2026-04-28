@@ -7,6 +7,8 @@
 
 #define MAX_ENTITIES 640
 
+static uint32_t PLAYER;
+
 typedef struct {
     uint32_t id;
     uint32_t generation;
@@ -24,6 +26,7 @@ Entity EntityCreate(EntityManager* em);
 void EntityTest(int count);
 bool EntityValid(EntityManager* em, Entity e);
 
+/*
 typedef bool (*StateComparator)(int a, int b);
 
 typedef struct{
@@ -39,4 +42,5 @@ static state_change_requirement_t CAN_CHANGE[STATE_END+1] = {
   {STATE_DIE, LESS_THAN, STATE_DIE},
   {STATE_END, EQUAL_TO, STATE_DIE},
 };
+*/
 #endif

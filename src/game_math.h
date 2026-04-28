@@ -15,6 +15,12 @@
 #define CELL_WIDTH 16
 typedef Rectangle Rect;
 
+typedef enum{
+  SHAPE_NONE,
+  SHAPE_CIRCLE,
+  SHAPE_REC,
+}ShapeType;
+
 typedef struct {
   int x,y;
 } Cell;
@@ -62,7 +68,7 @@ static inline Vector2 VectorDistanceBetween(Vector2 a, Vector2 b) {
   return Vector2Subtract(b,a);
 }
 
-static inline Vector2 VectorDirectionBetween(Vector2 a, Vector2 b) {
+static inline Vector2 vec_dir_between(Vector2 a, Vector2 b) {
     return Vector2Normalize((Vector2){ b.x - a.x, b.y - a.y });
 }
 
@@ -155,6 +161,40 @@ static inline int iround(float num){
     return (int)(num - 0.5);
   else
     return (int)(num + 0.5);
+}
+
+static inline Vector2 math_normal_rec(Rectangle collider, Rectangle target, Rectangle *out){
+  const float threshold = 0.0f;
+
+  Vector2 col_pos = GetRecCenter(collider);
+  Vector2 tar_pos = GetRecCenter(target);
+
+  Rectangle overlap = GetIntersectionRec(collider, target);
+
+  Vector2 result = Vector2Zero();
+  if (overlap.width < overlap.height - threshold) {
+    if (col_pos.x > tar_pos.x){
+//      TraceLog(LOG_INFO,"Hit from the left side of target\n");
+      result.x = -1;
+    }
+    else{
+  //    TraceLog(LOG_INFO,"Hit from the right side of target\n");
+      result.x = 1;
+    }
+  }
+  else if (overlap.height < overlap.width - threshold) {
+    if (col_pos.y > tar_pos.y){
+    //  TraceLog(LOG_INFO,"Hit from the top side of target\n");
+      result.y = -1;
+    }
+    else{
+      //TraceLog(LOG_INFO,"Hit from the bottom side of target\n");
+      result.y = 1;
+    }
+  }
+
+  *out = overlap;
+  return result;
 }
 
 #endif

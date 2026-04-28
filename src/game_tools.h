@@ -22,6 +22,7 @@
 #define VECTOR2_DOWN   (Vector2){ 0.0f,1.0f }
 #define VECTOR2_LEFT   (Vector2){-1.0f, 0.0f }
 #define VECTOR2_RIGHT  (Vector2){ 1.0f, 0.0f }
+#define VEC_BOTH(n)    (Vector2){n,n}
 #define Vector2X(x) ((Vector2){ (x), 0.0f })
 #define Vector2XY(x,y) ((Vector2){ (x), (y) })
 #define Vector2Y(y) ((Vector2){ 0.0f, (y) })
@@ -71,6 +72,14 @@ void* GameMalloc(const char* func, size_t size);
 void* GameRealloc(const char* func, void* ptr, size_t new_size);
 void GameFree(const char* func, void* ptr);
 
+static inline void normalize_32(uint32_t* a, uint32_t* b) {
+    if (*a > *b) {
+        uint32_t tmp = *a;
+        *a = *b;
+        *b = tmp;
+    }
+}
+
 static int next_pow2_int(int v) {
     if (v <= 1)
         return 1;
@@ -102,6 +111,11 @@ typedef struct {
     uint32_t count;
 } hash_map_t;
 
+static bool HashFull(hash_map_t* m){
+ return (m->count > m->cap/2);
+
+}
+
 typedef struct{
   hash_map_t* map;
   uint32_t index;
@@ -120,10 +134,14 @@ static hash_slot_t* HashNext(hash_iter_t* it) {
 
         if (s->state == 1)
             return s;
+
+        if (s->state == 2)
+          return NULL;
     }
 
     return NULL;
 }
+
 void HashInit(hash_map_t* m, uint32_t cap);
 void HashFree(hash_map_t* m);
 void HashClear(hash_map_t* m);
@@ -132,6 +150,32 @@ void* HashGet(hash_map_t* m, hash_key_t key);
 void HashPut(hash_map_t* m, hash_key_t key, void* value);
 void HashRemove(hash_map_t* m, hash_key_t key);
 void HashExpand(hash_map_t* m);
+
+static inline hash_key_t hash_pair_32(uint32_t a, uint32_t b) {
+    normalize_32(&a, &b);
+
+    hash_key_t h = 1469598103934665603ULL;
+
+    h ^= a;
+    h *= 1099511628211ULL;
+
+    h ^= b;
+    h *= 1099511628211ULL;
+
+    return h;
+}
+
+static inline uint64_t hash_event(uint32_t a, uint32_t b, uint64_t type){
+  if (a > b) { uint32_t t = a; a = b; b = t; }
+
+    uint64_t h = 1469598103934665603ULL;
+
+    h ^= (uint64_t)a; h *= 1099511628211ULL;
+    h ^= (uint64_t)b; h *= 1099511628211ULL;
+    h ^= type;         h *= 1099511628211ULL;
+
+    return h;
+}
 
 static uint64_t GenerateSeed() {
     return (uint64_t)time(NULL);
@@ -524,7 +568,7 @@ static inline Vector2 cell_to_vec(Cell c, float scale){
   return Vector2Scale(result,scale);
 }
 
-static inline bool v2_compare(Vector2 v1,Vector2 v2){
+static inline bool vec_compare(Vector2 v1,Vector2 v2){
   return (v1.x==v2.x && v1.y==v2.y);
 }
 static inline float v2_ang_deg(Vector2 v){ return atan2(v.y,v.x)*180.0 /M_PI;}

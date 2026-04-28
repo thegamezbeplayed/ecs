@@ -4,9 +4,12 @@
 void AnimEvent(event_t* ev, void* data){
   anim_c* c = &world.anim;
 
+  input_t* in = ev->data;
+
   anim_player_t* ap = &c->dense[ev->eid];
 
-  anim_t* a = AnimGet(ap, ev->type);
+  uint64_t group = hash_str_64(in->move);
+  anim_t* a = AnimGet(ap, group);
 
   AnimSetSequence(ap, a);
 }

@@ -1,6 +1,8 @@
 #ifndef SCREENS_H
 #define SCREENS_H
-#include "game_types.h"
+//#include "game_types.h"
+#include "game_math.h"
+#include "game_utils.h"
 
 #define MAX_CAMERA 4
 

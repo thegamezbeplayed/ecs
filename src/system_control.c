@@ -1,6 +1,13 @@
 #include "game_register.h"
 #include "game_systems.h"
 
+void OnInputEvent(event_t* ev, void* data){
+  rigid_body_t* b = data;
+  input_t*      in = ev->data;
+
+  RigidBodySteer(b, in->step);
+}
+
 void InputSystem(system_pool_t* s, component_registry_t* c){
   input_st *in = &s->input;
   input_c  *inputs = &c->input;
@@ -8,17 +15,17 @@ void InputSystem(system_pool_t* s, component_registry_t* c){
 
   for (int i = 0; i < inputs->map.size; i++){
     input_t* c = &inputs->dense[i];
-    InputCheck(c, in->turn);
+    if(!InputCheck(c, in->turn))
+      continue;
 
+    /*
     position_t* p = &pos->dense[i];
 
-    if(cell_compare(c->step, CELL_UNSET))
-      continue;
 
     Entity e = pos->map.entities[i];
     GameEvent(c->move, p, e.id);
-    PositionAddStep(p, cell_to_vec(c->step, 0.1));
-
+    //PositionAddStep(p, cell_to_vec(c->step, 0.1));
+*/
     in->step = true;
   }
 }
@@ -33,11 +40,25 @@ void InputTurn(system_pool_t* s, component_registry_t* c){
   in->turn++;
 }
 
+void OnPositionEvent(event_t* ev, void* data){
+  position_t* p = data;
+  rigid_body_t* b = ev->data;
+
+  Vector2 step = b->vel;
+
+  PositionAddStep(p, step);
+}
+
 void InitInputSystem(input_st*){
   RegisterScheduleStep(UPDATE_FRAME, InputSystem);
   RegisterScheduleStep(UPDATE_FIXED, InputTurn);
 }
 
+void LoadPositions(system_pool_t* s, component_registry_t* c){
+
+}
+
 void InitPositionSystem(position_st*){
+  RegisterScheduleState(GAME_READY, LoadPositions);
 
 }
