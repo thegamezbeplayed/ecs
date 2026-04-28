@@ -58,15 +58,6 @@ void GameEvent(char* event, void* data, uint64_t uid){
     EventEmit(BUS, ev);
 }
 
-bool TogglePause(void){
-  if(GP.state[SCREEN_GAMEPLAY] == GAME_RUNNING)
-    GameSetState(GAME_PAUSE);
-  else if (GP.state[SCREEN_GAMEPLAY] == GAME_PAUSE)
-    GameSetState(GAME_RUNNING);
-
-  return true;
-}
-
 void GameSetState(GameState state){
   if(GP.screen != SCREEN_GAMEPLAY)
     return;

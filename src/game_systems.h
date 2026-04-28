@@ -38,6 +38,11 @@ typedef struct{
 }phys_st;
 
 typedef struct{
+  hash_map_t      map;
+  hash_map_t      factory;
+}behavior_st;
+
+typedef struct{
   size_t    size;
   SystemFn  tick[64];
 }schedule_step_t;
@@ -54,9 +59,11 @@ struct system_pool_s{
   position_st pos;
   animate_st  anim;
   phys_st     phys;
+  behavior_st behavior;
   scheduler_t schedule;
 };
 
+void InitBehaviorSystem(behavior_st* b);
 void InitPhysicsSystem(phys_st* p);
 void InitPositionSystem(position_st*);
 void InitAnimateSystem(animate_st*);

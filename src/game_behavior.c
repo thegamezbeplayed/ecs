@@ -1,24 +1,7 @@
 #include <raylib.h>
 #include "game_behaviors.h"
 
-tree_cache_t tree_cache[18];
-int tree_cache_count;
-
-behavior_tree_node_t *BehaviorGetTree(BehaviorID id) {
-   for (int i = 0; i < tree_cache_count; i++){
-    if (tree_cache[i].id == id)
-      return tree_cache[i].root;
-  }
-
-   return NULL;
-}
-
-behavior_tree_node_t *BuildTreeNode(BehaviorID id,behavior_params_t* parent_params) {
-  /*
-  if (room_behaviors[id].id != id)
-    return NULL;
-
-  BehaviorData data = room_behaviors[id];
+/*
   if(data.param_overide || parent_params == NULL){
     parent_params = malloc(sizeof(behavior_params_t));
     *parent_params =(behavior_params_t){
@@ -55,20 +38,7 @@ behavior_tree_node_t *BuildTreeNode(BehaviorID id,behavior_params_t* parent_para
   out->id = id;
 
   return out;
-*/
-}
-
-behavior_tree_node_t* InitBehaviorTree( BehaviorID id){
-  if(id ==BN_NONE)
-    return NULL;
-  behavior_tree_node_t* node = BehaviorGetTree(id);
-
-  if(node != NULL)
-    return node;
-
-  TraceLog(LOG_WARNING,"<=====Behavior Tree %i not found=====>",id);
-  return NULL;
-}
+  */
 
 
 BehaviorStatus BehaviorTickLeaf(behavior_tree_node_t *self, void *context) {

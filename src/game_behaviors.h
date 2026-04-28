@@ -1,18 +1,19 @@
 #ifndef __GAME_BEHAVE__
 #define __GAME_BEHAVE__
 #include "game_common.h"
+#include "game_strings.h"
 
+#define DEFINE_BT_LEAF(name) \
+static inline behavior_tree_node_t* Leaf##name(behavior_params_t *params) { \
+    return BehaviorCreateLeaf(Behavior##name, params); \
+}
 #define MAX_BEHAVIOR_TREE 12
 //<===BEHAVIOR TREES
 
 //forward declare
 struct behavior_tree_node_s;
 
-typedef enum{
-  BN_NONE,
-}BehaviorID;
-
-struct behavior_tree_node_s *BehaviorGetTree( BehaviorID id);
+typedef uint64_t BehaviorID;
 
 typedef enum{
   BT_LEAF,
@@ -22,23 +23,12 @@ typedef enum{
   BT_DECIDER,
 }BehaviorTreeType;
 
-typedef struct {
-  BehaviorID           id;
-  struct behavior_tree_node_s *root;
-} tree_cache_t;
-
-extern tree_cache_t tree_cache[18];
-extern int tree_cache_count;
-
-static struct behavior_tree_node_s* BehaviorFindLeafFactory(const char *name);
 
 typedef BehaviorStatus (*BehaviorTreeTickFunc)(struct behavior_tree_node_s* self, void* context);
 
 typedef struct behavior_params_s{
   EntityState           state, o_state;
 }behavior_params_t;
-
-struct behavior_tree_node_s *BuildTreeNode(BehaviorID id, behavior_params_t* parent_params);
 
 typedef struct behavior_tree_node_s{
   BehaviorID            id;
@@ -71,7 +61,7 @@ typedef struct{
   behavior_params_t*    params;
 }behavior_tree_leaf_t;
 
-behavior_tree_node_t* InitBehaviorTree( BehaviorID id);
+behavior_tree_node_t* InitBehaviorTree(BehaviorID);
 void FreeBehaviorTree(behavior_tree_node_t* node);
 BehaviorStatus BehaviorTickSequence(behavior_tree_node_t *self, void *context);
 BehaviorStatus BehaviorTickSelector(behavior_tree_node_t *self, void *context);
@@ -80,5 +70,15 @@ behavior_tree_node_t* BehaviorCreateLeaf(BehaviorTreeLeafFunc fn, behavior_param
 behavior_tree_node_t* BehaviorCreateSequence(behavior_tree_node_t **children, int count);
 behavior_tree_node_t* BehaviorCreateSelector(behavior_tree_node_t **children, int count);
 behavior_tree_node_t* BehaviorCreateConcurrent(behavior_tree_node_t **children, int count);
+
+typedef struct {
+  char                 name[MAX_NAME_LEN];
+  bool                 is_root;
+  BehaviorTreeType     bt_type;
+  behavior_tree_node_t *(*func)(behavior_params_t *);
+  int                  num_children;
+  char*                children[5];
+} behavior_d;
+
 
 #endif
