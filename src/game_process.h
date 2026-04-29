@@ -50,12 +50,16 @@ typedef struct{
   UpdateFn    finish[PROCESS_DONE];
 }child_process_t;
 
+typedef void (*GameStateCB)(GameState);
+void GameStepState(GameState s);
+
 typedef struct{
   GameScreen           screen;
   int                  game_frames;
   child_process_t      children[SCREEN_DONE];
   GameScreen           next[SCREEN_DONE];
   GameState            state[SCREEN_DONE];
+  GameStateCB          cb[GAME_DONE];
   notification_pool_t* notifications;
   interactions         interactions;
   event_bus_t          *bus[SCREEN_DONE];
@@ -76,7 +80,7 @@ void GameProcessEnd();
 void WorldAnnounce(notification, Vector2 pos);
 void Notification(notification, EventCallback, void*);
 void SubscribeEntity(char*, EventCallback, void*, int);
-void TargetSubscribe(notification, EventCallback cb, void* data, int);
+void TargetSubscribe(char*, EventCallback cb, void* data, int);
 void Subscribe(char*, EventCallback cb, void* data);
 void ScheduleEvent(char*, void* data, uint64_t uid, TimeFrame, int);
 void GameEvent(char*, void*, uint64_t);

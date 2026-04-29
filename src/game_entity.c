@@ -43,22 +43,32 @@ void EntityTestSpawn(Cell c){
 
   position_t *pos = InitPosition(c);
   RegisterPos(&world.pos, e, *pos);
-  sprite_t* s = InitSpriteByTag("character", SHEET_CHAR);
-  s->is_visible = true;
-  RegisterSprite(&world.sprites, e, *s);
+  anim_player_t* a = InitAnimGroup("slime", SHEET_MOB);
+  RegisterAnim(&world.anim, e, *a);
 
-  Vector2 size = RectSize(s->slice->bounds);
-
+  Vector2 size = AnimSize(a);
   float radius = Vector2Length(size);
 
   rigid_body_t* rb = InitRigidBody(pos->vpos, SHAPE_CIRCLE, radius, 0.f);
-  RigidBodyHasForce(rb, 4);
+  RigidBodyHasForce(rb, 8);
   force_t* bump = ForceBump(VEC_BOTH(0.25f));
   RigidBodySetPos(rb, pos->vpos);
 
   RigidBodyGiveForce(rb, bump);
+
+  force_t* steer = ForceFromVec2(FORCE_STEERING, VEC_BOTH(0.175f));
+
+  steer->max_velocity = 1.67f;
+  steer->friction = VEC_BOTH(.47f);
+  steer->threshold = 0.067f;
+  RigidBodyGiveForce(rb, steer);
+
   RegisterRigidBody(&world.bodies, e, *rb);
 
+  state_t* s = GameCalloc("InitState", 1, sizeof(state_t));
+  RegisterState(&world.states, e, *s);
+  behavior_t* bh = InitBehavior(8, 2, "ATTACK","WANDER");
+  RegisterBehavior(&world.behaviors, e, *bh); 
 }
 
 void EntityTest(int count){

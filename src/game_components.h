@@ -34,11 +34,24 @@ static Entity* ComponentGetEntity(EntityManager* em, component_t* c, int index){
 
 }
 
+static bool HasComponent(component_t* c, Entity e) {
+    int idx = c->sparse[e.id];
+
+    return idx < c->size &&
+           c->entities[idx].id == e.id;
+}
+
+
 static int ComponentByEntity(component_t* c, int e){
   int index = c->sparse[e];
 
   return index;
 }
+
+typedef struct{
+  state_t     dense[MAX_COMPONENTS];
+  component_t map;
+}state_c;
 
 //2D PHYSICS
 typedef struct{

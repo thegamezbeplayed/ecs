@@ -33,14 +33,14 @@ void ForceSetAccel(rigid_body_t *b, force_t* f, Vector2 acc){
   f->accel = acc;
 }
 
-void ForceAddMagnitude(force_t* f, Cell mag){
-  Vector2 accel = cell_to_vec(mag, f->speed);
+void ForceAddMagnitude(force_t* f, Vector2 mag){
+  Vector2 accel = Vector2Scale(mag, f->speed);
   f->accel = Vector2Add(accel, f->vel);
 }
 
-void ForceSetDir(rigid_body_t *b, force_t* f, Cell dir){
+void ForceSetDir(rigid_body_t *b, force_t* f, Vector2 dir){
   f->dir = dir;
-  Vector2 accel = cell_to_vec(dir,f->speed);
+  Vector2 accel = Vector2Scale(dir,f->speed);
 
   ForceSetAccel(b, f,accel);
 }
@@ -52,11 +52,6 @@ void ForceKill(rigid_body_t *b, force_t* f){
 void ForceApply(rigid_body_t* b, force_t* f){
   if(HashFull(&b->apply))
     return;
-
-  if(b->apply.count == b->apply.cap){
-    TraceLog(LOG_WARNING, "=== FORCE FULL ====");
-    return;
-  }
 
   f->on_end = ForceKill;
 

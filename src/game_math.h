@@ -33,6 +33,21 @@ static inline Vector2 Vector2FromXY(float x, float y){
   return result;
 }
 
+static float vec_to_deg(Vector2 v) {
+  return atan2f(v.y, v.x);
+}
+
+static int angle_snap_to_card(Vector2 v) {
+  float angle = atan2f(v.y, v.x);          // radians
+
+  float deg = angle * (180.0f / PI);       // to degrees
+
+  // snap to nearest 90
+  deg = roundf(deg / 90.0f) * 90.0f;
+
+  return deg;             // back to radians
+}
+
 static inline Vector2 Vector2FromAngle(float a, float len){
   return (Vector2){
     .x = cosf(a) * len,

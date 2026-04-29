@@ -7,9 +7,10 @@
 #include "game_utils.h"
 #include "game_types.h"
 
-#define MAX_ANIM_FRAMES 4
 #define MAX_SPRITES 128
 #define MAX_LAYER_SPRITES 64
+#define MAX_SPRITE_FRAMES 80
+#define MAX_ANIM_GROUPS 16
 
 #define FLOAT_TEXT_SIZE 54
 #define FLOAT_TEXT_SPACING 2
@@ -17,14 +18,20 @@
 typedef struct sprite_s sprite_t;
 typedef struct sprite_slice_s sprite_slice_t;
 
+typedef struct{
+  ShapeType shape;
+  int       posx, posy, wid, hei;
+}collision_d;
+
 typedef struct sub_texture_s {
   const char*   name;
   const char*   tag;
-  int           index;
   int           originX, originY;
   int           positionX, positionY;
   int           sourceWidth, sourceHeight;
+  collision_d   collider;
   int           dur;
+  bool          mirror, is_root;
   float         scale;
 } sub_texture_t;
 
@@ -35,6 +42,7 @@ typedef enum{
   SHEET_ICON,
   SHEET_TILE,
   SHEET_CHAR,
+  SHEET_MOB,
   SHEET_VFX,
   SHEET_ALL
 }SheetID;
@@ -48,9 +56,11 @@ typedef enum{
 }RenderLayer;
 
 struct sprite_slice_s{
+  char      name[MAX_NAME_LEN];
   uint32_t  hash, tag;
   uint64_t  group;
   int       index, dur;
+  int       dir;
   SheetID   sheet;
   Vector2   center, offset;
   Rectangle bounds;
@@ -59,8 +69,14 @@ struct sprite_slice_s{
 };
 
 typedef struct{
+  bool            is_root;
+  sprite_slice_t* slice;
+  collision_d     coll;
+}sprite_data_t;
+
+typedef struct{
   int             num_sprites;
-  sprite_slice_t  *sprites[128];
+  sprite_data_t   *sprites[128];
   Texture2D       *sprite_sheet;
 }sprite_sheet_data_t;
 
@@ -69,7 +85,8 @@ static sprite_sheet_data_t SHEETS[SHEET_ALL];
 void SpriteLoadSubTextures(sub_texture_t* data, SheetID id, int sheet_cap);
 
 typedef struct anim_player_s anim_player_t;
-typedef bool (*AnimCallback)(anim_player_t*);
+typedef struct anim_s anim_t;
+typedef bool (*AnimCallback)(anim_player_t*, anim_t*);
 
 typedef enum{
   ANIM_NONE,
@@ -77,29 +94,25 @@ typedef enum{
   ANIM_DONE
 }AnimState;
 
-typedef struct{
-  uint64_t          group;
+struct anim_s{
+  uint64_t          group, next;
   int               cap, seq, num_frames, cur_index;
   sprite_slice_t    *frames;
-  int               duration;
-  int               elapsed;
+  int               angle, duration, elapsed;
   float             speed;
   bool              loop;
   AnimState         state;
   AnimCallback      on_end;
-}anim_t;
+};
 
 struct anim_player_s{
   int         num_seq, cur_seq, next;
-  uint32_t    groups;
+  collision_d *col_data;
   anim_t      *anims;
   hash_map_t  map;
 };
 
-static Vector2 AnimSize(anim_player_t* a){
-  return RectSize(a->anims[a->cur_seq].frames[0].bounds);
-}
-
+Vector2 AnimSize(anim_player_t* a);
 anim_t* AnimGet(anim_player_t* a, hash_key_t key);
 void AnimSetSequence(anim_player_t* ap, anim_t* a);
 void AnimEvent(event_t*, void*);

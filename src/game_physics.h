@@ -6,7 +6,7 @@
 #define MAX_FORCES 64
 
 #define GRAVITY 0.65f
-#define MAX_VELOCITY  2.7f
+#define MAX_VELOCITY  16
 #define TERMINAL_VELOCITY 7.0f
 
 typedef struct rigid_body_s rigid_body_t;
@@ -33,12 +33,9 @@ void ForceReactBump(rigid_body_t* a, rigid_body_t* b, force_t*);
 
 struct force_s{
   uint64_t   uid;
-  Vector2    vel;
+  Vector2    vel, accel, dir, friction;
   ForceType  type;
-  Vector2    accel;
-  Cell       dir;
   float      speed, max_velocity;
-  Vector2    friction;
   float      threshold;
   ForceFn    on_react;
   ForceCb    on_end;
@@ -53,11 +50,11 @@ void ForceKill(rigid_body_t *b, force_t* f);
 force_t* ForceBump(Vector2 acc);
 force_t* ForceFromVec2(ForceType type, Vector2 vec);
 bool ForceStep(force_t *force, bool accelerate);
-void ForceSetDir(rigid_body_t *b, force_t* f, Cell dir);
-void ForceAddMagnitude(force_t* f, Cell mag);
+void ForceSetDir(rigid_body_t *b, force_t* f, Vector2 dir);
+void ForceAddMagnitude(force_t* f, Vector2 mag);
 void RigidBodyHasForce(rigid_body_t* b, int cap);
 void RigidBodyGiveForce(rigid_body_t* b, force_t* f);
-void RigidBodySteer(rigid_body_t* b, Cell);
+void RigidBodySteer(rigid_body_t* b, Vector2);
 
 typedef struct bounds_s {
   ShapeType   shape;

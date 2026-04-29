@@ -2,6 +2,7 @@
 #define __GAME_STR__
 #include <stdio.h>
 #include "game_ui.h"
+#include <errno.h>
 
 void StringPrependPadding(char* s, size_t padding);
 void StringAppendPadding(char* s, size_t padding);
@@ -34,6 +35,17 @@ static char* SubString(char* base, char* delim, int at){
   }
 }
 
+static char* str_concat(const char* a, const char* b) {
+    size_t len = strlen(a) + strlen(b) + 1; // +1 for null terminator
+    char* result = malloc(len);
+    if (!result) return NULL;
+
+    strcpy(result, a);
+    strcat(result, b);
+
+    return result;
+}
+
 static char* sub_string(const char* base, const char* delim, int at) {
     int index = 0;
 
@@ -58,11 +70,59 @@ static char* sub_string(const char* base, const char* delim, int at) {
     return NULL; // SAFE: explicitly signal not found
 }
 
-static char* StringSplit(char* str, char delimiter){
-  char* token = strtok(str, &delimiter);
-
-  return token;
+static int count_tokens(const char* str, char delim) {
+    int count = 1;
+    for (const char* p = str; *p; p++) {
+        if (*p == delim) count++;
+    }
+    return count;
 }
+
+static char** split_string(const char* str, char delim, int* outCount) {
+    int count = count_tokens(str, delim);
+    char** result = (char**)malloc(sizeof(char*) * count);
+
+    const char* start = str;
+    int idx = 0;
+
+    for (const char* p = str; ; p++) {
+        if (*p == delim || *p == '\0') {
+            int len = p - start;
+
+            char* token = (char*)malloc(len + 1);
+            memcpy(token, start, len);
+            token[len] = '\0';
+
+            result[idx++] = token;
+
+            if (*p == '\0') break;
+            start = p + 1;
+        }
+    }
+
+    if (outCount) *outCount = count;
+    return result;
+}
+
+static void int_to_str(int x, char* out, size_t size) {
+    snprintf(out, size, "%d", x);
+}
+
+
+static int str_to_int(const char* str, int* out) {
+    char* end;
+    errno = 0;
+
+    long val = strtol(str, &end, 10);
+
+    if (errno != 0 || end == str) {
+        return 0; // failed
+    }
+
+    *out = (int)val;
+    return 1;
+}
+
 void StringBounds(Rectangle *b, char* buff);
 
 typedef struct{

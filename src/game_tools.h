@@ -24,6 +24,7 @@
 #define VECTOR2_RIGHT  (Vector2){ 1.0f, 0.0f }
 #define VEC_BOTH(n)    (Vector2){n,n}
 #define Vector2X(x) ((Vector2){ (x), 0.0f })
+#define VEC_NEW(x,y)  (Vector2){x,y}
 #define Vector2XY(x,y) ((Vector2){ (x), (y) })
 #define Vector2Y(y) ((Vector2){ 0.0f, (y) })
 #define Vector2Inc(v,xi,yi) ((Vector2){ (v.x+xi), (v.y+yi) })
@@ -535,6 +536,10 @@ static bool is_adjacent(Cell c1, Cell c2)
   return (dx + dy == 1);
 }
 
+static float vec_dist(Vector2 a, Vector2 b){
+  return Vector2Distance(a,b);
+}
+
 static inline float distance(int x1, int y1, int x2, int y2) {
     int dx = x2 - x1;
     int dy = y2 - y1;
@@ -735,6 +740,7 @@ static void MakeTriangleFromRect(Rectangle r, Cell dir, Vector2 out[3]) {
       out[2] = (Vector2){ r.x, r.y + r.height };            // bottom-left
     }
 }
+
 
 
 static Cell float_to_ints(float v) {

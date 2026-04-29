@@ -7,11 +7,6 @@ void PhysicsCollision(system_pool_t* s, component_registry_t* c){
   rigid_body_c* rbc = &c->bodies;
   EntityManager *em = &c->manager;
 
-  if(steps > 0){
-    DO_NOTHING();
-
-  }
-
   for(int i = 0; i < rbc->map.size; i++){
     rigid_body_t* body = &rbc->dense[i];
     Entity* ea = ComponentGetEntity(em, &rbc->map, i);
@@ -44,8 +39,6 @@ void PhysicsSystem(system_pool_t* s, component_registry_t* c){
   rigid_body_c* rbc = &c->bodies;
   EntityManager *em = &c->manager;
 
-  steps++;
-    hash_iter_t iter;
   for(int i = 0; i < rbc->map.size; i++){
     rigid_body_t* b = &rbc->dense[i];
     Entity* e = ComponentGetEntity(em, &rbc->map, i);
@@ -53,14 +46,13 @@ void PhysicsSystem(system_pool_t* s, component_registry_t* c){
     b->vel = VECTOR2_ZERO;
     bool step = false;
 
-    if(e->id == PLAYER){
-      force_t* steer = ForceHas(b, MakeFUID("FORCE", FORCE_STEERING));
-      if(steer && steer->is_active && ForceStep(steer, true)){
-        b->vel = Vector2Add(b->vel, steer->vel);
-        step = true;
-
-      }
+    force_t* steer = ForceHas(b, MakeFUID("FORCE", FORCE_STEERING));
+    if(steer && steer->is_active && ForceStep(steer, true)){
+      b->vel = Vector2Add(b->vel, steer->vel);
+      step = true;
     }
+
+    hash_iter_t iter;
     HashStart(&b->apply, &iter);
 
     hash_slot_t* s = NULL;

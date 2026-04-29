@@ -1,51 +1,33 @@
 #include <raylib.h>
 #include "game_behaviors.h"
+#include "game_systems.h"
 
-/*
-  if(data.param_overide || parent_params == NULL){
-    parent_params = malloc(sizeof(behavior_params_t));
-    *parent_params =(behavior_params_t){
-        .state = data.state,
-    };
+behavior_t* InitBehavior(int cap, int count, ...){
+  behavior_t* b = GameCalloc("InitBehavior", 1, sizeof(behavior_t));
+
+  HashInit(&b->map, next_pow2_int(cap*2));
+
+  va_list args;
+  va_start(args, count);
+
+  b->list = GameCalloc("InitBehavior", count, sizeof(BehaviorID));
+  for (int i = 0; i < count; i++) {
+    char* bname = va_arg(args, char*);
+    BehaviorID id = hash_str_64(bname);
+    BehaviorID *entry = &b->list[b->count++];
+    *entry = id;
   }
 
-  behavior_tree_node_t *out = NULL;
-  if(data.bt_type == BT_LEAF)
-    out = room_behaviors[id].func(parent_params);
-  else{
-    behavior_tree_node_t **kids = GameCalloc("BuildTreeNode", 1,sizeof(*kids) * data.num_children);
-    for (int j = 0; j < data.num_children; ++j)
-      kids[j] = BuildTreeNode(data.children[j],parent_params);
-
-    switch(data.bt_type){
-      case BT_SEQUENCE:
-        out = BehaviorCreateSequence(kids, data.num_children);
-        break;
-      case BT_SELECTOR:
-        out = BehaviorCreateSelector(kids, data.num_children);
-        break;
-      case BT_CONCURRENT:
-        out = BehaviorCreateConcurrent(kids, data.num_children);
-        break;
-      default:
-        TraceLog(LOG_WARNING,"Behavior Node Type %d NOT FOUND!",data.bt_type);
-        return NULL;
-        break;
-    }
-
-  }
-
-  out->id = id;
-
-  return out;
-  */
-
+  return b;
+}
 
 BehaviorStatus BehaviorTickLeaf(behavior_tree_node_t *self, void *context) {
     
   behavior_tree_leaf_t *leaf = (behavior_tree_leaf_t *)self->data;
     if (!leaf || !leaf->action)
       return BEHAVIOR_FAILURE;
+
+    leaf->params->context = context;
     BehaviorStatus status = leaf->action(leaf->params);
 
     return status;
@@ -157,3 +139,89 @@ BehaviorStatus BehaviorTickConcurrent(behavior_tree_node_t *self, void *context)
   return BEHAVIOR_FAILURE;
 }
 
+
+BehaviorStatus BehaviorChangeState(behavior_params_t *params){
+behavior_ctx_t* ctx = params->context;
+  if(!ctx)
+    return BEHAVIOR_FAILURE;
+
+  Entity* e               = ctx->e;
+  system_pool_t* s        = ctx->s;
+  component_registry_t* c = ctx->c;
+  if(!e || !s || !c)
+    return BEHAVIOR_FAILURE;
+
+
+    return BEHAVIOR_FAILURE;
+}
+
+BehaviorStatus BehaviorCheckAggro(behavior_params_t *params){
+  behavior_ctx_t* ctx = params->context;
+  if(!ctx)
+    return BEHAVIOR_FAILURE;
+
+  Entity* e               = ctx->e;
+  system_pool_t* s        = ctx->s;
+  component_registry_t* c = ctx->c;
+  if(!e || !s || !c)
+    return BEHAVIOR_FAILURE;
+
+
+    return BEHAVIOR_FAILURE;
+}
+
+BehaviorStatus BehaviorAcquireDestination(behavior_params_t *params){
+  behavior_ctx_t* ctx = params->context;
+  if(!ctx)
+    return BEHAVIOR_FAILURE;
+
+  Entity* e               = ctx->e;
+  system_pool_t* s        = ctx->s;
+  component_registry_t* c = ctx->c;
+  if(!e || !s || !c)
+    return BEHAVIOR_FAILURE;
+
+  position_c* pos = &c->pos;
+  int pidx = ComponentByEntity(&pos->map, e->id);
+  position_t* p = &pos->dense[pidx];
+
+  if(!vec_compare(p->vdest, VEC_UNSET) && !vec_compare(p->vpos, p->vdest))
+    return BEHAVIOR_SUCCESS;
+
+  int range = RandRange(2, 12);
+
+  range*=CELL_WIDTH;
+  if(vec_compare(p->dir, VEC_UNSET))
+    p->dir = VECTOR2_LEFT;
+
+  Vector2 step = Vector2Scale(p->dir, range);
+
+  PositionSetDest(p, Vector2Add(p->vpos, step));
+
+  return BEHAVIOR_SUCCESS;
+}
+
+BehaviorStatus BehaviorMoveToDestination(behavior_params_t *params){
+  behavior_ctx_t* ctx = params->context;
+  if(!ctx)
+    return BEHAVIOR_FAILURE;
+
+  Entity* e               = ctx->e;
+  system_pool_t* s        = ctx->s;
+  component_registry_t* c = ctx->c;
+  if(!e || !s || !c)
+    return BEHAVIOR_FAILURE;
+
+  position_c* pos = &c->pos;
+  int pidx = ComponentByEntity(&pos->map, e->id);
+  position_t* p = &pos->dense[pidx];
+
+  if(vec_dist(p->vpos, p->vdest)<1){
+    p->vdest = VEC_UNSET;
+    return BEHAVIOR_SUCCESS;
+  }
+
+  GameEvent("DEST_SET",  p, e->id);
+
+  return BEHAVIOR_RUNNING;
+}

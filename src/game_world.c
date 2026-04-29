@@ -25,7 +25,9 @@ void SubscribeEntity(char* event, EventCallback cb, void* data, int id){
   sub->eid = id;
 }
 
-void TargetSubscribe(notification hash, EventCallback cb, void* data, int id){
+void TargetSubscribe(char* event, EventCallback cb, void* data, int id){
+  notification hash = hash_str_64(event);
+
   event_sub_t* sub = EventSubscribe(BUS, hash, cb, data);
   sub->eid = id;
 }
@@ -59,11 +61,12 @@ void GameEvent(char* event, void* data, uint64_t uid){
 }
 
 void GameSetState(GameState state){
-  if(GP.screen != SCREEN_GAMEPLAY)
-    return;
-
+  TraceLog(LOG_INFO, "==== GAME STATE ====\n set to %i", state);
   GP.state[SCREEN_GAMEPLAY] = state;
   SystemsState(state);
+
+  if(GP.cb[state])
+    GP.cb[state](state);
 }
 
 void WorldPreUpdate(){
@@ -88,6 +91,9 @@ void InitGameProcess(){
       GP.children[s].state[p]=GAME_NONE;
   }
 
+  GP.cb[GAME_LOADING] = GameStepState;
+  GP.cb[GAME_READY] = GameStepState;
+  
   GP.next[SCREEN_TITLE] = SCREEN_GAMEPLAY;
   GP.phase[SCREEN_TITLE][GAME_LOADING] = InitTitleScreen;
   GP.phase[SCREEN_TITLE][GAME_FINISHED] = UnloadTitleScreen;
@@ -115,8 +121,9 @@ void InitGameProcess(){
   //GP.screen = SCREEN_TITLE;
   GP.screen = SCREEN_GAMEPLAY;
   //GP.state[SCREEN_GAMEPLAY] = GAME_LOADING;
-  GP.phase[SCREEN_GAMEPLAY][GAME_LOADING]();
 
+ 
+  GP.phase[SCREEN_GAMEPLAY][GAME_LOADING]();
 }
 
 void InitGameEvents(){
@@ -138,7 +145,6 @@ bool GameTransitionScreen(){
   GP.phase[current][GAME_FINISHED]();
   GP.screen = prepare;
   
-  GP.state[prepare] = GAME_LOADING;
   //AudioPlayMusic(GP.album_id[prepare]);
 
   return true;
@@ -153,7 +159,7 @@ void GameProcessStep(){
 }
 
 void GameProcessSync(bool wait){
-  if(GP.state[GP.screen] > GAME_READY){
+  if(GP.state[GP.screen] > GAME_RUNNING){
 
     GP.update_steps[SCREEN_GAMEPLAY][UPDATE_DRAW]();
   
@@ -173,6 +179,14 @@ void GameProcessSync(bool wait){
     for(int j = 0; j < UPDATE_DONE; j++)
       if(kids->update_steps[i][j]!=NULL)
         kids->update_steps[i][j]();
+  }
+}
+
+void GameStepState(GameState s){
+  if(s < GAME_DONE){
+    TraceLog(LOG_INFO, "=== GAME STATE ===\n step state to %i", s+1);
+    GameSetState(s+1);
+
   }
 }
 

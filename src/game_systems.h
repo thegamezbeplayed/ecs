@@ -39,8 +39,16 @@ typedef struct{
 
 typedef struct{
   hash_map_t      map;
-  hash_map_t      factory;
+  hash_map_t      nodes;
 }behavior_st;
+
+typedef struct{         
+  Entity*               e;
+  component_registry_t* c;
+  system_pool_t*        s;
+}behavior_ctx_t;
+
+behavior_tree_node_t* InitBehaviorTree(behavior_st*, BehaviorID id);
 
 typedef struct{
   size_t    size;

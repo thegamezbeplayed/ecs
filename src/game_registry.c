@@ -12,25 +12,27 @@ void TestComponents(void){
   PLAYER = e.id;
   position_t* p = InitPosition(CELL_NEW(4, 3));
 
-  anim_player_t* a = InitAnimGroup("character", SHEET_CHAR);
- 
+  anim_player_t* a = InitAnimGroup("player", SHEET_CHAR);
   Vector2 size = AnimSize(a);
-
   float radius = Vector2Length(size);
   rigid_body_t* rb = InitRigidBody(p->vpos, SHAPE_CIRCLE, radius/4, 0.f);
 
   RigidBodyHasForce(rb, 16);
-  Entity c = EntityCreate(&world.manager);
- 
   force_t* bump = ForceBump(VEC_BOTH(0.25f));
-  force_t* steer = ForceFromVec2(FORCE_STEERING, VEC_BOTH(0.25f));
+  force_t* steer = ForceFromVec2(FORCE_STEERING, VEC_BOTH(0.675f));
 
+  steer->speed = .25f;
   steer->friction = VEC_BOTH(.67f);
   steer->threshold = 0.067f;
+  steer->max_velocity = 4.f;
   RigidBodyGiveForce(rb, bump);
   RigidBodyGiveForce(rb, steer);
   RigidBodySetPos(rb, p->vpos); 
-  camera_t* cam = InitCamera(2.f, .0f, Vector2Scale(ROOM_SIZE,0.5f));
+
+  RegisterRigidBody(&world.bodies, e, *rb);
+  Entity c = EntityCreate(&world.manager);
+ 
+    camera_t* cam = InitCamera(2.f, .0f, Vector2Scale(ROOM_SIZE,0.5f));
 
   input_t* gi = InitInput();
   camera_ctx_t* ctx = InitCameraContext(CAM_FOLLOW);
@@ -39,7 +41,6 @@ void TestComponents(void){
   RegisterCamera(&world.cam, c, *cam);
   RegisterAnim(&world.anim, e, *a);
   RegisterPos(&world.pos, e, *p);
-  RegisterRigidBody(&world.bodies, e, *rb);
   EntityTest(10);
 }
 
@@ -74,8 +75,6 @@ void RegisterPos(position_c* c, Entity e, position_t pos){
 void RegisterAnim(anim_c* c, Entity e, anim_player_t a){
   uint32_t i = RegisterEntity(&c->map, e);
   c->dense[i] = a;
-  for (int j = 0; j < a.num_seq; j++)  
-  RegisterAnimation(&run.anim, a.anims[j].group);
 
 }
 
@@ -95,6 +94,10 @@ void RegisterInput(input_c* c, Entity e, input_t s){
   c->dense[i] = s;
 
 }
+void RegisterState(state_c* c, Entity e, state_t s){
+  uint32_t i = RegisterEntity(&c->map, e);
+  c->dense[i] = s;
+}
 
 void RegisterSprite(sprite_c* c, Entity e, sprite_t s){
   uint32_t i = RegisterEntity(&c->map, e);
@@ -108,6 +111,11 @@ bool HasSprite(sprite_c* c, Entity e) {
            c->map.entities[idx].id == e.id;
 }
 
+void RegisterBehavior(behavior_c* c, Entity e, behavior_t b){
+ uint32_t i = RegisterEntity(&c->map, e);
+  c->dense[i] = b;
+}
+
 void RegisterSystems(void){
   InitRenderSystem(&run.render);
   InitCameraSystem(&run.cam);
@@ -115,6 +123,7 @@ void RegisterSystems(void){
   InitPositionSystem(&run.pos);
   InitAnimateSystem(&run.anim);
   InitPhysicsSystem(&run.phys);
+  InitBehaviorSystem(&run.behavior);
 }
 
 void RegisterScheduleState(UpdateType u, SystemFn fn){

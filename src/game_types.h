@@ -6,11 +6,13 @@
 #define ParamRead(o, T) ((T*)((o)->data))
 
 typedef struct{
-  Cell    pos, last_pos, facing;
-  Vector2 vpos, last_vpos, dir;
+  Vector2 vpos, vdest, last_vpos, dir;
+  int     angle;
+  float   rad;
 }position_t;
 position_t* InitPosition(Cell pos);
 void PositionAddStep(position_t*, Vector2);
+void PositionSetDest(position_t* p, Vector2 v);
 
 static inline bool LESS_THAN(int a, int b){
   return a<b;

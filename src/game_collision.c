@@ -35,7 +35,7 @@ void RigidBodyGiveForce(rigid_body_t* b, force_t* f){
   HashPut(&b->has, f->uid, f);
 }
 
-void RigidBodySteer(rigid_body_t* b, Cell dir){
+void RigidBodySteer(rigid_body_t* b, Vector2 dir){
   uint64_t fuid = MakeFUID("FORCE", FORCE_STEERING);
 
   force_t* f = ForceHas(b, fuid);
@@ -47,7 +47,7 @@ void RigidBodySteer(rigid_body_t* b, Cell dir){
     f->is_active = true;
   }
   
-  if(!cell_compare(dir, f->dir))
+  if(!vec_compare(dir, f->dir))
     ForceSetDir(b, f, dir);
   else
     ForceAddMagnitude(f, dir);

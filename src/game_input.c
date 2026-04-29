@@ -11,25 +11,25 @@ BehaviorStatus InputActionMove(input_t* gi, KeyboardKey k){
     case KEY_A:
     case KEY_H:
     case KEY_LEFT:
-      strcpy(gi->move , "MOVE_left");
+      strcpy(gi->move , "walk180");
       dir = CELL_LEFT;
       break;
     case KEY_D:
     case KEY_L:
     case KEY_RIGHT:
-      strcpy(gi->move , "MOVE_right");
+      strcpy(gi->move , "walk0");
       dir = CELL_RIGHT;
       break;
     case KEY_W:
     case KEY_J:
     case KEY_UP:
-      strcpy(gi->move , "MOVE_up");
+      strcpy(gi->move , "walk90");
       dir = CELL_UP;
       break;
     case KEY_S:
     case KEY_K:
     case KEY_DOWN:
-      strcpy(gi->move , "MOVE_down");
+      strcpy(gi->move , "walk270");
       dir = CELL_DOWN;
       break;
     default:

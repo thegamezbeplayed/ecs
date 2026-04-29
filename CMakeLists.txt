@@ -24,7 +24,7 @@ add_executable(${PROJECT_NAME})
 
 target_compile_options(${PROJECT_NAME} PRIVATE
     -pg
-    -O1
+    -O0
     -g
 )
 
