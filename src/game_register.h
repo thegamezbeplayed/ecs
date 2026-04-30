@@ -21,8 +21,9 @@ typedef struct world_s world_t;
 typedef void (*SystemCB)(world_t* w, Entity e);
 
 typedef struct {
+  int       index;
   comp_id_t terms[MAX_TERMS];
-  int term_count;
+  int       term_count;
 
   SystemCB  set[GAME_DONE];
   SystemCB  tick[UPDATE_DONE];
@@ -47,7 +48,6 @@ typedef struct {
   size_t elem_size;   // size of component (Position, etc)
   void*  data;        // dense array of component data
 } component_pool_t;
-
 struct world_s {
   EntityManager     manager;
 
@@ -59,6 +59,8 @@ struct world_s {
   //relation_index_t relations[MAX_RELATIONS];
 };
 extern world_t world;
+
+component_pool_t* ComponentQueryInner(world_t* w, system_t* s);
 void WorldInit(world_t* w, int sys_cap);
 component_pool_t* StartComponentPool(world_t* w, comp_id_t id);
 Entity EntityPair(world_t*, Entity r, Entity o);

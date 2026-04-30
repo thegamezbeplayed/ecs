@@ -2,6 +2,7 @@
 #define __GAME_PHYS__
 
 #include "game_tools.h"
+#include "game_utils.h"
 
 #define MAX_FORCES 64
 
@@ -9,8 +10,15 @@
 #define MAX_VELOCITY  16
 #define TERMINAL_VELOCITY 7.0f
 
+DEFINE_EVENT_SPACE(PhysEvent, EVENT_PHYS_BASE)
+
 typedef struct rigid_body_s rigid_body_t;
 typedef struct force_s force_t;
+
+typedef enum{
+  PHYS_EVENT_ACCEL,
+  PHYS_EVENT_COUNT
+}PhysicsEventID;
 
 typedef enum {
   FORCE_GRAVITY,
@@ -20,6 +28,7 @@ typedef enum {
   FORCE_KINEMATIC,
   FORCE_NONE
 }ForceType;
+
 static uint64_t MakeFUID(char* str, ForceType f){
   uint64_t hash = hash_str_64(str);
 
@@ -74,6 +83,7 @@ struct rigid_body_s{
 static force_t* ForceHas(rigid_body_t* b, uint64_t fuid){
   if(b->has.count == 0)
     return NULL;
+
   return HashGet(&b->has, fuid);
 }
 

@@ -2,11 +2,19 @@
 #define __GAME_TYPES__
 
 #include "game_tools.h" 
+#include "game_enum.h"
 
 #define ParamRead(o, T) ((T*)((o)->data))
 
+DEFINE_EVENT_SPACE(PosEvent, EVENT_POS_BASE)
+
+typedef enum{
+  POS_EVENT_STEP,
+  POS_EVENT_COUNT
+}PosEventID;
+
 typedef struct{
-  Vector2 vpos, vdest, last_vpos, dir;
+  Vector2 vpos, vdest, last_vpos, dir, dir_step;
   int     angle;
   float   rad;
 }position_t;

@@ -6,10 +6,6 @@
 
 #define MAX_BEHAVIOR_TREE 12
 #define MAX_EVENTS 512
-#define DEFINE_EVENT_SPACE(name, base) \
-    static inline notification name##_ToNotif(int e) { \
-        return base + e; \
-    }
 
 #define COMBO_KEY(a, b) ((a << 8) | b)
 #define CALL_FUNC(type, ptr, ...) ((type)(ptr))(__VA_ARGS__)
@@ -30,8 +26,6 @@ char* GetFileStem(const char* filename);
 static inline void DO_NOTHING(void){}
 static inline bool BOOL_DO_NOTHING(){return false;}
 static inline const char* CHAR_DO_NOTHING(){return "\0";}
-
-typedef uint64_t notification;
 
 typedef struct{
   char          name[MAX_NAME_LEN];

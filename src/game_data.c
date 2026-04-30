@@ -5,12 +5,16 @@ uint64_t ANIM_ID;
 uint64_t NAME_ID;
 uint64_t POS_ID;
 uint64_t INPUT_ID;
+uint64_t PHYS_ID;
+
+int PHYS_SYS;
 
 void RegisterComponentData(world_t* w) {
   ANIM_ID = REGISTER_COMPONENT(w, sizeof(anim_comp_t));
   NAME_ID = REGISTER_COMPONENT(w, sizeof(name_comp_t));
   POS_ID = REGISTER_COMPONENT(w, sizeof(pos_comp_t));
   INPUT_ID = REGISTER_COMPONENT(w, sizeof(input_comp_t));
+  PHYS_ID = REGISTER_COMPONENT(w, sizeof(phys_comp_t));
 
 }
 
@@ -39,6 +43,27 @@ void RegisterSystemData(world_t* w){
   SystemRequire(insys, INPUT_ID);
   SystemRequire(insys, POS_ID);
 
+  SystemCB potick[UPDATE_DONE] = {0};
+
+  SystemCB poset[GAME_DONE] = {0};
+  poset[GAME_READY] = PositionLoad;
+  system_t* posys = SystemRegister(w, potick, poset);
+  SystemRequire(posys, POS_ID);
+
+
+
+  SystemCB phtick[UPDATE_DONE] = {0};
+  phtick[UPDATE_PRE] = PhysicsCollision;
+  phtick[UPDATE_POST] = PhysicsSystem;
+
+  SystemCB phset[GAME_DONE] = {0};
+  phset[GAME_READY] = PhysicsLoad;
+  system_t* phsys = SystemRegister(w, phtick, phset);
+
+  PHYS_SYS = phsys->index;
+  SystemRequire(phsys, PHYS_ID);
+  SystemRequire(phsys, POS_ID);
+
 }
 
 void RegisterEntityData(world_t* w){
@@ -53,6 +78,23 @@ void RegisterEntityData(world_t* w){
 
   input_comp_t* ic = ComponentAdd(w, p, INPUT_ID);
   ic->input = InitInput();
+
+  phys_comp_t* phc = ComponentAdd(w, p, PHYS_ID);
+
+  Vector2 size = AnimSize(ac->player);
+  phc->rb = InitRigidBody(pc->pos->vpos, SHAPE_CIRCLE, size.x, size.y);
+  
+  RigidBodyHasForce(phc->rb, 8);
+  force_t* bump = ForceBump(VEC_BOTH(0.25f));
+
+  RigidBodyGiveForce(phc->rb, bump);
+
+  force_t* steer = ForceFromVec2(FORCE_STEERING, VEC_BOTH(0.175f));
+
+  steer->max_velocity = 1.67f;
+  steer->friction = VEC_BOTH(.47f);
+  steer->threshold = 0.067f;
+  RigidBodyGiveForce(phc->rb, steer);
 
   name_comp_t* nc = ComponentAdd(w, p, NAME_ID);
 

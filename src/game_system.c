@@ -18,8 +18,9 @@ void OnSystemEvent(event_t* ev, void* data){
 }
 
 system_t* SystemRegister(world_t* w, SystemCB tick[UPDATE_DONE], SystemCB set[GAME_DONE]){
-  system_t* s = &w->systems[w->num_sys++];
+  system_t* s = &w->systems[w->num_sys];
   memset(s, 0, sizeof(system_t));
+  s->index = w->num_sys++;
   for (int i = 0; i < UPDATE_DONE; i++){
     if(!tick[i])
       continue;
