@@ -13,102 +13,27 @@
 
 #define FIRST(pool) \
     ((pool).size == 0 ? -1 : (pool).entities[0])
+#define COMP_MASK 0xFFFFFFFF
 
-typedef struct{
-  Entity  entities[MAX_COMPONENTS];
-  int     sparse[MAX_ENTITIES];
-  size_t  size;
-}component_t;
+typedef uint64_t comp_id_t;
 
-static int ComponentGetFirst(int* entities, size_t size){
-    if (size == 0) return -1; // invalid
-    return entities[0];
+static inline comp_id_t make_comp(uint32_t c) {
+    return (comp_id_t)c;
 }
 
-static Entity* ComponentGetEntity(EntityManager* em, component_t* c, int index){
-
-  if(EntityValid(em, c->entities[index]))
-    return &c->entities[index];
-
-  return NULL;
-
+static inline comp_id_t make_pair(uint32_t r, uint32_t o) {
+    return ((uint64_t)r << 32) | o;
 }
 
-static bool HasComponent(component_t* c, Entity e) {
-    int idx = c->sparse[e.id];
-
-    return idx < c->size &&
-           c->entities[idx].id == e.id;
+static inline uint32_t pair_rel(comp_id_t id) {
+    return (uint32_t)(id >> 32);
 }
 
-
-static int ComponentByEntity(component_t* c, int e){
-  int index = c->sparse[e];
-
-  return index;
+static inline uint32_t pair_obj(comp_id_t id) {
+    return (uint32_t)(id & COMP_MASK);
 }
 
-typedef struct{
-  state_t     dense[MAX_COMPONENTS];
-  component_t map;
-}state_c;
-
-//2D PHYSICS
-typedef struct{
-  rigid_body_t    dense[MAX_COMPONENTS];
-  component_t     map;
-}rigid_body_c;
-
-typedef struct{
-  behavior_t    dense[MAX_COMPONENTS];
-  component_t   map;
-}behavior_c;
-
-typedef struct{
-  sprite_t    dense[MAX_COMPONENTS];
-  component_t   map;
-}sprite_c;
-
-typedef struct{
-  camera_t    dense[MAX_CAMERA];
-  component_t map;
-}camera_c;
-
-typedef struct{
-  camera_ctx_t  dense[MAX_CAMERA];
-  component_t   map;
-}camera_follow_c;
-
-typedef struct{
-  input_t   dense[MAX_PLAYERS];
-  component_t    map;
-}input_c;
-
-typedef struct{
-  anim_player_t dense[MAX_COMPONENTS];
-  component_t   map;
-}anim_c;
-
-typedef struct{
-  position_t  dense[MAX_COMPONENTS];
-  component_t map;
-}position_c;
-
-static void ComponentInit(component_t* c){
-  c->size = 0;
+static inline int is_pair(comp_id_t id) {
+    return (id >> 32) != 0;
 }
-
-static void CameraInit(camera_c* c){
-  ComponentInit(&c->map);
-}
-
-static void SpriteInit(sprite_c* c){
-  ComponentInit(&c->map);
-}
-
-static void AnimInit(anim_c* c){
-  ComponentInit(&c->map);
-}
-
-
 #endif

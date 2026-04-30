@@ -63,7 +63,7 @@ void GameEvent(char* event, void* data, uint64_t uid){
 void GameSetState(GameState state){
   TraceLog(LOG_INFO, "==== GAME STATE ====\n set to %i", state);
   GP.state[SCREEN_GAMEPLAY] = state;
-  SystemsState(state);
+  //SystemsState(state);
 
   if(GP.cb[state])
     GP.cb[state](state);

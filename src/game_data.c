@@ -1,14 +1,9 @@
-#include "game_utils.h"
+#include "game_define.h"
+#include "game_register.h"
 
-// Allocates a copy of the filename without extension
-char* GetFileStem(const char* filename) {
-    const char* dot = strrchr(filename, '.');
-    size_t len = dot ? (size_t)(dot - filename) : strlen(filename);
+uint64_t ANIM_ID;
 
-    char* stem = GameMalloc("GetFileStem", len + 1);
-    if (!stem) return NULL;
-    memcpy(stem, filename, len);
-    stem[len] = '\0';
-    return stem;
+
+void RegisterComponentData(world_t* world) {
+    ANIM_ID = REGISTER_COMPONENT(world, sizeof(anim_player_t));
 }
-

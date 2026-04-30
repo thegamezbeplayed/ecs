@@ -1,7 +1,3 @@
-#ifndef __GAME_DEF__
-#define __GAME_DEF__
-
-#define MAX_NAME_LEN 128
-
-
-#endif
+#pragma once
+#include <stdint.h>
+extern uint64_t ANIM_ID;

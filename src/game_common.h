@@ -6,20 +6,14 @@
 #include "game_enum.h"
 
 #define MAX_ENTITIES 640
+#define MAX_NAME_LEN 128
 
-#define COMP_MASK 0xFFFFFFFF
 static uint32_t PLAYER;
 
 typedef struct {
     uint32_t id;
     uint32_t generation;
 } Entity;
-
-
-typedef struct{
-  Entity relate;
-  Entity obj;
-}pair_t;
 
 typedef struct {
     uint32_t generation[MAX_ENTITIES];
@@ -30,9 +24,7 @@ typedef struct {
 } EntityManager;
 void EntityInit(EntityManager* em);
 Entity EntityCreate(EntityManager* em);
-void EntityTest(int count);
 bool EntityValid(EntityManager* em, Entity e);
-Entity EntityPair(EntityManager*, Entity r, Entity o);
 
 /*
 typedef bool (*StateComparator)(int a, int b);

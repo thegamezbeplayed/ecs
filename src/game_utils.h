@@ -3,7 +3,6 @@
 
 #include "game_types.h"
 #include "game_common.h"
-#include "game_define.h"
 
 #define MAX_BEHAVIOR_TREE 12
 #define MAX_EVENTS 512

@@ -12,35 +12,27 @@ Camera2D camera = { 0 };
 // Gameplay Screen Initialization logic
 void InitGameplayScreen(void){
   InitGameEvents();
-  InitComponents();
   GameSetState(GAME_LOADING);
 }
 
 void PreUpdate(void){
   GameProcessStep();
-  SystemsStep(UPDATE_PRE);
 }
 
 void FixedUpdate(void){
-  SystemsStep(UPDATE_FIXED);
 }
 
 void PostUpdate(void){
-  SystemsStep(UPDATE_POST);
 }
 
 // Gameplay Screen Update logic
 void UpdateGameplayScreen(void)
 {
-  SystemsStep(UPDATE_FRAME);
 }
 
 // Gameplay Screen Draw logic
 void DrawGameplayScreen(void)
 {
-  //RenderSystem(&render, &world.sprites);
-
-  SystemsStep(UPDATE_DRAW);
 }
 
 // Gameplay Screen Unload logic
