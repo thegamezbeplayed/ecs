@@ -27,7 +27,11 @@ void* ComponentAdd(world_t* w, Entity e, comp_id_t id){
   pool->entities[idx] = e.id;
   pool->sparse[e.id] = idx;
 
-  return (char*)pool->data + (idx * pool->elem_size);
+  void* ptr = (char*)pool->data + (idx * pool->elem_size);
+
+  memset(ptr, 0, pool->elem_size);  // ✅ initialize
+
+  return ptr;
 }
 
 void* ComponentGet(world_t* w, Entity e, comp_id_t id){

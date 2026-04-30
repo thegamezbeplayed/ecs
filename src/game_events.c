@@ -189,13 +189,12 @@ void StepTimers(timers_t* pool){
   }
 }
 
-event_t* InitEvent(notification_pool_t* p, char* name, void* data, int uid){
+event_t* InitEvent(notification_pool_t* p, uint64_t event, void* data, int uid){
   event_t* ev = GameCalloc("InitEvent",1,sizeof(event_t));
-  notification_t* n = RegisterNotification(p, name);
 
-  uint64_t guid = MakeGUID(name, uid);
+  uint64_t guid = hash_combine_64(event, hash_64_from_int(uid));
   *ev = (event_t){
-    guid, n->hash, -1, 0, data, uid
+    guid, event, -1, 0, data, uid
   };
   return ev;
 }

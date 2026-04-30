@@ -6,6 +6,10 @@
 
 #define MAX_BEHAVIOR_TREE 12
 #define MAX_EVENTS 512
+#define DEFINE_EVENT_SPACE(name, base) \
+    static inline notification name##_ToNotif(int e) { \
+        return base + e; \
+    }
 
 #define COMBO_KEY(a, b) ((a << 8) | b)
 #define CALL_FUNC(type, ptr, ...) ((type)(ptr))(__VA_ARGS__)
@@ -28,7 +32,7 @@ static inline bool BOOL_DO_NOTHING(){return false;}
 static inline const char* CHAR_DO_NOTHING(){return "\0";}
 
 typedef uint64_t notification;
-    
+
 typedef struct{
   char          name[MAX_NAME_LEN];
   notification  hash;
@@ -76,7 +80,7 @@ struct event_s{
   TimeFrame         timing;
   int               scheduled;
 };
-event_t* InitEvent(notification_pool_t*, char*, void*, int);
+event_t* InitEvent(notification_pool_t*, uint64_t, void*, int);
 event_bus_t* InitEventBus(int cap);
 void EventBusStep(event_bus_t* bus);
 event_sub_t* EventSubscribe(event_bus_t* bus, notification event, EventCallback cb, void* u_data);

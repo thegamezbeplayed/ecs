@@ -5,6 +5,7 @@
 
 #define MAX_ACTIONS 16
 #define MAX_PHASE_ACTIONS 128
+DEFINE_EVENT_SPACE(InputEvent, EVENT_INPUT_BASE)
 
 typedef struct action_key_s action_key_t;
 

@@ -26,21 +26,4 @@ void EntityInit(EntityManager* em);
 Entity EntityCreate(EntityManager* em);
 bool EntityValid(EntityManager* em, Entity e);
 
-/*
-typedef bool (*StateComparator)(int a, int b);
-
-typedef struct{
-  int             state;
-  StateComparator can;
-  int             required;
-}state_change_requirement_t;
-
-static state_change_requirement_t CAN_CHANGE[STATE_END+1] = {
-  {STATE_NONE, NEVER, STATE_END},
-  {STATE_SPAWN, LESS_THAN, STATE_SPAWN},
-  {STATE_IDLE, LESS_THAN, STATE_DIE},
-  {STATE_DIE, LESS_THAN, STATE_DIE},
-  {STATE_END, EQUAL_TO, STATE_DIE},
-};
-*/
 #endif

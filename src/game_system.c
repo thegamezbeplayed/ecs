@@ -1,13 +1,42 @@
 #include "game_register.h"
+#include "game_enum.h"
 
-system_t* SystemRegister(world_t* w, int ticks, int sets, SystemCB tick[ticks], SystemCB set[sets]){
+void OnSystemEvent(event_t* ev, void* data){
+  system_t* s = data;
+  world_t*  w = ev->data;
+  switch((GameEventID)EVENT_ID(ev->type)){
+    case GAME_EVENT_STEP:
+      UpdateType u = ev->eid;
+      SystemTick(w, s, u);
+      break;
+    case GAME_EVENT_STATE:
+      GameState state = ev->eid;
+      SystemSet(w, s, state);
+      break;
+  }
+
+}
+
+system_t* SystemRegister(world_t* w, SystemCB tick[UPDATE_DONE], SystemCB set[GAME_DONE]){
   system_t* s = &w->systems[w->num_sys++];
   memset(s, 0, sizeof(system_t));
-  for (int i = 0; i < ticks; i++)
-    s->tick[i] = tick[i];
+  for (int i = 0; i < UPDATE_DONE; i++){
+    if(!tick[i])
+      continue;
 
-  for (int i = 0; i < sets; i++)
+    s->tick[i] = tick[i];
+    uint64_t n = GameEvent_ToNotif(GAME_EVENT_STEP);
+    TargetSubscribe(n, OnSystemEvent, s, i);
+  }
+  for (int i = 0; i < GAME_DONE; i++){
+    if(!set[i])
+      continue;
+
     s->set[i] = set[i];
+    uint64_t n = GameEvent_ToNotif(GAME_EVENT_STATE);
+    TargetSubscribe(n, OnSystemEvent, s, i);
+
+  }
 
   return s;
 }

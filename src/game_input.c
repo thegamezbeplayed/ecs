@@ -1,7 +1,6 @@
 #include "game_types.h"
 #include "game_process.h"
 #include "game_control.h"
-
 input_t player_input;
 
 BehaviorStatus InputActionMove(input_t* gi, KeyboardKey k){
@@ -39,7 +38,7 @@ BehaviorStatus InputActionMove(input_t* gi, KeyboardKey k){
 
   gi->step = dir;
 
-  GameEvent("INPUT_MOVE", gi, PLAYER);
+  GameEvent(InputEvent_ToNotif(INPUT_EVENT_MOVE), gi, PLAYER);
   return BEHAVIOR_SUCCESS;
 }
 
