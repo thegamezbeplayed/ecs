@@ -93,3 +93,13 @@ void EntityTest(int count){
 
   }
 }
+void EntityAddPair(world_t* w, Entity e, uint32_t r, uint32_t o) {
+    comp_id_t id = make_pair(r, o);
+    component_pool_t* pool = get_or_create_pool(w, id);
+    pool_add(pool, e);
+}
+
+Entity EntityPair(EntityManager* em, Entity r, Entity o){
+  Entity e = EntityCreate(em);
+  EntityAddPair(em, e, r.id, o.id);
+}
