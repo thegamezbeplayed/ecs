@@ -12,11 +12,11 @@ void AnimInputEvent(event_t* ev, void* data){
 }
 
 
-void LoadAnims(world_t* w, Entity e){
-  anim_player_t* ap = GET_COMPONENT(w, e, anim_player_t, ANIM_ID);
+void AnimLoad(world_t* w, Entity e){
+  anim_comp_t* ac = GET_COMPONENT(w, e, anim_comp_t, ANIM_ID);
 
   notification n = InputEvent_ToNotif(INPUT_EVENT_MOVE);
-  TargetSubscribe(n, AnimInputEvent, ap, e.id );
+  TargetSubscribe(n, AnimInputEvent, ac->player, e.id );
 
 /*
   for (int j = 0; j < ap->num_seq; j++){
@@ -28,13 +28,13 @@ void LoadAnims(world_t* w, Entity e){
 }
 
 void AnimSystem(world_t* w, Entity e){
-  anim_component_t* a = GET_COMPONENT(w, e, anim_component_t, ANIM_ID);
+  anim_comp_t* a = GET_COMPONENT(w, e, anim_comp_t, ANIM_ID);
   AnimPlay(a->player, 1.0f);
 }
 
 void AnimRender(world_t* w, Entity e){
-  anim_component_t* a = GET_COMPONENT(w, e, anim_component_t, ANIM_ID);
-  pos_component_t*  p = GET_COMPONENT(w, e, pos_component_t, POS_ID);
+  anim_comp_t* a = GET_COMPONENT(w, e, anim_comp_t, ANIM_ID);
+  pos_comp_t*  p = GET_COMPONENT(w, e, pos_comp_t, POS_ID);
 
   position_t* pos = p->pos;
   anim_player_t* ap = a->player;
