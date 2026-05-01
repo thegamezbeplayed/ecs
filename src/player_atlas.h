@@ -22,7 +22,7 @@ static sub_texture_t CHAR_SPRITES[NUM_CHAR] = {
 { "player_die_0_2", "player", 24,16, 192,32, 48,32, {1,17,14,8,8},	8},
 
 { "player_idle_0_0", "player", 24,16, 288,32, 48,32,
-  {1,17,6,8,8}, 8, .is_root = true },
+  {1,17,6,8,8}, 8,},
 { "player_idle_0_1", "player", 24,16, 336,32, 48,32, {1,17,6,8,8},	8},
 { "player_idle_0_2", "player", 24,16, 384,32, 48,32, {1,17,6,8,8},	8},
 { "player_idle_0_3", "player", 24,16, 432,32, 48,32, {1,17,7,8,8},	8},
@@ -43,7 +43,7 @@ static sub_texture_t CHAR_SPRITES[NUM_CHAR] = {
   {1,17,7,8,8}, 8, true },
 
 { "player_idle_90_0", "player", 24,16, 96,64, 48,32,
-  {1,18,6,8,8}, 8, .is_root = true },
+  {1,18,6,8,8}, 8},
 { "player_idle_90_1", "player", 24,16, 144,64, 48,32, {1,18,6,8,8},	8},
 { "player_idle_90_2", "player", 24,16, 192,64, 48,32, {1,18,6,8,8},	8},
 { "player_idle_90_3", "player", 24,16, 240,64, 48,32, {1,18,7,8,8},	8},
@@ -51,7 +51,7 @@ static sub_texture_t CHAR_SPRITES[NUM_CHAR] = {
 { "player_idle_90_5", "player", 24,16, 336,64, 48,32, {1,18,7,8,8},	8},
 
 { "player_idle_270_0", "player", 24, 16, 48, 160, 48, 32,
-  {1,18,6,8,8}, 8, .is_root = true },
+  {1,18,6,8,8}, 8},
 
 { "player_idle_270_1", "player", 24,16, 384,64, 48,32, {1,18,6,8,8}, 8},
 { "player_idle_270_2", "player", 24,16, 432,64, 48,32, {1,18,6,8,8}, 8},

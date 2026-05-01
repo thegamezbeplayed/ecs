@@ -1,152 +1,108 @@
 #include "game_register.h"
 #include "game_systems.h"
 
-Vector2 ROOM_SIZE =  {1600,1200};
+void WorldInit(world_t* w, int sys_cap) {
+  // Zero everything first
+  memset(w, 0, sizeof(world_t));
 
-component_registry_t world;
-system_pool_t run;
-void TestComponents(void){
+  // Init entity manager
+  EntityInit(&w->manager);
 
-  Entity e = EntityCreate(&world.manager);
+  // Init component system
+  w->next_component_id = 0;
 
-  PLAYER = e.id;
-  position_t* p = InitPosition(CELL_NEW(4, 3));
+  for (int i = 0; i < MAX_COMPONENTS; i++) {
+    w->pools[i] = NULL;
+  }
 
-  anim_player_t* a = InitAnimGroup("player", SHEET_CHAR);
-  Vector2 size = AnimSize(a);
-  float radius = Vector2Length(size);
-  rigid_body_t* rb = InitRigidBody(p->vpos, SHAPE_CIRCLE, radius/4, 0.f);
-
-  RigidBodyHasForce(rb, 16);
-  force_t* bump = ForceBump(VEC_BOTH(0.25f));
-  force_t* steer = ForceFromVec2(FORCE_STEERING, VEC_BOTH(0.675f));
-
-  steer->speed = .25f;
-  steer->friction = VEC_BOTH(.67f);
-  steer->threshold = 0.067f;
-  steer->max_velocity = 4.f;
-  RigidBodyGiveForce(rb, bump);
-  RigidBodyGiveForce(rb, steer);
-  RigidBodySetPos(rb, p->vpos); 
-
-  RegisterRigidBody(&world.bodies, e, *rb);
-  Entity c = EntityCreate(&world.manager);
- 
-    camera_t* cam = InitCamera(2.f, .0f, Vector2Scale(ROOM_SIZE,0.5f));
-
-  input_t* gi = InitInput();
-  camera_ctx_t* ctx = InitCameraContext(CAM_FOLLOW);
-  RegisterInput(&world.input, e, *gi);
-  RegisterCameraFollow(&world.view, e, *ctx);
-  RegisterCamera(&world.cam, c, *cam);
-  RegisterAnim(&world.anim, e, *a);
-  RegisterPos(&world.pos, e, *p);
-  EntityTest(10);
+  // Init systems
+  w->num_sys = 0;
+  w->systems = GameCalloc("WorldInit", sys_cap, sizeof(system_t));
 }
 
-void InitComponents(void){
-  RegisterSystems();
-  EntityInit(&world.manager);
-  SpriteInit(&world.sprites);
-  CameraInit(&world.cam);
-  TestComponents();
+component_pool_t* StartComponentPool(world_t* w, comp_id_t id){
+  if (w->pools[id]) return w->pools[id];
+
+  component_pool_t* pool = GameCalloc("StartComponentPool", 1, sizeof(component_pool_t));
+
+  pool->id = id;
+  pool->elem_size = 0; // tag
+  pool->data = NULL;
+
+  for (int i = 0; i < MAX_ENTITIES; i++) {
+    pool->sparse[i] = -1;
+  }
+
+  w->pools[id] = pool;
+  return pool;
 }
 
-uint32_t RegisterEntity(component_t* c, Entity e){
-  uint32_t i = c->size++;
-
-  c->entities[i] = e;
-  c->sparse[e.id] = i;
-
-  return i;
+void PrefabRegistryInit(world_t* w) {
+  w->prefabs.count = 0;
 }
 
-void RegisterRigidBody(rigid_body_c* c, Entity e, rigid_body_t b){
-  uint32_t i = RegisterEntity(&c->map, e);
-  c->dense[i] = b;
+Entity PrefabCreate(world_t* w, const char* name) {
+  if (w->prefabs.count >= MAX_PREFABS) {
+    printf("ERROR: Too many prefabs!\n");
+    return (Entity){0};
+  }
+
+  Entity e = EntityCreate(&w->manager);
+  prefab_t* p = &w->prefabs.prefabs[w->prefabs.count++];
+
+  strncpy(p->name, name, 63);
+  p->entity = e;
+  p->comp_count = 0;
+
+  printf("Prefab created: %s (id %u)\n", name, e.id);
+  return e;
 }
 
-void RegisterPos(position_c* c, Entity e, position_t pos){
-  uint32_t i = RegisterEntity(&c->map, e);
-  c->dense[i] = pos;
-
+prefab_t* PrefabFind(world_t* w, const char* name) {
+  for (int i = 0; i < w->prefabs.count; i++) {
+    if (strcmp(w->prefabs.prefabs[i].name, name) == 0)
+      return &w->prefabs.prefabs[i];
+  }
+  return NULL;
 }
 
-void RegisterAnim(anim_c* c, Entity e, anim_player_t a){
-  uint32_t i = RegisterEntity(&c->map, e);
-  c->dense[i] = a;
+Entity PrefabInstantiate(world_t* w, Entity prefab, Vector2 override_pos) {
+  if (!EntityValid(&w->manager, prefab)) return (Entity){0};
 
+  Entity instance = EntityCreate(&w->manager);
+
+  // Copy all components from prefab to instance
+  for (int i = 0; i < w->next_component_id; i++) {
+    component_pool_t* pool = w->pools[i];
+    if (!pool || !HasComponent(pool, prefab)) continue;
+
+    void* src = ComponentGet(w, prefab, i);
+    void* dst = ComponentAdd(w, instance, i);
+
+    if (src && dst)
+      memcpy(dst, src, pool->elem_size);
+  }
+
+  // Apply overrides
+  if (override_pos.x != -9999.0f) {  // special value = no override
+    pos_comp_t* pc = GET_COMPONENT(w, instance, pos_comp_t, POS_ID);
+    phys_comp_t* phc = GET_COMPONENT(w, instance, phys_comp_t, PHYS_ID);
+    if (pc) {
+      pc->pos.vpos = override_pos;
+      if(phc)
+        RigidBodySetPos(&phc->rb, override_pos);
+    }
+  }
+
+  return instance;
 }
 
-void RegisterCamera(camera_c* c, Entity e, camera_t s){
-  uint32_t i = RegisterEntity(&c->map, e);
-  c->dense[i] = s;
-}
+Entity PrefabSpawn(world_t* w, const char* name, Vector2 world_pos){
+  prefab_t* p = PrefabFind(w, name);
+  if (!p) {
+    printf("Prefab not found: %s\n", name);
+    return (Entity){0};
+  }
 
-void RegisterCameraFollow(camera_follow_c* c, Entity e, camera_ctx_t s){
-  uint32_t i = RegisterEntity(&c->map, e);
-  c->dense[i] = s;
-
-}
-
-void RegisterInput(input_c* c, Entity e, input_t s){
-  uint32_t i = RegisterEntity(&c->map, e);
-  c->dense[i] = s;
-
-}
-void RegisterState(state_c* c, Entity e, state_t s){
-  uint32_t i = RegisterEntity(&c->map, e);
-  c->dense[i] = s;
-}
-
-void RegisterSprite(sprite_c* c, Entity e, sprite_t s){
-  uint32_t i = RegisterEntity(&c->map, e);
-  c->dense[i] = s;
-}
-
-bool HasSprite(sprite_c* c, Entity e) {
-    int idx = c->map.sparse[e.id];
-
-    return idx < c->map.size &&
-           c->map.entities[idx].id == e.id;
-}
-
-void RegisterBehavior(behavior_c* c, Entity e, behavior_t b){
- uint32_t i = RegisterEntity(&c->map, e);
-  c->dense[i] = b;
-}
-
-void RegisterSystems(void){
-  InitRenderSystem(&run.render);
-  InitCameraSystem(&run.cam);
-  InitInputSystem(&run.input);
-  InitPositionSystem(&run.pos);
-  InitAnimateSystem(&run.anim);
-  InitPhysicsSystem(&run.phys);
-  InitBehaviorSystem(&run.behavior);
-}
-
-void RegisterScheduleState(UpdateType u, SystemFn fn){
-
-  run.schedule.states[u].tick[run.schedule.states[u].size++] = fn;
-}
-
-void RegisterScheduleStep(UpdateType u, SystemFn fn){
-
-  run.schedule.steps[u].tick[run.schedule.steps[u].size++] = fn;
-}
-
-void SystemsState(GameState u){
-  schedule_step_t* s = &run.schedule.states[u];
-
-  for(int i = 0; i < s->size; i++)
-    s->tick[i](&run, &world);
-
-}
-
-void SystemsStep(UpdateType u){
-  schedule_step_t* s = &run.schedule.steps[u];
-
-  for(int i = 0; i < s->size; i++)
-    s->tick[i](&run, &world);
+  return PrefabInstantiate(w, p->entity, world_pos);
 }

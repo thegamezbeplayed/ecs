@@ -2,9 +2,50 @@
 #include "game_strings.h"
 //#include "game_math.h"
 #include "game_tools.h"
+#include "game_define.h"
 //#include "screens.h"
 #include "player_atlas.h"
 #include "mob_atlas.h"
+
+sprite_sheet_d SHEETS[SHEET_ALL];
+
+void DuplicateAnim(void* src, void* dst){
+  if (src && dst) {
+
+    anim_comp_t* src_ac = (anim_comp_t*)src;
+    anim_comp_t* dst_ac = (anim_comp_t*)dst;
+    *dst_ac = *src_ac; 
+    // Deep copy the sequences 2D array properly
+    for (int e = 0; e < ANIM_DONE; e++) {
+      for (int d = 0; d < MAX_DIRECTIONS; d++) {
+        anim_t* sa = &src_ac->sequences[e][d];
+        anim_t* da = &dst_ac->sequences[e][d];
+
+        // Re-copy name safely
+        strncpy(da->name, sa->name, MAX_NAME_LEN-1);
+        da->name[MAX_NAME_LEN-1] = '\0';
+
+        // Copy other fields explicitly if needed
+        da->count     = sa->count;
+        da->cur_index = sa->cur_index;
+        da->duration  = sa->duration;
+        da->elapsed   = sa->elapsed;
+        da->speed     = sa->speed;
+        da->loop      = sa->loop;
+        da->on_end    = sa->on_end;
+
+        // Copy frames array
+        memcpy(da->frames, sa->frames, sizeof(da->frames));
+
+      }
+    }
+
+    // Copy player if needed
+    dst_ac->player = src_ac->player;
+  }
+
+  TraceLog(LOG_INFO, "=== ANIM COMP DEEP COPY FINISHED===");
+}
 
 void InitResources(){
   TEXTURES[SHEET_CHAR] = CHAR_SPRITES;
@@ -18,13 +59,11 @@ void InitResources(){
   SHEETS[SHEET_MOB].sprite_sheet = GameMalloc("",sizeof(Texture2D));
   SpriteLoadSubTextures(MOB_SPRITES,SHEET_MOB, NUM_MOB);
   *SHEETS[SHEET_MOB].sprite_sheet = LoadTextureFromImage(mobsImg);
-
-
 }
 
 sprite_t* InitSpriteByTag(char *name, SheetID s){
   sprite_t* spr = GameCalloc("InitSprite", 1, sizeof(sprite_t));
-  sprite_sheet_data_t* data = &SHEETS[s];
+  sprite_sheet_d* data = &SHEETS[s];
 
   uint32_t hash = hash_str_32(name);
   for (int i = 0; i < data->num_sprites; i++){
@@ -34,182 +73,12 @@ sprite_t* InitSpriteByTag(char *name, SheetID s){
     spr->slice = data->sprites[i]->slice;
     spr->sheet = data->sprite_sheet;
 
-    spr->is_visible = true;
     spr->offset = spr->slice->offset;
     return spr;
   }
 
   return NULL;
 
-}
-
-
-anim_t* AnimGet(anim_player_t* a, hash_key_t key){
-  return HashGet(&a->map, key);
-}
-
-bool AnimPlayNext(anim_player_t* ap, anim_t* a){
-
-  if(a->next < 0)
-    return false;
-
-  anim_t* next = AnimGet(ap, a->next);
-  if(!next)
-    return false;
-
-
-  ap->cur_seq = next->seq;
-
-  next->state = ANIM_PLAY;
-
-  return true;
-}
-
-Vector2 AnimSize(anim_player_t* a){
-  if(a->col_data && a->col_data->shape!=0){
-    return VEC_NEW(a->col_data->wid, a->col_data->hei);
-  }
-  return RectSize(a->anims[a->cur_seq].frames[0].bounds);
-}
-
-void AnimSetSequence(anim_player_t* ap, anim_t* a){
-  if(ap->cur_seq == a->seq){
-    ap->next = a->next;
-    a->state = ANIM_PLAY;
-    return;
-  }
-
-  anim_t* cur = &ap->anims[ap->cur_seq];
-
-  a->state = ANIM_PLAY;
-  if(cur->cur_index == 0 && cur->elapsed < 1)
-    ap->cur_seq = a->seq;
-  else{
-    ap->next = a->seq;
-  }
-}
-
-void AnimAddGroup(anim_player_t* a, sprite_data_t* data, int index, int count){
-  anim_t* anim = &a->anims[index];
-
-  sprite_slice_t* s = data->slice;
-  anim->duration = s->dur;
-
-  if(data->is_root)
-    anim->loop = true;
-
-  anim->angle = s->dir;
-  sprite_slice_t* as = &anim->frames[anim->num_frames++];
-  memcpy(as, s, sizeof(sprite_slice_t));
-}
-
-anim_player_t* InitAnimGroup(char* tag, SheetID s){
-  anim_player_t* ap = GameCalloc("InitAnimGroup", 1, sizeof(anim_player_t));
-  sprite_sheet_data_t* data = &SHEETS[s];
-  uint32_t hash = hash_str_32(tag);
-
-  sprite_data_t *found[MAX_SPRITE_FRAMES] = {0};
-
-  uint64_t groups[MAX_ANIM_GROUPS] = {0};
-  int num_groups = 0;
-  int count = 0;
-  int largest = 0;
-
-  int num_roots = 0;
-  sprite_slice_t* roots[24] = {0};
-  
-  for (int i = 0; i < data->num_sprites; i++){
-    if(data->sprites[i]->slice->tag != hash)
-      continue;
-
-    if(data->sprites[i]->slice->group == 0)
-      continue;
-
-    if(data->sprites[i]->slice->index > largest)
-      largest = data->sprites[i]->slice->index;
-
-    if(data->sprites[i]->slice->index == 0)
-      groups[num_groups++] = data->sprites[i]->slice->group;
-
-    if(data->sprites[i]->is_root)
-      roots[num_roots++] = data->sprites[i]->slice;
-
-    found[count++] = data->sprites[i];
-  }
-
-  if(num_groups == 0)
-    return NULL;
-
-  HashInit(&ap->map, next_pow2_int(1 + num_groups));
-
-  ap->anims = GameCalloc("InitAnimGroup", num_groups, sizeof(anim_t));
-  for (int i = 0; i < num_groups; i++){
-    ap->anims[i].group = groups[i];
-    ap->anims[i].seq = i;
-    ap->anims[i].cap = 1+largest;
-    ap->anims[i].frames = GameCalloc("AnimAddGroup", 1+largest, sizeof(sprite_slice_t));
-
-  }
-  largest+=1;
-  int index = -1;
-  for (int i = 0; i < count; i++){ 
-    if(found[i]->slice->index == 0)
-      index++;
-
-    AnimAddGroup(ap, found[i], index, largest);
-  
-  }
-  ap->num_seq = num_groups;
- 
-  ap->col_data = &data->sprites[0]->coll; 
-  for(int i = 0; i < num_groups; i++){
-    uint64_t root = 0;
-    for(int j = 0; j < num_roots; j++){
-      if(roots[j]->dir == ap->anims[i].angle){
-        root = roots[j]->group;
-        break;
-      }
-    }
-    ap->anims[i].next = root;
-    if(root >= 0)
-      ap->anims[i].on_end = AnimPlayNext;
-    
-    HashPut(&ap->map, ap->anims[i].group, &ap->anims[i]);
-  }
-  return  ap;
-
-}
-
-sprite_slice_t* AnimGetFrame(anim_player_t* player){
-  anim_t* a = &player->anims[player->cur_seq];
-
-  return &a->frames[a->cur_index];
-}
-
-void AnimPlay(anim_player_t* player, float spd){
-  anim_t* a = &player->anims[player->cur_seq];
-
-  if(a->state != ANIM_PLAY)
-    return;
-
-  a->elapsed++;
-
-  if(a->elapsed >= a->duration){
-    a->cur_index++;
-    a->elapsed = 0;
-  }
-  else
-    return;
-
-  if(a->cur_index >= a->num_frames){
-    a->cur_index = 0;
-
-    if(!a->loop)
-      a->state = ANIM_DONE;
-
-    if(!a->loop && a->on_end)
-      a->on_end(player, a);
-  }
 }
 
 void DrawSlice(sprite_slice_t *s, Vector2 position,float rot){
@@ -219,7 +88,6 @@ void DrawSlice(sprite_slice_t *s, Vector2 position,float rot){
     s->center.x * s->scale,//offset.x,
       s->center.y * s->scale//offset.y
   };
-
 
   position = Vector2Add(position,s->offset);
   Rectangle dst = {
@@ -244,21 +112,15 @@ bool FreeSprite(sprite_t* s){
 }
 
 void DrawSpriteAtPos(sprite_t*s , Vector2 pos){
-  if(s->is_visible)
-    DrawSlice(s->slice, pos, s->rot);
-
+  DrawSlice(s->slice, pos, s->rot);
 }
 
 void DrawSprite(sprite_t* s){
   if(!s->slice)
     return;
-
 }
 
 void SpriteLoadSubTextures(sub_texture_t* data, SheetID id, int sheet_cap){
-  if(id == SHEET_MOB)
-    DO_NOTHING();
-
   for(int i = 0; i < sheet_cap;i++){
     sub_texture_t sprData = data[i];
 
@@ -280,8 +142,7 @@ void SpriteLoadSubTextures(sub_texture_t* data, SheetID id, int sheet_cap){
     char* group_str = str_concat(parts[1], parts[2]);
     spr->group = hash_str_64(group_str);
     str_to_int(parts[3], &spr->index);
-    str_to_int(parts[2], &spr->dir);
-    spr->dur = sprData.dur; 
+    str_to_int(parts[2], &spr->angle);
     spr->center = center;// Vector2Scale(offset,spr->scale);
     spr->offset = VECTOR2_ZERO;//offset;//center;//Vector2Scale(center,spr->scale);
     spr->bounds = bounds;
@@ -291,11 +152,13 @@ void SpriteLoadSubTextures(sub_texture_t* data, SheetID id, int sheet_cap){
       spr->bounds.width*=-1;
     }
    
-    sprite_data_t* sdat = GameCalloc("Sub", 1, sizeof(sprite_data_t));
+    sprite_d* sdat = GameCalloc("Sub", 1, sizeof(sprite_d));
     sdat->slice = spr;
     sdat->coll = sprData.collider;
-    sdat->is_root = sprData.is_root;
-
+    sdat->tag = spr->tag;
+    sdat->duration = sprData.dur;
+    sdat->sheet_index = i;
+    sdat->sheet_id = id;
     SHEETS[id].sprites[SHEETS[id].num_sprites++] = sdat;
   }
 }
@@ -327,4 +190,65 @@ void SpritePreprocessImg(Image *img, Texture2D *out){
   // Create a texture from modified image
   *out = LoadTextureFromImage(newImg);
   UnloadImageColors(pixels);
+}
+
+bool AnimPlay(anim_t* a){
+  if(a->elapsed >= a->duration){
+    a->cur_index++;
+    a->elapsed = 0;
+  }
+  else{
+    a->elapsed++;
+    return true;
+  }
+
+  if(a->cur_index >= a->count){
+    a->cur_index = 0;
+    if(a->loop)
+      return true;
+
+  }
+  else
+    return true;
+
+  return false;
+}
+
+bool AnimIdle(anim_player_t* player, anim_t* a){
+  player->state = ANIM_IDLE;
+
+  return true;
+}
+
+anim_t* AnimRegisterState(SheetID id, char* name, char* group){
+  sprite_d found[MAX_SPRITE_FRAMES] = {0};
+
+  int count = 0;
+  uint32_t hash = hash_str_32(name);
+  uint64_t ghash = hash_str_64(group);
+  for (int i = 0; i < SHEETS[id].num_sprites; i++){
+    if(SHEETS[id].sprites[i]->tag != hash)
+      continue;
+
+    sprite_slice_t* spr = SHEETS[id].sprites[i]->slice;
+
+    if(spr->group != ghash)
+      continue;
+
+    found[count++] = *SHEETS[id].sprites[i];
+  } 
+
+  if(count == 0)
+    return NULL;
+
+  anim_t* a = GameCalloc("AnimRegisterState", 1, sizeof(anim_t));
+
+  for(int i = 0; i < count; i++){
+    a->frames[a->count++] = found[i].sheet_index;
+
+    if(found[i].duration > 0)
+      a->duration = found[i].duration;
+  }
+  strcpy(a->name, group);
+  return a;
 }

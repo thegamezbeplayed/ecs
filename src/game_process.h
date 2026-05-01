@@ -7,6 +7,7 @@
 #include "game_utils.h"
 
 #define MAX_INTERACTIONS 256
+DEFINE_EVENT_SPACE(GameEvent, EVENT_GAME_BASE)
 
 extern Font font;
 static int fixedFPS = 60;
@@ -21,7 +22,9 @@ typedef enum{
 
 typedef enum{
   UPDATE_FRAME,//update running at full fps
+  UPDATE_DRAW_BEGIN,
   UPDATE_DRAW,
+  UPDATE_DRAW_END,
   UPDATE_PRE,
   UPDATE_FIXED,
   UPDATE_POST,
@@ -78,12 +81,11 @@ void GameProcessEnd();
 //===WORLD_T===>
 
 void WorldAnnounce(notification, Vector2 pos);
-void Notification(notification, EventCallback, void*);
-void SubscribeEntity(char*, EventCallback, void*, int);
-void TargetSubscribe(char*, EventCallback cb, void* data, int);
-void Subscribe(char*, EventCallback cb, void* data);
-void ScheduleEvent(char*, void* data, uint64_t uid, TimeFrame, int);
-void GameEvent(char*, void*, uint64_t);
+void SubscribeEntity(uint64_t, EventCallback, void*, int);
+void TargetSubscribe(uint64_t, EventCallback cb, void* data, int);
+void Subscribe(uint64_t, EventCallback cb, void* data);
+void ScheduleEvent(uint64_t, void* data, uint64_t uid, TimeFrame, int);
+void GameEvent(uint64_t, void*, uint64_t);
 void WorldInitOnce();
 void WorldPreUpdate();
 void WorldFixedUpdate();

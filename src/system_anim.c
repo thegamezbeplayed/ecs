@@ -1,95 +1,59 @@
-#include "game_register.h"
+#include "game_assets.h"
 #include "game_systems.h"
 
 void AnimInputEvent(event_t* ev, void* data){
-  anim_c* c = &world.anim;
-
-  input_t* in = ev->data;
-
-  anim_player_t* ap = &c->dense[ev->eid];
-
-  uint64_t group = hash_str_64(in->move);
-  anim_t* a = AnimGet(ap, group);
-
-  AnimSetSequence(ap, a);
-}
-
-
-void AnimEvent(event_t* ev, void* data){
-  position_t* pos = ev->data;
-
   anim_player_t* ap = data;
+  input_t*       in = ev->data;
 
-  char ang[16];
-  int_to_str(pos->angle, ang, sizeof(ang));
-  
-  uint64_t group = hash_str_64(str_concat("walk", ang));
-  anim_t* a = AnimGet(ap, group);
+  int state_dir = in->angle/90;
 
-  if(a)
-  AnimSetSequence(ap, a);
-  else
-    TraceLog(LOG_WARNING,"==== ANIM MISSING===\n %s", str_concat("walk",ang));
+  ap->dir = state_dir;
+
+  switch(EVENT_ID(ev->type)){
+    case INPUT_EVENT_MOVE:
+      ap->state = ANIM_WALK;
+      break;
+    default:
+      TraceLog(LOG_WARNING, "==== ANIM INPUT UNKOWN EVENT ====\n %i", EVENT_ID(ev->type));
+      break;
+
+  }
 }
 
-uint64_t AnimationGlobal(hash_map_t* m, uint64_t key){
-  return HashKey(m, key);
+
+void AnimLoad(world_t* w, Entity e){
+  anim_comp_t* ac = GET_COMPONENT(w, e, anim_comp_t, ANIM_ID);
+
+  notification n = InputEvent_ToNotif(INPUT_EVENT_MOVE);
+  TargetSubscribe(n, AnimInputEvent, &ac->player, e.id );
 }
 
-void RegisterAnimation(animate_st* a, uint64_t group){
-  
-  uint64_t key = AnimationGlobal(&a->groups, group);
-  if(key > 0)
+void AnimSystem(world_t* w, Entity e){
+  anim_comp_t* ac = GET_COMPONENT(w, e, anim_comp_t, ANIM_ID);
+  anim_player_t* ap = &ac->player;
+  anim_t* a = &ac->sequences[ap->state][ap->dir];
+
+  if(!AnimPlay(a) && a->on_end)
+    a->on_end(ap, a);
+}
+
+void AnimRender(world_t* w, Entity e){
+  anim_comp_t* ac = GET_COMPONENT(w, e, anim_comp_t, ANIM_ID);
+  pos_comp_t*  p = GET_COMPONENT(w, e, pos_comp_t, POS_ID);
+
+  position_t* pos = &p->pos;
+  anim_player_t* ap = &ac->player;
+
+  anim_t* a = &ac->sequences[ap->state][ap->dir];
+
+  if(!a)
     return;
 
-  HashPut(&a->groups, group, &group);
+  int spr_index = a->frames[a->cur_index];
 
+  sprite_slice_t* spr = SHEETS[ap->sheet_id].sprites[spr_index]->slice;
+  if(!spr)
+    return;
 
-}
-
-void AnimSystem(system_pool_t* s, component_registry_t* c){
-  animate_st* st = &s->anim;
-  anim_c* a = &c->anim;
-
-  for(int i = 0; i < a->map.size; i++){
-    anim_player_t* ap = &a->dense[i];
-    AnimPlay(ap, st->global_speed);
-  }
-}
-
-void LoadAnims(system_pool_t* s, component_registry_t* c){
-  animate_st* st = &s->anim;
-  anim_c* ac = &c->anim;
-  EntityManager *em = &c->manager;
-  position_c* pos = &c->pos;
-  input_c *in = &c->input;
-
-  for(int i = 0; i < ac->map.size; i++){
-
-    anim_player_t* ap = &ac->dense[i];
-    Entity* e = ComponentGetEntity(em, &ac->map, i);
-
-
-    if(HasComponent(&in->map, *e))
-      TargetSubscribe("INPUT_MOVE", AnimInputEvent, ap, e->id );
-    else
-      TargetSubscribe("DEST_SET", AnimEvent, ap, e->id );
-
-
-    for (int j = 0; j < ap->num_seq; j++){
-      anim_t* a = &ap->anims[j];
-
-      RegisterAnimation(st, a->group);
-    }
-
-  }
-}
-
-void InitAnimateSystem(animate_st* a){
-  a->global_speed = 1.f;
-
-  RegisterScheduleState(GAME_READY, LoadAnims);
-  HashInit(&a->groups, next_pow2_int(MAX_COMPONENTS));
-  RegisterScheduleStep(UPDATE_FIXED, AnimSystem);
-
+  DrawSlice(spr, pos->vpos, 0);
 }

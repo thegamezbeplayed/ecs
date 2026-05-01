@@ -3,6 +3,38 @@
 
 #define BIT64(n) (1ULL << (n))
 
+#define EVENT_INPUT_BASE  0x1000
+#define EVENT_GAME_BASE   0x2000
+#define EVENT_PHYS_BASE   0x3000
+#define EVENT_POS_BASE    0x4000
+#define EVENT_BASE_MASK   0xFFFFF000
+#define EVENT_ID_MASK     0x00000FFF
+
+#define DEFINE_EVENT_SPACE(name, base) \
+    static inline notification name##_ToNotif(int e) { \
+        return base + e; \
+    }
+
+typedef uint64_t notification;
+
+static inline uint32_t EventBase(uint64_t n) {
+    return n & EVENT_BASE_MASK;
+}
+
+static inline uint32_t EVENT_ID(uint64_t n) {
+    return n & EVENT_ID_MASK;
+}
+typedef enum{
+  GAME_EVENT_STATE,
+  GAME_EVENT_STEP,
+  GAME_EVENT_COUNT
+}GameEventID;
+
+typedef enum{
+  INPUT_EVENT_MOVE,
+  INPUT_EVENT_COUNT
+}InputEventID;
+
 typedef enum{
   ENT_NONE,
   ENT_PLAYER,

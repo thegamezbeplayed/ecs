@@ -6,13 +6,14 @@
 #include "game_enum.h"
 
 #define MAX_ENTITIES 640
+#define MAX_NAME_LEN 128
 
-static uint32_t PLAYER;
 
 typedef struct {
     uint32_t id;
     uint32_t generation;
 } Entity;
+extern uint32_t PLAYER;
 
 typedef struct {
     uint32_t generation[MAX_ENTITIES];
@@ -23,24 +24,6 @@ typedef struct {
 } EntityManager;
 void EntityInit(EntityManager* em);
 Entity EntityCreate(EntityManager* em);
-void EntityTest(int count);
 bool EntityValid(EntityManager* em, Entity e);
 
-/*
-typedef bool (*StateComparator)(int a, int b);
-
-typedef struct{
-  int             state;
-  StateComparator can;
-  int             required;
-}state_change_requirement_t;
-
-static state_change_requirement_t CAN_CHANGE[STATE_END+1] = {
-  {STATE_NONE, NEVER, STATE_END},
-  {STATE_SPAWN, LESS_THAN, STATE_SPAWN},
-  {STATE_IDLE, LESS_THAN, STATE_DIE},
-  {STATE_DIE, LESS_THAN, STATE_DIE},
-  {STATE_END, EQUAL_TO, STATE_DIE},
-};
-*/
 #endif

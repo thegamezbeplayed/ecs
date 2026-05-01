@@ -5,6 +5,7 @@
 
 #define MAX_ACTIONS 16
 #define MAX_PHASE_ACTIONS 128
+DEFINE_EVENT_SPACE(InputEvent, EVENT_INPUT_BASE)
 
 typedef struct action_key_s action_key_t;
 
@@ -68,8 +69,8 @@ struct action_key_s{
 
 struct input_s{
   int             turn, frames;
+  int             angle;
   Cell            step;
-  char            move[MAX_NAME_LEN];
   action_key_t    actions[ACT_DONE];
 };
 input_t* InitInput(void);

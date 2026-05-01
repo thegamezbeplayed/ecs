@@ -2,15 +2,22 @@
 #define __GAME_PHYS__
 
 #include "game_tools.h"
+#include "game_utils.h"
 
 #define MAX_FORCES 64
-
 #define GRAVITY 0.65f
 #define MAX_VELOCITY  16
 #define TERMINAL_VELOCITY 7.0f
 
+DEFINE_EVENT_SPACE(PhysEvent, EVENT_PHYS_BASE)
+
 typedef struct rigid_body_s rigid_body_t;
 typedef struct force_s force_t;
+
+typedef enum{
+  PHYS_EVENT_ACCEL,
+  PHYS_EVENT_COUNT
+}PhysicsEventID;
 
 typedef enum {
   FORCE_GRAVITY,
@@ -20,19 +27,12 @@ typedef enum {
   FORCE_KINEMATIC,
   FORCE_NONE
 }ForceType;
-static uint64_t MakeFUID(char* str, ForceType f){
-  uint64_t hash = hash_str_64(str);
-
-  return hash_combine_64(hash, hash_64_from_int(f));
-
-}
 
 typedef void (*ForceFn)(rigid_body_t *a, rigid_body_t *b, force_t*);
 typedef void (*ForceCb)(rigid_body_t *a, force_t*);
 void ForceReactBump(rigid_body_t* a, rigid_body_t* b, force_t*);
 
 struct force_s{
-  uint64_t   uid;
   Vector2    vel, accel, dir, friction;
   ForceType  type;
   float      speed, max_velocity;
@@ -66,21 +66,13 @@ typedef struct bounds_s {
 struct rigid_body_s{
   Vector2     vel;
   int         col_rate;
-  hash_map_t  apply, has;
+  force_t     has[FORCE_NONE];
+  int         num_forces;
+  force_t     apply[MAX_FORCES]; 
   bounds_t    bounds;
   float       restitution;
   bool        is_static, is_grounded;
 };
-static force_t* ForceHas(rigid_body_t* b, uint64_t fuid){
-  if(b->has.count == 0)
-    return NULL;
-  return HashGet(&b->has, fuid);
-}
-
-
-static force_t* RigidBodyGetForce(rigid_body_t* b, uint64_t fuid){
-  return HashGet(&b->apply, fuid);
-}
 
 rigid_body_t* InitRigidBody(Vector2 pos, ShapeType, float, float);
 int CollisionStep(rigid_body_t*, rigid_body_t*);

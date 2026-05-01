@@ -2,45 +2,57 @@
 #include "game_process.h"
 #include "game_tools.h"
 
-#include "game_systems.h"
+#include "game_register.h"
+#include "game_define.h"
 #include "screens.h"
 Camera2D camera = { 0 };
 //----------------------------------------------------------------------------------
 // Gameplay Screen Functions Definition
 //----------------------------------------------------------------------------------
 
+void InitGameData(void){
+  RegisterComponentData(&world);
+  RegisterSystemData(&world);
+  RegisterEntityData(&world);
+}
+
 // Gameplay Screen Initialization logic
 void InitGameplayScreen(void){
   InitGameEvents();
-  InitComponents();
+  WorldInit(&world, NUM_SYS);
+  InitGameData();
   GameSetState(GAME_LOADING);
 }
 
 void PreUpdate(void){
+  
   GameProcessStep();
-  SystemsStep(UPDATE_PRE);
+  GameEvent(GameEvent_ToNotif(GAME_EVENT_STEP), &world , UPDATE_PRE);
 }
 
 void FixedUpdate(void){
-  SystemsStep(UPDATE_FIXED);
+  GameEvent(GameEvent_ToNotif(GAME_EVENT_STEP), &world , UPDATE_FIXED);
 }
 
 void PostUpdate(void){
-  SystemsStep(UPDATE_POST);
-}
+  GameEvent(GameEvent_ToNotif(GAME_EVENT_STEP), &world , UPDATE_POST);
+} 
+ 
 
 // Gameplay Screen Update logic
-void UpdateGameplayScreen(void)
-{
-  SystemsStep(UPDATE_FRAME);
+void UpdateGameplayScreen(void){
+  GameEvent(GameEvent_ToNotif(GAME_EVENT_STEP), &world , UPDATE_FRAME);
+
 }
 
 // Gameplay Screen Draw logic
-void DrawGameplayScreen(void)
-{
-  //RenderSystem(&render, &world.sprites);
+void BeginDraw(void){
+  GameEvent(GameEvent_ToNotif(GAME_EVENT_STEP), &world , UPDATE_DRAW_BEGIN);
+}
 
-  SystemsStep(UPDATE_DRAW);
+void EndDraw(void){
+  GameEvent(GameEvent_ToNotif(GAME_EVENT_STEP), &world , UPDATE_DRAW_END);
+
 }
 
 // Gameplay Screen Unload logic

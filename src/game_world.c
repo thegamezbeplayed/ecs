@@ -2,37 +2,29 @@
 #include <unistd.h>
 #include "game_process.h"
 #include "game_utils.h"
-#include "game_systems.h"
+#include "game_register.h"
 
 #define BUS (event_bus_t*){GP.bus[GP.screen]}
 
+world_t world;
 game_process_t GP;
 
-void Notification(notification hash, EventCallback cb, void* data){
-  event_sub_t* sub = EventSubscribe(BUS, hash, cb, data);
-
-}
-
-void Subscribe(char* event, EventCallback cb, void* data){
-  notification hash = hash_str_64(event);
-  event_sub_t* sub = EventSubscribe(BUS, hash, cb, data);
+void Subscribe(uint64_t event, EventCallback cb, void* data){
+  event_sub_t* sub = EventSubscribe(BUS, event , cb, data);
   sub->eid = -1;
 }
 
-void SubscribeEntity(char* event, EventCallback cb, void* data, int id){
-  notification hash = hash_str_64(event);
-  event_sub_t* sub = EventSubscribe(BUS, hash, cb, data);
+void SubscribeEntity(uint64_t event, EventCallback cb, void* data, int id){
+  event_sub_t* sub = EventSubscribe(BUS, event, cb, data);
   sub->eid = id;
 }
 
-void TargetSubscribe(char* event, EventCallback cb, void* data, int id){
-  notification hash = hash_str_64(event);
-
-  event_sub_t* sub = EventSubscribe(BUS, hash, cb, data);
+void TargetSubscribe(uint64_t event, EventCallback cb, void* data, int id){
+  event_sub_t* sub = EventSubscribe(BUS, event, cb, data);
   sub->eid = id;
 }
 
-void ScheduleEvent(char* event, void* data, uint64_t uid, TimeFrame tf, int step){
+void ScheduleEvent(uint64_t event, void* data, uint64_t uid, TimeFrame tf, int step){
   switch(tf){
     case TF_TURN:
 //      step += WorldGetTurn();
@@ -53,7 +45,7 @@ void ScheduleEvent(char* event, void* data, uint64_t uid, TimeFrame tf, int step
   EventSchedule(BUS, ev);
 }
 
-void GameEvent(char* event, void* data, uint64_t uid){
+void GameEvent(uint64_t event, void* data, uint64_t uid){
   event_t* ev = InitEvent(GP.notifications, event, data, uid);
 
   if(BUS->count)
@@ -61,9 +53,13 @@ void GameEvent(char* event, void* data, uint64_t uid){
 }
 
 void GameSetState(GameState state){
+  if(GP.state[SCREEN_GAMEPLAY] == state)
+    return;
+
   TraceLog(LOG_INFO, "==== GAME STATE ====\n set to %i", state);
   GP.state[SCREEN_GAMEPLAY] = state;
-  SystemsState(state);
+  GameEvent(GameEvent_ToNotif(GAME_EVENT_STATE), &world , state);
+
 
   if(GP.cb[state])
     GP.cb[state](state);
@@ -105,7 +101,8 @@ void InitGameProcess(){
   GP.phase[SCREEN_GAMEPLAY][GAME_FINISHED] = UnloadGameplayScreen;
   GP.update_steps[SCREEN_GAMEPLAY][UPDATE_FIXED] = FixedUpdate;
   GP.update_steps[SCREEN_GAMEPLAY][UPDATE_PRE] = PreUpdate;
-  GP.update_steps[SCREEN_GAMEPLAY][UPDATE_DRAW] = DrawGameplayScreen;
+  GP.update_steps[SCREEN_GAMEPLAY][UPDATE_DRAW_BEGIN] = BeginDraw;
+  GP.update_steps[SCREEN_GAMEPLAY][UPDATE_DRAW_END] = EndDraw;
   GP.update_steps[SCREEN_GAMEPLAY][UPDATE_FRAME] = UpdateGameplayScreen;
   GP.update_steps[SCREEN_GAMEPLAY][UPDATE_POST] = PostUpdate;
   //GP.album_id[SCREEN_GAMEPLAY] = AudioBuildMusicTracks("bingbong");
@@ -160,15 +157,14 @@ void GameProcessStep(){
 
 void GameProcessSync(bool wait){
   if(GP.state[GP.screen] > GAME_RUNNING){
-
     GP.update_steps[SCREEN_GAMEPLAY][UPDATE_DRAW]();
-  
     return;
   }
   
-  for(int i = 0; i <UPDATE_DONE;i++){
-    if(i > UPDATE_DRAW && wait)
+  for(int i = 0; i < UPDATE_DONE;i++){
+    if(i > UPDATE_DRAW_END && wait)
       return;
+
     GP.update_steps[GP.screen][i]();
   }
 

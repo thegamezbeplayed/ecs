@@ -1,7 +1,6 @@
 #include "game_types.h"
 #include "game_process.h"
 #include "game_control.h"
-
 input_t player_input;
 
 BehaviorStatus InputActionMove(input_t* gi, KeyboardKey k){
@@ -11,25 +10,25 @@ BehaviorStatus InputActionMove(input_t* gi, KeyboardKey k){
     case KEY_A:
     case KEY_H:
     case KEY_LEFT:
-      strcpy(gi->move , "walk180");
       dir = CELL_LEFT;
+      gi->angle = 180;
       break;
     case KEY_D:
     case KEY_L:
     case KEY_RIGHT:
-      strcpy(gi->move , "walk0");
       dir = CELL_RIGHT;
+      gi->angle = 0;
       break;
     case KEY_W:
     case KEY_J:
     case KEY_UP:
-      strcpy(gi->move , "walk90");
       dir = CELL_UP;
+      gi->angle = 90;
       break;
     case KEY_S:
     case KEY_K:
     case KEY_DOWN:
-      strcpy(gi->move , "walk270");
+      gi->angle = 270;
       dir = CELL_DOWN;
       break;
     default:
@@ -39,7 +38,7 @@ BehaviorStatus InputActionMove(input_t* gi, KeyboardKey k){
 
   gi->step = dir;
 
-  GameEvent("INPUT_MOVE", gi, PLAYER);
+  GameEvent(InputEvent_ToNotif(INPUT_EVENT_MOVE), gi, PLAYER);
   return BEHAVIOR_SUCCESS;
 }
 
