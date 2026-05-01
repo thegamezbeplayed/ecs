@@ -6,6 +6,7 @@
 #include "game_define.h"
 
 #define MAX_TERMS 8
+#define MAX_PREFABS 128
 
 #define ADD_COMPONENT(world, e, Type, ID) \
   (Type*)ComponentAdd(world, e, ID)
@@ -39,15 +40,29 @@ static void SystemRequire(system_t* s, comp_id_t id) {
 }
 
 typedef struct {
-  comp_id_t id;
+  comp_id_t  id;
 
-  int entities[MAX_ENTITIES];
-  int sparse[MAX_ENTITIES];
-  size_t size;
+  int        entities[MAX_ENTITIES];
+  int        sparse[MAX_ENTITIES];
+  size_t     size;
 
-  size_t elem_size;   // size of component (Position, etc)
-  void*  data;        // dense array of component data
+  size_t     elem_size;   // size of component (Position, etc)
+  void*      data;        // dense array of component data
 } component_pool_t;
+bool HasComponent(component_pool_t* pool, Entity e);
+
+typedef struct {
+    char          name[64];
+    Entity        entity;        // the template entity
+    comp_id_t     components[MAX_TERMS];  // list of components it has
+    int           comp_count;
+} prefab_t;
+
+typedef struct {
+    prefab_t prefabs[MAX_PREFABS];
+    int      count;
+} prefab_registry_t;
+
 struct world_s {
   EntityManager     manager;
 
@@ -56,6 +71,7 @@ struct world_s {
 
   int               num_sys;
   system_t*         systems;
+  prefab_registry_t prefabs;
   //relation_index_t relations[MAX_RELATIONS];
 };
 extern world_t world;
@@ -72,4 +88,11 @@ void RegisterComponentData(world_t* w);
 void RegisterSystemData(world_t* w);
 void RegisterEntityData(world_t* w);
 
+// Add to world_t
+void PrefabRegistryInit(world_t* w);
+Entity PrefabCreate(world_t* w, const char* name);
+Entity PrefabInstantiate(world_t* w, Entity prefab, Vector2 override_pos); // basic override
+Entity PrefabInstantiateFull(world_t* w, const char* name, Vector2 pos, ...); // later
+prefab_t* PrefabFind(world_t* w, const char* name);
+Entity PrefabSpawn(world_t* w, const char* name, Vector2 world_pos);
 #endif

@@ -6,6 +6,7 @@
 
 #define ParamRead(o, T) ((T*)((o)->data))
 
+#define MAX_DIRECTIONS 4
 DEFINE_EVENT_SPACE(PosEvent, EVENT_POS_BASE)
 
 typedef enum{

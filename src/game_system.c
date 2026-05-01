@@ -14,7 +14,6 @@ void OnSystemEvent(event_t* ev, void* data){
       SystemSet(w, s, state);
       break;
   }
-
 }
 
 system_t* SystemRegister(world_t* w, SystemCB tick[UPDATE_DONE], SystemCB set[GAME_DONE]){

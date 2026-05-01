@@ -9,7 +9,7 @@ static sub_texture_t MOB_SPRITES[NUM_MOB] = {
     { "slime_die_0_3",    "slime", 16, 16, 96, 0, 32, 32, .dur=8},
     { "slime_die_0_4",    "slime", 16, 16, 128, 0, 32, 32, .dur=8},
 
-    { "slime_idle_0_0",   "slime", 16, 16, 160, 0, 32, 32, .dur=8, .is_root = true},
+    { "slime_idle_0_0",   "slime", 16, 16, 160, 0, 32, 32, .dur=8},
     { "slime_idle_0_1",   "slime", 16, 16, 192, 0, 32, 32, .dur=8},
     { "slime_idle_0_2",   "slime", 16, 16, 224, 0, 32, 32, .dur=8},
     { "slime_idle_0_3",   "slime", 16, 16, 0, 32, 32, 32, .dur=8},
@@ -19,12 +19,12 @@ static sub_texture_t MOB_SPRITES[NUM_MOB] = {
     { "slime_idle_180_2",   "slime", 16, 16, 224, 0, 32, 32, .dur=8, true},
     { "slime_idle_180_3",   "slime", 16, 16, 0, 32, 32, 32, .dur=8, true},
 
-    { "slime_idle_90_0",  "slime", 16, 16, 32, 32, 32, 32, .dur=8, .is_root = true},
+    { "slime_idle_90_0",  "slime", 16, 16, 32, 32, 32, 32, .dur=8},
     { "slime_idle_90_1",  "slime", 16, 16, 64, 32, 32, 32, .dur=8},
     { "slime_idle_90_2",  "slime", 16, 16, 96, 32, 32, 32, .dur=8},
     { "slime_idle_90_3",  "slime", 16, 16, 128, 32, 32, 32, .dur=8},
 
-    { "slime_idle_270_0", "slime", 16, 16, 160, 32, 32, 32, .dur=8, .is_root = true},
+    { "slime_idle_270_0", "slime", 16, 16, 160, 32, 32, 32, .dur=8},
     { "slime_idle_270_1", "slime", 16, 16, 192, 32, 32, 32, .dur=8},
     { "slime_idle_270_2", "slime", 16, 16, 224, 32, 32, 32, .dur=8},
     { "slime_idle_270_3", "slime", 16, 16, 0, 64, 32, 32, .dur=8},

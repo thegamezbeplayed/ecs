@@ -36,7 +36,6 @@ void FixedUpdate(void){
 
 void PostUpdate(void){
   GameEvent(GameEvent_ToNotif(GAME_EVENT_STEP), &world , UPDATE_POST);
- 
 } 
  
 
@@ -47,14 +46,12 @@ void UpdateGameplayScreen(void){
 }
 
 // Gameplay Screen Draw logic
-void DrawGameplayScreen(void){
-  BeginDrawing();
-  ClearBackground(BLACK);
+void BeginDraw(void){
+  GameEvent(GameEvent_ToNotif(GAME_EVENT_STEP), &world , UPDATE_DRAW_BEGIN);
+}
 
-  GameEvent(GameEvent_ToNotif(GAME_EVENT_STEP), &world , UPDATE_DRAW);
-
-  DrawFPS(10, 10);
-  EndDrawing();
+void EndDraw(void){
+  GameEvent(GameEvent_ToNotif(GAME_EVENT_STEP), &world , UPDATE_DRAW_END);
 
 }
 

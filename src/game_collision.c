@@ -1,5 +1,11 @@
 #include "game_physics.h"
 #include "game_process.h"
+#include "game_define.h"
+
+void DuplicateRigidBody(void* src, void* dst){
+  phys_comp_t* from = (phys_comp_t*)src;
+  phys_comp_t* to = (phys_comp_t*)dst;
+}
 
 rigid_body_t* InitRigidBody(Vector2 pos, ShapeType shape, float wid, float hei){
   rigid_body_t* b = GameCalloc("InitRigidBody", 1, sizeof(rigid_body_t));
@@ -18,29 +24,16 @@ rigid_body_t* InitRigidBody(Vector2 pos, ShapeType shape, float wid, float hei){
       break;
   }
 
-  HashInit(&b->apply, MAX_FORCES);
-
   b->col_rate = 6;
   return b;
 }
 
-void RigidBodyHasForce(rigid_body_t* b, int cap){
-  HashInit(&b->has, cap); 
-}
-
 void RigidBodyGiveForce(rigid_body_t* b, force_t* f){
-  f->uid = MakeFUID("FORCE", f->type);
-
-  //f->is_active = true;
-  HashPut(&b->has, f->uid, f);
+  b->has[f->type] = *f;
 }
 
 void RigidBodySteer(rigid_body_t* b, Vector2 dir){
-  uint64_t fuid = MakeFUID("FORCE", FORCE_STEERING);
-
-  force_t* f = ForceHas(b, fuid);
-  if(!f)
-    return;
+  force_t* f = &b->has[FORCE_STEERING];
 
   if(!f->is_active){
     f->on_end = ForceEnd;
@@ -91,17 +84,17 @@ bool RigidBodyCollide(rigid_body_t* a, rigid_body_t* b){
   if(b->is_static)
     return false;
 
-  hash_iter_t iter;
-  HashStart(&a->has, &iter);
+  bool out = false;
+  for(int i = 0; i < FORCE_NONE; i++){
+    if(!a->has[i].on_react)
+      continue;
 
-  hash_slot_t* s;
+    out = true;
+    a->has[i].on_react(a, b, &a->has[i]);
 
-  while((s = HashNext(&iter))){
-    force_t* f = s->value;
-    f->on_react(b,a, f);
   }
 
-  return true;
+  return out;
 }
 
 int CollisionStep(rigid_body_t* a, rigid_body_t* b){

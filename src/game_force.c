@@ -46,18 +46,16 @@ void ForceSetDir(rigid_body_t *b, force_t* f, Vector2 dir){
 }
 
 void ForceKill(rigid_body_t *b, force_t* f){
-  HashRemove(&b->apply, f->uid);
 }
 
 void ForceApply(rigid_body_t* b, force_t* f){
-  if(HashFull(&b->apply))
+  if(b->num_forces >= MAX_FORCES)
     return;
 
   f->on_end = ForceKill;
 
   f->is_active = true;
-  f->uid = MakeGUID("FORCE", f->type);
-  HashPut(&b->apply, f->uid, f);
+  b->apply[b->num_forces++] = *f;
 }
 
 void ForceReactBump(rigid_body_t* a, rigid_body_t* b, force_t *f){

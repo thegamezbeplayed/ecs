@@ -16,6 +16,7 @@ comp_id_t ComponentRegister(world_t* w, size_t elem_size){
 
   w->pools[id] = pool;
 
+
   return id;
 }
 
@@ -29,7 +30,7 @@ void* ComponentAdd(world_t* w, Entity e, comp_id_t id){
 
   void* ptr = (char*)pool->data + (idx * pool->elem_size);
 
-  memset(ptr, 0, pool->elem_size);  // ✅ initialize
+  memset(ptr, 0, pool->elem_size);
 
   return ptr;
 }
@@ -41,4 +42,12 @@ void* ComponentGet(world_t* w, Entity e, comp_id_t id){
   if (idx == -1) return NULL;
 
   return (char*)pool->data + (idx * pool->elem_size);
+}
+
+bool HasComponent(component_pool_t* pool, Entity e) {
+  if (!pool || !EntityValid(&world.manager, e)) return false;
+  if (e.id >= MAX_ENTITIES) return false;
+
+  int idx = pool->sparse[e.id];
+  return (idx > 0 && pool->entities[idx] == e.id);
 }

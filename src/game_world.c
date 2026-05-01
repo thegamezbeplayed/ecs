@@ -53,6 +53,9 @@ void GameEvent(uint64_t event, void* data, uint64_t uid){
 }
 
 void GameSetState(GameState state){
+  if(GP.state[SCREEN_GAMEPLAY] == state)
+    return;
+
   TraceLog(LOG_INFO, "==== GAME STATE ====\n set to %i", state);
   GP.state[SCREEN_GAMEPLAY] = state;
   GameEvent(GameEvent_ToNotif(GAME_EVENT_STATE), &world , state);
@@ -98,7 +101,8 @@ void InitGameProcess(){
   GP.phase[SCREEN_GAMEPLAY][GAME_FINISHED] = UnloadGameplayScreen;
   GP.update_steps[SCREEN_GAMEPLAY][UPDATE_FIXED] = FixedUpdate;
   GP.update_steps[SCREEN_GAMEPLAY][UPDATE_PRE] = PreUpdate;
-  GP.update_steps[SCREEN_GAMEPLAY][UPDATE_DRAW] = DrawGameplayScreen;
+  GP.update_steps[SCREEN_GAMEPLAY][UPDATE_DRAW_BEGIN] = BeginDraw;
+  GP.update_steps[SCREEN_GAMEPLAY][UPDATE_DRAW_END] = EndDraw;
   GP.update_steps[SCREEN_GAMEPLAY][UPDATE_FRAME] = UpdateGameplayScreen;
   GP.update_steps[SCREEN_GAMEPLAY][UPDATE_POST] = PostUpdate;
   //GP.album_id[SCREEN_GAMEPLAY] = AudioBuildMusicTracks("bingbong");
@@ -153,15 +157,14 @@ void GameProcessStep(){
 
 void GameProcessSync(bool wait){
   if(GP.state[GP.screen] > GAME_RUNNING){
-
     GP.update_steps[SCREEN_GAMEPLAY][UPDATE_DRAW]();
-  
     return;
   }
   
-  for(int i = 0; i <UPDATE_DONE;i++){
-    if(i > UPDATE_DRAW && wait)
+  for(int i = 0; i < UPDATE_DONE;i++){
+    if(i > UPDATE_DRAW_END && wait)
       return;
+
     GP.update_steps[GP.screen][i]();
   }
 

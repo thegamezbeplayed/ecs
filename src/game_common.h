@@ -8,12 +8,12 @@
 #define MAX_ENTITIES 640
 #define MAX_NAME_LEN 128
 
-static uint32_t PLAYER;
 
 typedef struct {
     uint32_t id;
     uint32_t generation;
 } Entity;
+extern uint32_t PLAYER;
 
 typedef struct {
     uint32_t generation[MAX_ENTITIES];

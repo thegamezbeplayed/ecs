@@ -69,8 +69,8 @@ struct action_key_s{
 
 struct input_s{
   int             turn, frames;
+  int             angle;
   Cell            step;
-  char            move[MAX_NAME_LEN];
   action_key_t    actions[ACT_DONE];
 };
 input_t* InitInput(void);

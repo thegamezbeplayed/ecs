@@ -1,5 +1,7 @@
 #include "game_register.h"
 
+uint32_t PLAYER;
+
 void EntityInit(EntityManager* em) {
   em->free_count = MAX_ENTITIES;
 
@@ -38,13 +40,3 @@ bool EntityValid(EntityManager* em, Entity e) {
     em->generation[e.id] == e.generation;
 }
 
-void EntityAddPair(world_t* w, Entity e, uint32_t r, uint32_t o) {
-  comp_id_t id = make_pair(r, o);
-  //component_pool_t* pool = get_or_create_pool(w, id);
-  //pool_add(pool, e);
-}
-
-Entity EntityPair(world_t* w, Entity r, Entity o){
-  Entity e = EntityCreate(&w->manager);
-  EntityAddPair(w, e, r.id, o.id);
-}

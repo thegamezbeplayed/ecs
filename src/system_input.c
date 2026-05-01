@@ -17,13 +17,13 @@ void InputLoad(world_t* w, Entity e){
   pos_comp_t*  p = GET_COMPONENT(w, e, pos_comp_t, POS_ID);
 
   notification n = InputEvent_ToNotif(INPUT_EVENT_MOVE);
-  TargetSubscribe(n, OnInputEvent, p->pos, e.id );
+  TargetSubscribe(n, OnInputEvent, &p->pos, e.id );
 }
 
 void InputSystem(world_t* w, Entity e){
   input_comp_t* ic = GET_COMPONENT(w, e, input_comp_t, INPUT_ID);
 
-  input_t* in = ic->input;
+  input_t* in = &ic->input;
   if(!InputCheck(in, in->turn))
     return;
 

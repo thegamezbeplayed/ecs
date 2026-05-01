@@ -18,7 +18,14 @@ void PhysicsLoad(world_t* w, Entity e);
 void PhysicsSystem(world_t* w, Entity e);
 void PhysicsCollision(world_t* w, Entity e);
 
+void LevelLoad(world_t* w, Entity e);
+void LevelSystem(world_t* w, Entity e);
+void LevelRender(world_t* w, Entity e);
 
-//behavior_tree_node_t* InitBehaviorTree(behavior_st*, BehaviorID id);
+void RenderLoad(world_t* w, Entity e);
+void RenderBegin(world_t* w, Entity e);
+void RenderEnd(world_t* w, Entity e);
+
+
 
 #endif
