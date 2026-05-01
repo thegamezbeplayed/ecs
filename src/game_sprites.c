@@ -6,79 +6,43 @@
 //#include "screens.h"
 #include "player_atlas.h"
 #include "mob_atlas.h"
+#include "tile_atlas.h"
 
 sprite_sheet_d SHEETS[SHEET_ALL];
-
-void DuplicateAnim(void* src, void* dst){
-  if (src && dst) {
-
-    anim_comp_t* src_ac = (anim_comp_t*)src;
-    anim_comp_t* dst_ac = (anim_comp_t*)dst;
-    *dst_ac = *src_ac; 
-    // Deep copy the sequences 2D array properly
-    for (int e = 0; e < ANIM_DONE; e++) {
-      for (int d = 0; d < MAX_DIRECTIONS; d++) {
-        anim_t* sa = &src_ac->sequences[e][d];
-        anim_t* da = &dst_ac->sequences[e][d];
-
-        // Re-copy name safely
-        strncpy(da->name, sa->name, MAX_NAME_LEN-1);
-        da->name[MAX_NAME_LEN-1] = '\0';
-
-        // Copy other fields explicitly if needed
-        da->count     = sa->count;
-        da->cur_index = sa->cur_index;
-        da->duration  = sa->duration;
-        da->elapsed   = sa->elapsed;
-        da->speed     = sa->speed;
-        da->loop      = sa->loop;
-        da->on_end    = sa->on_end;
-
-        // Copy frames array
-        memcpy(da->frames, sa->frames, sizeof(da->frames));
-
-      }
-    }
-
-    // Copy player if needed
-    dst_ac->player = src_ac->player;
-  }
-
-  TraceLog(LOG_INFO, "=== ANIM COMP DEEP COPY FINISHED===");
-}
 
 void InitResources(){
   TEXTURES[SHEET_CHAR] = CHAR_SPRITES;
   Image spritesImg = LoadImage(TextFormat("resources/%s",CHAR_IMAGE_PATH)); 
-  SHEETS[SHEET_CHAR].sprite_sheet = GameMalloc("",sizeof(Texture2D));
   SpriteLoadSubTextures(CHAR_SPRITES,SHEET_CHAR, NUM_CHAR);
-  *SHEETS[SHEET_CHAR].sprite_sheet = LoadTextureFromImage(spritesImg);
+  SHEETS[SHEET_CHAR].texture = LoadTextureFromImage(spritesImg);
 
   TEXTURES[SHEET_MOB] = MOB_SPRITES;
   Image mobsImg = LoadImage(TextFormat("resources/%s",MOB_IMAGE_PATH)); 
-  SHEETS[SHEET_MOB].sprite_sheet = GameMalloc("",sizeof(Texture2D));
   SpriteLoadSubTextures(MOB_SPRITES,SHEET_MOB, NUM_MOB);
-  *SHEETS[SHEET_MOB].sprite_sheet = LoadTextureFromImage(mobsImg);
+  SHEETS[SHEET_MOB].texture = LoadTextureFromImage(mobsImg);
+
+  SHEETS[SHEET_OBJ] = LoadSpriteSheet(SHEET_OBJ, "resources/fences.json",
+      "resources/fences-sheet.png");
+
+/*
+
+  
+  TEXTURES[SHEET_TILE] = TILE_SPRITES;
+  Image tilesImg = LoadImage(TextFormat("resources/%s",TILE_IMAGE_PATH));
+  SHEETS[SHEET_TILE].sprite_sheet = GameMalloc("",sizeof(Texture2D));
+  SpriteLoadSubTextures(TILE_SPRITES,SHEET_TILE, NUM_TILE);
+  *SHEETS[SHEET_TILE].sprite_sheet = LoadTextureFromImage(tilesImg);
+*/
 }
 
-sprite_t* InitSpriteByTag(char *name, SheetID s){
+sprite_t* InitSprite(SheetID s, int index){
   sprite_t* spr = GameCalloc("InitSprite", 1, sizeof(sprite_t));
   sprite_sheet_d* data = &SHEETS[s];
 
-  uint32_t hash = hash_str_32(name);
-  for (int i = 0; i < data->num_sprites; i++){
-    if(data->sprites[i]->slice->tag != hash)
-      continue;
+  spr->sheet_id = s;
+  spr->index = index;
 
-    spr->slice = data->sprites[i]->slice;
-    spr->sheet = data->sprite_sheet;
-
-    spr->offset = spr->slice->offset;
-    return spr;
-  }
-
-  return NULL;
-
+  return spr;
 }
 
 void DrawSlice(sprite_slice_t *s, Vector2 position,float rot){
@@ -97,27 +61,11 @@ void DrawSlice(sprite_slice_t *s, Vector2 position,float rot){
     s->bounds.height * s->scale
   };
 
-  Texture sheet = *SHEETS[s->sheet].sprite_sheet;
+  Texture sheet = SHEETS[s->sheet].texture;
   Color col = s->color.a > 0? s->color: WHITE; 
   DrawTexturePro(sheet,src,dst, origin, rot, col);
 
   return;
-}
-
-bool FreeSprite(sprite_t* s){
-  if(!s) return false;
-
-  GameFree("FreeSprite", s);
-  return true;
-}
-
-void DrawSpriteAtPos(sprite_t*s , Vector2 pos){
-  DrawSlice(s->slice, pos, s->rot);
-}
-
-void DrawSprite(sprite_t* s){
-  if(!s->slice)
-    return;
 }
 
 void SpriteLoadSubTextures(sub_texture_t* data, SheetID id, int sheet_cap){
@@ -153,13 +101,13 @@ void SpriteLoadSubTextures(sub_texture_t* data, SheetID id, int sheet_cap){
     }
    
     sprite_d* sdat = GameCalloc("Sub", 1, sizeof(sprite_d));
-    sdat->slice = spr;
+    sdat->slice = *spr;
     sdat->coll = sprData.collider;
     sdat->tag = spr->tag;
     sdat->duration = sprData.dur;
     sdat->sheet_index = i;
     sdat->sheet_id = id;
-    SHEETS[id].sprites[SHEETS[id].num_sprites++] = sdat;
+    SHEETS[id].sprites[SHEETS[id].num_sprites++] = *sdat;
   }
 }
 
@@ -227,15 +175,15 @@ anim_t* AnimRegisterState(SheetID id, char* name, char* group){
   uint32_t hash = hash_str_32(name);
   uint64_t ghash = hash_str_64(group);
   for (int i = 0; i < SHEETS[id].num_sprites; i++){
-    if(SHEETS[id].sprites[i]->tag != hash)
+    if(SHEETS[id].sprites[i].tag != hash)
       continue;
 
-    sprite_slice_t* spr = SHEETS[id].sprites[i]->slice;
+    sprite_slice_t* spr = &SHEETS[id].sprites[i].slice;
 
     if(spr->group != ghash)
       continue;
 
-    found[count++] = *SHEETS[id].sprites[i];
+    found[count++] = SHEETS[id].sprites[i];
   } 
 
   if(count == 0)

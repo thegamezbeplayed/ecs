@@ -31,6 +31,7 @@ typedef enum {
 typedef void (*ForceFn)(rigid_body_t *a, rigid_body_t *b, force_t*);
 typedef void (*ForceCb)(rigid_body_t *a, force_t*);
 void ForceReactBump(rigid_body_t* a, rigid_body_t* b, force_t*);
+void ForceReactBlock(rigid_body_t* a, rigid_body_t* b, force_t*);
 
 struct force_s{
   Vector2    vel, accel, dir, friction;

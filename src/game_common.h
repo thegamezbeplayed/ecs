@@ -14,6 +14,7 @@ typedef struct {
     uint32_t generation;
 } Entity;
 extern uint32_t PLAYER;
+static const Entity INVALID_ENTITY = {UINT32_MAX, -1};
 
 typedef struct {
     uint32_t generation[MAX_ENTITIES];
@@ -25,5 +26,5 @@ typedef struct {
 void EntityInit(EntityManager* em);
 Entity EntityCreate(EntityManager* em);
 bool EntityValid(EntityManager* em, Entity e);
-
+Entity EntityGet(EntityManager* em, uint32_t id);
 #endif

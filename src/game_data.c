@@ -9,6 +9,9 @@ uint64_t INPUT_ID;
 uint64_t PHYS_ID;
 uint64_t LVL_ID;
 uint64_t CAM_ID;
+uint64_t TRACK_ID;
+uint64_t SPR_ID;
+uint64_t TYPE_ID;
 
 int PHYS_SYS;
 
@@ -20,8 +23,10 @@ void RegisterComponentData(world_t* w) {
   PHYS_ID = REGISTER_COMPONENT(w, phys_comp_t);//DuplicateRigidBody);
   LVL_ID = REGISTER_COMPONENT(w, lvl_comp_t);
   CAM_ID = REGISTER_COMPONENT(w, cam_comp_t);
+  TRACK_ID = REGISTER_COMPONENT(w, track_comp_t);
+  SPR_ID = REGISTER_COMPONENT(w, spr_comp_t);
+  TYPE_ID = REGISTER_COMPONENT(w, type_comp_t);
 }
-
 
 void RegisterSystemData(world_t* w){
   SystemCB atick[UPDATE_DONE] = {0};
@@ -69,8 +74,10 @@ void RegisterSystemData(world_t* w){
   SystemCB ltick[UPDATE_DONE] = {0};
   SystemCB lset[GAME_DONE] = {0};
 
-  lset[GAME_READY] = LevelLoad;
+  lset[GAME_LOADING] = LevelLoad;
+  lset[GAME_READY] = LevelReady;
 
+  ltick[UPDATE_DRAW] = LevelRender;
   system_t* lvlsys = SystemRegister(w, ltick, lset);
   SystemRequire(lvlsys, LVL_ID);
 
@@ -85,17 +92,28 @@ void RegisterSystemData(world_t* w){
 
   SystemRequire(rnsys, CAM_ID);
 
+  SystemCB cftick[UPDATE_DONE] = {0};
+  cftick[UPDATE_POST] = CameraSystem;
 
+  SystemCB cfset[GAME_DONE] = {0};
+  //cfset[GAME_READY] = RenderLoad;
+
+  system_t* cfsys = SystemRegister(w, cftick, cfset);
+  SystemRequire(cfsys, CAM_ID);
+  SystemRequire(cfsys, TRACK_ID);
+
+  SystemCB sptick[UPDATE_DONE] = {0};
+  sptick[UPDATE_DRAW] = SpriteRender;
+
+  SystemCB spset[GAME_DONE] = {0};
+
+  system_t* spsys = SystemRegister(w, sptick, spset);
+
+  SystemRequire(spsys, SPR_ID);
+  SystemRequire(spsys, POS_ID);
 
 }
 void RegisterPlayerData(world_t* w){
-  Entity l = EntityCreate(&w->manager);
-  ComponentAdd(w, l, LVL_ID);
-
-  Entity c = EntityCreate(&w->manager);
-  ComponentAdd(w, c, CAM_ID);
-
-
   Entity p = EntityCreate(&w->manager);
   PLAYER = p.id;
 
@@ -135,9 +153,9 @@ void RegisterPlayerData(world_t* w){
 
   force_t* steer = ForceFromVec2(FORCE_STEERING, VEC_BOTH(0.175f));
 
-  steer->max_velocity = 1.67f;
-  steer->friction = VEC_BOTH(.47f);
-  steer->threshold = 0.067f;
+  steer->max_velocity = 3.4f;
+  steer->friction = VEC_BOTH(.625f);
+  steer->threshold = 0.0337f;
   RigidBodyGiveForce(&phc->rb, steer);
 
   name_comp_t* nc = ComponentAdd(w, p, NAME_ID);
@@ -147,16 +165,16 @@ void RegisterPlayerData(world_t* w){
 
 }
 
-void RegisterEntityData(world_t* w){
-  RegisterPlayerData(w);
-
+void RegisterPrefabData(world_t* w){
   PrefabRegistryInit(w);
 
   Entity slime = PrefabCreate(w, "Slime");
 
   anim_comp_t* ac = ComponentAdd(w, slime, ANIM_ID);
   ac->player.sheet_id = SHEET_MOB;
-  
+ 
+  type_comp_t *stc = ComponentAdd(w, slime, TYPE_ID);
+  stc->type = ENT_MOB; 
   for(int i = 0; i < MAX_DIRECTIONS; i++){
 
     char gname[MAX_NAME_LEN] = {0};
@@ -191,4 +209,55 @@ void RegisterEntityData(world_t* w){
   RigidBodyGiveForce(&phc->rb, steer);
   RigidBodyGiveForce(&phc->rb, bump);
 
+  Entity fence = PrefabCreate(w, "Fence");
+
+  spr_comp_t *sc = ComponentAdd(w, fence, SPR_ID);
+
+  sc->sprite = *InitSprite(SHEET_OBJ, 0);
+
+  pos_comp_t *fpos = ComponentAdd(w, fence, POS_ID);
+
+  type_comp_t *ftc = ComponentAdd(w, fence, TYPE_ID);
+  ftc->type = ENT_OBJ;
+
+  phys_comp_t* frb  = ComponentAdd(w, fence, PHYS_ID);
+
+  Vector2 border = ROOM_SIZE;
+  frb->rb = *InitRigidBody(pc->pos.vpos, SHAPE_REC, border.x, border.y); 
+
+  frb->rb.is_static = true;
+  frb->rb.col_rate  = 1;
+  frb->rb.restitution  = 0.25f;
+
+  force_t* block = ForceFromVec2(FORCE_AVOID, VEC_BOTH(0.175f));
+  block->on_react = ForceReactBlock;
+  RigidBodyGiveForce(&frb->rb, block);
 }
+
+void RegisterWorldData(world_t* w){
+  Entity l = EntityCreate(&w->manager);
+  lvl_comp_t* lc = ComponentAdd(w, l, LVL_ID);
+
+  lc->wid = 800;
+  lc->hei = 600;
+  Entity c = EntityCreate(&w->manager);
+  cam_comp_t* cc = ComponentAdd(w, c, CAM_ID);
+
+  cc->camera = *InitCamera(3.f, 0, VEC_SCALE(ROOM_SIZE, 0.5f));
+  Rectangle border = Rect(264, 200, 272, 254);
+  float dist = 0;
+  cc->view   = *InitView(ROOM_SIZE, border, dist);
+
+  track_comp_t* tc = ComponentAdd(w, c, TRACK_ID);
+  tc->ctx    = *InitCameraContext(CAM_FOLLOW_SMOOTH);
+  tc->target = PLAYER;
+}
+
+void RegisterEntityData(world_t* w){
+  RegisterPlayerData(w);
+  RegisterWorldData(w);
+  RegisterPrefabData(w);
+
+}
+
+

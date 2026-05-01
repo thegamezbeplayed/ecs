@@ -17,6 +17,15 @@ FetchContent_Declare(
   GIT_REPOSITORY https://github.com/raysan5/raylib.git
   GIT_TAG 5.5
 )
+
+FetchContent_Declare(
+  cjson
+  GIT_REPOSITORY https://github.com/DaveGamble/cJSON.git
+  GIT_TAG master
+)
+
+FetchContent_MakeAvailable(cjson)
+
 set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(raylib)
 #include_directories(include)         # Your config.h
@@ -46,7 +55,14 @@ target_link_options(${PROJECT_NAME} PRIVATE
 add_subdirectory(src)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 add_subdirectory(resources)
-target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
+target_include_directories(index PRIVATE
+  ${cjson_SOURCE_DIR}
+  ${cjson_BINARY_DIR}
+)
+target_link_libraries(${PROJECT_NAME} PRIVATE raylib cjson)
+
+
+
 # Let CMake inherit the include dirs from raylib
 target_include_directories(${PROJECT_NAME}
     PRIVATE

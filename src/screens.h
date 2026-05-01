@@ -6,30 +6,6 @@
 
 #define MAX_CAMERA 4
 
-typedef enum{
-  CAM_NONE,
-  CAM_FOLLOW,
-}CameraTracking;
-
-typedef struct{
-  Camera2D        *camera;
-  Cell            size,pos,target, offset;
-  Rectangle       view,bounds;
-}camera_t;
-camera_t* InitCamera(float zoom, float rot, Vector2 offset);
-
-typedef struct{
-  CameraTracking  mode;
-}camera_ctx_t;
-camera_ctx_t* InitCameraContext(CameraTracking mode);
-
-void ScreenCameraSync(camera_t*, Vector2);
-void ScreenCameraToggle(void);
-bool ScreenCameraSetView(Cell v);
-void ScreenCameraSetBounds(Cell b);
-Rectangle ScreenGetCameraView(void);
-void ScreenRender(Color);
-
 typedef struct{
   bool    is_dragging;
   Vector2 offset,pos;

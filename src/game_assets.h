@@ -6,6 +6,7 @@
 #include <string.h>
 #include "game_utils.h"
 #include "game_types.h"
+#include "cJSON.h"
 
 #define MAX_SPRITES 128
 #define MAX_LAYER_SPRITES 64
@@ -44,6 +45,7 @@ typedef enum{
   SHEET_TILE,
   SHEET_CHAR,
   SHEET_MOB,
+  SHEET_OBJ,
   SHEET_VFX,
   SHEET_ALL
 }SheetID;
@@ -73,20 +75,20 @@ typedef struct{
   SheetID         sheet_id;
   uint32_t        tag;
   int             duration;
-  sprite_slice_t* slice;
+  sprite_slice_t  slice;
   collision_d     coll;
 }sprite_d;
 
 typedef struct{
   int        num_sprites;
-  sprite_d   *sprites[128];
-  Texture2D  *sprite_sheet;
+  sprite_d   sprites[128];
+  Texture2D  texture;
 }sprite_sheet_d;
 
 static sub_texture_t* TEXTURES[SHEET_ALL];
 extern sprite_sheet_d SHEETS[SHEET_ALL];
 void SpriteLoadSubTextures(sub_texture_t* data, SheetID id, int sheet_cap);
-
+sprite_sheet_d LoadSpriteSheet(SheetID, const char*, const char* );
 typedef struct anim_player_s anim_player_t;
 typedef struct anim_s anim_t;
 typedef bool (*AnimCallback)(anim_player_t*, anim_t*);
@@ -122,18 +124,12 @@ bool AnimIdle(anim_player_t*, anim_t*);
 void SpriteLoadSlicedTextures();
 //SPRITE_T===>
 struct sprite_s{
-  int               suid;
-  Texture2D         *sheet;
-  sprite_slice_t*   slice;
+  int               sheet_id, index;
   float             rot;
-  Vector2           offset, dest;
-  RenderLayer       layer;
+  Vector2           offset;
 };
 
+sprite_t* InitSprite(SheetID, int);
+
 void DrawSlice(sprite_slice_t*, Vector2 position,float rot);
-sprite_t* InitSpriteByTag(char *name, SheetID);
-sprite_t* InitSpriteByIndex(int index, sprite_sheet_d* spritesheet);
-bool FreeSprite(sprite_t* s);
-void DrawSprite(sprite_t* s);
-void DrawSpriteAtPos(sprite_t*s , Vector2 pos);
 #endif

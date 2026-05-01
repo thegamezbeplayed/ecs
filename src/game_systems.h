@@ -19,6 +19,7 @@ void PhysicsSystem(world_t* w, Entity e);
 void PhysicsCollision(world_t* w, Entity e);
 
 void LevelLoad(world_t* w, Entity e);
+void LevelReady(world_t* w, Entity e);
 void LevelSystem(world_t* w, Entity e);
 void LevelRender(world_t* w, Entity e);
 
@@ -26,6 +27,8 @@ void RenderLoad(world_t* w, Entity e);
 void RenderBegin(world_t* w, Entity e);
 void RenderEnd(world_t* w, Entity e);
 
+void CameraSystem(world_t* w, Entity e);
 
+void SpriteRender(world_t* w, Entity e);
 
 #endif

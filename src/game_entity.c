@@ -40,3 +40,13 @@ bool EntityValid(EntityManager* em, Entity e) {
     em->generation[e.id] == e.generation;
 }
 
+Entity EntityGet(EntityManager* em, uint32_t id)
+{
+  if (id >= MAX_ENTITIES)
+    return INVALID_ENTITY;
+
+  return (Entity){
+    .id = id,
+      .generation = em->generation[id]
+  };
+}

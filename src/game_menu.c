@@ -429,11 +429,6 @@ void ElementRender(ui_element_t* e){
     case UI_STATUSBAR:
       GuiStatusBar(e->bounds, e->text);
       break;
-    case UI_CHAR_SPR:
-      if(!e->value)
-        return;
-      DrawSprite(e->value->s);
-      break;
     case UI_GROUP:
       ui_element_t* ac = e->children[e->active];
 
