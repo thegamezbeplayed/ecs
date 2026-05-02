@@ -13,6 +13,9 @@ void AnimInputEvent(event_t* ev, void* data){
     case INPUT_EVENT_MOVE:
       ap->state = ANIM_WALK;
       break;
+    case INPUT_EVENT_KEY_RELEASE:
+      ap->state = ANIM_IDLE;
+      break;
     default:
       TraceLog(LOG_WARNING, "==== ANIM INPUT UNKOWN EVENT ====\n %i", EVENT_ID(ev->type));
       break;
@@ -26,6 +29,10 @@ void AnimLoad(world_t* w, Entity e){
 
   notification n = InputEvent_ToNotif(INPUT_EVENT_MOVE);
   TargetSubscribe(n, AnimInputEvent, &ac->player, e.id );
+
+  n = InputEvent_ToNotif(INPUT_EVENT_KEY_RELEASE);
+  TargetSubscribe(n, AnimInputEvent, &ac->player, ACT_MOVE );
+
 }
 
 void AnimSystem(world_t* w, Entity e){

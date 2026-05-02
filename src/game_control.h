@@ -68,9 +68,11 @@ struct action_key_s{
 };
 
 struct input_s{
+  KeyboardKey     last_key;
   int             turn, frames;
   int             angle;
   Cell            step;
+  ActionType      last_act;
   action_key_t    actions[ACT_DONE];
 };
 input_t* InitInput(void);
