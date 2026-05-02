@@ -24,5 +24,4 @@ void CameraSystem(world_t* w, Entity e){
     return;
 
   c->camera.target = clamped;
-  TraceLog(LOG_INFO, "===== CAMERA SYSTEM ====\n CLAMPED VIEW TO [%0.1f, %0.1f]", clamped.x, clamped.y);
 }

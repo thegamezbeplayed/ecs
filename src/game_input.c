@@ -38,6 +38,7 @@ BehaviorStatus InputActionMove(input_t* gi, KeyboardKey k){
 
   gi->step = dir;
 
+  gi->last_act = ACT_MOVE;
   GameEvent(InputEvent_ToNotif(INPUT_EVENT_MOVE), gi, PLAYER);
   return BEHAVIOR_SUCCESS;
 }
@@ -56,20 +57,21 @@ bool InputCheck(input_t* gi, int turn){
   if(IsKeyDown(KEY_SPACE))
       DO_NOTHING();
 
-//  gi->step = CELL_UNSET;
-  for(int i = 0; i < ACT_DONE; i++){
-    action_key_t akey = gi->actions[i];
+  int key = GetKeyPressed();
 
-    for (int j = 0; j< akey.num_keys; j++){
-      KeyboardKey k = akey.keys[j];
-
-      if(!IsKeyDown(k))
-        continue;
-
-      if(akey.fn(gi, k)==BEHAVIOR_SUCCESS)
-        return true;
-    }
+  notification n = 0;
+  if(key > 0){
+    n = InputEvent_ToNotif(INPUT_EVENT_BINDING);
+    GameEvent(n, gi, key);
+    gi->last_key = key;
+  }
+  else if(IsKeyDown(gi->last_key)){
+    n = InputEvent_ToNotif(INPUT_EVENT_BINDING);
+    GameEvent(n, gi, gi->last_key);
+  }
+  else if(IsKeyReleased(gi->last_key)){
+    n = InputEvent_ToNotif(INPUT_EVENT_KEY_RELEASE);
+    GameEvent(n, gi, gi->last_act);
   }
 
-  return false;
 }

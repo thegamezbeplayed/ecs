@@ -31,6 +31,8 @@ typedef enum{
 }GameEventID;
 
 typedef enum{
+  INPUT_EVENT_BINDING,
+  INPUT_EVENT_KEY_RELEASE,
   INPUT_EVENT_MOVE,
   INPUT_EVENT_COUNT
 }InputEventID;
