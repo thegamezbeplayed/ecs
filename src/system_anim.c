@@ -51,7 +51,7 @@ void AnimRender(world_t* w, Entity e){
 
   int spr_index = a->frames[a->cur_index];
 
-  sprite_slice_t* spr = SHEETS[ap->sheet_id].sprites[spr_index]->slice;
+  sprite_slice_t* spr = &SHEETS[ap->sheet_id].sprites[spr_index].slice;
   if(!spr)
     return;
 

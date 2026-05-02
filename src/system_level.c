@@ -2,7 +2,39 @@
 #include "game_systems.h"
 
 static choice_pool_t* locations;
+
 void LevelLoad(world_t* w, Entity e){
+  lvl_comp_t* l = GET_COMPONENT(w, e, lvl_comp_t, LVL_ID);
+
+  l->bounds = Rect(0, 0, l->wid, l->hei);
+
+  prefab_registry_t* p = &w->prefabs;
+
+  int num_objs =  0;
+  prefab_t objs[4] = {0};
+
+  for(int i = 0; i < p->count; i++){
+    prefab_t pspawn = p->prefabs[i];
+
+    type_comp_t* t = ComponentGet(w,pspawn.entity, TYPE_ID);
+    if(t->type != ENT_OBJ)
+      continue;
+
+    objs[num_objs++] = pspawn;
+  }
+ 
+  if(num_objs == 0)
+   return;
+
+
+  PrefabSpawn(w, objs[0].name, VEC_NEW(0,0));
+  PrefabSpawn(w, objs[0].name, VEC_NEW(0,l->hei));
+  PrefabSpawn(w, objs[0].name, VEC_NEW(l->hei,0));
+  PrefabSpawn(w, objs[0].name, VEC_NEW(l->hei,l->wid));
+
+}
+
+void LevelReady(world_t* w, Entity e){
   prefab_registry_t* p = &w->prefabs;
 
   Vector2 origin = VECTOR2_ZERO;
@@ -27,6 +59,10 @@ void LevelLoad(world_t* w, Entity e){
   for(int i = 0; i < p->count; i++){
     prefab_t* pspawn = &p->prefabs[i];
 
+    type_comp_t* type = ComponentGet(w,pspawn->entity, TYPE_ID);
+    if(!type || type->type != ENT_MOB)
+      continue;
+
     int count = 0;
     for(int j = 0; j < MOB_MAX; j++){
       choice_t* c = locations->choose(locations);
@@ -48,4 +84,9 @@ void LevelSystem(world_t* w, Entity e){
 }
 
 void LevelRender(world_t* w, Entity e){
+  lvl_comp_t* l = GET_COMPONENT(w, e, lvl_comp_t, LVL_ID);
+
+  DrawRectangleLinesEx(l->bounds, 1.5f, RED);
+
+
 }

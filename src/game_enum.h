@@ -38,6 +38,8 @@ typedef enum{
 typedef enum{
   ENT_NONE,
   ENT_PLAYER,
+  ENT_MOB,
+  ENT_OBJ,
   ENT_TILE,
   ENT_DONE
 }EntityType;

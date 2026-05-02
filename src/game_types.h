@@ -23,6 +23,11 @@ position_t* InitPosition(Cell pos);
 void PositionAddStep(position_t*, Vector2);
 void PositionSetDest(position_t* p, Vector2 v);
 
+typedef struct{
+  uint16_t type;
+  uint8_t  flags;
+}tile_t;
+
 static inline bool LESS_THAN(int a, int b){
   return a<b;
 }

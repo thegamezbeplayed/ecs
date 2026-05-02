@@ -23,7 +23,8 @@
 #define VECTOR2_LEFT   (Vector2){-1.0f, 0.0f }
 #define VECTOR2_RIGHT  (Vector2){ 1.0f, 0.0f }
 #define VEC_BOTH(n)    (Vector2){n,n}
-#define Vector2X(x) ((Vector2){ (x), 0.0f })
+#define Vector2X(x)     ((Vector2){ (x), 0.0f })
+#define VEC_SCALE(v, s) (Vector2)(Vector2Scale(v, s))
 #define VEC_NEW(x,y)  (Vector2){x,y}
 #define Vector2XY(x,y) ((Vector2){ (x), (y) })
 #define Vector2Y(y) ((Vector2){ 0.0f, (y) })
@@ -41,6 +42,9 @@
 #define RectInner(r,i) (Rectangle){(r.x+i),(r.y+i),(r.width-i),(r.height-i)}
 #define RectInc(r,xi,yi) ((Rectangle){ (r.x+xi), (r.y+yi),(r.width),(r.height) })
 #define RectScale(r,s) ((Rectangle){ (r.x), (r.y),(r.width * s),(r.height * s) })
+#define RECT_CROP(r, f) \
+  (Rectangle){r.x+f, r.y+f, r.width -2*f, r.height  -2 *f}
+
 #define RECT(x,y,w,h) ((Rectangle){x,y,w,h})
 #define CELL_EMPTY (Cell){0,0}
 #define CELL_UNSET (Cell){-1,-1}

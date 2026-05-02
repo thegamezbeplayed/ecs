@@ -58,6 +58,10 @@ void ForceApply(rigid_body_t* b, force_t* f){
   b->apply[b->num_forces++] = *f;
 }
 
+void ForceReactBlock(rigid_body_t* a, rigid_body_t* b, force_t*){
+
+}
+
 void ForceReactBump(rigid_body_t* a, rigid_body_t* b, force_t *f){
 
   Rectangle collider = {
