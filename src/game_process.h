@@ -118,5 +118,7 @@ static uint64_t MakeGUID(char* str, int index){
   return hash_combine_64(uid, hash_64_from_int(WorldGetTime()));
 }
 
+void InitEntityComponentSystem(void);
+
 #endif
 

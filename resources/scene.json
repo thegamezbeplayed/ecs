@@ -32,7 +32,32 @@
   },
   "cameras": {
     "follow_player": {
+      "target": 2,
+      "type": "FOLLOW_SMOOTH"
+    }
+  },
+  "physics": {
+    "player": {
+      "shape": "CIRCLE",
+      "width": 20,
+      "height": 16,
+      "forces": {
+        "steering": {
+          "speed":
+          "max":
+          "
+      }
+
+    },
+    "slime": {
 
     }
-  }
+  },
+  "views": {
+    "screen": {
+      "zoom": 3.0,
+      "width": 800,
+      "height": 600
+    }
+  },
 }

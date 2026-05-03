@@ -2,25 +2,17 @@
 #include "game_process.h"
 #include "game_tools.h"
 
-#include "game_register.h"
 #include "game_define.h"
+#include "game_register.h"
 #include "screens.h"
-Camera2D camera = { 0 };
 //----------------------------------------------------------------------------------
 // Gameplay Screen Functions Definition
 //----------------------------------------------------------------------------------
 
-void InitGameData(void){
-  RegisterComponentData(&world);
-  RegisterSystemData(&world);
-  RegisterEntityData(&world);
-}
-
 // Gameplay Screen Initialization logic
 void InitGameplayScreen(void){
   InitGameEvents();
-  WorldInit(&world, NUM_SYS);
-  InitGameData();
+  InitEntityComponentSystem();
   GameSetState(GAME_LOADING);
 }
 

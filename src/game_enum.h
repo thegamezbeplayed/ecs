@@ -39,6 +39,7 @@ typedef enum{
 
 typedef enum{
   ENT_NONE,
+  ENT_OMNI,
   ENT_PLAYER,
   ENT_MOB,
   ENT_OBJ,

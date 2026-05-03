@@ -29,6 +29,9 @@ void RenderEnd(world_t* w, Entity e);
 
 void CameraSystem(world_t* w, Entity e);
 
+void CameraLoad(world_t* w, Entity e);
+void CameraReady(world_t* w, Entity e);
+
 void SpriteRender(world_t* w, Entity e);
 
 #endif

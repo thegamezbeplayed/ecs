@@ -1,4 +1,5 @@
 #include "game_views.h"
+#include "game_define.h"
 
 camera_t* InitCamera(float zoom, float rot, Vector2 offset){
   camera_t* c = GameCalloc("InitCamera", 1,sizeof(camera_t));
@@ -6,7 +7,7 @@ camera_t* InitCamera(float zoom, float rot, Vector2 offset){
   c->offset = offset;
   c->rotation = rot;
   c->zoom = zoom;
-
+  c->target = offset;
   c->target = VECTOR2_ZERO;
 
   return c;

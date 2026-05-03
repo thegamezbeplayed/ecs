@@ -20,13 +20,27 @@ typedef enum{
 }PhysicsEventID;
 
 typedef enum {
+  FORCE_NONE,
   FORCE_GRAVITY,
   FORCE_STEERING,
   FORCE_IMPULSE,
   FORCE_AVOID,
   FORCE_KINEMATIC,
-  FORCE_NONE
+  FORCE_DONE
 }ForceType;
+
+typedef struct{
+  ForceType   type;
+  float       speed, max_vel, threshold;
+  Vector2     frict;
+}force_d;
+
+typedef struct{
+  const char  name[MAX_NAME_LEN];
+  ShapeType   shape;
+  int         wid, hei;
+  force_d     forces[FORCE_DONE];
+}phys_d;
 
 typedef void (*ForceFn)(rigid_body_t *a, rigid_body_t *b, force_t*);
 typedef void (*ForceCb)(rigid_body_t *a, force_t*);

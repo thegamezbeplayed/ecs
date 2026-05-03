@@ -18,23 +18,9 @@ void WorldInit(world_t* w, int sys_cap) {
   // Init systems
   w->num_sys = 0;
   w->systems = GameCalloc("WorldInit", sys_cap, sizeof(system_t));
-}
 
-component_pool_t* StartComponentPool(world_t* w, comp_id_t id){
-  if (w->pools[id]) return w->pools[id];
 
-  component_pool_t* pool = GameCalloc("StartComponentPool", 1, sizeof(component_pool_t));
-
-  pool->id = id;
-  pool->elem_size = 0; // tag
-  pool->data = NULL;
-
-  for (int i = 0; i < MAX_ENTITIES; i++) {
-    pool->sparse[i] = -1;
-  }
-
-  w->pools[id] = pool;
-  return pool;
+  InitComponentMap(COMPONENT_CAP);
 }
 
 void PrefabRegistryInit(world_t* w) {
@@ -47,7 +33,7 @@ Entity PrefabCreate(world_t* w, const char* name) {
     return (Entity){0};
   }
 
-  Entity e = EntityCreate(&w->manager);
+  Entity e = EntityCreatePrefab(&w->manager);
   prefab_t* p = &w->prefabs.prefabs[w->prefabs.count++];
 
   strncpy(p->name, name, 63);

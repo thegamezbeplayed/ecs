@@ -1,5 +1,34 @@
 #include "game_systems.h"
 
+void CameraLoad(world_t* w, Entity e){
+  QueryBegin();
+  comp_id_t seek[1];
+  seek[0] = FOLLOW_ID;
+  int count = QueryEntityByComp(w, 1, seek);
+
+  if(count < 1)
+    TraceLog(LOG_WARNING, "==== CAMERA SYSTEM ===\n NO TARGETS FOUND");
+  else
+   TraceLog(LOG_INFO, "==== CAMERA SYSTEM ===\n FOUND %i targets", count); 
+}
+
+void CameraReady(world_t* w, Entity e){
+  track_comp_t* t = GET_COMPONENT(w, e, track_comp_t, TRACK_ID);
+
+  Entity tar = QueryGetNext(w);
+  if(tar.id == INVALID_ENTITY.id)
+    return;
+
+  follow_comp_t* fc = GET_COMPONENT(w, tar, follow_comp_t, FOLLOW_ID);
+
+  if(fc->assigned)
+    return;
+
+  t->target = tar.id;
+
+  TraceLog(LOG_INFO, "==== CAMERA TRACKING ===\n Camera %i assigned to Ent %i", e.id, tar.id);
+}
+
 void CameraSystem(world_t* w, Entity e){
   cam_comp_t* c = GET_COMPONENT(w, e, cam_comp_t, CAM_ID);
   track_comp_t* t = GET_COMPONENT(w, e, track_comp_t, TRACK_ID);

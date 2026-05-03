@@ -1,4 +1,7 @@
+#ifndef   __GAME_VIEW__
+#define   __GAME_VIEW__
 #include "game_tools.h"
+#include "game_strings.h"
 
 #define MAX_CAMERA 4
 
@@ -6,6 +9,13 @@
 
 typedef Camera2D camera_t;
 camera_t* InitCamera(float zoom, float rot, Vector2 offset);
+
+typedef struct{
+  const char  name[MAX_NAME_LEN];
+  float       zoom, rot;
+  int         offset_x, offset_y, wid, hei;
+  int         bx, by, bw, bh;
+}cam_d;
 
 typedef enum{
   CAM_NONE,
@@ -58,4 +68,5 @@ static track_mode_d TRACK_MODES[CAM_DONE] = {
   {CAM_NONE, LERP_NONE, TrackingStatic},
   {CAM_FOLLOW, LERP_NONE, TrackingFollow},
   {CAM_FOLLOW_SMOOTH, LERP_LINEAR, TrackingFollow, .125f},
-}; 
+};
+#endif

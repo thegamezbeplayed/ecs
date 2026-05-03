@@ -20,6 +20,7 @@ extern uint64_t CAM_ID;
 extern uint64_t TRACK_ID;
 extern uint64_t SPR_ID;
 extern uint64_t TYPE_ID;
+extern uint64_t FOLLOW_ID;
 
 extern int PHYS_SYS;
 
@@ -66,6 +67,11 @@ typedef struct{
   camera_ctx_t      ctx;
   uint32_t          target;
 }track_comp_t;
+
+typedef struct{
+  Entity  e;
+  bool    assigned;
+}follow_comp_t;
 
 typedef struct{
   EntityType type;

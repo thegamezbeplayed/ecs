@@ -3,6 +3,7 @@
 //#include "game_math.h"
 #include "game_tools.h"
 #include "game_define.h"
+#include "game_helpers.h"
 //#include "screens.h"
 #include "player_atlas.h"
 #include "mob_atlas.h"
@@ -168,7 +169,7 @@ bool AnimIdle(anim_player_t* player, anim_t* a){
   return true;
 }
 
-anim_t* AnimRegisterState(SheetID id, char* name, char* group){
+anim_t* AnimRegisterState(SheetID id, const char* name, char* group){
   sprite_d found[MAX_SPRITE_FRAMES] = {0};
 
   int count = 0;

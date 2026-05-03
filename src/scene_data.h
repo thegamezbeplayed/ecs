@@ -23,28 +23,44 @@
 #define CELL_WIDTH 80
 #define CELL_HEIGHT 80
 
+#define NUM_PREFABS 5
+#define NUM_PREFABS 5
+#define NUM_ENTS    4
+#define NUM_PHYS    2
+#define NUM_ANIM    2
+#define NUM_SPR     1
+#define NUM_CAMS    1
+#define NUM_TILES   37
+
+#include "game_import.h"
+
 typedef struct {
     const char* engine_instance;
-		const char* name;
-		float x;
+		const char* prefab;
+    EntityType  type;
+    float x;
     float y;
-		int sprite_sheet_index;
-		int speed;
-		int accel;
-		int	team_enum;
-} ObjectInstance;
+} EntityInstance;
 
-static const ObjectInstance room_instances[] = {
-    {"ent_data", "player", 1248, 128, 3, 16, 4, 1},
-    {"ent_data", "slime", 416, 288, 1, 16, 0, 0},
+static const EntityPrefab PREFAB_DATA[5] = {
+  {"level",   1, {"Level"}},
+  {"camera",  2, {"Camera", "Track"}},
+  {"player",  6, {"Follow", "Animation", "Position", "Input", "Physics", "Type"}},
+  {"slime",   5, {"Animation", "Position", "Physics", "Behavior", "Type"}},
+  {"floor",   3, {"Sprite", "Position", "Type"}},
 };
 
-#define SCENE_INSTANCE_COUNT 2
+static const EntityInstance ENT_DATA[NUM_ENTS] = {
+    {"ent_data", "level", ENT_OMNI, 0, 0},
+    {"ent_data", "camera", ENT_OMNI, 1248, 128},
+    {"ent_data", "player", ENT_PLAYER, 1248, 128},
+    {"ent_data", "slime", ENT_MOB, 416, 288},
+};
 
-#endif // SCENE_DATA_H
 // Tile Data
 typedef struct {
     int tile_index;
+    int prefab_index;
     int start_x;
 		int start_y;
 		int map_x;
@@ -54,44 +70,148 @@ typedef struct {
     bool flip_y;
 } TileInstance;
 
-static const TileInstance room_tiles[] = {
-    {4, 0, 0, 0, 0, 0, 0, 0},
-    {4, 0, 240, 0, 3, 0, 0, 0},
-    {6, 0, 320, 0, 4, 0, 0, 0},
-    {5, 0, 400, 0, 5, 0, 0, 0},
-    {4, 0, 480, 0, 6, 0, 0, 0},
-    {6, 0, 560, 0, 7, 0, 0, 0},
-    {5, 0, 640, 0, 8, 0, 0, 0},
-    {5, 80, 0, 1, 0, 0, 0, 0},
-    {4, 160, 800, 2, 10, 0, 0, 0},
-    {6, 240, 800, 3, 10, 0, 0, 0},
-    {5, 320, 0, 4, 0, 0, 0, 0},
-    {5, 320, 800, 4, 10, 0, 0, 0},
-    {6, 400, 0, 5, 0, 0, 0, 0},
-    {4, 400, 800, 5, 10, 0, 0, 0},
-    {4, 480, 0, 6, 0, 0, 0, 0},
-    {5, 560, 0, 7, 0, 0, 0, 0},
-    {6, 640, 0, 8, 0, 0, 0, 0},
-    {4, 640, 800, 8, 10, 0, 0, 0},
-    {6, 720, 800, 9, 10, 0, 0, 0},
-    {5, 800, 800, 10, 10, 0, 0, 0},
-    {4, 880, 800, 11, 10, 0, 0, 0},
-    {4, 960, 0, 12, 0, 0, 0, 0},
-    {6, 960, 800, 12, 10, 0, 0, 0},
-    {5, 1040, 0, 13, 0, 0, 0, 0},
-    {5, 1040, 800, 13, 10, 0, 0, 0},
-    {6, 1120, 0, 14, 0, 0, 0, 0},
-    {4, 1120, 800, 14, 10, 0, 0, 0},
-    {4, 1200, 0, 15, 0, 0, 0, 0},
-    {6, 1200, 800, 15, 10, 0, 0, 0},
-    {5, 1280, 0, 16, 0, 0, 0, 0},
-    {6, 1360, 0, 17, 0, 0, 0, 0},
-    {6, 1360, 80, 17, 1, 0, 0, 0},
-    {5, 1360, 160, 17, 2, 0, 0, 0},
-    {4, 1360, 480, 17, 6, 0, 0, 0},
-    {6, 1360, 560, 17, 7, 0, 0, 0},
-    {4, 1360, 720, 17, 9, 0, 0, 0},
-    {4, 1360, 800, 17, 10, 0, 0, 0},
+static const phys_d PHYS_DATA[NUM_PHYS] = {
+  {"player",  SHAPE_CIRCLE, 20, 16,
+    {
+      {FORCE_STEERING, 1.15f, 3.45f, 0.067f},
+      {FORCE_IMPULSE,     0.25F, 0.45, 0.1f},
+    }
+  },
+  {"slime",   SHAPE_CIRCLE, 16, 16,
+    {
+      {FORCE_STEERING, 1.15f, 2.15f, 0.125f},
+      {FORCE_IMPULSE,     0.25F, 0.45, 0.1f},
+    }
+  },
 };
 
-#define SCENE_TILE_COUNT 37
+static const anim_d ANIM_DATA[NUM_ANIM] = {
+  {"player",  SHEET_CHAR,
+    {
+      {
+        {ANIM_WALK, "walk0", 0, false, AnimIdle},
+        {ANIM_WALK, "walk90", 90, false, AnimIdle},
+        {ANIM_WALK, "walk180", 180, false, AnimIdle},
+        {ANIM_WALK, "walk270", 270, false, AnimIdle},
+      },
+      {
+        {ANIM_IDLE, "idle0", 0, true, NULL},
+        {ANIM_IDLE, "idle90", 90, true, NULL},
+        {ANIM_IDLE, "idle180", 180, true, NULL},
+        {ANIM_IDLE, "idle270", 270, true, NULL},
+      }
+    }
+  },
+  {"slime",   SHEET_MOB,
+    {
+      { 
+        {ANIM_WALK, "walk0", 0, false, AnimIdle},
+        {ANIM_WALK, "walk90", 90, false, AnimIdle},
+        {ANIM_WALK, "walk180", 180, false, AnimIdle},
+        {ANIM_WALK, "walk270", 270, false, AnimIdle},
+      },
+      {
+        {ANIM_IDLE, "idle0", 0, true, NULL},
+        {ANIM_IDLE, "idle90", 90, true, NULL},
+        {ANIM_IDLE, "idle180", 180, true, NULL},
+        {ANIM_IDLE, "idle270", 270, true, NULL},
+      }
+    }
+  }
+};
+
+static const cam_d CAM_DATA[NUM_CAMS] = {
+  {"camera", 3.f, 0.f, 800, 600, 1600, 1200, 264, 200, 272, 254}
+};
+
+static const sprite_d SPR_DATA[NUM_SPR] = {
+
+};
+
+
+static const TileInstance scene_tiles[NUM_TILES] = {
+    {4,	4, 0, 0, 0, 0, 0, 0, 0},
+    {4,	4, 0, 240, 0, 3, 0, 0, 0},
+    {6,	4, 0, 320, 0, 4, 0, 0, 0},
+    {5,	4, 0, 400, 0, 5, 0, 0, 0},
+    {4,	4, 0, 480, 0, 6, 0, 0, 0},
+    {6,	4, 0, 560, 0, 7, 0, 0, 0},
+    {5,	4, 0, 640, 0, 8, 0, 0, 0},
+    {5,	4, 80, 0, 1, 0, 0, 0, 0},
+    {4,	4, 160, 800, 2, 10, 0, 0, 0},
+    {6,	4, 240, 800, 3, 10, 0, 0, 0},
+    {5,	4, 320, 0, 4, 0, 0, 0, 0},
+    {5,	4, 320, 800, 4, 10, 0, 0, 0},
+    {6,	4, 400, 0, 5, 0, 0, 0, 0},
+    {4,	4, 400, 800, 5, 10, 0, 0, 0},
+    {4,	4, 480, 0, 6, 0, 0, 0, 0},
+    {5,	4, 560, 0, 7, 0, 0, 0, 0},
+    {6,	4, 640, 0, 8, 0, 0, 0, 0},
+    {4,	4, 640, 800, 8, 10, 0, 0, 0},
+    {6,	4, 720, 800, 9, 10, 0, 0, 0},
+    {5,	4, 800, 800, 10, 10, 0, 0, 0},
+    {4,	4, 880, 800, 11, 10, 0, 0, 0},
+    {4,	4, 960, 0, 12, 0, 0, 0, 0},
+    {6,	4, 960, 800, 12, 10, 0, 0, 0},
+    {5,	4, 1040, 0, 13, 0, 0, 0, 0},
+    {5,	4, 1040, 800, 13, 10, 0, 0, 0},
+    {6,	4, 1120, 0, 14, 0, 0, 0, 0},
+    {4,	4, 1120, 800, 14, 10, 0, 0, 0},
+    {4,	4, 1200, 0, 15, 0, 0, 0, 0},
+    {6,	4, 1200, 800, 15, 10, 0, 0, 0},
+    {5,	4, 1280, 0, 16, 0, 0, 0, 0},
+    {6,	4, 1360, 0, 17, 0, 0, 0, 0},
+    {6,	4, 1360, 80, 17, 1, 0, 0, 0},
+    {5,	4, 1360, 160, 17, 2, 0, 0, 0},
+    {4,	4, 1360, 480, 17, 6, 0, 0, 0},
+    {6,	4, 1360, 560, 17, 7, 0, 0, 0},
+    {4,	4, 1360, 720, 17, 9, 0, 0, 0},
+    {4,	4, 1360, 800, 17, 10, 0, 0, 0},
+};
+
+void AnimationImport(void*,const char*);
+void SpriteImport(void*,const char*);
+void PhysicsImport(void*,const char*);
+void InputImport(void*,const char*);
+void PositionImport(void*,const char*);
+void CameraImport(void*,const char*);
+void TrackingImport(void*,const char*);
+void TypeImport(void* c,const char* name);
+
+static void LevelImport(void* c, const char* name){
+  lvl_comp_t* lc = c;
+
+  lc->wid = 800;
+  lc->hei = 600;
+}
+
+static EntityInstance GetEntData(const char* name){
+  for (int i = 0; i < NUM_ENTS; i++){
+    if(strcmp(name, ENT_DATA[i].prefab) == 0)
+      return ENT_DATA[i];
+  };
+}
+
+static cam_d GetCamData(const char* name){
+  for (int i = 0; i < NUM_CAMS; i++){
+    if(strcmp(name, CAM_DATA[i].name) == 0)
+      return CAM_DATA[i];
+  };
+}
+
+
+static phys_d GetPhysData(const char* name){
+  for (int i = 0; i < NUM_PHYS; i++){
+    if(strcmp(name, PHYS_DATA[i].name) == 0)
+      return PHYS_DATA[i];
+  };
+}
+
+static anim_d GetAnimData(const char* name){
+  for (int i = 0; i < NUM_ANIM; i++){
+    if(strcmp(name, ANIM_DATA[i].name) == 0)
+      return ANIM_DATA[i];
+  };
+}
+
+#endif // SCENE_DATA_H

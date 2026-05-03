@@ -7,6 +7,7 @@
 
 #define MAX_TERMS 8
 #define MAX_PREFABS 128
+#define MAX_COMP_DATA 8
 
 #define ADD_COMPONENT(world, e, Type, ID) \
   (Type*)ComponentAdd(world, e, ID)
@@ -25,7 +26,6 @@ typedef struct {
   int       index;
   comp_id_t terms[MAX_TERMS];
   int       term_count;
-
   SystemCB  set[GAME_DONE];
   SystemCB  tick[UPDATE_DONE];
 } system_t;
@@ -46,8 +46,8 @@ typedef struct {
   int        sparse[MAX_ENTITIES];
   size_t     size;
 
-  size_t     elem_size;   // size of component (Position, etc)
-  void*      data;        // dense array of component data
+  size_t            elem_size;   // size of component (Position, etc)
+  void*             data;        // dense array of component data
 } component_pool_t;
 bool HasComponent(component_pool_t* pool, Entity e);
 
@@ -76,10 +76,9 @@ struct world_s {
 };
 extern world_t world;
 
+
 component_pool_t* ComponentQueryInner(world_t* w, system_t* s);
 void WorldInit(world_t* w, int sys_cap);
-component_pool_t* StartComponentPool(world_t* w, comp_id_t id);
-Entity EntityPair(world_t*, Entity r, Entity o);
 void* ComponentAdd(world_t* w, Entity e, comp_id_t id);
 void* ComponentGet(world_t* w, Entity e, comp_id_t id);
 comp_id_t ComponentRegister(world_t* w, size_t);
@@ -95,4 +94,15 @@ Entity PrefabInstantiate(world_t* w, Entity prefab, Vector2 override_pos); // ba
 Entity PrefabInstantiateFull(world_t* w, const char* name, Vector2 pos, ...); // later
 prefab_t* PrefabFind(world_t* w, const char* name);
 Entity PrefabSpawn(world_t* w, const char* name, Vector2 world_pos);
+
+typedef struct{
+  int       query_pos, num_results;
+  uint32_t  results[MAX_QUERY_SET];
+  comp_id_t terms[MAX_TERMS];
+  int       term_count;
+}entity_query_t;
+extern entity_query_t EQ;
+void QueryBegin(void);
+int QueryEntityByComp(world_t* w, int, comp_id_t[]);
+Entity QueryGetNext(world_t* w);
 #endif

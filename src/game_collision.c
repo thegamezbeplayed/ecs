@@ -1,11 +1,7 @@
 #include "game_physics.h"
 #include "game_process.h"
 #include "game_define.h"
-
-void DuplicateRigidBody(void* src, void* dst){
-  phys_comp_t* from = (phys_comp_t*)src;
-  phys_comp_t* to = (phys_comp_t*)dst;
-}
+#include "game_helpers.h"
 
 rigid_body_t* InitRigidBody(Vector2 pos, ShapeType shape, float wid, float hei){
   rigid_body_t* b = GameCalloc("InitRigidBody", 1, sizeof(rigid_body_t));
