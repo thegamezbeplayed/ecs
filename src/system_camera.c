@@ -5,11 +5,6 @@ void CameraLoad(world_t* w, Entity e){
   comp_id_t seek[1];
   seek[0] = FOLLOW_ID;
   int count = QueryEntityByComp(w, 1, seek);
-
-  if(count < 1)
-    TraceLog(LOG_WARNING, "==== CAMERA SYSTEM ===\n NO TARGETS FOUND");
-  else
-   TraceLog(LOG_INFO, "==== CAMERA SYSTEM ===\n FOUND %i targets", count); 
 }
 
 void CameraReady(world_t* w, Entity e){
@@ -25,8 +20,6 @@ void CameraReady(world_t* w, Entity e){
     return;
 
   t->target = tar.id;
-
-  TraceLog(LOG_INFO, "==== CAMERA TRACKING ===\n Camera %i assigned to Ent %i", e.id, tar.id);
 }
 
 void CameraSystem(world_t* w, Entity e){

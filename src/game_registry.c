@@ -56,17 +56,21 @@ Entity PrefabInstantiate(world_t* w, Entity prefab, Vector2 override_pos) {
   if (!EntityValid(&w->manager, prefab)) return (Entity){0};
 
   Entity instance = EntityCreate(&w->manager);
-
+  
   // Copy all components from prefab to instance
   for (int i = 0; i < w->next_component_id; i++) {
     component_pool_t* pool = w->pools[i];
+    if(pool->id == FOLLOW_ID)
+      DO_NOTHING();
     if (!pool || !HasComponent(pool, prefab)) continue;
 
-    void* src = ComponentGet(w, prefab, i);
-    void* dst = ComponentAdd(w, instance, i);
+    void* src = ComponentGet(w, prefab, pool->id);
+    void* dst = ComponentAdd(w, instance, pool->id);
 
-    if (src && dst)
+
+    if (src && dst){
       memcpy(dst, src, pool->elem_size);
+    }
   }
 
   // Apply overrides
@@ -89,6 +93,5 @@ Entity PrefabSpawn(world_t* w, const char* name, Vector2 world_pos){
     printf("Prefab not found: %s\n", name);
     return (Entity){0};
   }
-
   return PrefabInstantiate(w, p->entity, world_pos);
 }

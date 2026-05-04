@@ -11,7 +11,10 @@ void OnInputEvent(event_t* ev, void* data){
       break;
     case INPUT_EVENT_BINDING:
       ActionKeyCallback fn = data;
-      fn(in, ev->eid);
+
+      if(fn(in, ev->eid) == BEHAVIOR_SUCCESS)
+        GameEvent(InputEvent_ToNotif(INPUT_EVENT_MOVE), in, ev->eid);
+
       break;
   }
 }
@@ -23,6 +26,7 @@ void InputLoad(world_t* w, Entity e){
   notification n = InputEvent_ToNotif(INPUT_EVENT_MOVE);
   TargetSubscribe(n, OnInputEvent, &p->pos, e.id );
 
+  ic->ent = e;
   n = InputEvent_ToNotif(INPUT_EVENT_BINDING);
   for(int i = 0; i < ACT_DONE; i++){
     action_key_t akey = ic->input.actions[i];
@@ -36,8 +40,9 @@ void InputSystem(world_t* w, Entity e){
   input_comp_t* ic = GET_COMPONENT(w, e, input_comp_t, INPUT_ID);
 
   input_t* in = &ic->input;
-  if(!InputCheck(in, in->turn))
+  if(!InputCheck(in, e))
     return;
+
 
 }
 

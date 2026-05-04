@@ -73,7 +73,7 @@ void PhysicsSystem(world_t* w, Entity e){
   b->vel = VECTOR2_ZERO;
   bool step = false;
 
-  for(int i = 0; i < FORCE_NONE; i++){
+  for(int i = 0; i < FORCE_DONE; i++){
     force_t* f = &b->has[i];
     if(!f->is_active)
       continue;

@@ -44,6 +44,7 @@ typedef struct{
 }pos_comp_t;
 
 typedef struct{
+  Entity    ent;
   input_t   input;
 }input_comp_t;
 

@@ -25,7 +25,7 @@
 
 #define NUM_PREFABS 5
 #define NUM_PREFABS 5
-#define NUM_ENTS    4
+#define NUM_ENTS    11
 #define NUM_PHYS    2
 #define NUM_ANIM    2
 #define NUM_SPR     1
@@ -52,9 +52,16 @@ static const EntityPrefab PREFAB_DATA[5] = {
 
 static const EntityInstance ENT_DATA[NUM_ENTS] = {
     {"ent_data", "level", ENT_OMNI, 0, 0},
-    {"ent_data", "camera", ENT_OMNI, 1248, 128},
-    {"ent_data", "player", ENT_PLAYER, 1248, 128},
+    {"ent_data", "camera", ENT_OMNI, 128, 128},
+    {"ent_data", "player", ENT_PLAYER, 128, 128},
     {"ent_data", "slime", ENT_MOB, 416, 288},
+    {"ent_data", "slime", ENT_MOB, 460, 288},
+    {"ent_data", "slime", ENT_MOB, 416, 88},
+    {"ent_data", "slime", ENT_MOB, 416, 308},
+    {"ent_data", "slime", ENT_MOB, 300, 288},
+    {"ent_data", "slime", ENT_MOB, 46, 288},
+    {"ent_data", "slime", ENT_MOB, 416, 28},
+    {"ent_data", "slime", ENT_MOB, 46, 88},
 };
 
 // Tile Data
@@ -73,14 +80,14 @@ typedef struct {
 static const phys_d PHYS_DATA[NUM_PHYS] = {
   {"player",  SHAPE_CIRCLE, 20, 16,
     {
-      {FORCE_STEERING, 1.15f, 3.45f, 0.067f},
-      {FORCE_IMPULSE,     0.25F, 0.45, 0.1f},
+      {FORCE_STEERING, 0.67f, 2.45f, 0.067f, {0.69, 0.69}},
+      {FORCE_IMPULSE,     0.25F, 0.45, 0.1f, {0.925, 0.925}},
     }
   },
   {"slime",   SHAPE_CIRCLE, 16, 16,
     {
-      {FORCE_STEERING, 1.15f, 2.15f, 0.125f},
-      {FORCE_IMPULSE,     0.25F, 0.45, 0.1f},
+      {FORCE_STEERING, 1.0f, 1.75f, 0.125f, {0.65, 0.67}},
+      {FORCE_IMPULSE,     0.25F, 0.45, 0.1f, {0.875, 0.875}},
     }
   },
 };

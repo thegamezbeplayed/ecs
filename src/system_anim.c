@@ -53,6 +53,9 @@ void AnimRender(world_t* w, Entity e){
 
   anim_t* a = &ac->sequences[ap->state][ap->dir];
 
+  if(ap->state == ANIM_WALK)
+    DO_NOTHING();
+
   if(!a)
     return;
 

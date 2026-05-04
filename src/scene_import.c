@@ -6,18 +6,16 @@ void SceneImport(world_t* w, const char* path){
     EntityPrefab prefab_data = PREFAB_DATA[i];
 
     Entity e = PrefabCreate(w, prefab_data.name);
-
-    for(int j = 0; j < prefab_data.num_comp; j++)
-      ImportPrefabComponent(w, e, prefab_data.components[j], path, prefab_data.name);
+    for(int j = 0; j < prefab_data.num_comp; j++) {
+      for(int j = 0; j < prefab_data.num_comp; j++)
+        ImportPrefabComponent(w, e, prefab_data.components[j], path, prefab_data.name);
+    }
   }
-
   for(int i = 0; i < NUM_ENTS; i++){
     EntityInstance ent_data =  ENT_DATA[i];
 
     Vector2 pos = VEC_NEW(ent_data.x, ent_data.y);
     Entity e = PrefabSpawn(w, ent_data.prefab, pos);
-
-    TraceLog(LOG_INFO,"==== SCENE IMPORT ===\n Spawn prefab %s as Ent %i at [%0.2f, %0.2f]", ent_data.prefab, e.id, pos.x, pos.y);
 
   }
 }
@@ -32,8 +30,7 @@ void ImportPrefabComponent(world_t* w, Entity e, const char* comp, const char* p
       fn(ComponentAdd(w, e, *cid), name);
     else
       ComponentAdd(w, e, *cid);
-    
-    TraceLog(LOG_INFO,"==== SCENE IMPORT ===\n added component %s %i to prefab %s", comp, *cid, name);
+
   }
 }
 
@@ -51,6 +48,11 @@ void CameraImport(void* c,const char* name){
 
   Vector2 offset = VEC_NEW(data.offset_x, data.offset_y);
   cc->camera = *InitCamera(data.zoom, data.rot, offset);
+
+  Vector2 size = VEC_NEW(data.wid, data.hei);
+
+  Rectangle bounds = RECT(data.bx, data.by, data.bw, data.bh);
+  cc->view = *InitView(size, bounds, 0);
 }
 
 void TrackingImport(void* c,const char* name){
@@ -99,9 +101,10 @@ void AnimationImport(void* c, const char* name){
       anim_seq_d seq_dat = data.sequences[s][i];
       if(seq_dat.state == ANIM_NONE)
         continue;
-      ac->sequences[s][i] = *AnimRegisterState(data.sheet, name, seq_dat.name);
-      ac->sequences[s][i].loop = seq_dat.loop;
-      ac->sequences[s][i].on_end = seq_dat.on_end;
+      AnimState ast = seq_dat.state;
+      ac->sequences[ast][i] = *AnimRegisterState(data.sheet, name, seq_dat.name);
+      ac->sequences[ast][i].loop = seq_dat.loop;
+      ac->sequences[ast][i].on_end = seq_dat.on_end;
     }
 }
 

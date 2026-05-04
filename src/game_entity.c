@@ -89,7 +89,7 @@ int QueryEntityByComp(world_t* w, int num_terms, comp_id_t terms[num_terms]){
       component_pool_t* pool = w->pools[EQ.terms[j]]; 
       if (pool->entities[i] == 0) {
         has = false;
-        continue;
+        break;
       }
 
       e = EntityGet(&w->manager, pool->entities[i]);

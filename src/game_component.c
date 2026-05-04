@@ -46,6 +46,9 @@ comp_id_t ComponentRegister(world_t* w, size_t elem_size){
 }
 
 void* ComponentAdd(world_t* w, Entity e, comp_id_t id){
+  if (id == 10) {   // FOLLOW_ID
+    TraceLog(LOG_WARNING, "FOLLOW COMPONENT ADDED TO ENTITY %u !", e.id);
+  }
   component_pool_t* pool = w->pools[id];
 
   int idx = pool->size++;
@@ -70,9 +73,14 @@ void* ComponentGet(world_t* w, Entity e, comp_id_t id){
 }
 
 bool HasComponent(component_pool_t* pool, Entity e) {
-  if (!pool || !EntityValid(&world.manager, e)) return false;
-  if (e.id >= MAX_ENTITIES) return false;
+    if (!pool) return false;
+    if (!EntityValid(&world.manager, e)) return false;
+    if (e.id >= MAX_ENTITIES) return false;
 
-  int idx = pool->sparse[e.id];
-  return (idx >= INVALID_COMPONENT && pool->entities[idx] == e.id);
+    int idx = pool->sparse[e.id];
+
+    if (idx < 0) return false;
+
+    return (pool->entities[idx] == e.id);
+
 }
