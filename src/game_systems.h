@@ -34,4 +34,9 @@ void CameraReady(world_t* w, Entity e);
 
 void SpriteRender(world_t* w, Entity e);
 
+void BehaviorSystem(world_t* w, Entity e);
+
+void CombatLoad(world_t* w, Entity e);
+void CombatSystem(world_t* w, Entity e);
+
 #endif

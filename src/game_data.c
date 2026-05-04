@@ -1,6 +1,7 @@
 #include "game_systems.h"
 #include "scene_data.h"
 
+uint64_t AI_ID;
 uint64_t ANIM_ID;
 uint64_t NAME_ID;
 uint64_t POS_ID;
@@ -12,6 +13,8 @@ uint64_t TRACK_ID;
 uint64_t SPR_ID;
 uint64_t TYPE_ID;
 uint64_t FOLLOW_ID;
+uint64_t STATE_ID;
+uint64_t STAT_ID;
 
 int PHYS_SYS;
 
@@ -42,6 +45,12 @@ void RegisterComponentData(world_t* w) {
   FOLLOW_ID = REGISTER_COMPONENT(w, follow_comp_t);
   ComponentMap("Follow", &FOLLOW_ID, NULL);
 
+  AI_ID = REGISTER_COMPONENT(w, ai_comp_t);
+
+  STATE_ID = REGISTER_COMPONENT(w, state_comp_t);
+  
+  STAT_ID = REGISTER_COMPONENT(w, stat_comp_t);
+  ComponentMap("Stat", &STAT_ID, StatImport);
 }
 
 void RegisterSystemData(world_t* w){
@@ -128,5 +137,16 @@ void RegisterSystemData(world_t* w){
 
   SystemRequire(spsys, SPR_ID);
   SystemRequire(spsys, POS_ID);
+
+  SystemCB cbtick[UPDATE_DONE] = {0};
+  cbtick[UPDATE_FIXED] = CombatSystem;
+
+  SystemCB cbset[GAME_DONE] = {0};
+
+  system_t* cbsys = SystemRegister(w, cbtick, cbset);
+
+  SystemRequire(cbsys, STAT_ID);
+  SystemRequire(cbsys, PHYS_ID);
+  SystemRequire(cbsys, ANIM_ID);
 
 }

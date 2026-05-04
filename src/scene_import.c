@@ -126,3 +126,19 @@ void TypeImport(void* c,const char* name){
 
 }
 
+void StatImport(void* c,const char* name){
+  stat_comp_t* sc = c;
+
+  stats_d data = GetStatData(name);
+
+  for (int i = 0; i < STAT_DONE; i++){
+    stat_d stat = data.stats[i];
+    if(stat.type == STAT_NONE)
+      continue;
+
+    sc->stats[i] = *InitStat(stat.type, stat.min, stat.max, stat.val);
+    sc->stats[i].on_empty = stat.on_empty;
+    sc->stats[i].on_full = stat.on_full;
+  }
+
+}
