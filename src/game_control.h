@@ -77,7 +77,7 @@ struct input_s{
 };
 input_t* InitInput(void);
 
-bool InputCheck(input_t*, int turn);
+bool InputCheck(input_t*, Entity);
 
 
 

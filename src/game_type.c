@@ -1,9 +1,11 @@
 #include "game_types.h"
+#include "game_define.h"
+#include "game_helpers.h"
 
-position_t* InitPosition(Cell pos){
+position_t* InitPosition(Vector2 pos){
   position_t* p = GameCalloc("InitPosition", 1, sizeof(position_t));
 
-  p->last_vpos = p->vpos = cell_to_vec(pos, CELL_WIDTH);
+  p->last_vpos = p->vpos = pos;
 
   p->vdest = p->dir = VEC_UNSET;
 

@@ -3,11 +3,19 @@
 #include "game_process.h"
 #include "game_utils.h"
 #include "game_register.h"
+#include "game_import.h"
 
 #define BUS (event_bus_t*){GP.bus[GP.screen]}
 
 world_t world;
 game_process_t GP;
+
+void InitEntityComponentSystem(void){
+  WorldInit(&world, NUM_SYS);
+  RegisterComponentData(&world);
+  RegisterSystemData(&world);
+  SceneImport(&world, "resources/scene.json");
+}
 
 void Subscribe(uint64_t event, EventCallback cb, void* data){
   event_sub_t* sub = EventSubscribe(BUS, event , cb, data);

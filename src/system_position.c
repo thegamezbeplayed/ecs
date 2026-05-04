@@ -8,8 +8,6 @@ void OnPositionEvent(event_t* ev, void* data){
   Vector2 step = b->vel;
 
   PositionAddStep(p, step);
-
-  TraceLog(LOG_INFO, "==== POSITION EVENT === \n Ent: %i new [%0.2f, %0.2f", ev->eid, p->vpos.x, p->vpos.y);
 }
 
 void PositionLoad(world_t* w, Entity e){

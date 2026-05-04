@@ -79,26 +79,31 @@ typedef struct{
   collision_d     coll;
 }sprite_d;
 
-typedef struct{
-  int        num_sprites;
-  sprite_d   sprites[128];
-  Texture2D  texture;
-}sprite_sheet_d;
-
-static sub_texture_t* TEXTURES[SHEET_ALL];
-extern sprite_sheet_d SHEETS[SHEET_ALL];
-void SpriteLoadSubTextures(sub_texture_t* data, SheetID id, int sheet_cap);
-sprite_sheet_d LoadSpriteSheet(SheetID, const char*, const char* );
 typedef struct anim_player_s anim_player_t;
 typedef struct anim_s anim_t;
 typedef bool (*AnimCallback)(anim_player_t*, anim_t*);
 
 typedef enum{
+  ANIM_NONE,
   ANIM_IDLE,
   ANIM_WALK,
   ANIM_DIE,
   ANIM_DONE
 }AnimState;
+
+typedef struct{
+  AnimState   state;
+  char         name[MAX_NAME_LEN];
+  int          dir;
+  bool         loop;
+  AnimCallback on_end;
+}anim_seq_d;
+
+typedef struct{
+  const char    name[MAX_NAME_LEN];
+  SheetID       sheet;
+  anim_seq_d    sequences[ANIM_DONE][MAX_ANIM_GROUPS];
+}anim_d;
 
 struct anim_s{
   char              name[MAX_NAME_LEN];
@@ -111,7 +116,7 @@ struct anim_s{
 };
 
 bool AnimPlay(anim_t*);
-anim_t* AnimRegisterState(SheetID, char* tag, char* group);
+anim_t* AnimRegisterState(SheetID, const char* tag, char* group);
 struct anim_player_s{
   SheetID         sheet_id;
   AnimState       state;
@@ -121,6 +126,18 @@ struct anim_player_s{
 
 bool AnimIdle(anim_player_t*, anim_t*);
 
+
+typedef struct{
+  int        num_sprites;
+  sprite_d   sprites[128];
+  Texture2D  texture;
+}sprite_sheet_d;
+
+static sub_texture_t* TEXTURES[SHEET_ALL];
+extern sprite_sheet_d SHEETS[SHEET_ALL];
+void SpriteLoadSubTextures(sub_texture_t* data, SheetID id, int sheet_cap);
+sprite_sheet_d LoadSpriteSheet(SheetID, const char*, const char* );
+bool LoadSceneAnimData(const char*, const char*,  anim_d*);
 void SpriteLoadSlicedTextures();
 //SPRITE_T===>
 struct sprite_s{

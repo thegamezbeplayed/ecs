@@ -39,7 +39,6 @@ BehaviorStatus InputActionMove(input_t* gi, KeyboardKey k){
   gi->step = dir;
 
   gi->last_act = ACT_MOVE;
-  GameEvent(InputEvent_ToNotif(INPUT_EVENT_MOVE), gi, PLAYER);
   return BEHAVIOR_SUCCESS;
 }
 
@@ -53,7 +52,7 @@ input_t* InitInput(void){
     ACT_MOVE,12,{KEY_H, KEY_J, KEY_K, KEY_L, KEY_D,KEY_A,KEY_W,KEY_S,KEY_LEFT, KEY_RIGHT,KEY_UP,KEY_DOWN},InputActionMove, 0};
 }
 
-bool InputCheck(input_t* gi, int turn){
+bool InputCheck(input_t* gi, Entity e){
   if(IsKeyDown(KEY_SPACE))
       DO_NOTHING();
 
@@ -72,6 +71,12 @@ bool InputCheck(input_t* gi, int turn){
   else if(IsKeyReleased(gi->last_key)){
     n = InputEvent_ToNotif(INPUT_EVENT_KEY_RELEASE);
     GameEvent(n, gi, gi->last_act);
+    return false;
   }
+  else
+    return false;
 
+  GameEvent(InputEvent_ToNotif(INPUT_EVENT_MOVE), gi, e.id);
+
+  return true;
 }

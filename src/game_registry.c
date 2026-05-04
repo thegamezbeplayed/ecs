@@ -18,23 +18,9 @@ void WorldInit(world_t* w, int sys_cap) {
   // Init systems
   w->num_sys = 0;
   w->systems = GameCalloc("WorldInit", sys_cap, sizeof(system_t));
-}
 
-component_pool_t* StartComponentPool(world_t* w, comp_id_t id){
-  if (w->pools[id]) return w->pools[id];
 
-  component_pool_t* pool = GameCalloc("StartComponentPool", 1, sizeof(component_pool_t));
-
-  pool->id = id;
-  pool->elem_size = 0; // tag
-  pool->data = NULL;
-
-  for (int i = 0; i < MAX_ENTITIES; i++) {
-    pool->sparse[i] = -1;
-  }
-
-  w->pools[id] = pool;
-  return pool;
+  InitComponentMap(COMPONENT_CAP);
 }
 
 void PrefabRegistryInit(world_t* w) {
@@ -47,7 +33,7 @@ Entity PrefabCreate(world_t* w, const char* name) {
     return (Entity){0};
   }
 
-  Entity e = EntityCreate(&w->manager);
+  Entity e = EntityCreatePrefab(&w->manager);
   prefab_t* p = &w->prefabs.prefabs[w->prefabs.count++];
 
   strncpy(p->name, name, 63);
@@ -70,17 +56,21 @@ Entity PrefabInstantiate(world_t* w, Entity prefab, Vector2 override_pos) {
   if (!EntityValid(&w->manager, prefab)) return (Entity){0};
 
   Entity instance = EntityCreate(&w->manager);
-
+  
   // Copy all components from prefab to instance
   for (int i = 0; i < w->next_component_id; i++) {
     component_pool_t* pool = w->pools[i];
+    if(pool->id == FOLLOW_ID)
+      DO_NOTHING();
     if (!pool || !HasComponent(pool, prefab)) continue;
 
-    void* src = ComponentGet(w, prefab, i);
-    void* dst = ComponentAdd(w, instance, i);
+    void* src = ComponentGet(w, prefab, pool->id);
+    void* dst = ComponentAdd(w, instance, pool->id);
 
-    if (src && dst)
+
+    if (src && dst){
       memcpy(dst, src, pool->elem_size);
+    }
   }
 
   // Apply overrides
@@ -103,6 +93,5 @@ Entity PrefabSpawn(world_t* w, const char* name, Vector2 world_pos){
     printf("Prefab not found: %s\n", name);
     return (Entity){0};
   }
-
   return PrefabInstantiate(w, p->entity, world_pos);
 }

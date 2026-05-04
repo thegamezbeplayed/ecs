@@ -82,6 +82,8 @@ void SystemTick(world_t* w, system_t* s, UpdateType u){
     }
 
     if (!match) continue;
+    if(!EntityReady(&w->manager, e))
+      continue;
 
     s->tick[u](w, e);
   }
@@ -109,6 +111,9 @@ void SystemSet(world_t* w, system_t* s, GameState g){
     }
 
     if (!match) continue;
+
+    if(!EntityReady(&w->manager, e))
+      continue;
 
     s->set[g](w, e);
   }

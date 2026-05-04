@@ -1,0 +1,63 @@
+{
+  "animations": {
+    "player": {
+      "sheet": "SHEET_CHAR",
+      "sequences": {
+        "idle": {
+          "loop": true,
+          "groups": ["idle0", "idle90", "idle180", "idle270"]
+        },
+        "walk": {
+          "loop": false,
+          "groups": ["walk0", "walk90", "walk180", "walk270"],
+          "on_end": "AnimIdle"
+        }
+      }
+    },
+
+    "slime": {
+      "sheet": "SHEET_MOB",
+      "sequences": {
+        "idle": {
+          "loop": true,
+          "groups": ["idle0", "idle90", "idle180", "idle270"]
+        },
+        "walk": {
+          "loop": false,
+          "groups": ["walk0", "walk90", "walk180", "walk270"],
+          "on_end": "AnimIdle"
+        }
+      }
+    }
+  },
+  "cameras": {
+    "follow_player": {
+      "target": 2,
+      "type": "FOLLOW_SMOOTH"
+    }
+  },
+  "physics": {
+    "player": {
+      "shape": "CIRCLE",
+      "width": 20,
+      "height": 16,
+      "forces": {
+        "steering": {
+          "speed":
+          "max":
+          "
+      }
+
+    },
+    "slime": {
+
+    }
+  },
+  "views": {
+    "screen": {
+      "zoom": 3.0,
+      "width": 800,
+      "height": 600
+    }
+  },
+}
