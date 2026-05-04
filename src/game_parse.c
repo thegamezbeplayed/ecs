@@ -1,4 +1,5 @@
 #include "game_assets.h"
+#include "game_strings.h"
 
 SheetID StringToSheetID(const char* str)
 {
@@ -12,6 +13,7 @@ SheetID StringToSheetID(const char* str)
 // Parse the JSON file
 sprite_sheet_d LoadSpriteSheet(SheetID sid, const char* jsonPath, const char* imagePath)
 {
+/*
   sprite_sheet_d sheet = {0};
 
   // Load JSON
@@ -69,6 +71,7 @@ sprite_sheet_d LoadSpriteSheet(SheetID sid, const char* jsonPath, const char* im
 
   cJSON_Delete(root);
   return sheet;
+*/
 }
 
 cJSON* ParseRoot(const char* path)
@@ -156,6 +159,116 @@ bool LoadSceneAnimData(const char* path, const char* name, anim_d* out)
   return true;
 }
 
+Texture2D* LoadAsepriteSheet(const char* json_path, ase_sprite_sheet_d* sheet)
+{
+  if (!sheet) return NULL;
+  memset(sheet, 0, sizeof(ase_sprite_sheet_d));
+
+  Texture2D* out = GameCalloc("LoadAsepriteSheet", 1, sizeof(Texture2D));
+  char* text = LoadFileText(json_path);
+  if (!text) {
+    TraceLog(LOG_ERROR, "Failed to read file: %s", json_path);
+    return NULL;
+  }
+
+  cJSON* root = cJSON_Parse(text);
+  if (!root) {
+    TraceLog(LOG_ERROR, "JSON parse failed: %s", json_path);
+    UnloadFileText(text);
+    return NULL;
+  }
+
+  cJSON* meta = cJSON_GetObjectItem(root, "meta");
+
+  // ====================== LOAD TEXTURE ======================
+  cJSON* image_item = cJSON_GetObjectItem(meta, "image");
+  if (image_item && image_item->valuestring) {
+    *out = LoadTexture(TextFormat("resources/%s",image_item->valuestring));
+    TraceLog(LOG_INFO, "Loaded texture: %s (%dx%d)", 
+        image_item->valuestring, 
+        out->width, out->height);
+  }
+
+  // ====================== PARSE FRAMES ======================
+  cJSON* frames_json = cJSON_GetObjectItem(root, "frames");
+  sheet->num_frames = cJSON_GetArraySize(frames_json);
+
+  for (int i = 0; i < sheet->num_frames && i < MAX_SPRITE_FRAMES; i++) {
+    cJSON* f = cJSON_GetArrayItem(frames_json, i);
+    anim_frame_t* frame = &sheet->frames[i];
+
+    // Parse filename → tag + group
+    const char* filename = cJSON_GetObjectItem(f, "filename")->valuestring;
+    char name_copy[256];
+    strncpy(name_copy, filename, sizeof(name_copy)-1);
+    name_copy[sizeof(name_copy)-1] = '\0';
+
+    // Remove extension
+    char* dot = strrchr(name_copy, '.');
+    if (dot) *dot = '\0';
+
+    int count;
+    char** parts = split_string(name_copy, '_', &count);
+
+    frame->tag = hash_str_32(parts[0]);
+
+    char* group_str = str_concat(parts[1], parts[2]);
+
+    frame->index = i;
+    frame->group = hash_str_64(group_str);
+    TraceLog(LOG_INFO,"==== ASE PARSE ====\n found anim %s for %s - %llu", group_str, parts[0], frame->group);
+
+    // Frame rect
+    cJSON* fr = cJSON_GetObjectItem(f, "frame");
+    frame->frame_rect.x      = (float)cJSON_GetObjectItem(fr, "x")->valuedouble;
+    frame->frame_rect.y      = (float)cJSON_GetObjectItem(fr, "y")->valuedouble;
+    frame->frame_rect.width  = (float)cJSON_GetObjectItem(fr, "w")->valuedouble;
+    frame->frame_rect.height = (float)cJSON_GetObjectItem(fr, "h")->valuedouble;
+
+    // Source rect
+    cJSON* src = cJSON_GetObjectItem(f, "spriteSourceSize");
+    frame->source_rect.x      = (float)cJSON_GetObjectItem(src, "x")->valuedouble;
+    frame->source_rect.y      = (float)cJSON_GetObjectItem(src, "y")->valuedouble;
+    frame->source_rect.width  = (float)cJSON_GetObjectItem(src, "w")->valuedouble;
+    frame->source_rect.height = (float)cJSON_GetObjectItem(src, "h")->valuedouble;
+
+    frame->duration = cJSON_GetObjectItem(f, "duration")->valueint;
+  }
+
+  // ====================== PARSE SLICES ======================
+  cJSON* slices_json = cJSON_GetObjectItem(meta, "slices");
+  sheet->num_slices = cJSON_GetArraySize(slices_json);
+
+  for (int i = 0; i < sheet->num_slices && i < MAX_ANIM_FRAMES; i++) {
+    cJSON* s = cJSON_GetArrayItem(slices_json, i);
+    slice_d* slice = &sheet->slices[i];
+
+    const char* name = cJSON_GetObjectItem(s, "name")->valuestring;
+    strncpy(slice->name, name, MAX_NAME_LEN-1);
+
+    cJSON* keys_json = cJSON_GetObjectItem(s, "keys");
+    slice->num_keys = cJSON_GetArraySize(keys_json);
+
+    for (int k = 0; k < slice->num_keys && k < MAX_SLICES; k++) {
+      cJSON* key = cJSON_GetArrayItem(keys_json, k);
+      cJSON* b = cJSON_GetObjectItem(key, "bounds");
+
+      slice->keys[k].frame = cJSON_GetObjectItem(key, "frame")->valueint;
+      slice->keys[k].bounds.x      = (float)cJSON_GetObjectItem(b, "x")->valuedouble;
+      slice->keys[k].bounds.y      = (float)cJSON_GetObjectItem(b, "y")->valuedouble;
+      slice->keys[k].bounds.width  = (float)cJSON_GetObjectItem(b, "w")->valuedouble;
+      slice->keys[k].bounds.height = (float)cJSON_GetObjectItem(b, "h")->valuedouble;
+    }
+  }
+
+  cJSON_Delete(root);
+  UnloadFileText(text);
+
+  TraceLog(LOG_INFO, "Aseprite sheet loaded: %d frames, %d slices", 
+      sheet->num_frames, sheet->num_slices);
+
+  return out;
+}
 // Cleanup
 void Unloadsprite_sheet_d(sprite_sheet_d* sheet)
 {

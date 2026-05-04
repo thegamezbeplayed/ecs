@@ -7,11 +7,12 @@ void SpriteRender(world_t* w, Entity e){
 
   position_t* pos = &p->pos;
 
-
+/*
   sprite_t* spr = &s->sprite;
   sprite_slice_t* slice = &SHEETS[spr->sheet_id].sprites[spr->index].slice;
   if(!slice)
     return;
 
   DrawSlice(slice, pos->vpos, 0);
+  */
 }

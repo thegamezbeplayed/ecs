@@ -52,7 +52,7 @@ void CameraImport(void* c,const char* name){
   Vector2 size = VEC_NEW(data.wid, data.hei);
 
   Rectangle bounds = RECT(data.bx, data.by, data.bw, data.bh);
-  cc->view = *InitView(size, bounds, 0);
+  //cc->view = *InitView(size, bounds, 0);
 }
 
 void TrackingImport(void* c,const char* name){
@@ -102,10 +102,19 @@ void AnimationImport(void* c, const char* name){
       if(seq_dat.state == ANIM_NONE)
         continue;
       AnimState ast = seq_dat.state;
-      ac->sequences[ast][i] = *AnimRegisterState(data.sheet, name, seq_dat.name);
+      anim_t* a = AnimRegisterState(data.sheet, name, seq_dat.name);
+
+      if(!a)
+        continue;
+
+      ac->sequences[ast][i] = *a;
       ac->sequences[ast][i].loop = seq_dat.loop;
       ac->sequences[ast][i].on_end = seq_dat.on_end;
     }
+
+
+  ac->player.state = ANIM_IDLE;
+  ac->player.dir = 270;
 }
 
 void PositionImport(void* c,const char* name){

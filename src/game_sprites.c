@@ -12,20 +12,16 @@
 sprite_sheet_d SHEETS[SHEET_ALL];
 
 void InitResources(){
-  TEXTURES[SHEET_CHAR] = CHAR_SPRITES;
-  Image spritesImg = LoadImage(TextFormat("resources/%s",CHAR_IMAGE_PATH)); 
-  SpriteLoadSubTextures(CHAR_SPRITES,SHEET_CHAR, NUM_CHAR);
-  SHEETS[SHEET_CHAR].texture = LoadTextureFromImage(spritesImg);
+  ase_sprite_sheet_d* parse = GameCalloc("InitResources", 1,
+      sizeof(ase_sprite_sheet_d));
 
-  TEXTURES[SHEET_MOB] = MOB_SPRITES;
-  Image mobsImg = LoadImage(TextFormat("resources/%s",MOB_IMAGE_PATH)); 
-  SpriteLoadSubTextures(MOB_SPRITES,SHEET_MOB, NUM_MOB);
-  SHEETS[SHEET_MOB].texture = LoadTextureFromImage(mobsImg);
+  SHEETS[SHEET_CHAR].texture = *LoadAsepriteSheet("resources/player-sheet.json", parse);
 
-  SHEETS[SHEET_OBJ] = LoadSpriteSheet(SHEET_OBJ, "resources/fences.json",
-      "resources/fences-sheet.png");
+  for(int i = 0; i < parse->num_frames; i++){
+    AsepriteToSprite(parse, SHEETS[SHEET_CHAR].num_sprites++, &SHEETS[SHEET_CHAR].sprites[i]); 
 
-/*
+  }
+  /*
 
   
   TEXTURES[SHEET_TILE] = TILE_SPRITES;
@@ -70,6 +66,7 @@ void DrawSlice(sprite_slice_t *s, Vector2 position,float rot){
 }
 
 void SpriteLoadSubTextures(sub_texture_t* data, SheetID id, int sheet_cap){
+  /*
   for(int i = 0; i < sheet_cap;i++){
     sub_texture_t sprData = data[i];
 
@@ -110,6 +107,7 @@ void SpriteLoadSubTextures(sub_texture_t* data, SheetID id, int sheet_cap){
     sdat->sheet_id = id;
     SHEETS[id].sprites[SHEETS[id].num_sprites++] = *sdat;
   }
+  */
 }
 
 void SpritePreprocessImg(Image *img, Texture2D *out){
@@ -200,4 +198,66 @@ anim_t* AnimRegisterState(SheetID id, const char* name, char* group){
   }
   strcpy(a->name, group);
   return a;
+}
+
+void AsepriteToSprite(const ase_sprite_sheet_d* ase, int index, sprite_d* out){
+   if (!ase || !out || index < 0 || index >= ase->num_frames) {
+        memset(out, 0, sizeof(sprite_d));
+        return;
+    }
+
+    const anim_frame_t* f = &ase->frames[index];
+
+    // Basic info
+    out->tag   = f->tag;
+    out->sheet_index = index;
+    out->sheet_id = SHEET_CHAR;           // or whatever sheet this is
+    out->slice.scale = 1.0f;
+    out->slice.group = f->group;
+
+    // Important: Use source_rect for correct positioning (handles trimming)
+    out->slice.bounds = f->source_rect;      // or f->frame_rect depending on your needs
+
+    // Center / offset (adjust as needed for your system)
+    out->slice.center = (Vector2){
+        f->source_rect.width  * 0.5f,
+        f->source_rect.height * 0.5f
+    };
+}
+
+Rectangle GetSlice(const ase_sprite_sheet_d* sheet, const char* slice_name, int frame)
+{
+    if (!sheet || !slice_name) return (Rectangle){0};
+
+    for (int i = 0; i < sheet->num_slices; i++) {
+        const slice_d* s = &sheet->slices[i];
+        if (strcmp(s->name, slice_name) != 0)
+            continue;
+
+        for (int k = 0; k < s->num_keys; k++) {
+            if (s->keys[k].frame == frame) {
+                return s->keys[k].bounds;
+            }
+        }
+    }
+    return (Rectangle){0, 0, 0, 0};
+}
+
+// Convenience wrappers
+bool IsHitboxActive(const ase_sprite_sheet_d* sheet, int frame)
+{
+    Rectangle r = GetSlice(sheet, "hitbox", frame);
+    return r.width > 0 && r.height > 0;
+}
+
+Rectangle GetHurtbox(const ase_sprite_sheet_d* sheet, int frame)
+{
+    Rectangle r = GetSlice(sheet, "hurtbox", frame);
+    if (r.width == 0) {
+        // fallback to direction-specific
+        r = GetSlice(sheet, "hurtbox_270", frame);
+        if (r.width == 0) r = GetSlice(sheet, "hurtbox_0", frame);
+        if (r.width == 0) r = GetSlice(sheet, "hurtbox_90", frame);
+    }
+    return r;
 }
