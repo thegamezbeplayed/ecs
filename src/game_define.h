@@ -4,6 +4,7 @@
 #include "game_control.h"
 #include "game_physics.h"
 #include "game_views.h"
+#include "game_stats.h"
 
 #define MOB_MAX 64
 #define NUM_SYS 4
@@ -11,6 +12,7 @@
 #define ROOM_SIZE (Vector2){1600,1200}
 
 extern uint64_t ANIM_ID;
+extern uint64_t AI_ID;
 extern uint64_t NAME_ID;
 extern uint64_t POS_ID;
 extern uint64_t INPUT_ID;
@@ -21,12 +23,18 @@ extern uint64_t TRACK_ID;
 extern uint64_t SPR_ID;
 extern uint64_t TYPE_ID;
 extern uint64_t FOLLOW_ID;
+extern uint64_t STATE_ID;
+extern uint64_t STAT_ID;
 
 extern int PHYS_SYS;
 
 typedef struct{
-  anim_player_t player;
-  anim_t        sequences[ANIM_DONE][MAX_DIRECTIONS];
+  anim_player_t   player;
+  int             num_hurt;
+  collision_d     hitbox;
+  collision_d     hurtboxes[MAX_SLICES];
+  AnimCollisionCB on_coll_frame[MAX_SLICES];
+  anim_t          sequences[ANIM_DONE][MAX_DIRECTIONS];
 }anim_comp_t;
 
 typedef struct{
@@ -77,3 +85,15 @@ typedef struct{
 typedef struct{
   EntityType type;
 }type_comp_t;
+
+typedef struct{
+
+}ai_comp_t;
+
+typedef struct{
+
+}state_comp_t;
+
+typedef struct{
+  stat_t    stats[STAT_DONE];
+}stat_comp_t;

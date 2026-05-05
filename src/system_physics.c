@@ -113,3 +113,18 @@ void PhysicsSystem(world_t* w, Entity e){
   }
 }
 
+void PhysicsDebug(world_t* w, Entity e){
+ phys_comp_t* pc = GET_COMPONENT(w, e, phys_comp_t, PHYS_ID);
+
+  rigid_body_t* b = &pc->rb;
+
+  switch(b->bounds.shape){
+    case SHAPE_CIRCLE:
+      DrawCircleLinesV(b->bounds.pos, b->bounds.radius, BLUE);
+      break;
+    case SHAPE_REC:
+
+      break;
+  }
+
+}

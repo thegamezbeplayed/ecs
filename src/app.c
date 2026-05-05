@@ -30,11 +30,6 @@ int main(void)
 {
   srand((unsigned int)time(NULL));  // seed once using current time
 
-#if defined(PLATFORM_ANDROID)
-  screenWidth = GetScreenWidth();
-  screenHeight = GetScreenHeight();
-#endif
-
   InitWindow(screenWidth,screenHeight, "raylib game template");
 
   InitAudioDevice();      // Initialize audio device
@@ -74,6 +69,7 @@ int main(void)
       deltaTime = (float)updateDrawTime;    // Framerate could be variable
 
     previousTime = currentTime;
+
     GameProcessSync(wait);
   }
 #endif

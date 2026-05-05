@@ -46,9 +46,6 @@ comp_id_t ComponentRegister(world_t* w, size_t elem_size){
 }
 
 void* ComponentAdd(world_t* w, Entity e, comp_id_t id){
-  if (id == 10) {   // FOLLOW_ID
-    TraceLog(LOG_WARNING, "FOLLOW COMPONENT ADDED TO ENTITY %u !", e.id);
-  }
   component_pool_t* pool = w->pools[id];
 
   int idx = pool->size++;

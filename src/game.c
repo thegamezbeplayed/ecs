@@ -12,6 +12,7 @@
 // Gameplay Screen Initialization logic
 void InitGameplayScreen(void){
   InitGameEvents();
+  
   InitEntityComponentSystem();
   GameSetState(GAME_LOADING);
 }
@@ -39,6 +40,7 @@ void UpdateGameplayScreen(void){
 
 // Gameplay Screen Draw logic
 void BeginDraw(void){
+
   GameEvent(GameEvent_ToNotif(GAME_EVENT_STEP), &world , UPDATE_DRAW_BEGIN);
 }
 

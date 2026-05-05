@@ -7,6 +7,7 @@
 #define EVENT_GAME_BASE   0x2000
 #define EVENT_PHYS_BASE   0x3000
 #define EVENT_POS_BASE    0x4000
+#define EVENT_ANIM_BASE   0x5000
 #define EVENT_BASE_MASK   0xFFFFF000
 #define EVENT_ID_MASK     0x00000FFF
 
@@ -33,9 +34,15 @@ typedef enum{
 typedef enum{
   INPUT_EVENT_BINDING,
   INPUT_EVENT_KEY_RELEASE,
+  INPUT_EVENT_ATTACK,
   INPUT_EVENT_MOVE,
   INPUT_EVENT_COUNT
 }InputEventID;
+
+typedef enum{
+  ANIM_EVENT_FRAME,
+  ANIM_EVENT_COUNT
+}AnimEventID;
 
 typedef enum{
   ENT_NONE,
@@ -83,6 +90,7 @@ typedef enum{
 typedef enum{
   ACT_NONE,
   ACT_MOVE,
+  ACT_ATTACK,
   ACT_DONE
 }ActionType;
 

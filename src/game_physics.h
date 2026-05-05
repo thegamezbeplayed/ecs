@@ -73,7 +73,7 @@ void RigidBodySteer(rigid_body_t* b, Vector2);
 
 typedef struct bounds_s {
   ShapeType   shape;
-  Vector2     pos;
+  Vector2     pos, offset;
   float       radius;
   float       width,height;
 } bounds_t;

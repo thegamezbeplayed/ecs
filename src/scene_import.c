@@ -102,10 +102,32 @@ void AnimationImport(void* c, const char* name){
       if(seq_dat.state == ANIM_NONE)
         continue;
       AnimState ast = seq_dat.state;
-      ac->sequences[ast][i] = *AnimRegisterState(data.sheet, name, seq_dat.name);
+      anim_t* a = AnimRegisterState(data.sheet, name, seq_dat.name);
+
+      if(!a)
+        continue;
+
+      ac->sequences[ast][i] = *a;
       ac->sequences[ast][i].loop = seq_dat.loop;
       ac->sequences[ast][i].on_end = seq_dat.on_end;
     }
+
+
+  for(int i = 0; i < MAX_SLICES; i++){
+    collision_d cdata = SHEETS[data.sheet].coll[i];
+
+    switch(cdata.type){
+      case COL_HURT:
+        //ac->on_coll_frame[ac->num_hurt] = AnimCollisionHurt;
+        ac->hurtboxes[ac->num_hurt++] = cdata;
+        break;
+      case COL_HIT:
+        ac->hitbox = cdata;
+        break;
+    }
+  }
+  ac->player.state = ANIM_IDLE;
+  ac->player.dir = 3;
 }
 
 void PositionImport(void* c,const char* name){
@@ -126,3 +148,19 @@ void TypeImport(void* c,const char* name){
 
 }
 
+void StatImport(void* c,const char* name){
+  stat_comp_t* sc = c;
+
+  stats_d data = GetStatData(name);
+
+  for (int i = 0; i < STAT_DONE; i++){
+    stat_d stat = data.stats[i];
+    if(stat.type == STAT_NONE)
+      continue;
+
+    sc->stats[i] = *InitStat(stat.type, stat.min, stat.max, stat.val);
+    sc->stats[i].on_empty = stat.on_empty;
+    sc->stats[i].on_full = stat.on_full;
+  }
+
+}

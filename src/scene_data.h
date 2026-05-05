@@ -23,14 +23,14 @@
 #define CELL_WIDTH 80
 #define CELL_HEIGHT 80
 
-#define NUM_PREFABS 5
-#define NUM_PREFABS 5
-#define NUM_ENTS    11
+#define NUM_PREFABS 4 
+#define NUM_ENTS    11 
 #define NUM_PHYS    2
 #define NUM_ANIM    2
 #define NUM_SPR     1
 #define NUM_CAMS    1
 #define NUM_TILES   37
+#define NUM_STATS   2
 
 #include "game_import.h"
 
@@ -42,12 +42,12 @@ typedef struct {
     float y;
 } EntityInstance;
 
-static const EntityPrefab PREFAB_DATA[5] = {
+static const EntityPrefab PREFAB_DATA[NUM_PREFABS] = {
   {"level",   1, {"Level"}},
   {"camera",  2, {"Camera", "Track"}},
   {"player",  6, {"Follow", "Animation", "Position", "Input", "Physics", "Type"}},
-  {"slime",   5, {"Animation", "Position", "Physics", "Behavior", "Type"}},
-  {"floor",   3, {"Sprite", "Position", "Type"}},
+  {"slime",   4, {"Animation", "Position", "Physics", "Type"}},
+  //{"floor",   3, {"Sprite", "Position", "Type"}},
 };
 
 static const EntityInstance ENT_DATA[NUM_ENTS] = {
@@ -92,6 +92,21 @@ static const phys_d PHYS_DATA[NUM_PHYS] = {
   },
 };
 
+static const stats_d STAT_DATA[NUM_STATS] = {
+  {"player",
+    {
+      { STAT_HP, 0, 25, 25},
+      { STAT_DMG, 1, 1, 1},
+    }
+  },
+  {"slime",
+    {
+      {STAT_HP, 0, 10, 10},
+      {STAT_DMG, 1, 1, 1},
+    }
+  }
+};
+
 static const anim_d ANIM_DATA[NUM_ANIM] = {
   {"player",  SHEET_CHAR,
     {
@@ -106,7 +121,15 @@ static const anim_d ANIM_DATA[NUM_ANIM] = {
         {ANIM_IDLE, "idle90", 90, true, NULL},
         {ANIM_IDLE, "idle180", 180, true, NULL},
         {ANIM_IDLE, "idle270", 270, true, NULL},
+      },
+      {
+        {ANIM_ATTACK, "attack0", 0, false, AnimIdle},
+        {ANIM_ATTACK, "attack90", 90, false, AnimIdle},
+        {ANIM_ATTACK, "attack180", 180, false, AnimIdle},
+        {ANIM_ATTACK, "attack270", 270, false, AnimIdle},
       }
+
+
     }
   },
   {"slime",   SHEET_MOB,
@@ -122,8 +145,8 @@ static const anim_d ANIM_DATA[NUM_ANIM] = {
         {ANIM_IDLE, "idle90", 90, true, NULL},
         {ANIM_IDLE, "idle180", 180, true, NULL},
         {ANIM_IDLE, "idle270", 270, true, NULL},
-      }
-    }
+      },
+          }
   }
 };
 
@@ -184,6 +207,7 @@ void PositionImport(void*,const char*);
 void CameraImport(void*,const char*);
 void TrackingImport(void*,const char*);
 void TypeImport(void* c,const char* name);
+void StatImport(void* c,const char* name);
 
 static void LevelImport(void* c, const char* name){
   lvl_comp_t* lc = c;
@@ -219,6 +243,14 @@ static anim_d GetAnimData(const char* name){
     if(strcmp(name, ANIM_DATA[i].name) == 0)
       return ANIM_DATA[i];
   };
+}
+
+static stats_d GetStatData(const char* name){
+  for (int i = 0; i < NUM_STATS; i++){
+    if(strcmp(name, STAT_DATA[i].name) == 0)
+      return STAT_DATA[i];
+  };
+
 }
 
 #endif // SCENE_DATA_H
