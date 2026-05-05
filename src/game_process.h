@@ -104,7 +104,7 @@ static void GameInteraction(interaction_t* entry){
 
   RegisterInteraction(&GP.interactions, entry);
 }
-static bool GameCheckInteraction(uint32_t a, uint32_t b, char* type){
+static interaction_t* GameCheckInteraction(uint32_t a, uint32_t b, char* type){
   return InteractionCheck(&GP.interactions, a, b, type);
 }
 

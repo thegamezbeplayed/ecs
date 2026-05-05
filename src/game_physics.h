@@ -15,7 +15,9 @@ typedef struct rigid_body_s rigid_body_t;
 typedef struct force_s force_t;
 
 typedef enum{
+  PHYS_EVENT_NONE,
   PHYS_EVENT_ACCEL,
+  PHYS_EVENT_COLL,
   PHYS_EVENT_COUNT
 }PhysicsEventID;
 
@@ -29,47 +31,51 @@ typedef enum {
   FORCE_DONE
 }ForceType;
 
+typedef enum{
+  REACT_NONE,
+  REACT_BUMP,
+  REACT_BLOCK,
+}ReactType;
+
 typedef struct{
-  ForceType   type;
-  float       speed, max_vel, threshold;
-  Vector2     frict;
+  const char     name[MAX_NAME_LEN];
+  ForceType      type;
+  float          speed, max_vel, threshold;
+  Vector2        frict;
+  PhysicsEventID event;
+  ReactType      react;
 }force_d;
 
 typedef struct{
   const char  name[MAX_NAME_LEN];
   ShapeType   shape;
   int         wid, hei;
-  force_d     forces[FORCE_DONE];
 }phys_d;
 
-typedef void (*ForceFn)(rigid_body_t *a, rigid_body_t *b, force_t*);
-typedef void (*ForceCb)(rigid_body_t *a, force_t*);
-void ForceReactBump(rigid_body_t* a, rigid_body_t* b, force_t*);
-void ForceReactBlock(rigid_body_t* a, rigid_body_t* b, force_t*);
+force_t* ForceReactBump(rigid_body_t* a, rigid_body_t* b, force_t*);
+force_t* ForceReactBlock(rigid_body_t* a, rigid_body_t* b, force_t*);
 
 struct force_s{
-  Vector2    vel, accel, dir, friction;
-  ForceType  type;
-  float      speed, max_velocity;
-  float      threshold;
-  ForceFn    on_react;
-  ForceCb    on_end;
-  bool       is_active;
+  Vector2        vel, accel, dir, friction;
+  ForceType      type;
+  float          speed, max_velocity;
+  float          threshold;
+  ReactType      react;
+  PhysicsEventID event;  
+  bool           kill_on_end, is_active;
 };
 
-static void ForceEnd(rigid_body_t *b, force_t* f){
+static void ForceEnd(force_t* f){
   f->is_active = false;
 }
 
-void ForceKill(rigid_body_t *b, force_t* f);
+void ForceApply(rigid_body_t* b, force_t* f);
+void ForceKill(force_t* f);
 force_t* ForceBump(Vector2 acc);
 force_t* ForceFromVec2(ForceType type, Vector2 vec);
 bool ForceStep(force_t *force, bool accelerate);
-void ForceSetDir(rigid_body_t *b, force_t* f, Vector2 dir);
+void ForceSetDir(force_t* f, Vector2 dir);
 void ForceAddMagnitude(force_t* f, Vector2 mag);
-void RigidBodyHasForce(rigid_body_t* b, int cap);
-void RigidBodyGiveForce(rigid_body_t* b, force_t* f);
-void RigidBodySteer(rigid_body_t* b, Vector2);
 
 typedef struct bounds_s {
   ShapeType   shape;
@@ -81,18 +87,15 @@ typedef struct bounds_s {
 struct rigid_body_s{
   Vector2     vel;
   int         col_rate;
-  force_t     has[FORCE_NONE];
-  int         num_forces;
-  force_t     apply[MAX_FORCES]; 
   bounds_t    bounds;
   float       restitution;
   bool        is_static, is_grounded;
 };
 
 rigid_body_t* InitRigidBody(Vector2 pos, ShapeType, float, float);
-int CollisionStep(rigid_body_t*, rigid_body_t*);
 static void RigidBodySetPos(rigid_body_t* b, Vector2 pos){
   b->bounds.pos = pos;
 }
-static void CollisionNoAction(rigid_body_t* a, rigid_body_t* b, force_t*){}
+
+bool CheckCollision(rigid_body_t *a, rigid_body_t *b, int len);
 #endif

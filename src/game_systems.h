@@ -14,6 +14,8 @@ void InputLoad(world_t* w, Entity e);
 void InputSystem(world_t* w, Entity e);
 
 void OnForceEvent(event_t* ev, void* data);
+void ForceLoad(world_t* w, Entity e);
+void ForceSystem(world_t* w, Entity e);
 void PhysicsLoad(world_t* w, Entity e);
 void PhysicsSystem(world_t* w, Entity e);
 void PhysicsCollision(world_t* w, Entity e);

@@ -7,7 +7,7 @@
 #include "game_stats.h"
 
 #define MOB_MAX 64
-#define NUM_SYS 4
+#define NUM_SYS 12
 
 #define ROOM_SIZE (Vector2){1600,1200}
 
@@ -25,6 +25,7 @@ extern uint64_t TYPE_ID;
 extern uint64_t FOLLOW_ID;
 extern uint64_t STATE_ID;
 extern uint64_t STAT_ID;
+extern uint64_t FORCE_ID;
 
 extern int PHYS_SYS;
 
@@ -52,13 +53,16 @@ typedef struct{
 }pos_comp_t;
 
 typedef struct{
-  Entity    ent;
   input_t   input;
 }input_comp_t;
 
 typedef struct{
   rigid_body_t rb;
 }phys_comp_t;
+
+typedef struct{
+  force_t   f;
+}force_comp_t;
 
 typedef struct{
   int       wid, hei;
@@ -78,7 +82,6 @@ typedef struct{
 }track_comp_t;
 
 typedef struct{
-  Entity  e;
   bool    assigned;
 }follow_comp_t;
 

@@ -15,6 +15,7 @@ uint64_t TYPE_ID;
 uint64_t FOLLOW_ID;
 uint64_t STATE_ID;
 uint64_t STAT_ID;
+uint64_t FORCE_ID;
 
 int PHYS_SYS;
 
@@ -51,6 +52,10 @@ void RegisterComponentData(world_t* w) {
   
   STAT_ID = REGISTER_COMPONENT(w, stat_comp_t);
   ComponentMap("Stat", &STAT_ID, StatImport);
+
+  FORCE_ID = REGISTER_COMPONENT(w, force_comp_t);
+  ComponentMap("Force", &FORCE_ID, ForceImport);
+  
 }
 
 void RegisterSystemData(world_t* w){
@@ -87,7 +92,7 @@ void RegisterSystemData(world_t* w){
   SystemCB phtick[UPDATE_DONE] = {0};
   phtick[UPDATE_PRE] = PhysicsCollision;
   phtick[UPDATE_POST] = PhysicsSystem;
-  //phtick[UPDATE_DRAW] = PhysicsDebug;
+  phtick[UPDATE_DRAW] = PhysicsDebug;
 
   SystemCB phset[GAME_DONE] = {0};
   phset[GAME_READY] = PhysicsLoad;
@@ -138,4 +143,17 @@ void RegisterSystemData(world_t* w){
 
   SystemRequire(spsys, SPR_ID);
   SystemRequire(spsys, POS_ID);
+
+  SystemCB frtick[UPDATE_DONE] = {0};
+  frtick[UPDATE_FIXED] = ForceSystem;
+
+  SystemCB frset[GAME_DONE] = {0};
+  frset[GAME_READY] = ForceLoad;
+
+  system_t* frsys = SystemRegister(w, frtick, frset);
+
+  SystemRequire(frsys, FORCE_ID);
+
+
+
 }

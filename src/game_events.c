@@ -367,7 +367,8 @@ notification_t* RegisterNotification(notification_pool_t* p, char* name){
   notif->hash = n;
   strcpy(notif->name, name);
   HashPut(&p->map, n, notif);
-
+  p->count++;
+  TraceLog(LOG_INFO, "==== REGISTER NOTIFICATION\n %s %d", name, n);
   return notif; 
 }
 
@@ -394,6 +395,7 @@ interaction_t* InitInteraction(uint32_t a, uint32_t b, char* type, int dur){
   notification n = GameNotification(type);
   cooldown_t* cd = InitCooldown(dur, n);
 
+  i->type = n;
   i->timer = cd;
   i->source = a;
   i->target = b;
@@ -421,10 +423,10 @@ void InteractionStep(interactions* p){
   }
 }
 
-bool InteractionCheck(interactions* p, uint32_t a, uint32_t b, char* type){
-  notification n = hash_str_64(type);
+interaction_t* InteractionCheck(interactions* p, uint32_t a, uint32_t b, char* type){
+  notification n = GameNotification(type);
 
   hash_key_t key = hash_event(a, b, n);
 
-  return (InteractionsGetEntry(p, key) != NULL);
+  return InteractionsGetEntry(p, key);
 }

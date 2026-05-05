@@ -7,8 +7,7 @@ void SceneImport(world_t* w, const char* path){
 
     Entity e = PrefabCreate(w, prefab_data.name);
     for(int j = 0; j < prefab_data.num_comp; j++) {
-      for(int j = 0; j < prefab_data.num_comp; j++)
-        ImportPrefabComponent(w, e, prefab_data.components[j], path, prefab_data.name);
+      ImportPrefabComponent(w, e, prefab_data.components[j], path, prefab_data.name);
     }
   }
   for(int i = 0; i < NUM_ENTS; i++){
@@ -17,6 +16,10 @@ void SceneImport(world_t* w, const char* path){
     Vector2 pos = VEC_NEW(ent_data.x, ent_data.y);
     Entity e = PrefabSpawn(w, ent_data.prefab, pos);
 
+    EntityRelations erelates = GetRelationData(ent_data.prefab);
+    for(int i = 0; i < erelates.count; i++){
+      ImportPrefabRelation(w, e, ent_data.prefab, erelates.comps[i]);
+    }
   }
 }
 
@@ -31,6 +34,26 @@ void ImportPrefabComponent(world_t* w, Entity e, const char* comp, const char* p
     else
       ComponentAdd(w, e, *cid);
 
+  }
+}
+
+void ImportPrefabRelation(world_t* w, Entity e, const char* ename, RelationComp comp){
+  comp_id_t *cid = ComponentMapGetID(comp.comp);
+  ComponentImportFn fn = ComponentMapFn(comp.comp);
+
+  if(!cid){
+    TraceLog(LOG_WARNING,"=== SCENE IMPORT ===\n Pair %s Component %s not found", ename, comp.comp);
+    return;
+  }
+
+  for(int i = 0; i < comp.count; i++){
+    RelationPair pair = comp.pairs[i];
+    Entity rel = EntityCreate(&w->manager);
+
+    if(fn)
+      fn(ComponentAdd(w, rel, *cid), pair.name);
+
+    EntityAddRelation(w, rel, pair.type, e);
   }
 }
 
@@ -69,22 +92,23 @@ void PhysicsImport(void* c,const char* name){
 
   pc->rb = *InitRigidBody(VECTOR2_ZERO, data.shape, data.wid, data.hei);
 
-  for(int i = 0; i < FORCE_DONE; i++){
-    force_d fdat = data.forces[i];
-    if(fdat.type == FORCE_NONE)
-      continue;
-
-    force_t* f = ForceFromVec2(fdat.type, VEC_BOTH(fdat.speed));
-
-    f->max_velocity = fdat.max_vel;
-    f->friction = fdat.frict;
-
-    f->threshold = fdat.threshold;
-
-    RigidBodyGiveForce(&pc->rb, f);
-  }
 }
 
+void ForceImport(void* c,const char* name){
+  force_comp_t* fc = c;
+
+  force_d fdat = GetForceData(name);
+
+  fc->f = *ForceFromVec2(fdat.type, VEC_BOTH(fdat.speed));
+
+  fc->f.speed = fdat.speed;
+  fc->f.max_velocity = fdat.max_vel;
+  fc->f.friction = fdat.frict;
+  fc->f.event = fdat.event;
+  fc->f.react = fdat.react;
+  fc->f.threshold = fdat.threshold;
+
+}
 
 void SpriteImport(void*,const char*){
 

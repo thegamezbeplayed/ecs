@@ -8,7 +8,6 @@ void OnBehaviorEvent(event_t* ev, void* data){
   rigid_body_t* rb = data;
 
   Vector2 dir = Vector2Normalize(p->vdest);
-  RigidBodySteer(rb, dir);
 }
 
 void BehaviorSystem(world_t* w, Entity e){

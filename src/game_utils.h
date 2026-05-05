@@ -125,7 +125,7 @@ typedef hash_map_t interactions;
 void InitInteractions(hash_map_t* m, int cap);
 hash_key_t RegisterInteraction(interactions*, interaction_t*);       
 interaction_t* InitInteraction(uint32_t, uint32_t, char*, int);
-bool InteractionCheck(interactions* p, uint32_t a, uint32_t b, char* type);
+interaction_t* InteractionCheck(interactions* p, uint32_t a, uint32_t b, char* type);
 void InteractionStep(interactions*);
 //<===BEHAVIOR TREES
 

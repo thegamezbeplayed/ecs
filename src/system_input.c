@@ -26,7 +26,6 @@ void InputLoad(world_t* w, Entity e){
   notification n = InputEvent_ToNotif(INPUT_EVENT_MOVE);
   TargetSubscribe(n, OnInputEvent, &p->pos, e.id );
 
-  ic->ent = e;
   n = InputEvent_ToNotif(INPUT_EVENT_BINDING);
   for(int i = 0; i < ACT_DONE; i++){
     action_key_t akey = ic->input.actions[i];
