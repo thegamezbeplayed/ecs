@@ -94,5 +94,14 @@ int CollisionStep(rigid_body_t*, rigid_body_t*);
 static void RigidBodySetPos(rigid_body_t* b, Vector2 pos){
   b->bounds.pos = pos;
 }
+
+static void RigidBodySetBounds(rigid_body_t* rb, Vector2 size, Vector2 offset){
+   rb->bounds.width = size.x;
+   rb->bounds.height = size.y;
+
+   rb->bounds.radius = Vector2Length(size)/2;
+
+}
+
 static void CollisionNoAction(rigid_body_t* a, rigid_body_t* b, force_t*){}
 #endif

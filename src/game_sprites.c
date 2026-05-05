@@ -32,7 +32,7 @@ void InitResources(){
       slice_key_t skdat = sdat.keys[j];
 
       anim_frame_t* f = &parse->frames[skdat.frame];
-      s->coll[s->num_coll++] = *InitSpriteCollision(f, COL_HURT,
+      s->coll[s->num_coll++] = *InitSpriteCollision(f, skdat.type,
           SHAPE_REC, skdat.bounds);
     }
   } 
@@ -55,7 +55,7 @@ void InitResources(){
       slice_key_t skdat = sdat.keys[j];
 
       anim_frame_t* f = &parse->frames[skdat.frame];
-      s->coll[s->num_coll++] = *InitSpriteCollision(f, COL_HURT,
+      s->coll[s->num_coll++] = *InitSpriteCollision(f, skdat.type,
           SHAPE_REC, skdat.bounds);
     }
   } 

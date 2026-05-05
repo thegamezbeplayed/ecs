@@ -45,8 +45,8 @@ typedef struct {
 static const EntityPrefab PREFAB_DATA[NUM_PREFABS] = {
   {"level",   1, {"Level"}},
   {"camera",  2, {"Camera", "Track"}},
-  {"player",  6, {"Follow", "Animation", "Position", "Input", "Physics", "Type"}},
-  {"slime",   4, {"Animation", "Position", "Physics", "Type"}},
+  {"player",  7, {"State", "Stat", "Follow", "Animation", "Position", "Input", "Physics", "Type"}},
+  {"slime",   5, {"State", "Stat", "Animation", "Position", "Physics", "Type"}},
   //{"floor",   3, {"Sprite", "Position", "Type"}},
 };
 

@@ -5,9 +5,10 @@
 #include "game_physics.h"
 #include "game_views.h"
 #include "game_stats.h"
+#include "game_behaviors.h"
 
 #define MOB_MAX 64
-#define NUM_SYS 4
+#define NUM_SYS 9
 
 #define ROOM_SIZE (Vector2){1600,1200}
 
@@ -87,11 +88,11 @@ typedef struct{
 }type_comp_t;
 
 typedef struct{
-
+  behavior_t behavior;
 }ai_comp_t;
 
 typedef struct{
-
+  State state;
 }state_comp_t;
 
 typedef struct{

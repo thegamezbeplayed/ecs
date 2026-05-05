@@ -37,7 +37,10 @@ void AnimLoad(world_t* w, Entity e){
   if(!in)
     return;
 
-  notification n = InputEvent_ToNotif(INPUT_EVENT_MOVE);
+  notification n = InputEvent_ToNotif(INPUT_EVENT_ATTACK);
+  TargetSubscribe(n, AnimInputEvent, &ac->player, e.id );
+
+  n = InputEvent_ToNotif(INPUT_EVENT_MOVE);
   TargetSubscribe(n, AnimInputEvent, &ac->player, e.id );
 
   n = InputEvent_ToNotif(INPUT_EVENT_KEY_RELEASE);

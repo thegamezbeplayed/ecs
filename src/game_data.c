@@ -87,7 +87,7 @@ void RegisterSystemData(world_t* w){
   SystemCB phtick[UPDATE_DONE] = {0};
   phtick[UPDATE_PRE] = PhysicsCollision;
   phtick[UPDATE_POST] = PhysicsSystem;
-  //phtick[UPDATE_DRAW] = PhysicsDebug;
+  phtick[UPDATE_DRAW] = PhysicsDebug;
 
   SystemCB phset[GAME_DONE] = {0};
   phset[GAME_READY] = PhysicsLoad;
@@ -138,4 +138,18 @@ void RegisterSystemData(world_t* w){
 
   SystemRequire(spsys, SPR_ID);
   SystemRequire(spsys, POS_ID);
+
+  SystemCB cbtick[UPDATE_DONE] = {0};
+  cbtick[UPDATE_FIXED] = CombatSystem;
+
+  SystemCB cbset[GAME_DONE] = {0};
+
+  cbset[GAME_READY] = CombatLoad;
+  system_t* cbsys = SystemRegister(w, cbtick, cbset);
+
+  //SystemRequire(cbsys, STATE_ID);
+  //SystemRequire(cbsys, STAT_ID);
+  SystemRequire(cbsys, ANIM_ID);
+  SystemRequire(cbsys, PHYS_ID);
+
 }
