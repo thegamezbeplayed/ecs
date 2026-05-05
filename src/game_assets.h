@@ -17,10 +17,20 @@
 #define FLOAT_TEXT_SIZE 54
 #define FLOAT_TEXT_SPACING 2
 
+DEFINE_EVENT_SPACE(AnimEvent, EVENT_ANIM_BASE)
+
 typedef struct sprite_s sprite_t;
 typedef struct sprite_slice_s sprite_slice_t;
 
+typedef enum{
+  COL_NONE,
+  COL_HIT,
+  COL_HURT,
+}CollType;
+
 typedef struct{
+  int       frame;
+  CollType  type;
   ShapeType shape;
   int       posx, posy, wid, hei;
 }collision_d;
@@ -38,6 +48,7 @@ typedef struct sub_texture_s {
 } sub_texture_t;
 
 typedef struct{
+  CollType  type;
   Rectangle bounds;
   int       frame;
 }slice_key_t;
@@ -48,19 +59,28 @@ typedef struct{
   int         num_keys;
 }slice_d;
 
-typedef struct {
-  uint32_t  tag;
+typedef struct{
+  uint32_t  hash;
   uint64_t  group;
-  int       index;
+  char      name[MAX_NAME_LEN];
+  char      direction[16];
+  bool      repeat;
+  int       index_start, index_end;
+}anim_tag_t;
+
+typedef struct {
+  int       index, duration;
   Rectangle frame_rect;     // position + size in the spritesheet
   Rectangle source_rect;    // spriteSourceSize (trimmed area)
-  int       duration;
 } anim_frame_t;
 
+collision_d* InitSpriteCollision(anim_frame_t*, CollType, ShapeType, Rectangle r);
 typedef struct{
   anim_frame_t frames[MAX_SPRITE_FRAMES];
   int          num_frames;
 
+  anim_tag_t   tags[MAX_ANIM_GROUPS];
+  int          num_tags;
   slice_d      slices[MAX_ANIM_FRAMES];
   int          num_slices;
 }ase_sprite_sheet_d;
@@ -91,11 +111,7 @@ typedef enum{
   SHEET_ALL
 }SheetID;
 
-
 struct sprite_slice_s{
-  char      name[MAX_NAME_LEN];
-  uint32_t  hash, tag;
-  uint64_t  group;
   int       index, angle;
   SheetID   sheet;
   Vector2   center, offset;
@@ -106,12 +122,20 @@ struct sprite_slice_s{
 
 typedef struct{
   int             sheet_index;
+  char            name[MAX_NAME_LEN];
   SheetID         sheet_id;
   uint32_t        tag;
+  uint64_t        group;
   int             duration;
   sprite_slice_t  slice;
-  collision_d     coll;
+  bool            repeat, mirror;
 }sprite_d;
+
+typedef void (*AnimCollisionCB)(sprite_slice_t*, collision_d*, position_t*);
+
+void AsepriteToSprite(SheetID, const ase_sprite_sheet_d*, anim_tag_t, int, sprite_d*); 
+
+void AnimCollisionHurt(sprite_slice_t*,collision_d*, position_t*);
 
 typedef enum{
   ST_ASE,
@@ -120,9 +144,11 @@ typedef enum{
 }SheetType;
 
 typedef struct{
-  int        num_sprites;
-  sprite_d   sprites[128];
-  Texture2D  texture;
+  int         num_sprites;
+  sprite_d    sprites[128];
+  int         num_coll;
+  collision_d coll[MAX_SLICES];
+  Texture2D   texture;
 }sprite_sheet_d;
 
 static sub_texture_t* TEXTURES[SHEET_ALL];
@@ -140,6 +166,7 @@ typedef enum{
   ANIM_NONE,
   ANIM_IDLE,
   ANIM_WALK,
+  ANIM_ATTACK,
   ANIM_DIE,
   ANIM_DONE
 }AnimState;
@@ -187,7 +214,6 @@ struct sprite_s{
   float             rot;
   Vector2           offset;
 };
-void AsepriteToSprite(const ase_sprite_sheet_d*, int, sprite_d*); 
 sprite_t* InitSprite(SheetID, int);
 
 void DrawSlice(sprite_slice_t*, Vector2 position,float rot);

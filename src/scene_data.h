@@ -23,14 +23,14 @@
 #define CELL_WIDTH 80
 #define CELL_HEIGHT 80
 
-#define NUM_PREFABS 3
-#define NUM_ENTS    3
-#define NUM_PHYS    1
-#define NUM_ANIM    1
+#define NUM_PREFABS 4 
+#define NUM_ENTS    11 
+#define NUM_PHYS    2
+#define NUM_ANIM    2
 #define NUM_SPR     1
 #define NUM_CAMS    1
 #define NUM_TILES   37
-#define NUM_STATS   1
+#define NUM_STATS   2
 
 #include "game_import.h"
 
@@ -42,11 +42,11 @@ typedef struct {
     float y;
 } EntityInstance;
 
-static const EntityPrefab PREFAB_DATA[5] = {
+static const EntityPrefab PREFAB_DATA[NUM_PREFABS] = {
   {"level",   1, {"Level"}},
   {"camera",  2, {"Camera", "Track"}},
-  {"player",  6, {"Follow", "Stat", "Animation", "Position", "Input", "Physics", "Type"}},
-//  {"slime",   5, {"State", "Animation", "Position", "Physics", "Behavior", "Type"}},
+  {"player",  6, {"Follow", "Animation", "Position", "Input", "Physics", "Type"}},
+  {"slime",   4, {"Animation", "Position", "Physics", "Type"}},
   //{"floor",   3, {"Sprite", "Position", "Type"}},
 };
 
@@ -54,7 +54,6 @@ static const EntityInstance ENT_DATA[NUM_ENTS] = {
     {"ent_data", "level", ENT_OMNI, 0, 0},
     {"ent_data", "camera", ENT_OMNI, 128, 128},
     {"ent_data", "player", ENT_PLAYER, 128, 128},
-/*
     {"ent_data", "slime", ENT_MOB, 416, 288},
     {"ent_data", "slime", ENT_MOB, 460, 288},
     {"ent_data", "slime", ENT_MOB, 416, 88},
@@ -63,7 +62,6 @@ static const EntityInstance ENT_DATA[NUM_ENTS] = {
     {"ent_data", "slime", ENT_MOB, 46, 288},
     {"ent_data", "slime", ENT_MOB, 416, 28},
     {"ent_data", "slime", ENT_MOB, 46, 88},
-    */
 };
 
 // Tile Data
@@ -123,7 +121,15 @@ static const anim_d ANIM_DATA[NUM_ANIM] = {
         {ANIM_IDLE, "idle90", 90, true, NULL},
         {ANIM_IDLE, "idle180", 180, true, NULL},
         {ANIM_IDLE, "idle270", 270, true, NULL},
+      },
+      {
+        {ANIM_ATTACK, "attack0", 0, false, AnimIdle},
+        {ANIM_ATTACK, "attack90", 90, false, AnimIdle},
+        {ANIM_ATTACK, "attack180", 180, false, AnimIdle},
+        {ANIM_ATTACK, "attack270", 270, false, AnimIdle},
       }
+
+
     }
   },
   {"slime",   SHEET_MOB,
@@ -139,8 +145,8 @@ static const anim_d ANIM_DATA[NUM_ANIM] = {
         {ANIM_IDLE, "idle90", 90, true, NULL},
         {ANIM_IDLE, "idle180", 180, true, NULL},
         {ANIM_IDLE, "idle270", 270, true, NULL},
-      }
-    }
+      },
+          }
   }
 };
 

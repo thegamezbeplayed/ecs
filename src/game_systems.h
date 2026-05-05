@@ -17,6 +17,7 @@ void OnForceEvent(event_t* ev, void* data);
 void PhysicsLoad(world_t* w, Entity e);
 void PhysicsSystem(world_t* w, Entity e);
 void PhysicsCollision(world_t* w, Entity e);
+void PhysicsDebug(world_t* w, Entity e);
 
 void LevelLoad(world_t* w, Entity e);
 void LevelReady(world_t* w, Entity e);

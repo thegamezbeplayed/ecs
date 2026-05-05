@@ -29,8 +29,12 @@ extern uint64_t STAT_ID;
 extern int PHYS_SYS;
 
 typedef struct{
-  anim_player_t player;
-  anim_t        sequences[ANIM_DONE][MAX_DIRECTIONS];
+  anim_player_t   player;
+  int             num_hurt;
+  collision_d     hitbox;
+  collision_d     hurtboxes[MAX_SLICES];
+  AnimCollisionCB on_coll_frame[MAX_SLICES];
+  anim_t          sequences[ANIM_DONE][MAX_DIRECTIONS];
 }anim_comp_t;
 
 typedef struct{

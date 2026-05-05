@@ -15,12 +15,51 @@ void InitResources(){
   ase_sprite_sheet_d* parse = GameCalloc("InitResources", 1,
       sizeof(ase_sprite_sheet_d));
 
-  SHEETS[SHEET_CHAR].texture = *LoadAsepriteSheet("resources/player-sheet.json", parse);
+  sprite_sheet_d *s = &SHEETS[SHEET_CHAR];
+  s->texture = *LoadAsepriteSheet("resources/player-sheet.json", parse);
 
-  for(int i = 0; i < parse->num_frames; i++){
-    AsepriteToSprite(parse, SHEETS[SHEET_CHAR].num_sprites++, &SHEETS[SHEET_CHAR].sprites[i]); 
-
+  for(int i = 0; i < parse->num_tags ; i++){
+    anim_tag_t tag = parse->tags[i];
+    for(int j = tag.index_start; j <= tag.index_end; j++){
+      AsepriteToSprite(SHEET_CHAR, parse, tag, j, &s->sprites[j]); 
+      s->num_sprites++;
+    }
   }
+ 
+  for (int i = 0; i < parse->num_slices; i++){
+    slice_d sdat = parse->slices[i];
+    for (int j = 0; j < sdat.num_keys; j++){
+      slice_key_t skdat = sdat.keys[j];
+
+      anim_frame_t* f = &parse->frames[skdat.frame];
+      s->coll[s->num_coll++] = *InitSpriteCollision(f, COL_HURT,
+          SHAPE_REC, skdat.bounds);
+    }
+  } 
+  TraceLog(LOG_INFO, "=== LOADED %i SPRITES FROM ASEPRITE ===", SHEETS[SHEET_CHAR].num_sprites);
+  
+  s = &SHEETS[SHEET_MOB];
+  s->texture = *LoadAsepriteSheet("resources/slime-sheet.json", parse);
+
+  for(int i = 0; i < parse->num_tags ; i++){
+    anim_tag_t tag = parse->tags[i];
+    for(int j = tag.index_start; j <= tag.index_end; j++){
+      AsepriteToSprite(SHEET_MOB, parse, tag, j, &s->sprites[j]); 
+      s->num_sprites++;
+    }
+  }
+ 
+  for (int i = 0; i < parse->num_slices; i++){
+    slice_d sdat = parse->slices[i];
+    for (int j = 0; j < sdat.num_keys; j++){
+      slice_key_t skdat = sdat.keys[j];
+
+      anim_frame_t* f = &parse->frames[skdat.frame];
+      s->coll[s->num_coll++] = *InitSpriteCollision(f, COL_HURT,
+          SHAPE_REC, skdat.bounds);
+    }
+  } 
+  TraceLog(LOG_INFO, "=== LOADED %i SPRITES FROM ASEPRITE ===", SHEETS[SHEET_MOB].num_sprites);
   /*
 
   
@@ -40,6 +79,20 @@ sprite_t* InitSprite(SheetID s, int index){
   spr->index = index;
 
   return spr;
+}
+
+collision_d* InitSpriteCollision(anim_frame_t* f, CollType coll, ShapeType s, Rectangle r){
+
+  collision_d* c = GameCalloc("InitSpriteCollision", 1, sizeof(collision_d));
+  c->frame = f->index;
+  c->type = coll;
+  c->shape = s;
+  c->posx = r.x - f->source_rect.x;
+  c->posy = r.y - f->source_rect.y;
+  c->wid = r.width;
+  c->hei = r.height;
+
+  return c;
 }
 
 void DrawSlice(sprite_slice_t *s, Vector2 position,float rot){
@@ -177,11 +230,10 @@ anim_t* AnimRegisterState(SheetID id, const char* name, char* group){
     if(SHEETS[id].sprites[i].tag != hash)
       continue;
 
-    sprite_slice_t* spr = &SHEETS[id].sprites[i].slice;
-
-    if(spr->group != ghash)
+    if(SHEETS[id].sprites[i].group != ghash)
       continue;
 
+    sprite_slice_t* spr = &SHEETS[id].sprites[i].slice;
     found[count++] = SHEETS[id].sprites[i];
   } 
 
@@ -200,29 +252,38 @@ anim_t* AnimRegisterState(SheetID id, const char* name, char* group){
   return a;
 }
 
-void AsepriteToSprite(const ase_sprite_sheet_d* ase, int index, sprite_d* out){
-   if (!ase || !out || index < 0 || index >= ase->num_frames) {
-        memset(out, 0, sizeof(sprite_d));
-        return;
-    }
-
+void AsepriteToSprite(SheetID id, const ase_sprite_sheet_d* ase, anim_tag_t tag, int index, sprite_d* out){
+  if (!ase || !out || index < 0 || index >= ase->num_frames) {
+    memset(out, 0, sizeof(sprite_d));
+    return;
+  }
     const anim_frame_t* f = &ase->frames[index];
 
     // Basic info
-    out->tag   = f->tag;
+    out->tag   = tag.hash;
     out->sheet_index = index;
-    out->sheet_id = SHEET_CHAR;           // or whatever sheet this is
+    out->sheet_id = id;
+    out->duration = f->duration;
     out->slice.scale = 1.0f;
-    out->slice.group = f->group;
+    out->group = tag.group;
 
-    // Important: Use source_rect for correct positioning (handles trimming)
-    out->slice.bounds = f->source_rect;      // or f->frame_rect depending on your needs
+    strcpy(out->name, tag.name);
+    out->repeat = tag.repeat;
 
-    // Center / offset (adjust as needed for your system)
+    if(strcmp(tag.direction, "reverse") == 0)
+      out->mirror = true;
+    out->slice.bounds = f->frame_rect;
+
+    out->slice.sheet = id;
     out->slice.center = (Vector2){
         f->source_rect.width  * 0.5f,
         f->source_rect.height * 0.5f
     };
+
+    if(out->mirror){
+      out->slice.center.x = out->slice.bounds.width - out->slice.center.x;
+      out->slice.bounds.width*=-1;
+    }
 }
 
 Rectangle GetSlice(const ase_sprite_sheet_d* sheet, const char* slice_name, int frame)
@@ -253,11 +314,5 @@ bool IsHitboxActive(const ase_sprite_sheet_d* sheet, int frame)
 Rectangle GetHurtbox(const ase_sprite_sheet_d* sheet, int frame)
 {
     Rectangle r = GetSlice(sheet, "hurtbox", frame);
-    if (r.width == 0) {
-        // fallback to direction-specific
-        r = GetSlice(sheet, "hurtbox_270", frame);
-        if (r.width == 0) r = GetSlice(sheet, "hurtbox_0", frame);
-        if (r.width == 0) r = GetSlice(sheet, "hurtbox_90", frame);
-    }
     return r;
 }

@@ -52,7 +52,7 @@ void CameraImport(void* c,const char* name){
   Vector2 size = VEC_NEW(data.wid, data.hei);
 
   Rectangle bounds = RECT(data.bx, data.by, data.bw, data.bh);
-  //cc->view = *InitView(size, bounds, 0);
+  cc->view = *InitView(size, bounds, 0);
 }
 
 void TrackingImport(void* c,const char* name){
@@ -113,8 +113,21 @@ void AnimationImport(void* c, const char* name){
     }
 
 
+  for(int i = 0; i < MAX_SLICES; i++){
+    collision_d cdata = SHEETS[data.sheet].coll[i];
+
+    switch(cdata.type){
+      case COL_HURT:
+        //ac->on_coll_frame[ac->num_hurt] = AnimCollisionHurt;
+        ac->hurtboxes[ac->num_hurt++] = cdata;
+        break;
+      case COL_HIT:
+        ac->hitbox = cdata;
+        break;
+    }
+  }
   ac->player.state = ANIM_IDLE;
-  ac->player.dir = 270;
+  ac->player.dir = 3;
 }
 
 void PositionImport(void* c,const char* name){

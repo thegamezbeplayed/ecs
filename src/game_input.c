@@ -42,6 +42,12 @@ BehaviorStatus InputActionMove(input_t* gi, KeyboardKey k){
   return BEHAVIOR_SUCCESS;
 }
 
+BehaviorStatus InputActionAttack(input_t* gi, KeyboardKey k){
+
+  gi->last_act = ACT_ATTACK;
+  return BEHAVIOR_SUCCESS;
+}
+
 
 input_t* InitInput(void){
   input_t* in = GameCalloc("InitInput", 1, sizeof(input_t));
@@ -50,6 +56,9 @@ input_t* InitInput(void){
   in->step =  CELL_UNSET;
   in->actions[ACT_MOVE] = (action_key_t){
     ACT_MOVE,12,{KEY_H, KEY_J, KEY_K, KEY_L, KEY_D,KEY_A,KEY_W,KEY_S,KEY_LEFT, KEY_RIGHT,KEY_UP,KEY_DOWN},InputActionMove, 0};
+
+in->actions[ACT_ATTACK] = (action_key_t){
+    ACT_ATTACK,1,{KEY_TAB},InputActionAttack, 0};
 }
 
 bool InputCheck(input_t* gi, Entity e){
@@ -76,7 +85,20 @@ bool InputCheck(input_t* gi, Entity e){
   else
     return false;
 
-  GameEvent(InputEvent_ToNotif(INPUT_EVENT_MOVE), gi, e.id);
+  notification an;
+  switch(gi->last_act){
+    case ACT_MOVE:
+      an = InputEvent_ToNotif(INPUT_EVENT_MOVE);
+      break;
+    case ACT_ATTACK:
+      an = InputEvent_ToNotif(INPUT_EVENT_ATTACK);
+      break;
+    default:
+      return false;
+      break;
+  }
+  
+  GameEvent(an, gi, e.id);
 
   return true;
 }
