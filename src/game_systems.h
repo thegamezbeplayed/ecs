@@ -42,4 +42,6 @@ void BehaviorSystem(world_t* w, Entity e);
 void CombatLoad(world_t* w, Entity e);
 void CombatSystem(world_t* w, Entity e);
 
+void ForceCleanup(world_t* w, Entity e);
+
 #endif

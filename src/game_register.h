@@ -37,6 +37,7 @@ void EntityRemoveRelation(world_t*, Entity);
 Entity EntityGetRelationTarget(world_t*, Entity, RelationType);
 bool EntityHasRelation(world_t*, Entity, RelationType);
 
+void EntityRelationEnd(world_t*, Entity);
 
 typedef void (*SystemCB)(world_t* w, Entity e);
 

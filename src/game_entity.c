@@ -49,6 +49,12 @@ void EntityDestroy(EntityManager* em, Entity e) {
   em->free_list[em->free_count++] = e.id;
 }
 
+void EntityRelationEnd(world_t* w, Entity e){
+  EntityRemoveRelation(w, e);
+
+  EntityDestroy(&w->manager, e);
+}
+
 bool EntityReady(EntityManager* em, Entity e) {
   return em->alive[e.id] &&
     em->generation[e.id] == e.generation;

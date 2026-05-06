@@ -28,6 +28,7 @@ typedef enum{
   UPDATE_PRE,
   UPDATE_FIXED,
   UPDATE_POST,
+  UPDATE_FINAL,
   UPDATE_DONE
 }UpdateType;
 

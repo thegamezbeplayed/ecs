@@ -133,7 +133,7 @@ void AnimationImport(void* c, const char* name){
 
       ac->sequences[ast][i] = *a;
       ac->sequences[ast][i].loop = seq_dat.loop;
-      ac->sequences[ast][i].on_end = seq_dat.on_end;
+      ac->sequences[ast][i].on_end = seq_dat.end;
     }
 
 

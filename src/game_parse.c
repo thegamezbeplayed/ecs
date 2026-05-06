@@ -95,7 +95,7 @@ cJSON* ParseRoot(const char* path)
 bool LoadSceneAnimData(const char* path, const char* name, anim_d* out)
 {
   cJSON* root = ParseRoot(path);
-
+/*
   cJSON* animations = cJSON_GetObjectItem(root, "animations");
   if (!animations) {
     TraceLog(LOG_ERROR, "No 'animations' object in JSON");
@@ -127,7 +127,7 @@ bool LoadSceneAnimData(const char* path, const char* name, anim_d* out)
   SheetID sheet = StringToSheetID(cJSON_GetObjectItem(entity_anim, "sheet")->valuestring);
 
   out->sheet = sheet;
-  const char* seq_names[] = {"idle", "walk" /* add more later */};
+  const char* seq_names[] = {"idle", "walk"};
   int seq_ids[] = {ANIM_IDLE, ANIM_WALK};
 
   for (int s = 0; s < 2; s++) {                    // for each sequence type
@@ -148,12 +148,12 @@ bool LoadSceneAnimData(const char* path, const char* name, anim_d* out)
       cJSON* on_end = cJSON_GetObjectItem(seq, "on_end");
       if (on_end && on_end->valuestring) {
         if (strcmp(on_end->valuestring, "AnimIdle") == 0)
-          out->sequences[seq_ids[s]][i].on_end = AnimIdle;
+        //  out->sequences[seq_ids[s]][i].on_end = AnimIdle;
         // add more callbacks as needed
       }
     }
   }
-
+*/
   cJSON_Delete(root);
 
   return true;

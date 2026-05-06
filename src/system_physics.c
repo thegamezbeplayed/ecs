@@ -17,13 +17,11 @@ void OnForceEvent(event_t* ev, void* data){
           Entity e = EntityGet(&world.manager, ev->eid);
           phys_comp_t* pc = GET_COMPONENT(&world, e, phys_comp_t, PHYS_ID);
           phys_comp_t* opc = GET_COMPONENT(&world, *tar, phys_comp_t, PHYS_ID);
-
           rigid_body_t* other = &opc->rb;
 
           force_t* react = ForceReactBump(&pc->rb, other, f);
           if(!react)
             return;
-
 
           Entity fent = EntityCreate(&world.manager);
 
@@ -39,8 +37,6 @@ void OnForceEvent(event_t* ev, void* data){
       }
       break;
   }
-
-
 }
 
 void PhysicsLoad(world_t* w, Entity e){
@@ -83,6 +79,7 @@ void PhysicsCollision(world_t* w, Entity e){
     if(!CheckCollision(body, tar, 0))
       continue;
 
+    TraceLog(LOG_INFO, "== INTERACTION ==\n %d with %d at %i", e.id, other.id, WorldGetTime());
 
     notification n = PhysEvent_ToNotif(PHYS_EVENT_COLL);
 
@@ -155,7 +152,26 @@ void ForceSystem(world_t* w, Entity e){
 
    phys_comp_t* pc = GET_COMPONENT(w, rel, phys_comp_t, PHYS_ID);
 
-   if(ForceStep(&fc->f, fc->f.is_active))
-     ForceApply(&pc->rb, &fc->f);
+   fc->f.is_active = ForceStep(&fc->f, fc->f.is_active);
+   ForceApply(&pc->rb, &fc->f);
+
+}
+
+void ForceCleanup(world_t* w, Entity e){
+  force_comp_t* fc = GET_COMPONENT(w, e, force_comp_t, FORCE_ID);
+
+  if(fc->f.is_active)
+    return;
+
+  if(!fc->f.kill_on_end)
+    return;
+
+  Entity rel = EntityGetRelationTarget(w, e, REL_AppliesTo);
+
+  notification n = PhysEvent_ToNotif(PHYS_EVENT_FORCE_END);
+  GameEvent(n, &fc->f, rel.id);
+  TraceLog(LOG_INFO, "== END RELATION ==\n %d on %d", e.id, rel.id);
+
+  EntityRelationEnd(w, e);
 
 }

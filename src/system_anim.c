@@ -12,14 +12,13 @@ void AnimInputEvent(event_t* ev, void* data){
 
   switch(EVENT_ID(ev->type)){
     case INPUT_EVENT_MOVE:
-      ap->state = ANIM_WALK;
+      AnimPlayerState(ap, ANIM_WALK);
       break;
     case INPUT_EVENT_KEY_RELEASE:
-      if(in->last_act != ACT_ATTACK)
-      ap->state = ANIM_IDLE;
+      AnimPlayerState(ap, ANIM_IDLE);
       break;
     case INPUT_EVENT_ATTACK:
-      ap->state = ANIM_ATTACK;
+      AnimPlayerState(ap, ANIM_ATTACK);
       break;
     default:
       TraceLog(LOG_WARNING, "==== ANIM INPUT UNKOWN EVENT ====\n %i", EVENT_ID(ev->type));
@@ -28,6 +27,13 @@ void AnimInputEvent(event_t* ev, void* data){
   }
 }
 
+void AnimBehaviorHandler(world_t* w, Entity e, anim_comp_t* ac, anim_t* a){
+  switch(a->on_end){
+    case ANIM_SUSPEND:
+      ac->player.state = ANIM_IDLE;
+      break;
+  }
+}
 
 void AnimLoad(world_t* w, Entity e){
   anim_comp_t* ac = GET_COMPONENT(w, e, anim_comp_t, ANIM_ID);
@@ -54,8 +60,8 @@ void AnimSystem(world_t* w, Entity e){
 
   int spr_index = a->frames[a->cur_index];
 
-  if(!AnimPlay(a) && a->on_end)
-    a->on_end(ap, a);
+  if(!AnimPlay(a))
+    AnimBehaviorHandler(w, e, ac, a);
 }
 
 void AnimRender(world_t* w, Entity e){

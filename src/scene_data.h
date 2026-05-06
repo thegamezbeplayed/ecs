@@ -24,7 +24,7 @@
 #define CELL_HEIGHT 80
 
 #define NUM_PREFABS 4 
-#define NUM_ENTS    4 
+#define NUM_ENTS    11 
 #define NUM_PHYS    2
 #define NUM_ANIM    2
 #define NUM_SPR     1
@@ -149,22 +149,22 @@ static const anim_d ANIM_DATA[NUM_ANIM] = {
   {"player",  SHEET_CHAR,
     {
       {
-        {ANIM_WALK, "walk0", 0, false, AnimIdle},
-        {ANIM_WALK, "walk90", 90, false, AnimIdle},
-        {ANIM_WALK, "walk180", 180, false, AnimIdle},
-        {ANIM_WALK, "walk270", 270, false, AnimIdle},
+        {ANIM_WALK, "walk0", 0, false, ANIM_SUSPEND},
+        {ANIM_WALK, "walk90", 90, false, ANIM_SUSPEND},
+        {ANIM_WALK, "walk180", 180, false, ANIM_SUSPEND},
+        {ANIM_WALK, "walk270", 270, false, ANIM_SUSPEND},
       },
       {
-        {ANIM_IDLE, "idle0", 0, true, NULL},
-        {ANIM_IDLE, "idle90", 90, true, NULL},
-        {ANIM_IDLE, "idle180", 180, true, NULL},
-        {ANIM_IDLE, "idle270", 270, true, NULL},
+        {ANIM_IDLE, "idle0", 0, true, },
+        {ANIM_IDLE, "idle90", 90, true, },
+        {ANIM_IDLE, "idle180", 180, true, },
+        {ANIM_IDLE, "idle270", 270, true, },
       },
       {
-        {ANIM_ATTACK, "attack0", 0, false, AnimIdle},
-        {ANIM_ATTACK, "attack90", 90, false, AnimIdle},
-        {ANIM_ATTACK, "attack180", 180, false, AnimIdle},
-        {ANIM_ATTACK, "attack270", 270, false, AnimIdle},
+        {ANIM_ATTACK, "attack0", 0, false, ANIM_SUSPEND},
+        {ANIM_ATTACK, "attack90", 90, false, ANIM_SUSPEND},
+        {ANIM_ATTACK, "attack180", 180, false, ANIM_SUSPEND},
+        {ANIM_ATTACK, "attack270", 270, false, ANIM_SUSPEND},
       }
 
 
@@ -173,18 +173,18 @@ static const anim_d ANIM_DATA[NUM_ANIM] = {
   {"slime",   SHEET_MOB,
     {
       { 
-        {ANIM_WALK, "walk0", 0, false, AnimIdle},
-        {ANIM_WALK, "walk90", 90, false, AnimIdle},
-        {ANIM_WALK, "walk180", 180, false, AnimIdle},
-        {ANIM_WALK, "walk270", 270, false, AnimIdle},
+        {ANIM_WALK, "walk0", 0, false, ANIM_SUSPEND},
+        {ANIM_WALK, "walk90", 90, false, ANIM_SUSPEND},
+        {ANIM_WALK, "walk180", 180, false, ANIM_SUSPEND},
+        {ANIM_WALK, "walk270", 270, false, ANIM_SUSPEND},
       },
       {
-        {ANIM_IDLE, "idle0", 0, true, NULL},
-        {ANIM_IDLE, "idle90", 90, true, NULL},
-        {ANIM_IDLE, "idle180", 180, true, NULL},
-        {ANIM_IDLE, "idle270", 270, true, NULL},
+        {ANIM_IDLE, "idle0", 0, true, },
+        {ANIM_IDLE, "idle90", 90, true, },
+        {ANIM_IDLE, "idle180", 180, true, },
+        {ANIM_IDLE, "idle270", 270, true, },
       },
-          }
+    }
   }
 };
 

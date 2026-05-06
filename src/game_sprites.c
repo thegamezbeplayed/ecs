@@ -214,10 +214,19 @@ bool AnimPlay(anim_t* a){
   return false;
 }
 
-bool AnimIdle(anim_player_t* player, anim_t* a){
-  player->state = ANIM_IDLE;
+void AnimSetState(anim_t* a, AnimState s){
+  if(a->state == s)
+    return;
 
-  return true;
+  a->state = s;
+
+}
+
+void AnimPlayerState(anim_player_t* player, AnimState s){
+  if(player->state == s)
+    return;
+
+  player->state = s;
 }
 
 anim_t* AnimRegisterState(SheetID id, const char* name, char* group){

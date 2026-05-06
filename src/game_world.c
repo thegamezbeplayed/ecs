@@ -113,6 +113,7 @@ void InitGameProcess(){
   GP.update_steps[SCREEN_GAMEPLAY][UPDATE_DRAW_END] = EndDraw;
   GP.update_steps[SCREEN_GAMEPLAY][UPDATE_FRAME] = UpdateGameplayScreen;
   GP.update_steps[SCREEN_GAMEPLAY][UPDATE_POST] = PostUpdate;
+  GP.update_steps[SCREEN_GAMEPLAY][UPDATE_FINAL] = FinalUpdate;
   //GP.album_id[SCREEN_GAMEPLAY] = AudioBuildMusicTracks("bingbong");
 
   //GP.children[SCREEN_GAMEPLAY].update_steps[PROCESS_LEVEL][UPDATE_FIXED] = LevelFixedUpdate; 

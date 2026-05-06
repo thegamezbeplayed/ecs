@@ -1,5 +1,6 @@
 #include "game_register.h"
 #include "game_systems.h"
+#include "game_common.h"
 
 void WorldInit(world_t* w, int sys_cap) {
   // Zero everything first
@@ -118,3 +119,4 @@ Entity EntityGetRelationTarget(world_t* w, Entity e, RelationType rel){
 bool EntityHasRelation(world_t* w, Entity e, RelationType rel){
     return EntityGetRelationTarget(w, e, rel).id != INVALID_ENTITY.id;
 }
+

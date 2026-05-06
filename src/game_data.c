@@ -146,6 +146,7 @@ void RegisterSystemData(world_t* w){
 
   SystemCB frtick[UPDATE_DONE] = {0};
   frtick[UPDATE_FIXED] = ForceSystem;
+  frtick[UPDATE_FINAL] = ForceCleanup;
 
   SystemCB frset[GAME_DONE] = {0};
   frset[GAME_READY] = ForceLoad;
