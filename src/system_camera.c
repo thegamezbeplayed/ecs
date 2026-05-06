@@ -20,6 +20,7 @@ void CameraReady(world_t* w, Entity e){
     return;
 
   t->target = tar.id;
+  fc->assigned = true;
 }
 
 void CameraSystem(world_t* w, Entity e){

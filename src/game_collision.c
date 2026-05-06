@@ -20,27 +20,10 @@ rigid_body_t* InitRigidBody(Vector2 pos, ShapeType shape, float wid, float hei){
       break;
   }
 
-  b->col_rate = 6;
+  b->col_rate = 15;
   return b;
 }
 
-void RigidBodyGiveForce(rigid_body_t* b, force_t* f){
-  b->has[f->type] = *f;
-}
-
-void RigidBodySteer(rigid_body_t* b, Vector2 dir){
-  force_t* f = &b->has[FORCE_STEERING];
-
-  if(!f->is_active){
-    f->on_end = ForceEnd;
-    f->is_active = true;
-  }
-  
-  if(!vec_compare(dir, f->dir))
-    ForceSetDir(b, f, dir);
-  else
-    ForceAddMagnitude(f, dir);
-}
 
 bool CheckCollision(rigid_body_t *a, rigid_body_t *b, int len) {
   bool col = false;
@@ -74,34 +57,4 @@ bool CheckCollision(rigid_body_t *a, rigid_body_t *b, int len) {
   }
 
   return col;
-}
-
-bool RigidBodyCollide(rigid_body_t* a, rigid_body_t* b){
-  if(b->is_static)
-    return false;
-
-  bool out = false;
-  for(int i = 0; i < FORCE_NONE; i++){
-    if(!a->has[i].on_react)
-      continue;
-
-    out = true;
-    a->has[i].on_react(a, b, &a->has[i]);
-
-  }
-
-  return out;
-}
-
-int CollisionStep(rigid_body_t* a, rigid_body_t* b){
-  if(!CheckCollision(a, b, 0))
-    return -1;
-
-  bool ares = RigidBodyCollide(a, b);
-  bool bres = RigidBodyCollide(b, a);
-  
-  if(!ares && !bres)
-    return -1;
-
-  return imax(a->col_rate, b->col_rate);
 }

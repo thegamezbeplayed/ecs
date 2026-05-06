@@ -71,6 +71,7 @@ int FinishGameplayScreen(void);
 void PreUpdate(void);
 void FixedUpdate(void);
 void PostUpdate(void);
+void FinalUpdate(void);
 //----------------------------------------------------------------------------------
 // Ending Screen Functions Declaration
 //----------------------------------------------------------------------------------

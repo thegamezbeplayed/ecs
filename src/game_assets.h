@@ -160,10 +160,10 @@ void SpriteLoadSlicedTextures();
 
 typedef struct anim_player_s anim_player_t;
 typedef struct anim_s anim_t;
-typedef bool (*AnimCallback)(anim_player_t*, anim_t*);
 
 typedef enum{
   ANIM_NONE,
+  ANIM_START,
   ANIM_IDLE,
   ANIM_WALK,
   ANIM_ATTACK,
@@ -171,12 +171,18 @@ typedef enum{
   ANIM_DONE
 }AnimState;
 
+typedef enum{
+  ANIM_BLANK,
+  ANIM_SUSPEND,
+  ANIM_HURTBOX,
+}AnimBehavior;
+
 typedef struct{
   AnimState   state;
   char         name[MAX_NAME_LEN];
   int          dir;
   bool         loop;
-  AnimCallback on_end;
+  AnimBehavior end, start;
 }anim_seq_d;
 
 typedef struct{
@@ -193,7 +199,8 @@ struct anim_s{
   int               duration, elapsed;
   float             speed;
   bool              loop;
-  AnimCallback      on_end;
+  AnimState         state;
+  AnimBehavior      on_end, on_start;
 };
 
 bool AnimPlay(anim_t*);
@@ -205,9 +212,8 @@ struct anim_player_s{
   collision_d     col_data;
 };
 
-bool AnimIdle(anim_player_t*, anim_t*);
-
-
+void AnimSetState(anim_t* a, AnimState s);
+void AnimPlayerState(anim_player_t* player, AnimState s);
 //SPRITE_T===>
 struct sprite_s{
   int               sheet_id, index;

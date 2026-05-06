@@ -30,7 +30,10 @@ void FixedUpdate(void){
 void PostUpdate(void){
   GameEvent(GameEvent_ToNotif(GAME_EVENT_STEP), &world , UPDATE_POST);
 } 
- 
+
+void FinalUpdate(void){
+  GameEvent(GameEvent_ToNotif(GAME_EVENT_STEP), &world , UPDATE_FINAL);
+}
 
 // Gameplay Screen Update logic
 void UpdateGameplayScreen(void){

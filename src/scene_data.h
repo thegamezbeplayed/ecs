@@ -31,6 +31,9 @@
 #define NUM_CAMS    1
 #define NUM_TILES   37
 #define NUM_STATS   2
+#define NUM_FORCES  4
+
+#define NUM_RELATE 2 
 
 #include "game_import.h"
 
@@ -43,11 +46,36 @@ typedef struct {
 } EntityInstance;
 
 static const EntityPrefab PREFAB_DATA[NUM_PREFABS] = {
-  {"level",   1, {"Level"}},
-  {"camera",  2, {"Camera", "Track"}},
-  {"player",  6, {"Follow", "Animation", "Position", "Input", "Physics", "Type"}},
-  {"slime",   4, {"Animation", "Position", "Physics", "Type"}},
+  {"level",  1, {"Level"}},
+  {"camera", 2, {"Camera", "Track"}},
+  {"player", 6, 
+    {"Follow", "Animation", "Position", "Input", "Physics", "Type"},
+  },
+  {"slime", 4, 
+    {"Animation", "Position", "Physics", "Type"},
+  },
   //{"floor",   3, {"Sprite", "Position", "Type"}},
+};
+
+
+
+static const EntityRelations ENT_RELATE[NUM_RELATE] = {
+  {"player", 1, 
+    {"Force", 2, 
+      {
+        {"player-steering", REL_AppliesTo},
+        {"player-bump", REL_AppliesTo},
+      }
+    }
+  },
+  {"slime", 1, 
+    {"Force", 2, 
+      {
+        {"slime-steering", REL_AppliesTo},
+        {"slime-bump", REL_AppliesTo},
+      }
+    }
+  }
 };
 
 static const EntityInstance ENT_DATA[NUM_ENTS] = {
@@ -78,18 +106,28 @@ typedef struct {
 } TileInstance;
 
 static const phys_d PHYS_DATA[NUM_PHYS] = {
-  {"player",  SHAPE_CIRCLE, 20, 16,
-    {
-      {FORCE_STEERING, 0.67f, 2.45f, 0.067f, {0.69, 0.69}},
-      {FORCE_IMPULSE,     0.25F, 0.45, 0.1f, {0.925, 0.925}},
-    }
+  {"player",  SHAPE_CIRCLE, 10, 8},
+  {"slime",   SHAPE_CIRCLE, 8, 8},
+};
+
+static const force_d FORCE_DATA[NUM_FORCES] = {
+  {"player-steering", FORCE_STEERING,
+    0.67f, 2.45f, 0.067f, {0.69, 0.69},
+    PHYS_EVENT_ACCEL,
   },
-  {"slime",   SHAPE_CIRCLE, 16, 16,
-    {
-      {FORCE_STEERING, 1.0f, 1.75f, 0.125f, {0.65, 0.67}},
-      {FORCE_IMPULSE,     0.25F, 0.45, 0.1f, {0.875, 0.875}},
-    }
+  {"slime-steering", FORCE_STEERING,
+    1.0f, 1.75f, 0.125f, {0.65, 0.67},
+    PHYS_EVENT_ACCEL,
   },
+  {"player-bump", FORCE_IMPULSE,
+    0.67f, 1.25f, 0.1f, {0.915, 0.915},
+    PHYS_EVENT_COLL, REACT_BUMP
+  },
+  {"slime-bump", FORCE_IMPULSE,
+    1.0f, 1.15f, 0.125f, {0.915, 0.915},
+    PHYS_EVENT_COLL, REACT_BUMP
+  },
+
 };
 
 static const stats_d STAT_DATA[NUM_STATS] = {
@@ -111,22 +149,22 @@ static const anim_d ANIM_DATA[NUM_ANIM] = {
   {"player",  SHEET_CHAR,
     {
       {
-        {ANIM_WALK, "walk0", 0, false, AnimIdle},
-        {ANIM_WALK, "walk90", 90, false, AnimIdle},
-        {ANIM_WALK, "walk180", 180, false, AnimIdle},
-        {ANIM_WALK, "walk270", 270, false, AnimIdle},
+        {ANIM_WALK, "walk0", 0, false, ANIM_SUSPEND},
+        {ANIM_WALK, "walk90", 90, false, ANIM_SUSPEND},
+        {ANIM_WALK, "walk180", 180, false, ANIM_SUSPEND},
+        {ANIM_WALK, "walk270", 270, false, ANIM_SUSPEND},
       },
       {
-        {ANIM_IDLE, "idle0", 0, true, NULL},
-        {ANIM_IDLE, "idle90", 90, true, NULL},
-        {ANIM_IDLE, "idle180", 180, true, NULL},
-        {ANIM_IDLE, "idle270", 270, true, NULL},
+        {ANIM_IDLE, "idle0", 0, true, },
+        {ANIM_IDLE, "idle90", 90, true, },
+        {ANIM_IDLE, "idle180", 180, true, },
+        {ANIM_IDLE, "idle270", 270, true, },
       },
       {
-        {ANIM_ATTACK, "attack0", 0, false, AnimIdle},
-        {ANIM_ATTACK, "attack90", 90, false, AnimIdle},
-        {ANIM_ATTACK, "attack180", 180, false, AnimIdle},
-        {ANIM_ATTACK, "attack270", 270, false, AnimIdle},
+        {ANIM_ATTACK, "attack0", 0, false, ANIM_SUSPEND},
+        {ANIM_ATTACK, "attack90", 90, false, ANIM_SUSPEND},
+        {ANIM_ATTACK, "attack180", 180, false, ANIM_SUSPEND},
+        {ANIM_ATTACK, "attack270", 270, false, ANIM_SUSPEND},
       }
 
 
@@ -135,18 +173,18 @@ static const anim_d ANIM_DATA[NUM_ANIM] = {
   {"slime",   SHEET_MOB,
     {
       { 
-        {ANIM_WALK, "walk0", 0, false, AnimIdle},
-        {ANIM_WALK, "walk90", 90, false, AnimIdle},
-        {ANIM_WALK, "walk180", 180, false, AnimIdle},
-        {ANIM_WALK, "walk270", 270, false, AnimIdle},
+        {ANIM_WALK, "walk0", 0, false, ANIM_SUSPEND},
+        {ANIM_WALK, "walk90", 90, false, ANIM_SUSPEND},
+        {ANIM_WALK, "walk180", 180, false, ANIM_SUSPEND},
+        {ANIM_WALK, "walk270", 270, false, ANIM_SUSPEND},
       },
       {
-        {ANIM_IDLE, "idle0", 0, true, NULL},
-        {ANIM_IDLE, "idle90", 90, true, NULL},
-        {ANIM_IDLE, "idle180", 180, true, NULL},
-        {ANIM_IDLE, "idle270", 270, true, NULL},
+        {ANIM_IDLE, "idle0", 0, true, },
+        {ANIM_IDLE, "idle90", 90, true, },
+        {ANIM_IDLE, "idle180", 180, true, },
+        {ANIM_IDLE, "idle270", 270, true, },
       },
-          }
+    }
   }
 };
 
@@ -208,12 +246,22 @@ void CameraImport(void*,const char*);
 void TrackingImport(void*,const char*);
 void TypeImport(void* c,const char* name);
 void StatImport(void* c,const char* name);
+void ForceImport(void* c,const char* name);
 
 static void LevelImport(void* c, const char* name){
   lvl_comp_t* lc = c;
 
   lc->wid = 800;
   lc->hei = 600;
+}
+
+static EntityRelations GetRelationData(const char* name){
+  for (int i = 0; i < NUM_RELATE; i++){
+    if(strcmp(name, ENT_RELATE[i].name) == 0)
+      return ENT_RELATE[i];
+  };
+
+  return (EntityRelations){.count = 0};
 }
 
 static EntityInstance GetEntData(const char* name){
@@ -230,6 +278,12 @@ static cam_d GetCamData(const char* name){
   };
 }
 
+static force_d GetForceData(const char* name){
+  for (int i = 0; i < NUM_FORCES; i++){
+    if(strcmp(name, FORCE_DATA[i].name) == 0)
+      return FORCE_DATA[i];
+  };
+}
 
 static phys_d GetPhysData(const char* name){
   for (int i = 0; i < NUM_PHYS; i++){

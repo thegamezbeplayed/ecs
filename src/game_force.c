@@ -9,7 +9,6 @@ force_t* ForceFromVec2(ForceType type, Vector2 vec){
   g->speed = 0.125f;
   g->max_velocity = MAX_VELOCITY;
   g->friction = Vector2One();
-  g->on_react = CollisionNoAction;
   return g;
 
 }
@@ -24,13 +23,14 @@ force_t* ForceBump(Vector2 acc){
 
   f->threshold = 0.067f;
   f->speed = 0.895f;
-  f->on_react = ForceReactBump;
+  f->react = REACT_BUMP;
 
   return f;
 }
 
-void ForceSetAccel(rigid_body_t *b, force_t* f, Vector2 acc){
+void ForceSetAccel(force_t* f, Vector2 acc){
   f->accel = acc;
+  f->is_active = Vector2Length(acc) > 0;
 }
 
 void ForceAddMagnitude(force_t* f, Vector2 mag){
@@ -38,31 +38,25 @@ void ForceAddMagnitude(force_t* f, Vector2 mag){
   f->accel = Vector2Add(accel, f->vel);
 }
 
-void ForceSetDir(rigid_body_t *b, force_t* f, Vector2 dir){
+void ForceSetDir(force_t* f, Vector2 dir){
   f->dir = dir;
   Vector2 accel = Vector2Scale(dir,f->speed);
 
-  ForceSetAccel(b, f,accel);
+  ForceSetAccel(f,accel);
 }
 
-void ForceKill(rigid_body_t *b, force_t* f){
+void ForceKill(force_t* f){
 }
 
 void ForceApply(rigid_body_t* b, force_t* f){
-  if(b->num_forces >= MAX_FORCES)
-    return;
-
-  f->on_end = ForceKill;
-
-  f->is_active = true;
-  b->apply[b->num_forces++] = *f;
+  b->vel = Vector2Add(b->vel,f->vel);
 }
 
-void ForceReactBlock(rigid_body_t* a, rigid_body_t* b, force_t*){
+force_t* ForceReactBlock(rigid_body_t* a, rigid_body_t* b, force_t*){
 
 }
 
-void ForceReactBump(rigid_body_t* a, rigid_body_t* b, force_t *f){
+force_t* ForceReactBump(rigid_body_t* a, rigid_body_t* b, force_t *f){
 
   Rectangle collider = {
           .x =      a->bounds.pos.x,
@@ -82,7 +76,7 @@ void ForceReactBump(rigid_body_t* a, rigid_body_t* b, force_t *f){
   Vector2 surface_normal = math_normal_rec(collider, target,&overlap);
 
 
-  Vector2 angBetween = vec_dir_between(b->bounds.pos, a->bounds.pos);
+  Vector2 angBetween = vec_dir_between(a->bounds.pos, b->bounds.pos);
 
   float penAmount = fmaxf(overlap.width,overlap.height);
 
@@ -95,19 +89,19 @@ void ForceReactBump(rigid_body_t* a, rigid_body_t* b, force_t *f){
 
  float speed = f->speed +  Vector2Length(Vector2Max(a->vel,b->vel));
  if(Vector2Length(bump) == 0 && Vector2Length(penetration)==0)
-  return;
+  return NULL;
 
  Vector2 rForce = Vector2Add(bump,penetration);
 
+ /*
  if(Vector2DotProduct(rForce,Vector2Rotate(angBetween,PI))> 0)
-   return;
-
+   return NULL;
+*/
  force_t *reaction = ForceFromVec2(f->type,Vector2ClampValue(rForce,1,speed));
 
  reaction->threshold = f->threshold;
  reaction->friction = f->friction;
-  // Apply impulse
-  ForceApply(a,reaction);
+ return reaction;
 
 }
 

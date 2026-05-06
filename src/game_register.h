@@ -18,7 +18,26 @@
 #define REGISTER_COMPONENT(world, Type) \
   ComponentRegister(world, sizeof(Type))
 
+#define MAX_RELATIONS_PER_ENTITY 4 
+#define MAX_RELATIONS   8
+#define REL_AppliesTo   1u
+#define REL_ChildOf     2u          
+#define REL_Owner       3u         
+#define REL_Target      4u  
+
+typedef uint32_t RelationType;
+typedef struct {
+    Entity       target;      // INVALID_ENTITY = no relation
+    RelationType type;
+} relation_t;
+
 typedef struct world_s world_t;
+void EntityAddRelation(world_t*, Entity, RelationType, Entity);
+void EntityRemoveRelation(world_t*, Entity);
+Entity EntityGetRelationTarget(world_t*, Entity, RelationType);
+bool EntityHasRelation(world_t*, Entity, RelationType);
+
+void EntityRelationEnd(world_t*, Entity);
 
 typedef void (*SystemCB)(world_t* w, Entity e);
 
@@ -72,7 +91,10 @@ struct world_s {
   int               num_sys;
   system_t*         systems;
   prefab_registry_t prefabs;
-  //relation_index_t relations[MAX_RELATIONS];
+
+  relation_t        relations[MAX_ENTITIES];
+  bool              has_relation[MAX_ENTITIES];  
+  
 };
 extern world_t world;
 

@@ -1,5 +1,6 @@
 #include "game_register.h"
 #include "game_systems.h"
+#include "game_common.h"
 
 void WorldInit(world_t* w, int sys_cap) {
   // Zero everything first
@@ -95,3 +96,27 @@ Entity PrefabSpawn(world_t* w, const char* name, Vector2 world_pos){
   }
   return PrefabInstantiate(w, p->entity, world_pos);
 }
+
+void EntityAddRelation(world_t* w, Entity e, RelationType type, Entity target){
+  if (!EntityValid(&w->manager, target)) 
+    return;
+
+  w->relations[e.id] = (relation_t){ .target = target, .type = type };
+  w->has_relation[e.id] = true;
+}
+
+void EntityRemoveRelation(world_t* w, Entity e){
+  if (e.id >= MAX_ENTITIES) return;
+  w->has_relation[e.id] = false;
+}
+
+Entity EntityGetRelationTarget(world_t* w, Entity e, RelationType rel){
+  if (!EntityValid(&w->manager, e) || !w->has_relation[e.id] || w->relations[e.id].type != rel)
+    return INVALID_ENTITY;
+  return w->relations[e.id].target;
+}
+
+bool EntityHasRelation(world_t* w, Entity e, RelationType rel){
+    return EntityGetRelationTarget(w, e, rel).id != INVALID_ENTITY.id;
+}
+
