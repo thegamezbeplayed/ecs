@@ -11,6 +11,9 @@
 
 static ui_element_t* active_tooltip = NULL;
 
+void GuiDrawNPatch(Texture2D texture, NPatchInfo nPatchInfo, Rectangle dest, Vector2 origin, float rotation, Color tint) {
+  DrawTextureNPatch(texture, nPatchInfo, dest, origin, rotation, tint);
+}
 
 ui_element_t* InitElementByName(const char* name, ui_menu_t* m, ui_element_t* o){
   ui_element_d d;
@@ -437,6 +440,23 @@ void ElementRender(ui_element_t* e){
       
       }
       break;
+    case UI_9SLICE:
+      Vector2 origin = { 0.0f, 0.0f };
+      Rectangle dstRecV = e->bounds;
+
+      // A 9-patch (NPATCH_NINE_PATCH)
+      NPatchInfo ninePatchInfo = { (Rectangle){ 0.0f, 0.0f, 64.0f, 64.0f }, 16, 16, 16, 16, NPATCH_NINE_PATCH };
+      // TODO pass in texture or pull from somewhere?
+      GuiDrawNPatch(SHEETS[SHEET_UI].texture, ninePatchInfo, dstRecV, origin, 0.0f, DARKBLUE);
+
+      // Draw text if available
+      if(e->text && e->text[0] != '\0'){
+        Rectangle textBounds = e->bounds;
+        textBounds.y += (e->bounds.height - ui.text_size)/2.0f;
+        textBounds.height = ui.text_size;
+        GuiDrawText(e->text, textBounds, TEXT_ALIGN_CENTER, WHITE);
+      }
+      break;
     default:
       break;
   }
@@ -711,6 +731,8 @@ bool ElementActivateChildren(ui_element_t* e){
     ElementSetState(e->children[i], ELEMENT_LOAD);
     ElementSetState(e->children[i], ELEMENT_IDLE);
   }
+
+  ElementResize(e);
   return ElementSetState(e, ELEMENT_SHOW);
 }
 

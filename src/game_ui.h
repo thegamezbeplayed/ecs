@@ -111,7 +111,8 @@ typedef enum{
   UI_GAME,
   UI_TOOL_TIP,
   UI_CHAR_SPR,
-  UI_BLANK
+  UI_BLANK,
+  UI_9SLICE
 }ElementType;
 
 typedef enum{
