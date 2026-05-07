@@ -6,6 +6,7 @@
 
 #define MAX_BEHAVIOR_TREE 12
 #define MAX_EVENTS 512
+#define MAX_INTERACTIONS 4096
 
 #define COMBO_KEY(a, b) ((a << 8) | b)
 #define CALL_FUNC(type, ptr, ...) ((type)(ptr))(__VA_ARGS__)
@@ -115,18 +116,20 @@ bool CheckTimer(timers_t* pool, notification type);
 
 //INTERACTIONS_T===>
 typedef struct {
+  hash_key_t      key;
   notification    type;
   uint32_t        source, target;
-  cooldown_t*     timer;
+  uint32_t        expiration;
 } interaction_t;
 
-typedef hash_map_t interactions;
+typedef struct{
+  interaction_t entries[MAX_INTERACTIONS];
+  uint32_t      current_frame;
+}interaction_pool_t;
+void InteractionRegister(interaction_pool_t*, uint32_t, uint32_t, const char*,  float);
+bool InteractionCheck(interaction_pool_t*, uint32_t, uint32_t, const char*);
+void InteractionStep(interaction_pool_t*);
 
-void InitInteractions(hash_map_t* m, int cap);
-hash_key_t RegisterInteraction(interactions*, interaction_t*);       
-interaction_t* InitInteraction(uint32_t, uint32_t, char*, int);
-interaction_t* InteractionCheck(interactions* p, uint32_t a, uint32_t b, char* type);
-void InteractionStep(interactions*);
 //<===BEHAVIOR TREES
 
 //forward declare

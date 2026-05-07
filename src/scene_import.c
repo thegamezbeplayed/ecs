@@ -1,5 +1,6 @@
 #include "scene_data.h"
 #include "game_import.h"
+#include "game_helpers.h"
 
 void SceneImport(world_t* w, const char* path){
   for (int i = 0; i < NUM_PREFABS; i++){
@@ -120,28 +121,14 @@ void AnimationImport(void* c, const char* name){
   anim_d data = GetAnimData(name);
   ac->player.sheet_id = data.sheet;
 
-  for(int s = 0; s < ANIM_DONE; s++)
-    for(int i = 0; i < MAX_DIRECTIONS; i++){
-      anim_seq_d seq_dat = data.sequences[s][i];
-      if(seq_dat.state == ANIM_NONE)
-        continue;
-      AnimState ast = seq_dat.state;
-      anim_t* a = AnimRegisterState(data.sheet, name, seq_dat.name);
-
-      if(!a)
-        continue;
-
-      ac->sequences[ast][i] = *a;
-      ac->sequences[ast][i].loop = seq_dat.loop;
-      ac->sequences[ast][i].on_end = seq_dat.end;
-    }
-
-
+  int hurt_count = 0;
+  int HURT_FRAMES[MAX_SPRITE_FRAMES] = {0};
   for(int i = 0; i < MAX_SLICES; i++){
     collision_d cdata = SHEETS[data.sheet].coll[i];
 
     switch(cdata.type){
       case COL_HURT:
+        HURT_FRAMES[hurt_count++] = cdata.frame;
         //ac->on_coll_frame[ac->num_hurt] = AnimCollisionHurt;
         ac->hurtboxes[ac->num_hurt++] = cdata;
         break;
@@ -150,6 +137,31 @@ void AnimationImport(void* c, const char* name){
         break;
     }
   }
+
+  for(int s = 0; s < ANIM_DONE; s++)
+    for(int i = 0; i < MAX_DIRECTIONS; i++){
+      anim_seq_d seq_dat = data.sequences[s][i];
+      if(seq_dat.state == ANIM_NONE)
+        continue;
+      AnimState ast = seq_dat.state;
+      anim_t* a = AnimRegisterState(data.sheet, name, seq_dat.name);
+      if(!a)
+        continue;
+
+      a->interupt = (ast < ANIM_ATTACK);
+      for (int j = 0; j < a->count; j++){
+       if(!array_contains_int(HURT_FRAMES, hurt_count, a->frames[j]))
+        continue;
+
+        a->hurtbox_index = j;
+
+        a->on_frame_start[j] = ANIM_HURTBOX;
+      }
+      ac->sequences[ast][i] = *a;
+      ac->sequences[ast][i].loop = seq_dat.loop;
+      ac->sequences[ast][i].on_end = seq_dat.end;
+    }
+  
   ac->player.state = ANIM_IDLE;
   ac->player.dir = 3;
 }
@@ -175,16 +187,9 @@ void TypeImport(void* c,const char* name){
 void StatImport(void* c,const char* name){
   stat_comp_t* sc = c;
 
-  stats_d data = GetStatData(name);
+  stat_d stat = GetStatData(name);
 
-  for (int i = 0; i < STAT_DONE; i++){
-    stat_d stat = data.stats[i];
-    if(stat.type == STAT_NONE)
-      continue;
-
-    sc->stats[i] = *InitStat(stat.type, stat.min, stat.max, stat.val);
-    sc->stats[i].on_empty = stat.on_empty;
-    sc->stats[i].on_full = stat.on_full;
-  }
-
+  sc->stat = *InitStat(stat.type, stat.min, stat.max, stat.val);
+  sc->stat.on_empty = stat.on_empty;
+  sc->stat.on_full = stat.on_full;
 }

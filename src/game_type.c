@@ -13,6 +13,11 @@ position_t* InitPosition(Vector2 pos){
 
 }
 
+void PositionSet(position_t* p, Vector2 pos){
+  p->last_vpos = p->vpos;
+  p->vpos = pos;
+}
+
 void PositionAddStep(position_t* p, Vector2 v){
   p->last_vpos = p->vpos;
   p->vpos = Vector2Add(p->vpos,v);

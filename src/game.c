@@ -24,6 +24,7 @@ void PreUpdate(void){
 }
 
 void FixedUpdate(void){
+  GP.game_frames++;
   GameEvent(GameEvent_ToNotif(GAME_EVENT_STEP), &world , UPDATE_FIXED);
 }
 

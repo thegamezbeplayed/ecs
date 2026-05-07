@@ -3,6 +3,7 @@
 //#include "game_math.h"
 #include "game_tools.h"
 #include "game_define.h"
+#include "game_process.h"
 #include "game_helpers.h"
 //#include "screens.h"
 #include "player_atlas.h"
@@ -32,7 +33,7 @@ void InitResources(){
       slice_key_t skdat = sdat.keys[j];
 
       anim_frame_t* f = &parse->frames[skdat.frame];
-      s->coll[s->num_coll++] = *InitSpriteCollision(f, COL_HURT,
+      s->coll[s->num_coll++] = *InitSpriteCollision(f, skdat.type,
           SHAPE_REC, skdat.bounds);
     }
   } 
@@ -55,7 +56,7 @@ void InitResources(){
       slice_key_t skdat = sdat.keys[j];
 
       anim_frame_t* f = &parse->frames[skdat.frame];
-      s->coll[s->num_coll++] = *InitSpriteCollision(f, COL_HURT,
+      s->coll[s->num_coll++] = *InitSpriteCollision(f, skdat.type,
           SHAPE_REC, skdat.bounds);
     }
   } 
@@ -192,41 +193,45 @@ void SpritePreprocessImg(Image *img, Texture2D *out){
   UnloadImageColors(pixels);
 }
 
-bool AnimPlay(anim_t* a){
+AnimEventID AnimPlay(anim_t* a){
+
+  AnimEventID ev = 0;
   if(a->elapsed >= a->duration){
+    ev = ANIM_EVENT_FRAME_START;
     a->cur_index++;
     a->elapsed = 0;
   }
   else{
     a->elapsed++;
-    return true;
+    return ev;
   }
 
   if(a->cur_index >= a->count){
     a->cur_index = 0;
-    if(a->loop)
-      return true;
-
+    if(!a->loop)
+      ev = ANIM_EVENT_SEQ_END;
   }
-  else
-    return true;
 
-  return false;
+  return ev;
 }
 
-void AnimSetState(anim_t* a, AnimState s){
-  if(a->state == s)
-    return;
+bool AnimSetState(anim_t* a, AnimState s){
+  if(a->state != s)
+    a->state = s;
 
-  a->state = s;
-
+  return a->state == s;
 }
 
-void AnimPlayerState(anim_player_t* player, AnimState s){
-  if(player->state == s)
-    return;
+bool AnimPlayerState(anim_player_t* player, anim_t* cur, AnimState s){
+  if(s == ANIM_NONE || player->state == s)
+    return false;
+
+  if(!cur->interupt)
+    return false;
 
   player->state = s;
+
+  return true;
 }
 
 anim_t* AnimRegisterState(SheetID id, const char* name, char* group){

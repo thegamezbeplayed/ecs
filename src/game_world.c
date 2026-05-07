@@ -15,6 +15,11 @@ void InitEntityComponentSystem(void){
   RegisterComponentData(&world);
   RegisterSystemData(&world);
   SceneImport(&world, "resources/scene.json");
+
+  for(int i = 0; i < world.num_sys; i++){
+    if(world.systems[i].init)
+      world.systems[i].init(&world);
+  }
 }
 
 void Subscribe(uint64_t event, EventCallback cb, void* data){
@@ -38,7 +43,7 @@ void ScheduleEvent(uint64_t event, void* data, uint64_t uid, TimeFrame tf, int s
 //      step += WorldGetTurn();
       break;
     case TF_UPDATE:
-  //    step += WorldGetTime();
+      step += WorldGetTime();
       break;
     default:
       return;
@@ -68,19 +73,8 @@ void GameSetState(GameState state){
   GP.state[SCREEN_GAMEPLAY] = state;
   GameEvent(GameEvent_ToNotif(GAME_EVENT_STATE), &world , state);
 
-
   if(GP.cb[state])
     GP.cb[state](state);
-}
-
-void WorldPreUpdate(){
-}
-
-void WorldFixedUpdate(){
-  
-}
-
-void WorldPostUpdate(){
 }
 
 void InitGameProcess(){
@@ -138,7 +132,6 @@ void InitGameEvents(){
 
   GP.bus[SCREEN_GAMEPLAY] = InitEventBus(64);
   GP.notifications = InitNotifications(64);
-  InitInteractions(&GP.interactions, 64);
 }
 
 bool GameTransitionScreen(){
@@ -157,9 +150,6 @@ bool GameTransitionScreen(){
 }
 
 void GameProcessStep(){
-  if(GP.interactions.count > 0)
-    InteractionStep(&GP.interactions);
-
   if(BUS)
     EventBusStep(BUS);
 }

@@ -20,6 +20,7 @@ void WorldInit(world_t* w, int sys_cap) {
   w->num_sys = 0;
   w->systems = GameCalloc("WorldInit", sys_cap, sizeof(system_t));
 
+  w->iter = GameCalloc("WorldInit", 1, sizeof(entity_iter_t));
 
   InitComponentMap(COMPONENT_CAP);
 }

@@ -16,7 +16,7 @@ void OnSystemEvent(event_t* ev, void* data){
   }
 }
 
-system_t* SystemRegister(world_t* w, SystemCB tick[UPDATE_DONE], SystemCB set[GAME_DONE]){
+system_t* SystemRegister(world_t* w, SystemCB tick[UPDATE_DONE], SystemCB set[GAME_DONE], SystemFn init){
   system_t* s = &w->systems[w->num_sys];
   memset(s, 0, sizeof(system_t));
   s->index = w->num_sys++;
@@ -35,9 +35,9 @@ system_t* SystemRegister(world_t* w, SystemCB tick[UPDATE_DONE], SystemCB set[GA
     s->set[i] = set[i];
     uint64_t n = GameEvent_ToNotif(GAME_EVENT_STATE);
     TargetSubscribe(n, OnSystemEvent, s, i);
-
   }
 
+  s->init = init;
   return s;
 }
 
@@ -59,13 +59,16 @@ component_pool_t* ComponentQueryInner(world_t* w, system_t* s) {
   return best;
 }
 
-
 void SystemTick(world_t* w, system_t* s, UpdateType u){
   if(!s->tick[u])
     return;
 
   component_pool_t* base = ComponentQueryInner(w, s);
   if (!base) return;
+
+  //TraceLog(LOG_INFO,"CALL SYSTEM %i Update %i at frame %i", s->index, u, WorldGetTime());
+  if(s->needs_iter)
+    *w->iter = EntityIterStart(w, s);
 
   for (int i = 0; i < base->size; i++) {
     Entity e = { base->entities[i], w->manager.generation[base->entities[i]] };
@@ -96,6 +99,7 @@ void SystemSet(world_t* w, system_t* s, GameState g){
   component_pool_t* base = ComponentQueryInner(w, s);
   if (!base) return;
 
+  //TraceLog(LOG_INFO,"CALL SYSTEM %i State %i at frame %i", s->index, g, WorldGetTime());
   for (int i = 0; i < base->size; i++) {
     Entity e = { base->entities[i], w->manager.generation[base->entities[i]] };
 

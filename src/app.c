@@ -38,7 +38,7 @@ int main(void)
   
   InitGameProcess();
 
-//  SetTargetFPS(60);
+  //SetTargetFPS(60);
 #if defined(PLATFORM_WEB)
   emscripten_set_main_loop(UpdateDrawFrame, 0, 1);
 #else

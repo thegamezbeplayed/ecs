@@ -18,15 +18,18 @@ FetchContent_Declare(
   GIT_TAG 5.5
 )
 
+set(ENABLE_CJSON_TEST   OFF CACHE BOOL "" FORCE)
+set(ENABLE_CJSON_UTILS  OFF CACHE BOOL "" FORCE)
+set(BUILD_SHARED_LIBS   OFF CACHE BOOL "" FORCE)
 FetchContent_Declare(
-  cjson
+  cJSON
   GIT_REPOSITORY https://github.com/DaveGamble/cJSON.git
   GIT_TAG master
 )
 
-FetchContent_MakeAvailable(cjson)
+FetchContent_MakeAvailable(cJSON)
 
-set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+# Disable test targets if they still get pulled in
 FetchContent_MakeAvailable(raylib)
 #include_directories(include)         # Your config.h
 add_executable(${PROJECT_NAME})
@@ -56,12 +59,10 @@ add_subdirectory(src)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 add_subdirectory(resources)
 target_include_directories(index PRIVATE
-  ${cjson_SOURCE_DIR}
-  ${cjson_BINARY_DIR}
+  ${cJSON_SOURCE_DIR}
+  ${cJSON_BINARY_DIR}
 )
 target_link_libraries(${PROJECT_NAME} PRIVATE raylib cjson)
-
-
 
 # Let CMake inherit the include dirs from raylib
 target_include_directories(${PROJECT_NAME}

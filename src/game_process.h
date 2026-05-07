@@ -6,7 +6,6 @@
 #include "game_common.h"
 #include "game_utils.h"
 
-#define MAX_INTERACTIONS 256
 DEFINE_EVENT_SPACE(GameEvent, EVENT_GAME_BASE)
 
 extern Font font;
@@ -65,7 +64,7 @@ typedef struct{
   GameState            state[SCREEN_DONE];
   GameStateCB          cb[GAME_DONE];
   notification_pool_t* notifications;
-  interactions         interactions;
+  interaction_pool_t   interactions;
   event_bus_t          *bus[SCREEN_DONE];
   int                  album_id[SCREEN_DONE];
   UpdateFn             phase[SCREEN_DONE][GAME_DONE];
@@ -87,12 +86,6 @@ void TargetSubscribe(uint64_t, EventCallback cb, void* data, int);
 void Subscribe(uint64_t, EventCallback cb, void* data);
 void ScheduleEvent(uint64_t, void* data, uint64_t uid, TimeFrame, int);
 void GameEvent(uint64_t, void*, uint64_t);
-void WorldInitOnce();
-void WorldPreUpdate();
-void WorldFixedUpdate();
-void WorldPostUpdate();
-void WorldRender();
-Rectangle WorldRoomBounds();
 static int WorldGetTime(){
   return GP.game_frames;
 }
@@ -101,15 +94,13 @@ static notification GameNotification(char* str){
   notification_t* n = RegisterNotification(GP.notifications, str);
 }
 
-static void GameInteraction(interaction_t* entry){
-
-  RegisterInteraction(&GP.interactions, entry);
-}
-static interaction_t* GameCheckInteraction(uint32_t a, uint32_t b, char* type){
+static bool GameCheckInteraction(uint32_t a, uint32_t b, char* type){
   return InteractionCheck(&GP.interactions, a, b, type);
 }
 
-const char* GetLevelString(void);
+static void GameInteraction(uint32_t a, uint32_t b, const char* str,  float dur){
+  InteractionRegister(&GP.interactions, a, b, str, dur);
+}
 
 static uint64_t MakeGUID(char* str, int index){
   uint64_t hash = hash_str_64(str);
