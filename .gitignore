@@ -1,0 +1,8 @@
+# IDE specific things
+.idea
+.agents
+
+# Build directories
+cmake-build-debug
+build
+build_debug
