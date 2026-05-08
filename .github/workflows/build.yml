@@ -1,0 +1,54 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+
+jobs:
+  linux-desktop:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            cmake \
+            ninja-build \
+            pkg-config \
+            libx11-dev \
+            libxcursor-dev \
+            libxrandr-dev \
+            libxinerama-dev \
+            libxi-dev \
+            libgl1-mesa-dev \
+            libglu1-mesa-dev \
+            libasound2-dev \
+            xvfb
+
+      - name: Configure
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug
+
+      - name: Build
+        run: cmake --build build --target index --parallel
+
+      - name: Smoke run
+        run: |
+          set +e
+          timeout 15s xvfb-run -a ./build/index
+          status=$?
+          set -e
+
+          # 124 means the app stayed alive until timeout, which is acceptable
+          # for a game loop smoke test.
+          if [ "$status" -eq 124 ] || [ "$status" -eq 0 ]; then
+            exit 0
+          fi
+
+          exit "$status"
