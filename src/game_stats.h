@@ -15,15 +15,11 @@ typedef void (*StatCallback)(struct stat_s* self, float old, float cur);
 typedef float (*StatGetter)(struct stat_s* self);
 
 typedef struct{
+  const char    name[MAX_NAME_LEN];
   StatType      type;
   float         min, max, val;
   StatCallback  on_empty, on_full;
 }stat_d;
-
-typedef struct{
-  const char    name[MAX_NAME_LEN];
-  stat_d        stats[STAT_DONE];
-}stats_d;
 
 struct stat_s{
   StatType      type;

@@ -220,7 +220,6 @@ void EventBusEnsureCap(event_bus_t* bus){
 }
 
 void EventBusStep(event_bus_t* bus){
-/*
   hash_iter_t iter;
   HashStart(&bus->scheduled, &iter);
 
@@ -231,7 +230,7 @@ void EventBusStep(event_bus_t* bus){
 
     switch(e->timing){
       case TF_TURN:
-        if(e->scheduled > WorldGetTurn())
+        //if(e->scheduled > WorldGetTurn())
           continue;
         break;
       case TF_UPDATE:
@@ -244,9 +243,8 @@ void EventBusStep(event_bus_t* bus){
     }
 
     EventEmit(bus, e);
-    HashRemove(&bus->scheduled, e->gouid);
+    HashRemove(&bus->scheduled, e->uid);
   }
-  */
 }
 
 event_sub_t* EventSubscribe(event_bus_t* bus, notification event, EventCallback cb, void* u_data){
@@ -321,15 +319,13 @@ void EventEmit(event_bus_t* bus, event_t* e){
 }
 
 uint64_t EventSchedule(event_bus_t* bus, event_t* e){
-  /*
-  uint64_t uid = hash_combine_64(hash_string_64("EVENT"),
-      hash_combine_64(e->iuid, WorldGetTime()));
+  uint64_t uid = hash_combine_64(hash_str_64("EVENT"),
+      hash_combine_64(e->uid, WorldGetTime()));
 
   e->uid = uid;
 
-  HashPut(&bus->scheduled, gouid, e);
-  return gouid;
-  */
+  HashPut(&bus->scheduled, uid, e);
+  return uid;
 }
 
 notification_t* NotificationGet(notification_pool_t* p, hash_key_t key ){
@@ -372,61 +368,63 @@ notification_t* RegisterNotification(notification_pool_t* p, char* name){
   return notif; 
 }
 
-hash_key_t RegisterInteraction(interactions* p, interaction_t*entry){
-  hash_key_t key = hash_event(entry->source, entry->target, entry->type);
+hash_key_t MakeInteractionKey(notification n, uint32_t source, uint32_t target){
+  return hash_event(source, target, n);
 
-  HashPut(p, key, entry);
-
-  return key;
-} 
-
-interaction_t* InteractionsGetEntry(hash_map_t* m, hash_key_t key){
-  return HashGet(m, key);
 }
 
-void InitInteractions(hash_map_t* m, int cap){
+void InteractionRegister(interaction_pool_t* p, uint32_t source, uint32_t target, const char* name,  float duration){
+  notification type = hash_str_64(name);
+  uint64_t key = MakeInteractionKey(type, source, target);
+  uint32_t hash = (uint32_t)(key ^ (key >> 32) ^ (key >> 16));
 
-  HashInit(m, cap);
-}
+  int current_time = WorldGetTime();
+  for (int i = 0; i < 12; ++i)
+  {
+    uint32_t idx = (hash + i) & (MAX_INTERACTIONS - 1);
+    interaction_t* slot = &p->entries[idx];
 
-interaction_t* InitInteraction(uint32_t a, uint32_t b, char* type, int dur){
-  interaction_t* i = GameCalloc("InitInteraction", 1, sizeof(interaction_t));
-
-  notification n = GameNotification(type);
-  cooldown_t* cd = InitCooldown(dur, n);
-
-  i->type = n;
-  i->timer = cd;
-  i->source = a;
-  i->target = b;
-
-
-  return i;
-}
-
-void InteractionStep(interactions* p){
-  hash_iter_t iter;
-
-  HashStart(p, &iter);
-
-  hash_slot_t* s = NULL;
-
-  while((s = HashNext(&iter))){
-    interaction_t* intact = s->value;
-
-    if(intact->timer->elapsed >= intact->timer->duration){
-      HashRemove(p, s->key);
-      continue;
+    if (slot->key == 0 || slot->key == key)
+    {
+      slot->key = key;
+      slot->type = type;
+      slot->expiration = current_time + duration;
+      return;
     }
-    intact->timer->elapsed++;
-
   }
+  // Table full → ignore (very rare with 4096 slots)
 }
 
-interaction_t* InteractionCheck(interactions* p, uint32_t a, uint32_t b, char* type){
-  notification n = GameNotification(type);
+bool InteractionCheck(interaction_pool_t* p, uint32_t source, uint32_t target, const char* name)
+{
+  notification type = hash_str_64(name);
 
-  hash_key_t key = hash_event(a, b, n);
+  uint64_t key = MakeInteractionKey(type, source, target);
+  uint32_t hash = (uint32_t)(key ^ (key >> 32) ^ (key >> 16));  // good mixing
+  int current_time = WorldGetTime();
 
-  return InteractionsGetEntry(p, key);
+  for (int i = 0; i < 12; ++i)   // limited linear probing
+  {
+    uint32_t idx = (hash + i) & (MAX_INTERACTIONS - 1);
+    interaction_t* slot = &p->entries[idx];
+
+    if (slot->key == 0)                    // empty slot
+      return true;
+
+    if (slot->key == key){
+      int remaining = slot->expiration - current_time;
+      if(remaining > 0)
+        return false;
+
+      slot->key = 0;
+      return true;
+
+    }
+  }
+
+  return true;   // table full → allow interaction (rare)
+}
+
+void InteractionStep(interaction_pool_t* p){
+  p->current_frame = WorldGetTime();
 }

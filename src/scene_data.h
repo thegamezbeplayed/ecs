@@ -24,13 +24,13 @@
 #define CELL_HEIGHT 80
 
 #define NUM_PREFABS 4 
-#define NUM_ENTS    11 
+#define NUM_ENTS    22 
 #define NUM_PHYS    2
 #define NUM_ANIM    2
 #define NUM_SPR     1
 #define NUM_CAMS    1
 #define NUM_TILES   37
-#define NUM_STATS   2
+#define NUM_STATS   4 
 #define NUM_FORCES  4
 
 #define NUM_RELATE 2 
@@ -60,19 +60,36 @@ static const EntityPrefab PREFAB_DATA[NUM_PREFABS] = {
 
 
 static const EntityRelations ENT_RELATE[NUM_RELATE] = {
-  {"player", 1, 
-    {"Force", 2, 
-      {
-        {"player-steering", REL_AppliesTo},
-        {"player-bump", REL_AppliesTo},
+  {"player", 2,
+    { 
+      {"Force", 2, 
+        {
+          {"player-steering", REL_AppliesTo},
+          {"player-bump", REL_AppliesTo},
+        }
+      },
+      {"Stat", 2,
+        {
+          {"player-hp", REL_AppliesTo},
+          {"player-dmg", REL_AppliesTo},
+
+        }
       }
     }
   },
-  {"slime", 1, 
-    {"Force", 2, 
-      {
-        {"slime-steering", REL_AppliesTo},
-        {"slime-bump", REL_AppliesTo},
+  {"slime", 2,
+    { 
+      {"Force", 2, 
+        {
+          {"slime-steering", REL_AppliesTo},
+          {"slime-bump", REL_AppliesTo},
+        },
+      },
+      {"Stat", 2,
+        {
+          {"slime-hp", REL_AppliesTo},
+          {"slime-dmg", REL_AppliesTo},
+        }
       }
     }
   }
@@ -89,7 +106,18 @@ static const EntityInstance ENT_DATA[NUM_ENTS] = {
     {"ent_data", "slime", ENT_MOB, 300, 288},
     {"ent_data", "slime", ENT_MOB, 46, 288},
     {"ent_data", "slime", ENT_MOB, 416, 28},
-    {"ent_data", "slime", ENT_MOB, 46, 88},
+    {"ent_data", "slime", ENT_MOB, 146, 88},
+    {"ent_data", "slime", ENT_MOB, 246, 88},
+    {"ent_data", "slime", ENT_MOB, 346, 88},
+    {"ent_data", "slime", ENT_MOB, 46, 188},
+    {"ent_data", "slime", ENT_MOB, 46, 388},
+    {"ent_data", "slime", ENT_MOB, 46, 488},
+    {"ent_data", "slime", ENT_MOB, 146, 388},
+    {"ent_data", "slime", ENT_MOB, 346, 388},
+    {"ent_data", "slime", ENT_MOB, 446, 388},
+    {"ent_data", "slime", ENT_MOB, 6, 88},
+    {"ent_data", "slime", ENT_MOB, 6, 88},
+    {"ent_data", "slime", ENT_MOB, 6, 88},
 };
 
 // Tile Data
@@ -120,29 +148,21 @@ static const force_d FORCE_DATA[NUM_FORCES] = {
     PHYS_EVENT_ACCEL,
   },
   {"player-bump", FORCE_IMPULSE,
-    0.67f, 1.25f, 0.1f, {0.915, 0.915},
+    0.5f, 1.25f, 0.1f, {0.85, 0.75},
     PHYS_EVENT_COLL, REACT_BUMP
   },
   {"slime-bump", FORCE_IMPULSE,
-    1.0f, 1.15f, 0.125f, {0.915, 0.915},
+    0.34f, 1.15f, 0.125f, {0.85, 0.67},
     PHYS_EVENT_COLL, REACT_BUMP
   },
 
 };
 
-static const stats_d STAT_DATA[NUM_STATS] = {
-  {"player",
-    {
-      { STAT_HP, 0, 25, 25},
-      { STAT_DMG, 1, 1, 1},
-    }
-  },
-  {"slime",
-    {
-      {STAT_HP, 0, 10, 10},
-      {STAT_DMG, 1, 1, 1},
-    }
-  }
+static const stat_d STAT_DATA[NUM_STATS] = {
+  {"player-hp", STAT_HP, 0, 25, 25},
+  {"player-dmg", STAT_DMG, 1, 1, 1},
+  {"slime-hp", STAT_HP, 0, 10, 10},
+  {"slime-dmg", STAT_DMG, 1, 1, 1},
 };
 
 static const anim_d ANIM_DATA[NUM_ANIM] = {
@@ -161,13 +181,11 @@ static const anim_d ANIM_DATA[NUM_ANIM] = {
         {ANIM_IDLE, "idle270", 270, true, },
       },
       {
-        {ANIM_ATTACK, "attack0", 0, false, ANIM_SUSPEND},
-        {ANIM_ATTACK, "attack90", 90, false, ANIM_SUSPEND},
-        {ANIM_ATTACK, "attack180", 180, false, ANIM_SUSPEND},
-        {ANIM_ATTACK, "attack270", 270, false, ANIM_SUSPEND},
+        {ANIM_ATTACK, "attack0", 0, false, ANIM_SUSPEND, ANIM_HURTBOX},
+        {ANIM_ATTACK, "attack90", 90, false, ANIM_SUSPEND, ANIM_HURTBOX},
+        {ANIM_ATTACK, "attack180", 180, false, ANIM_SUSPEND, ANIM_HURTBOX},
+        {ANIM_ATTACK, "attack270", 270, false, ANIM_SUSPEND, ANIM_HURTBOX},
       }
-
-
     }
   },
   {"slime",   SHEET_MOB,
@@ -177,6 +195,12 @@ static const anim_d ANIM_DATA[NUM_ANIM] = {
         {ANIM_WALK, "walk90", 90, false, ANIM_SUSPEND},
         {ANIM_WALK, "walk180", 180, false, ANIM_SUSPEND},
         {ANIM_WALK, "walk270", 270, false, ANIM_SUSPEND},
+      },
+      {
+        {ANIM_HURT, "hurt0", 0, false, ANIM_SUSPEND},
+        {ANIM_HURT, "hurt90", 90, false, ANIM_SUSPEND},
+        {ANIM_HURT, "hurt180", 180, false, ANIM_SUSPEND},
+        {ANIM_HURT, "hurt270", 270, false, ANIM_SUSPEND},
       },
       {
         {ANIM_IDLE, "idle0", 0, true, },
@@ -299,7 +323,7 @@ static anim_d GetAnimData(const char* name){
   };
 }
 
-static stats_d GetStatData(const char* name){
+static stat_d GetStatData(const char* name){
   for (int i = 0; i < NUM_STATS; i++){
     if(strcmp(name, STAT_DATA[i].name) == 0)
       return STAT_DATA[i];

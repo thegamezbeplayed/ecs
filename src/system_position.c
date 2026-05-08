@@ -5,9 +5,9 @@ void OnPositionEvent(event_t* ev, void* data){
   position_t* p = data;
   rigid_body_t* b = ev->data;
 
-  Vector2 step = b->vel;
+  Vector2 pos = b->bounds.pos;
 
-  PositionAddStep(p, step);
+  PositionSet(p, pos);
 }
 
 void PositionLoad(world_t* w, Entity e){

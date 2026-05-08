@@ -48,7 +48,6 @@ BehaviorStatus InputActionAttack(input_t* gi, KeyboardKey k){
   return BEHAVIOR_SUCCESS;
 }
 
-
 input_t* InitInput(void){
   input_t* in = GameCalloc("InitInput", 1, sizeof(input_t));
 
@@ -79,7 +78,8 @@ bool InputCheck(input_t* gi, Entity e){
   }
   else if(IsKeyReleased(gi->last_key)){
     n = InputEvent_ToNotif(INPUT_EVENT_KEY_RELEASE);
-    GameEvent(n, gi, gi->last_act);
+    GameEvent(n, gi, e.id);
+    gi->last_key = 0;
     return false;
   }
   else

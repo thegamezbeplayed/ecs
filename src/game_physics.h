@@ -19,6 +19,9 @@ typedef enum{
   PHYS_EVENT_ACCEL,
   PHYS_EVENT_COLL,
   PHYS_EVENT_FORCE_END,
+  PHYS_EVENT_SPAWN,
+  PHYS_EVENT_DESTROY,
+  PHYS_EVENT_HIT,
   PHYS_EVENT_COUNT
 }PhysicsEventID;
 
@@ -85,18 +88,33 @@ typedef struct bounds_s {
   float       width,height;
 } bounds_t;
 
+typedef enum{
+  COLL_NONE,
+  COLL_FORCE,
+  COLL_HIT
+}CollisionBehavior;
+
 struct rigid_body_s{
-  Vector2     vel;
-  int         col_rate;
-  bounds_t    bounds;
-  float       restitution;
-  bool        is_static, is_grounded;
+  Vector2           vel;
+  int               col_rate;
+  bounds_t          bounds;
+  CollisionBehavior on_coll;
+  float             restitution;
+  bool              is_static, is_grounded;
 };
 
 rigid_body_t* InitRigidBody(Vector2 pos, ShapeType, float, float);
 static void RigidBodySetPos(rigid_body_t* b, Vector2 pos){
   b->bounds.pos = pos;
 }
+
+static void RigidBodySetBounds(rigid_body_t* b, Vector2 size){
+  b->bounds.width = size.x;
+  b->bounds.height = size.y;
+
+  b->bounds.radius = Vector2Length(size)/2;
+}
+
 
 bool CheckCollision(rigid_body_t *a, rigid_body_t *b, int len);
 #endif

@@ -8,13 +8,12 @@
 #define MAX_ENTITIES 640
 #define MAX_NAME_LEN 128
 #define MAX_QUERY_SET 64
-
-
+#define ENT_MAX_ADD  32
 typedef struct {
     uint32_t id;
     uint32_t generation;
 } Entity;
-extern uint32_t PLAYER;
+
 static const Entity INVALID_ENTITY = {UINT32_MAX, -1};
 
 typedef struct {

@@ -3,6 +3,19 @@
 
 #include "game_define.h"
 
+static bool array_contains_int(const int* arr, int count, int value)
+{
+    if (arr == NULL || count <= 0)
+        return false;
+
+    for (int i = 0; i < count; ++i)
+    {
+        if (arr[i] == value)
+            return true;
+    }
+    return false;
+}
+
 static bool COMPARE_ALL_BOOL(bool *all, int count){
   for (int i = 0; i < count; i++)
     if(!all[i])

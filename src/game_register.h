@@ -23,7 +23,7 @@
 #define REL_AppliesTo   1u
 #define REL_ChildOf     2u          
 #define REL_Owner       3u         
-#define REL_Target      4u  
+#define REL_Target      4u
 
 typedef uint32_t RelationType;
 typedef struct {
@@ -40,16 +40,19 @@ bool EntityHasRelation(world_t*, Entity, RelationType);
 void EntityRelationEnd(world_t*, Entity);
 
 typedef void (*SystemCB)(world_t* w, Entity e);
+typedef void (*SystemFn)(world_t* w);
 
 typedef struct {
   int       index;
   comp_id_t terms[MAX_TERMS];
   int       term_count;
+  SystemFn  init;
   SystemCB  set[GAME_DONE];
   SystemCB  tick[UPDATE_DONE];
+  bool      needs_iter;
 } system_t;
 
-system_t* SystemRegister(world_t* w, SystemCB*, SystemCB*);
+system_t* SystemRegister(world_t* w, SystemCB*, SystemCB*, SystemFn);
 
 void SystemTick(world_t* w, system_t* s, UpdateType u);
 void SystemSet(world_t* w, system_t* s, GameState g);
@@ -82,6 +85,13 @@ typedef struct {
     int      count;
 } prefab_registry_t;
 
+typedef struct{
+  component_pool_t*   base;
+  int                 index, term_count;
+  Entity              current;
+  const comp_id_t*    terms;
+}entity_iter_t;
+
 struct world_s {
   EntityManager     manager;
 
@@ -94,10 +104,15 @@ struct world_s {
 
   relation_t        relations[MAX_ENTITIES];
   bool              has_relation[MAX_ENTITIES];  
-  
+  entity_iter_t*    iter; 
 };
 extern world_t world;
 
+static void EntityIterReset(entity_iter_t* it){
+  it->index = -1;
+}
+entity_iter_t EntityIterStart(world_t*, system_t*);
+bool EntityIterNext(entity_iter_t*, world_t*);
 
 component_pool_t* ComponentQueryInner(world_t* w, system_t* s);
 void WorldInit(world_t* w, int sys_cap);
@@ -127,4 +142,5 @@ extern entity_query_t EQ;
 void QueryBegin(void);
 int QueryEntityByComp(world_t* w, int, comp_id_t[]);
 Entity QueryGetNext(world_t* w);
+
 #endif

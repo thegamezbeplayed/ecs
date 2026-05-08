@@ -25,7 +25,6 @@ Entity EntityCreatePrefab(EntityManager* em) {
   return e;
 }
 
-
 Entity EntityCreate(EntityManager* em) {
   uint32_t id = em->free_list[--em->free_count];
 
@@ -119,4 +118,52 @@ Entity QueryGetNext(world_t* w){
     return INVALID_ENTITY;
 
   return EntityGet(&w->manager, EQ.results[EQ.query_pos++]);
+}
+
+
+entity_iter_t EntityIterStart(world_t* w, system_t* s){
+  entity_iter_t it = {0};
+  it.terms = s->terms;
+  it.term_count = s->term_count;
+
+  it.base = ComponentQueryInner(w, s);
+  if (!it.base)
+    return it;
+
+  it.index = -1;   // will be incremented on first Next()
+  return it;
+}
+
+bool EntityIterNext(entity_iter_t* it, world_t* w){
+  if (!it->base)
+    return false;
+
+  while (++it->index < it->base->size)
+  {
+    uint32_t id = it->base->entities[it->index];
+    Entity e = { id, w->manager.generation[id] };
+
+    if (!EntityReady(&w->manager, e))
+      continue;
+
+    // Check if entity has ALL required components
+    bool match = true;
+    for (int t = 0; t < it->term_count; ++t)
+    {
+      component_pool_t* p = w->pools[it->terms[t]];
+      if (p->sparse[id] == -1)   // doesn't have this component
+      {
+        match = false;
+        break;
+      }
+    }
+
+    if (match)
+    {
+      it->current = e;
+      return true;
+    }
+  }
+
+  return false;
 }

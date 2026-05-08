@@ -19,6 +19,15 @@
 
 DEFINE_EVENT_SPACE(AnimEvent, EVENT_ANIM_BASE)
 
+  typedef enum{
+    ANIM_EVENT_NONE,
+    ANIM_EVENT_FRAME,
+    ANIM_EVENT_FRAME_START,
+    ANIM_EVENT_FRAME_END,
+    ANIM_EVENT_SEQ_END,
+    ANIM_EVENT_COUNT
+  }AnimEventID;
+
 typedef struct sprite_s sprite_t;
 typedef struct sprite_slice_s sprite_slice_t;
 
@@ -32,7 +41,7 @@ typedef struct{
   int       frame;
   CollType  type;
   ShapeType shape;
-  int       posx, posy, wid, hei;
+  int       duration, posx, posy, wid, hei;
 }collision_d;
 
 typedef struct sub_texture_s {
@@ -167,6 +176,7 @@ typedef enum{
   ANIM_IDLE,
   ANIM_WALK,
   ANIM_ATTACK,
+  ANIM_HURT,
   ANIM_DIE,
   ANIM_DONE
 }AnimState;
@@ -198,12 +208,14 @@ struct anim_s{
   int               frames[MAX_ANIM_FRAMES];
   int               duration, elapsed;
   float             speed;
-  bool              loop;
+  bool              loop, interupt;
+  int               hurtbox_index;
   AnimState         state;
+  AnimBehavior      on_frame_start[MAX_ANIM_FRAMES];
   AnimBehavior      on_end, on_start;
 };
 
-bool AnimPlay(anim_t*);
+AnimEventID AnimPlay(anim_t*);
 anim_t* AnimRegisterState(SheetID, const char* tag, char* group);
 struct anim_player_s{
   SheetID         sheet_id;
@@ -212,8 +224,8 @@ struct anim_player_s{
   collision_d     col_data;
 };
 
-void AnimSetState(anim_t* a, AnimState s);
-void AnimPlayerState(anim_player_t* player, AnimState s);
+bool AnimSetState(anim_t* a, AnimState s);
+bool AnimPlayerState(anim_player_t*, anim_t*, AnimState s);
 //SPRITE_T===>
 struct sprite_s{
   int               sheet_id, index;

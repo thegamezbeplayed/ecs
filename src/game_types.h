@@ -22,7 +22,7 @@ typedef struct{
 position_t* InitPosition(Vector2 pos);
 void PositionAddStep(position_t*, Vector2);
 void PositionSetDest(position_t* p, Vector2 v);
-
+void PositionSet(position_t* p, Vector2 pos);
 typedef struct{
   uint16_t type;
   uint8_t  flags;

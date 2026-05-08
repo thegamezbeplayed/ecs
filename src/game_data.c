@@ -16,6 +16,7 @@ uint64_t FOLLOW_ID;
 uint64_t STATE_ID;
 uint64_t STAT_ID;
 uint64_t FORCE_ID;
+uint64_t EXPIR_ID;
 
 int PHYS_SYS;
 
@@ -55,11 +56,15 @@ void RegisterComponentData(world_t* w) {
 
   FORCE_ID = REGISTER_COMPONENT(w, force_comp_t);
   ComponentMap("Force", &FORCE_ID, ForceImport);
-  
+
+  EXPIR_ID = REGISTER_COMPONENT(w, lifetime_t);
+  ComponentMap("Lifetime", &EXPIR_ID, NULL);
+   
 }
 
 void RegisterSystemData(world_t* w){
   SystemCB atick[UPDATE_DONE] = {0};
+  //atick[UPDATE_PRE] = AnimBehavior;
   atick[UPDATE_FIXED] = AnimSystem;
   atick[UPDATE_DRAW] = AnimRender;
 
@@ -67,7 +72,7 @@ void RegisterSystemData(world_t* w){
 
   aset[GAME_READY] = AnimLoad;
 
-  system_t* asys = SystemRegister(w, atick, aset);
+  system_t* asys = SystemRegister(w, atick, aset, NULL);
 
   SystemRequire(asys, ANIM_ID);
   SystemRequire(asys, POS_ID);
@@ -77,7 +82,7 @@ void RegisterSystemData(world_t* w){
 
   SystemCB inset[GAME_DONE] = {0};
   inset[GAME_READY] = InputLoad;
-  system_t* insys = SystemRegister(w, intick, inset);
+  system_t* insys = SystemRegister(w, intick, inset, NULL);
 
   SystemRequire(insys, INPUT_ID);
   SystemRequire(insys, POS_ID);
@@ -86,7 +91,7 @@ void RegisterSystemData(world_t* w){
 
   SystemCB poset[GAME_DONE] = {0};
   poset[GAME_READY] = PositionLoad;
-  system_t* posys = SystemRegister(w, potick, poset);
+  system_t* posys = SystemRegister(w, potick, poset, NULL);
   SystemRequire(posys, POS_ID);
 
   SystemCB phtick[UPDATE_DONE] = {0};
@@ -96,8 +101,8 @@ void RegisterSystemData(world_t* w){
 
   SystemCB phset[GAME_DONE] = {0};
   phset[GAME_READY] = PhysicsLoad;
-  system_t* phsys = SystemRegister(w, phtick, phset);
-
+  system_t* phsys = SystemRegister(w, phtick, phset, PhysicsInit);
+  phsys->needs_iter = true;
   PHYS_SYS = phsys->index;
   SystemRequire(phsys, PHYS_ID);
   SystemRequire(phsys, POS_ID);
@@ -109,7 +114,7 @@ void RegisterSystemData(world_t* w){
   lset[GAME_READY] = LevelReady;
 
   ltick[UPDATE_DRAW] = LevelRender;
-  system_t* lvlsys = SystemRegister(w, ltick, lset);
+  system_t* lvlsys = SystemRegister(w, ltick, lset, NULL);
   SystemRequire(lvlsys, LVL_ID);
 
   SystemCB rntick[UPDATE_DONE] = {0};
@@ -119,7 +124,7 @@ void RegisterSystemData(world_t* w){
   SystemCB rnset[GAME_DONE] = {0};
   rnset[GAME_READY] = RenderLoad;
 
-  system_t* rnsys = SystemRegister(w, rntick, rnset);
+  system_t* rnsys = SystemRegister(w, rntick, rnset, NULL);
 
   SystemRequire(rnsys, CAM_ID);
 
@@ -130,7 +135,7 @@ void RegisterSystemData(world_t* w){
   cfset[GAME_LOADING] = CameraLoad;
   cfset[GAME_READY] = CameraReady;
 
-  system_t* cfsys = SystemRegister(w, cftick, cfset);
+  system_t* cfsys = SystemRegister(w, cftick, cfset, NULL);
   SystemRequire(cfsys, CAM_ID);
   SystemRequire(cfsys, TRACK_ID);
 
@@ -139,7 +144,7 @@ void RegisterSystemData(world_t* w){
 
   SystemCB spset[GAME_DONE] = {0};
 
-  system_t* spsys = SystemRegister(w, sptick, spset);
+  system_t* spsys = SystemRegister(w, sptick, spset, NULL);
 
   SystemRequire(spsys, SPR_ID);
   SystemRequire(spsys, POS_ID);
@@ -151,10 +156,31 @@ void RegisterSystemData(world_t* w){
   SystemCB frset[GAME_DONE] = {0};
   frset[GAME_READY] = ForceLoad;
 
-  system_t* frsys = SystemRegister(w, frtick, frset);
+  system_t* frsys = SystemRegister(w, frtick, frset, NULL);
 
   SystemRequire(frsys, FORCE_ID);
 
+  SystemCB lftick[UPDATE_DONE] = {0};
+  lftick[UPDATE_FINAL] = ExpirationSystem;
+
+  SystemCB lfset[GAME_DONE] = {0};
+
+  system_t* lfsys = SystemRegister(w, lftick, lfset, NULL);
+
+  SystemRequire(lfsys, EXPIR_ID);
+
+
+  /*
+  SystemCB cmbtick[UPDATE_DONE] = {0};
+  cmbtick[UPDATE_FIXED] = CombatSystem;
+
+  SystemCB cmbset[GAME_DONE] = {0};
+  cmbset[GAME_READY] = CombatLoad;
+
+  system_t* cmbsys = SystemRegister(w, cmbtick, cmbset);
+
+  SystemRequire(cmbsys, );
+*/
 
 
 }

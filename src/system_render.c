@@ -21,6 +21,7 @@ void RenderEnd(world_t* w, Entity e){
   EndTextureMode();
   DrawTexturePro(c->view.tex.texture, c->view.view, c->view.bounds, VECTOR2_ZERO, 0, WHITE);
 
+  DrawFPS(10,10);
   EndDrawing();
 
 }

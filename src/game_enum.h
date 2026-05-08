@@ -8,13 +8,14 @@
 #define EVENT_PHYS_BASE   0x3000
 #define EVENT_POS_BASE    0x4000
 #define EVENT_ANIM_BASE   0x5000
+#define EVENT_COMBAT_BASE 0x6000
 #define EVENT_BASE_MASK   0xFFFFF000
 #define EVENT_ID_MASK     0x00000FFF
 
 #define DEFINE_EVENT_SPACE(name, base) \
     static inline notification name##_ToNotif(int e) { \
-        return base + e; \
-    }
+        return base + e;}
+
 
 typedef uint64_t notification;
 
@@ -40,9 +41,10 @@ typedef enum{
 }InputEventID;
 
 typedef enum{
-  ANIM_EVENT_FRAME,
-  ANIM_EVENT_COUNT
-}AnimEventID;
+  COMB_EVENT_HURTBOX,
+  COMB_EVENT_HIT,
+  COMB_EVENT_COUNT,
+}CombatEventID;
 
 typedef enum{
   ENT_NONE,
