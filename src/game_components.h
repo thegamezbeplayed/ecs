@@ -22,5 +22,4 @@ ComponentImportFn ComponentMapFn(const char* name);
 
 comp_id_t* ComponentMapGetID(const char* name);
 void InitComponentMap(int size);
-
 #endif

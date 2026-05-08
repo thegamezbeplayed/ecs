@@ -1,0 +1,10 @@
+#include "game_systems.h"
+
+void ExpirationSystem(world_t* w, Entity e){
+  lifetime_t* lf = GET_COMPONENT(w, e, lifetime_t, EXPIR_ID);
+
+  if(WorldGetTime() < lf->expiration)
+    return;
+
+  EntityRelationEnd(w, e);
+}

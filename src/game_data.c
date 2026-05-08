@@ -16,6 +16,7 @@ uint64_t FOLLOW_ID;
 uint64_t STATE_ID;
 uint64_t STAT_ID;
 uint64_t FORCE_ID;
+uint64_t EXPIR_ID;
 
 int PHYS_SYS;
 
@@ -55,7 +56,10 @@ void RegisterComponentData(world_t* w) {
 
   FORCE_ID = REGISTER_COMPONENT(w, force_comp_t);
   ComponentMap("Force", &FORCE_ID, ForceImport);
-  
+
+  EXPIR_ID = REGISTER_COMPONENT(w, lifetime_t);
+  ComponentMap("Lifetime", &EXPIR_ID, NULL);
+   
 }
 
 void RegisterSystemData(world_t* w){
@@ -155,6 +159,16 @@ void RegisterSystemData(world_t* w){
   system_t* frsys = SystemRegister(w, frtick, frset, NULL);
 
   SystemRequire(frsys, FORCE_ID);
+
+  SystemCB lftick[UPDATE_DONE] = {0};
+  lftick[UPDATE_FINAL] = ExpirationSystem;
+
+  SystemCB lfset[GAME_DONE] = {0};
+
+  system_t* lfsys = SystemRegister(w, lftick, lfset, NULL);
+
+  SystemRequire(lfsys, EXPIR_ID);
+
 
   /*
   SystemCB cmbtick[UPDATE_DONE] = {0};

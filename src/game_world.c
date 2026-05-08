@@ -52,8 +52,8 @@ void ScheduleEvent(uint64_t event, void* data, uint64_t uid, TimeFrame tf, int s
 
   event_t* ev = InitEvent(GP.notifications, event, data, uid);
 
-    ev->timing = tf,
-    ev->scheduled = step,
+  ev->timing = tf;
+  ev->scheduled = step;
 
   EventSchedule(BUS, ev);
 }
@@ -130,7 +130,7 @@ void InitGameEvents(){
   GP.children[SCREEN_GAMEPLAY].process = PROCESS_LEVEL;
   GP.game_frames = 0; 
 
-  GP.bus[SCREEN_GAMEPLAY] = InitEventBus(64);
+  GP.bus[SCREEN_GAMEPLAY] = InitEventBus(128);
   GP.notifications = InitNotifications(64);
 }
 

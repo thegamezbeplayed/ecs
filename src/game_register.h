@@ -142,4 +142,5 @@ extern entity_query_t EQ;
 void QueryBegin(void);
 int QueryEntityByComp(world_t* w, int, comp_id_t[]);
 Entity QueryGetNext(world_t* w);
+
 #endif

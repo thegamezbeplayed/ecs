@@ -63,15 +63,12 @@ void OnPhysEvent(event_t* ev, void* data){
       pc->pos = *InitPosition(pos);
 
       ph->rb.on_coll = COLL_HIT;
-      TraceLog(LOG_INFO, "==== PHYS_EVENT_SPAWN ===\n Spawn Rigid Body %d for Ent %d at %i", rb.id, e.id, WorldGetTime());
       EntityAddRelation(&world, rb, REL_ChildOf, e);
       notification n = PhysEvent_ToNotif(PHYS_EVENT_DESTROY);
-      ScheduleEvent(n, &rb, rb.id, TF_UPDATE, coll->duration);
-      break;
-    case PHYS_EVENT_DESTROY:
-      world_t* w = data;
-      Entity tar = EntityGet(&w->manager, ev->eid);
-      EntityRelationEnd(w, tar);
+
+      lifetime_t* lf = ComponentAdd(&world, rb, EXPIR_ID);
+
+      LifetimeSet(lf, coll->duration);
       break;
     case COMB_EVENT_HIT:
       
@@ -80,8 +77,6 @@ void OnPhysEvent(event_t* ev, void* data){
 }
 
 void PhysicsInit(world_t* w){
-  notification n = PhysEvent_ToNotif(PHYS_EVENT_DESTROY);
-  Subscribe(n, OnPhysEvent, w);
 }
 
 void PhysicsLoad(world_t* w, Entity e){
@@ -114,15 +109,32 @@ void PhysicsCollision(world_t* w, Entity e){
 
     Entity other = w->iter->current;
 
+    if(EntityGetRelationTarget(w, e, REL_ChildOf).id == other.id)
+      continue;
+
     if(EntityGetRelationTarget(w, other, REL_ChildOf).id == e.id)
       continue;
 
     if(e.id == other.id)
       continue;
 
-    if(!GameCheckInteraction(e.id, other.id, "RB_COLL"))
-      continue;
+    char estr[MAX_NAME_LEN] = "RB_COLL";
+    notification n = PhysEvent_ToNotif(PHYS_EVENT_COLL);
+    uint32_t evid = e.id;
+    switch(body->on_coll){
+      case COLL_FORCE:
+        strcpy(estr, "RB_COLL");
+        n = PhysEvent_ToNotif(PHYS_EVENT_COLL);
+        break;
+      case COLL_HIT:
+        strcpy(estr, "RB_HIT");
+        n = CombatEvent_ToNotif(COMB_EVENT_HIT);
+        evid = other.id;
+        break;
+    }
 
+    if(!GameCheckInteraction(e.id, other.id, estr))
+      continue;
 
     opc = GET_COMPONENT(w, other, phys_comp_t, PHYS_ID);
 
@@ -130,29 +142,15 @@ void PhysicsCollision(world_t* w, Entity e){
       continue;
 
     rigid_body_t* tar = &opc->rb;
-    
+
     if(!CheckCollision(body, tar, 0))
       continue;
-
-    TraceLog(LOG_INFO, "== INTERACTION ==\n %d with %d at %i", e.id, other.id, WorldGetTime());
-
-    notification n = PhysEvent_ToNotif(PHYS_EVENT_COLL);
-    uint32_t evid = e.id;
-    switch(body->on_coll){
-      case COLL_FORCE:
-        n = PhysEvent_ToNotif(PHYS_EVENT_COLL);
-        break;
-      case COLL_HIT:
-        n = CombatEvent_ToNotif(COMB_EVENT_HIT);
-        evid = other.id;
-        break;
-    }
 
     GameEvent(n, &other, evid);
 
     int rate = imax(body->col_rate, tar->col_rate);
     
-    GameInteraction(e.id, other.id, "RB_COLL", rate);
+    GameInteraction(e.id, other.id, estr, rate);
     return;
   }
 
@@ -237,7 +235,6 @@ void ForceCleanup(world_t* w, Entity e){
 
   notification n = PhysEvent_ToNotif(PHYS_EVENT_FORCE_END);
   GameEvent(n, &fc->f, rel.id);
-  TraceLog(LOG_INFO, "== END RELATION ==\n %d on %d", e.id, rel.id);
 
   EntityRelationEnd(w, e);
 

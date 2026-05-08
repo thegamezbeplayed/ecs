@@ -46,4 +46,6 @@ void CombatSystem(world_t* w, Entity e);
 
 void ForceCleanup(world_t* w, Entity e);
 
+void ExpirationSystem(world_t* w, Entity e);
+
 #endif

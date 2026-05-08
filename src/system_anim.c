@@ -2,6 +2,10 @@
 #include "game_systems.h"
 #include "game_helpers.h"
 
+void AnimSet(anim_comp_t* ac, anim_t* a, AnimState s){
+
+}
+
 void AnimEvent(event_t* ev, void* data){
   anim_comp_t* ac = data;
 
@@ -18,11 +22,7 @@ void AnimEvent(event_t* ev, void* data){
       break;
   }
 
-  if(!AnimPlayerState(ap, a, s))
-    return;
-
-  if(!a)
-    return;
+  AnimSet(ac, a, s);
 }
 
 void AnimInputEvent(event_t* ev, void* data){

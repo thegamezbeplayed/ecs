@@ -1,6 +1,6 @@
-#include "game_types.h"
 #include "game_define.h"
 #include "game_helpers.h"
+#include "game_process.h"
 
 position_t* InitPosition(Vector2 pos){
   position_t* p = GameCalloc("InitPosition", 1, sizeof(position_t));
@@ -29,4 +29,9 @@ void PositionSetDest(position_t* p, Vector2 v){
 
   Vector2 dir = vec_dir_between(p->vpos, p->vdest);
   p->angle = angle_snap_to_card(dir);
+}
+
+
+void LifetimeSet(lifetime_t* lf, int dur){
+  lf->expiration = WorldGetTime() + dur;
 }

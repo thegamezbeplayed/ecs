@@ -29,6 +29,7 @@ extern uint64_t FOLLOW_ID;
 extern uint64_t STATE_ID;
 extern uint64_t STAT_ID;
 extern uint64_t FORCE_ID;
+extern uint64_t EXPIR_ID;
 
 extern int PHYS_SYS;
 
@@ -103,3 +104,10 @@ typedef struct{
 typedef struct{
   stat_t    stat;
 }stat_comp_t;
+
+typedef struct{
+  int   duration;
+  int   expiration;
+}lifetime_t;
+
+void LifetimeSet(lifetime_t* lf, int dur);

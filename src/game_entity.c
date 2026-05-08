@@ -25,7 +25,6 @@ Entity EntityCreatePrefab(EntityManager* em) {
   return e;
 }
 
-
 Entity EntityCreate(EntityManager* em) {
   uint32_t id = em->free_list[--em->free_count];
 
