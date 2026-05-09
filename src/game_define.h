@@ -8,7 +8,7 @@
 #include "game_behaviors.h"
 
 #define MOB_MAX 64
-#define NUM_SYS 12
+#define NUM_SYS 16
 
 #define ROOM_SIZE (Vector2){1600,1200}
 

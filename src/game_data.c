@@ -1,5 +1,4 @@
 #include "game_systems.h"
-#include "scene_data.h"
 
 uint64_t AI_ID;
 uint64_t ANIM_ID;
@@ -22,43 +21,29 @@ int PHYS_SYS;
 
 void RegisterComponentData(world_t* w) {
   ANIM_ID = REGISTER_COMPONENT(w, anim_comp_t);
-  ComponentMap("Animation", &ANIM_ID, AnimationImport);
   
   NAME_ID = REGISTER_COMPONENT(w, name_comp_t);
-  ComponentMap("Name", &NAME_ID, NULL);
   POS_ID = REGISTER_COMPONENT(w, pos_comp_t);
-  ComponentMap("Position", &POS_ID, PositionImport);
 
   INPUT_ID = REGISTER_COMPONENT(w, input_comp_t);
-  ComponentMap("Input", &INPUT_ID, InputImport);
   PHYS_ID = REGISTER_COMPONENT(w, phys_comp_t);//DuplicateRigidBody);
-  ComponentMap("Physics", &PHYS_ID, PhysicsImport);
   LVL_ID = REGISTER_COMPONENT(w, lvl_comp_t);
-  ComponentMap("Level", &LVL_ID, LevelImport);
   CAM_ID = REGISTER_COMPONENT(w, cam_comp_t);
-  ComponentMap("Camera", &CAM_ID, CameraImport);
   TRACK_ID = REGISTER_COMPONENT(w, track_comp_t);
-  ComponentMap("Track", &TRACK_ID, TrackingImport);
   SPR_ID = REGISTER_COMPONENT(w, spr_comp_t);
-  ComponentMap("Sprite", &SPR_ID, SpriteImport);
   TYPE_ID = REGISTER_COMPONENT(w, type_comp_t);
-  ComponentMap("Type", &TYPE_ID, TypeImport);
 
   FOLLOW_ID = REGISTER_COMPONENT(w, follow_comp_t);
-  ComponentMap("Follow", &FOLLOW_ID, NULL);
 
   AI_ID = REGISTER_COMPONENT(w, ai_comp_t);
 
   STATE_ID = REGISTER_COMPONENT(w, state_comp_t);
   
   STAT_ID = REGISTER_COMPONENT(w, stat_comp_t);
-  ComponentMap("Stat", &STAT_ID, StatImport);
 
   FORCE_ID = REGISTER_COMPONENT(w, force_comp_t);
-  ComponentMap("Force", &FORCE_ID, ForceImport);
 
   EXPIR_ID = REGISTER_COMPONENT(w, lifetime_t);
-  ComponentMap("Lifetime", &EXPIR_ID, NULL);
    
 }
 

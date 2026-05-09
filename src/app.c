@@ -1,13 +1,16 @@
 #include <time.h>
-#include "raylib.h"
+#include "app_resource.h"
 #include "screens.h"    // NOTE: Declares global (extern) variables and screens functions
-#include "game_assets.h"
 #include "game_ui.h"
 #include "game_process.h"
+#include "scene_loader.h"
+
 #include "rlgl.h"
 #if defined(PLATFORM_WEB)
 #include <emscripten/emscripten.h>
 #endif
+
+LoadQueue loader = {0};
 float screenWidth = 1920.0f;
 float screenHeight = 1080.0f; 
 double currentTime = 0.0;           // Current time measure
@@ -17,6 +20,7 @@ double waitTime = 0.0;              // Wait time (if target fps required)
 float deltaTime = 0.0f;             // Frame time (Update + Draw + Wait time)
 
 int tarFPS = 60;
+float progress = .0f;
 
 void UpdateDrawFrame(void);          // Update and draw one frame
 static void ChangeToScreen(GameScreen screen);     // Change to screen, no transition effect
@@ -25,6 +29,39 @@ static void TransitionToScreen(GameScreen screen); // Request transition to next
 static void UpdateTransition(void);         // Update transition effect
 static void DrawTransition(void);           // Draw transition effect (full-screen rectangle)
 bool wantQuit = false;
+bool resLoaded = false;
+void* AppBackgroundLoader(void* arg);
+bool IsLoadingFinished(void)
+{
+  return atomic_load(&loader.finished);
+}
+
+float GetLoadingProgress(void)
+{
+  for (int i = 0; i < loader.count; i++){
+    LoadJob* job = &loader.jobs[i];
+
+    if (atomic_load(&job->ready) && !atomic_load(&job->done))
+    {
+      if (IsImageValid(job->image))
+      {
+        job->texture = LoadTextureFromImage(job->image);
+        UnloadImage(job->image);                    // free CPU memory
+
+        if (job->dest != NULL)
+        {
+          *job->dest = job->texture;       // Assign to original variable!
+        }
+
+        atomic_store(&job->done, true);
+      }
+    }
+
+  }
+  if (loader.count == 0) return 1.0f;
+  int done = atomic_load(&loader.load_count);
+  return (float)done / loader.count;
+}
 
 int main(void)
 {
@@ -32,11 +69,17 @@ int main(void)
 
   InitWindow(screenWidth,screenHeight, "raylib game template");
 
+  SpriteLoadSplash("resources/splash.png", VEC_NEW(screenWidth,screenHeight));
+  InitGameProcess();
   InitAudioDevice();      // Initialize audio device
 
+  SceneInit(&loader);
+
+  pthread_t t;
+  pthread_create(&t, NULL, AppBackgroundLoader, &loader);
+  pthread_detach(t); 
   InitResources();
   
-  InitGameProcess();
 
   //SetTargetFPS(60);
 #if defined(PLATFORM_WEB)
@@ -47,6 +90,16 @@ int main(void)
   // Main game loop
   while (!WindowShouldClose() && !wantQuit)    // Detect window close button or ESC key
   {
+    if(!resLoaded )
+    {
+      progress = GetLoadingProgress();
+
+      if (IsLoadingFinished()){
+        resLoaded = true;
+        GameTransitionScreen();
+      }
+    }
+
     bool wait = true;
 
     currentTime = GetTime();
@@ -95,4 +148,22 @@ void UpdateDrawFrame(void){
   GameProcessSync(false);
 }
 
+void* AppBackgroundLoader(void* arg)
+{
+  LoadQueue* q = (LoadQueue*)arg;
+  atomic_store(&q->load_count, 0);
+  atomic_store(&q->finished, false);
 
+  for (int i = 0; i < q->count; i++)
+  {
+    LoadJob* job = &q->jobs[i];
+
+    job->image = LoadImage(job->path);        // Safe on any thread
+    atomic_store(&job->ready, true);
+  }
+  SceneLoadResources();
+  pthread_mutex_lock(&q->mutex);
+  atomic_store(&q->finished, true);
+  pthread_mutex_unlock(&q->mutex);
+  return NULL;
+}
