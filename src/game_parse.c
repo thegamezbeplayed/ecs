@@ -1,5 +1,30 @@
 #include "game_assets.h"
 #include "game_strings.h"
+#include "scene.h"
+
+static char* Json_GetString(cJSON* obj, const char* key, char* out, int max_len)
+{
+    cJSON* item = cJSON_GetObjectItem(obj, key);
+    if (item && cJSON_IsString(item) && out) {
+        strncpy(out, item->valuestring, max_len - 1);
+        out[max_len-1] = '\0';
+        return out;
+    }
+    out[0] = '\0';
+    return out;
+}
+
+static int Json_GetInt(cJSON* obj, const char* key, int default_val)
+{
+    cJSON* item = cJSON_GetObjectItem(obj, key);
+    return cJSON_IsNumber(item) ? item->valueint : default_val;
+}
+
+static float Json_GetFloat(cJSON* obj, const char* key, float default_val)
+{
+    cJSON* item = cJSON_GetObjectItem(obj, key);
+    return cJSON_IsNumber(item) ? (float)item->valuedouble : default_val;
+}
 
 SheetID StringToSheetID(const char* str)
 {
@@ -10,72 +35,7 @@ SheetID StringToSheetID(const char* str)
   return SHEET_ALL;
 }
 
-// Parse the JSON file
-sprite_sheet_d LoadSpriteSheet(SheetID sid, const char* jsonPath, const char* imagePath)
-{
-  /*
-     sprite_sheet_d sheet = {0};
-
-  // Load JSON
-  char* jsonData = LoadFileText(jsonPath);
-  if (!jsonData) {
-  TraceLog(LOG_WARNING,"Failed to load %s\n", jsonPath);
-  return sheet;
-  }
-
-  cJSON* root = cJSON_Parse(jsonData);
-  UnloadFileText(jsonData);
-
-  if (!root) {
-  TraceLog(LOG_WARNING,"JSON parse error\n");
-  return sheet;
-  }
-
-  cJSON* framesObj = cJSON_GetObjectItem(root, "frames");
-  if (!framesObj || !cJSON_IsObject(framesObj)) {
-  TraceLog(LOG_WARNING,"No 'frames' object found\n");
-  cJSON_Delete(root);
-  return sheet;
-  }
-
-  // Count frames
-  sheet.num_sprites = cJSON_GetArraySize(framesObj);
-
-  int index = 0;
-  cJSON* frameItem = NULL;
-  cJSON_ArrayForEach(frameItem, framesObj)
-  {
-  cJSON* frameData = cJSON_GetObjectItem(frameItem, "frame");
-  cJSON* duration  = cJSON_GetObjectItem(frameItem, "duration");
-
-  if (frameData) {
-  sheet.sprites[index].slice.sheet = sid;
-  sheet.sprites[index].slice.scale = 1;
-  sheet.sprites[index].slice.bounds.x = (float)cJSON_GetObjectItem(frameData, "x")->valueint;
-  sheet.sprites[index].slice.bounds.y = (float)cJSON_GetObjectItem(frameData, "y")->valueint;
-  sheet.sprites[index].slice.bounds.width  = (float)cJSON_GetObjectItem(frameData, "w")->valueint;
-  sheet.sprites[index].slice.bounds.height = (float)cJSON_GetObjectItem(frameData, "h")->valueint;
-  }
-
-  if (duration) {
-  sheet.sprites[index].duration = cJSON_GetObjectItem(frameItem, "duration")->valueint;
-  } else {
-  sheet.sprites[index].duration = 100; // default
-  }
-
-  index++;
-  }
-
-  // Load the texture
-  sheet.texture = LoadTexture(imagePath);
-
-  cJSON_Delete(root);
-  return sheet;
-  */
-}
-
-cJSON* ParseRoot(const char* path)
-{
+cJSON* ParseRoot(const char* path){
   char* json_str = LoadFileText(path);   // Raylib helper
   if (!json_str) {
     TraceLog(LOG_ERROR, "Failed to load %s", path);
@@ -92,102 +52,9 @@ cJSON* ParseRoot(const char* path)
   return root;
 }
 
-bool LoadSceneAnimData(const char* path, const char* name, anim_d* out)
-{
-  cJSON* root = ParseRoot(path);
-/*
-  cJSON* animations = cJSON_GetObjectItem(root, "animations");
-  if (!animations) {
-    TraceLog(LOG_ERROR, "No 'animations' object in JSON");
-    cJSON_Delete(root);
-    //UnloadFileText(json_str);
-    return false;
-  }
-
-  cJSON* entity_anim = cJSON_GetObjectItem(animations, name);
-  if (!entity_anim) {
-    TraceLog(LOG_WARNING, "No animation data for entity: %s", name);
-    cJSON_Delete(root);
-    //UnloadFileText(json_str);
-    return false;
-  }
-
-  cJSON* sheet_item = cJSON_GetObjectItem(entity_anim, "sheet");
-  if (sheet_item)
-    out->sheet = StringToSheetID(sheet_item->valuestring);
-
-  // Get sequences object
-  cJSON* sequences = cJSON_GetObjectItem(entity_anim, "sequences");
-  if (!sequences) {
-    TraceLog(LOG_ERROR, "'sequences' object not found for %s", name);
-    cJSON_Delete(root);
-
-    return false;
-  }
-  SheetID sheet = StringToSheetID(cJSON_GetObjectItem(entity_anim, "sheet")->valuestring);
-
-  out->sheet = sheet;
-  const char* seq_names[] = {"idle", "walk"};
-  int seq_ids[] = {ANIM_IDLE, ANIM_WALK};
-
-  for (int s = 0; s < 2; s++) {                    // for each sequence type
-    cJSON* seq = cJSON_GetObjectItem(sequences, seq_names[s]);
-    if (!seq) continue;
-
-    bool loop = cJSON_GetObjectItem(seq, "loop")->valueint;
-    cJSON* groups = cJSON_GetObjectItem(seq, "groups");
-
-    for (int i = 0; i < MAX_DIRECTIONS && i < cJSON_GetArraySize(groups); i++) {
-      const char* group_name = cJSON_GetArrayItem(groups, i)->valuestring;
-
-      strcpy(out->sequences[seq_ids[s]][i].name, group_name);
-      out->sequences[seq_ids[s]][i].loop = loop;
-
-      //out->num_groups[seq_ids[s]]++;
-      // Handle on_end
-      cJSON* on_end = cJSON_GetObjectItem(seq, "on_end");
-      if (on_end && on_end->valuestring) {
-        if (strcmp(on_end->valuestring, "AnimIdle") == 0)
-        //  out->sequences[seq_ids[s]][i].on_end = AnimIdle;
-        // add more callbacks as needed
-      }
-    }
-  }
-*/
-  cJSON_Delete(root);
-
-  return true;
-}
-
-Texture2D* LoadAsepriteSheet(const char* json_path, ase_sprite_sheet_d* sheet)
-{
-  if (!sheet) return NULL;
-  memset(sheet, 0, sizeof(ase_sprite_sheet_d));
-
-  Texture2D* out = GameCalloc("LoadAsepriteSheet", 1, sizeof(Texture2D));
-  char* text = LoadFileText(json_path);
-  if (!text) {
-    TraceLog(LOG_ERROR, "Failed to read file: %s", json_path);
-    return NULL;
-  }
-
-  cJSON* root = cJSON_Parse(text);
-  if (!root) {
-    TraceLog(LOG_ERROR, "JSON parse failed: %s", json_path);
-    UnloadFileText(text);
-    return NULL;
-  }
-
+bool LoadAsepriteSheet(cJSON* root, ase_sprite_sheet_d* sheet){
+  if (!sheet) return false;
   cJSON* meta = cJSON_GetObjectItem(root, "meta");
-
-  // ====================== LOAD TEXTURE ======================
-  cJSON* image_item = cJSON_GetObjectItem(meta, "image");
-  if (image_item && image_item->valuestring) {
-    *out = LoadTexture(TextFormat("resources/%s",image_item->valuestring));
-    TraceLog(LOG_INFO, "Loaded texture: %s (%dx%d)", 
-        image_item->valuestring, 
-        out->width, out->height);
-  }
 
   // ====================== PARSE TAGS (frameTags) ======================
   cJSON* tags_json = cJSON_GetObjectItem(meta, "frameTags");
@@ -295,12 +162,64 @@ Texture2D* LoadAsepriteSheet(const char* json_path, ase_sprite_sheet_d* sheet)
     slice->num_keys = k_count;
   }
 
-  cJSON_Delete(root);
-  UnloadFileText(text);
-
-  return out;
+  return true;
 }
 // Cleanup
 void Unloadsprite_sheet_d(sprite_sheet_d* sheet)
 {
+}
+
+bool ParseScene(cJSON* root, Scene* scene){
+  Json_GetString(root, "display_name", scene->display_name, 128);
+
+  scene->pixel_width  = Json_GetInt(root, "pixel_width", 800);
+  scene->pixel_height = Json_GetInt(root, "pixel_height", 600);
+  scene->grid_width   = Json_GetInt(root, "grid_width", 18);
+  scene->grid_height  = Json_GetInt(root, "grid_height", 11);
+  scene->cell_width   = Json_GetInt(root, "cell_width", 80);
+  scene->cell_height  = Json_GetInt(root, "cell_height", 80);
+
+  // Parse Tiles
+  cJSON* tile_array = cJSON_GetObjectItem(root, "tiles");
+  if (tile_array && cJSON_IsArray(tile_array)) {
+    scene->tile_count = cJSON_GetArraySize(tile_array);
+    scene->tiles = GameCalloc("ParseScene", scene->tile_count, sizeof(TileInstance));
+
+    for (int i = 0; i < scene->tile_count; i++) {
+      cJSON* item = cJSON_GetArrayItem(tile_array, i);
+      TileInstance* t = &scene->tiles[i];
+      t->tile_index = Json_GetInt(item, "tile_index", 0);
+      t->cell_x      = Json_GetInt(item, "cell_x", 0);
+      t->cell_y      = Json_GetInt(item, "cell_y", 0);
+      t->rotation   = Json_GetInt(item, "rotation", 0);
+      t->flip_x     = cJSON_IsTrue(cJSON_GetObjectItem(item, "flip_x"));
+      t->flip_y     = cJSON_IsTrue(cJSON_GetObjectItem(item, "flip_y"));
+    }
+  }
+
+  // Parse Entities
+  cJSON* ent_array = cJSON_GetObjectItem(root, "entities");
+  if (ent_array && cJSON_IsArray(ent_array)) {
+    scene->entity_count = cJSON_GetArraySize(ent_array);
+    scene->entities = GameCalloc("ParseScene", scene->entity_count, sizeof(EntityInstance));
+
+    for (int i = 0; i < scene->entity_count; i++) {
+      cJSON* item = cJSON_GetArrayItem(ent_array, i);
+      EntityInstance* e = &scene->entities[i];
+      Json_GetString(item, "prefab", e->prefab, 64);
+      e->x = Json_GetFloat(item, "x", 0.0f);
+      e->y = Json_GetFloat(item, "y", 0.0f);
+      e->type = Json_GetInt(item, "type", 0);
+    }
+  }
+
+  // Metadata
+  cJSON* meta = cJSON_GetObjectItem(root, "metadata");
+  if (meta)
+    scene->metadata = meta;
+
+  cJSON_Delete(root);
+  return true;
+
+
 }

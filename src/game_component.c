@@ -1,29 +1,6 @@
 #include "game_register.h"
 
-static hash_map_t COMP_MAP;
-static hash_map_t COMP_IMPORT;
 static comp_id_t INVALID_COMPONENT = 0;
-
-void ComponentMap(const char* name, comp_id_t* id, ComponentImportFn fn){
-  uint64_t key = hash_str_64(name);
-  HashPut(&COMP_MAP, key, id);
-  HashPut(&COMP_IMPORT, key, fn);
-}
-
-comp_id_t* ComponentMapGetID(const char* name){
-  uint64_t key = hash_str_64(name);
-  return HashGet(&COMP_MAP, key);
-}
-
-ComponentImportFn ComponentMapFn(const char* name){
-  uint64_t key = hash_str_64(name);
-  return HashGet(&COMP_IMPORT, key);
-}
-
-void InitComponentMap(int size){
-  HashInit(&COMP_MAP, next_pow2_int(size*2));
-  HashInit(&COMP_IMPORT, next_pow2_int(size*2));
-}
 
 comp_id_t ComponentRegister(world_t* w, size_t elem_size){
   comp_id_t id = w->next_component_id++;

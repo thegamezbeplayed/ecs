@@ -3,9 +3,8 @@
 #include "game_process.h"
 #include "game_utils.h"
 #include "game_register.h"
-#include "game_import.h"
-
-#define BUS (event_bus_t*){GP.bus[GP.screen]}
+#include "scene_loader.h"
+#define BUS (event_bus_t*){GP.bus}
 
 world_t world;
 game_process_t GP;
@@ -14,12 +13,17 @@ void InitEntityComponentSystem(void){
   WorldInit(&world, NUM_SYS);
   RegisterComponentData(&world);
   RegisterSystemData(&world);
-  SceneImport(&world, "resources/scene.json");
 
   for(int i = 0; i < world.num_sys; i++){
     if(world.systems[i].init)
       world.systems[i].init(&world);
   }
+
+  Scene* test = GameCalloc("InitEntityComponentSystem", 1, sizeof(Scene));
+
+  bool scene = SceneLoadByIndex(0, test);
+
+  TraceLog(LOG_INFO," ==== LOADED SCENE %s %s", test->name, test->display_name);
 }
 
 void Subscribe(uint64_t event, EventCallback cb, void* data){
@@ -91,7 +95,13 @@ void InitGameProcess(){
 
   GP.cb[GAME_LOADING] = GameStepState;
   GP.cb[GAME_READY] = GameStepState;
-  
+   
+  GP.next[SCREEN_LOGO] = SCREEN_GAMEPLAY;
+  GP.phase[SCREEN_LOGO][GAME_LOADING] = InitLogoScreen;
+  GP.phase[SCREEN_LOGO][GAME_FINISHED] = UnloadLogoScreen;
+  GP.update_steps[SCREEN_LOGO][UPDATE_DRAW] = DrawLogoScreen;
+  GP.update_steps[SCREEN_LOGO][UPDATE_FRAME] = UpdateLogoScreen;
+ 
   GP.next[SCREEN_TITLE] = SCREEN_GAMEPLAY;
   GP.phase[SCREEN_TITLE][GAME_LOADING] = InitTitleScreen;
   GP.phase[SCREEN_TITLE][GAME_FINISHED] = UnloadTitleScreen;
@@ -117,21 +127,21 @@ void InitGameProcess(){
   GP.phase[SCREEN_ENDING][GAME_FINISHED] = UnloadEndScreen;
   GP.update_steps[SCREEN_ENDING][UPDATE_DRAW] = DrawEndScreen;
   GP.update_steps[SCREEN_ENDING][UPDATE_FRAME] = UpdateEndScreen;
-
-  GP.screen = SCREEN_TITLE;
-  // GP.screen = SCREEN_GAMEPLAY;
-  // GP.state[SCREEN_GAMEPLAY] = GAME_LOADING;
-
- 
-  GP.phase[SCREEN_TITLE][GAME_LOADING]();
+  
+  GP.screen = SCREEN_LOGO;
+  GP.phase[SCREEN_LOGO][GAME_LOADING]();
 }
 
 void InitGameEvents(){
   GP.children[SCREEN_GAMEPLAY].process = PROCESS_LEVEL;
   GP.game_frames = 0; 
 
+<<<<<<< HEAD
   GP.bus[SCREEN_GAMEPLAY] = InitEventBus(128);
   GP.bus[SCREEN_TITLE] = InitEventBus(64);
+=======
+  GP.bus = InitEventBus(128);
+>>>>>>> 5c2424b (added app thread loader)
   GP.notifications = InitNotifications(64);
 }
 
