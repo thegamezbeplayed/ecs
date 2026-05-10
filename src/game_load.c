@@ -1,7 +1,8 @@
 #include "game_assets.h"
+#include "game_define.h"
 
 static ResourcePool RES_POOL;
-
+static game_t       GAME_DEF;
 void AsepriteToAnim(SheetID id, const ase_sprite_sheet_d* ase, anim_tag_t tag, int index, sprite_d* out){
   if (!ase || !out || index < 0 || index >= ase->num_frames) {
     memset(out, 0, sizeof(sprite_d));
@@ -117,6 +118,22 @@ void ResourceLoadJSON(ResourceRef* ref){
 void ResourceInit(int count){
   RES_POOL.cap = count;
   RES_POOL.refs = GameCalloc("ResourceInit", count, sizeof(ResourceRef));
+}
+
+void LoadGameDefine(const char* path){
+  cJSON* root = ParseRoot(path);
+
+  bool load = ParseGameDefinition(root, &GAME_DEF);
+
+  if(!load){
+    TraceLog(LOG_WARNING, "=== GAME DEF NOT LOADED===");
+    return;
+  }
+
+  ComponentInit(GAME_DEF.num_comps);
+  for(int i = 0; i < GAME_DEF.num_comps; i++)
+    ComponentRegisterCore(GAME_DEF.comps[i]);
+
 }
 
 void ResourceLoad(ResourceRef ref){

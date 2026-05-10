@@ -2,10 +2,9 @@
 #include "game_systems.h"
 
 void SpriteRender(world_t* w, Entity e){
-  spr_comp_t*  s = GET_COMPONENT(w, e, spr_comp_t, SPR_ID);
-  pos_comp_t*  p = GET_COMPONENT(w, e, pos_comp_t, POS_ID);
+  sprite_t* s      = GET_COMPONENT(w, e, sprite_t, SPR_ID);
+  position_t* pos  = GET_COMPONENT(w, e, position_t, POS_ID);
 
-  position_t* pos = &p->pos;
 
 /*
   sprite_t* spr = &s->sprite;

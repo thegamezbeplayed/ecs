@@ -147,9 +147,11 @@ bool AnimSetState(anim_t* a, AnimState s);
 bool AnimPlayerState(anim_player_t*, anim_t*, AnimState s);
 //SPRITE_T===>
 struct sprite_s{
-  int               sheet_id, index;
-  float             rot;
-  Vector2           offset;
+  int         sheet_id, index;
+  float       rot;
+  Vector2     offset;
+  RenderLayer layer;
+  collision_d coll;
 };
 sprite_t* InitSprite(SheetID, int);
 

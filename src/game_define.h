@@ -1,113 +1,72 @@
-#pragma once
-#include <stdint.h>
-#include "game_assets.h"
-#include "game_control.h"
-#include "game_physics.h"
-#include "game_views.h"
-#include "game_stats.h"
-#include "game_behaviors.h"
+#ifndef __GAME_DEF__
+#define __GAME_DEF__
+#include "cJSON.h"
+
+#include "game_register.h"
 
 #define MOB_MAX 64
 #define NUM_SYS 16
-
+#define NUM_REL 4
 #define ROOM_SIZE (Vector2){1600,1200}
 
-DEFINE_EVENT_SPACE(CombatEvent, EVENT_COMBAT_BASE)
-
-extern uint64_t ANIM_ID;
-extern uint64_t AI_ID;
-extern uint64_t NAME_ID;
-extern uint64_t POS_ID;
-extern uint64_t INPUT_ID;
-extern uint64_t PHYS_ID;
-extern uint64_t LVL_ID;
-extern uint64_t CAM_ID;
-extern uint64_t TRACK_ID;
-extern uint64_t SPR_ID;
-extern uint64_t TYPE_ID;
-extern uint64_t FOLLOW_ID;
-extern uint64_t STATE_ID;
-extern uint64_t STAT_ID;
-extern uint64_t FORCE_ID;
-extern uint64_t EXPIR_ID;
+DEFINE_EVENT_SPACE(CombatEvent, EVENT_COMBAT_BASE);
 
 extern int PHYS_SYS;
 
 typedef struct{
-  anim_player_t   player;
-  AnimEventID       event;
-  int             num_hurt;
-  collision_d     hitbox;
-  collision_d     hurtboxes[MAX_SLICES];
-  anim_t          sequences[ANIM_DONE][MAX_DIRECTIONS];
-}anim_comp_t;
+  const char*  name;
+  int          num_comp;
+  const char*  components[MAX_COMPONENTS];
+}prefab_entity_t;
 
 typedef struct{
-  sprite_t    sprite;
-  collision_d coll;
-  RenderLayer layer;
-}spr_comp_t;
+  const char*   name;
+  RelationType  type;
+}relation_pair_t;
 
 typedef struct{
-  char  name[MAX_NAME_LEN];
-}name_comp_t;
+  const char*     comp;
+  int             count;
+  relation_pair_t pairs[MAX_RELATIONS_PER_ENTITY];
+}component_relation_t;
 
 typedef struct{
-  position_t   pos;
-}pos_comp_t;
+    const char*           name;
+    int                   count;
+    component_relation_t  comps[MAX_RELATIONS];
+}entity_relation_t;
 
 typedef struct{
-  input_t   input;
-}input_comp_t;
+  int                 num_comps;
+  const char*         comps[NUM_COMP_CORE];
+  int                 num_prefabs;
+  prefab_entity_t*    prefabs;
+  int                 relation_count;
+  entity_relation_t*  relations;
+}game_t;
+bool ParseGameDefinition(cJSON* root, game_t* out);
+void LoadGameDefine(const char* path);
+
+extern const component_define_t CORE_COMPONENTS[NUM_COMP_CORE];
 
 typedef struct{
-  rigid_body_t rb;
-}phys_comp_t;
+  RelationType    type;
+  const char      name[MAX_NAME_LEN];
+}relation_str_t;
 
-typedef struct{
-  force_t   f;
-}force_comp_t;
+static const relation_str_t RELATION_LOOKUP[NUM_REL] = {
+  {REL_AppliesTo,   "AppliesTo"},
+  {REL_ChildOf,     "ChildOf"},
+  {REL_Owner,       "Owner"},
+  {REL_Target,      "Target"}
+};
 
-typedef struct{
-  int       wid, hei;
-  int       num_tiles;
-  tile_t*   tiles;
-  Rectangle bounds;
-}lvl_comp_t;
-
-typedef struct{
-  viewport_t  view;
-  Camera2D    camera;
-}cam_comp_t;
-
-typedef struct{
-  camera_ctx_t      ctx;
-  uint32_t          target;
-}track_comp_t;
-
-typedef struct{
-  bool    assigned;
-}follow_comp_t;
-
-typedef struct{
-  EntityType type;
-}type_comp_t;
-
-typedef struct{
-
-}ai_comp_t;
-
-typedef struct{
-  State   state, last;
-}state_comp_t;
-
-typedef struct{
-  stat_t    stat;
-}stat_comp_t;
-
-typedef struct{
-  int   duration;
-  int   expiration;
-}lifetime_t;
-
-void LifetimeSet(lifetime_t* lf, int dur);
+static int FindComponentIndex(const char* name)
+{
+    for (int i = 0; i < NUM_COMP_CORE; i++) {
+        if (strcmp(CORE_COMPONENTS[i].name, name) == 0)
+            return i;
+    }
+    return -1;
+}
+#endif

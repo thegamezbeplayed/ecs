@@ -1,6 +1,7 @@
 #ifndef __GAME_SYS__
 #define __GAME_SYS__
-#include "game_register.h"
+#include "game_define.h"
+#include "component_define.h"
 
 void OnPositionEvent(event_t* ev, void* data);
 void PositionLoad(world_t* w, Entity e);

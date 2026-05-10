@@ -31,7 +31,3 @@ void PositionSetDest(position_t* p, Vector2 v){
   p->angle = angle_snap_to_card(dir);
 }
 
-
-void LifetimeSet(lifetime_t* lf, int dur){
-  lf->expiration = WorldGetTime() + dur;
-}

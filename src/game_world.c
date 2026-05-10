@@ -3,6 +3,7 @@
 #include "game_process.h"
 #include "game_utils.h"
 #include "game_register.h"
+#include "game_define.h"
 #include "scene_loader.h"
 #define BUS (event_bus_t*){GP.bus}
 
@@ -10,7 +11,9 @@ world_t world;
 game_process_t GP;
 
 void InitEntityComponentSystem(void){
-  WorldInit(&world, NUM_SYS);
+  WorldInit(&world);
+  
+  LoadGameDefine("resources/data/definitions.json");
   RegisterComponentData(&world);
   RegisterSystemData(&world);
 

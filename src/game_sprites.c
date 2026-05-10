@@ -6,9 +6,6 @@
 #include "game_process.h"
 #include "game_helpers.h"
 //#include "screens.h"
-#include "player_atlas.h"
-#include "mob_atlas.h"
-#include "tile_atlas.h"
 
 sprite_sheet_d SHEETS[SHEET_ALL];
 static splash_tex_t splash_tex;

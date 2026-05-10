@@ -1,4 +1,5 @@
 #include "game_systems.h"
+#include "component_define.h"
 
 void CameraLoad(world_t* w, Entity e){
   QueryBegin();
@@ -32,12 +33,12 @@ void CameraSystem(world_t* w, Entity e){
   if(!EntityValid(&w->manager, tar))
     return;
 
-  pos_comp_t* pc = ComponentGet(w, tar, POS_ID);
-
-  if(!pc)
+  position_t* pos = ComponentGet(w, tar, POS_ID);
+  
+  if(!pos)
     return;
 
-  TRACK(t->ctx.tracking, &c->camera, pc->pos.vpos);
+  TRACK(t->ctx.tracking, &c->camera, pos->vpos);
 
   Rectangle cropped_bounds = RECT_CROP(c->view.border, c->view.border_distance);
 

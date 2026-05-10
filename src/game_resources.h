@@ -118,6 +118,7 @@ typedef struct sub_texture_s {
   float         scale;
 } sub_texture_t;
 
+
 void SpriteLoadSubTextures(sub_texture_t* data, SheetID id, int sheet_cap);
 void SpriteLoadSlicedTextures();
 

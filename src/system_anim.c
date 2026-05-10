@@ -1,6 +1,4 @@
-#include "game_assets.h"
 #include "game_systems.h"
-#include "game_helpers.h"
 
 void AnimSet(anim_comp_t* ac, anim_t* a, AnimState s){
 
@@ -101,7 +99,7 @@ void AnimBehaviorHandler(world_t* w, Entity e, anim_comp_t* ac, anim_t* a){
 void AnimLoad(world_t* w, Entity e){
   anim_comp_t* ac = GET_COMPONENT(w, e, anim_comp_t, ANIM_ID);
 
-  input_comp_t* in = GET_COMPONENT(w, e, input_comp_t, INPUT_ID);
+  input_t* in = GET_COMPONENT(w, e, input_t, INPUT_ID);
 
   notification n = CombatEvent_ToNotif(COMB_EVENT_HIT);
   TargetSubscribe(n, AnimEvent, ac, e.id );
@@ -123,9 +121,7 @@ void AnimSystem(world_t* w, Entity e){
   anim_comp_t* ac = GET_COMPONENT(w, e, anim_comp_t, ANIM_ID);
   anim_player_t* ap = &ac->player;
   anim_t* a = &ac->sequences[ap->state][ap->dir];
-  pos_comp_t*  p = GET_COMPONENT(w, e, pos_comp_t, POS_ID);
-
-  position_t* pos = &p->pos;
+  position_t* pos = GET_COMPONENT(w, e, position_t, POS_ID);
 
   int spr_index = a->frames[a->cur_index];
 
@@ -137,9 +133,8 @@ void AnimSystem(world_t* w, Entity e){
 
 void AnimRender(world_t* w, Entity e){
   anim_comp_t* ac = GET_COMPONENT(w, e, anim_comp_t, ANIM_ID);
-  pos_comp_t*  p = GET_COMPONENT(w, e, pos_comp_t, POS_ID);
+  position_t*  pos = GET_COMPONENT(w, e, position_t, POS_ID);
 
-  position_t* pos = &p->pos;
   anim_player_t* ap = &ac->player;
 
   anim_t* a = &ac->sequences[ap->state][ap->dir];

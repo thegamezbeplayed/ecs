@@ -1,97 +1,10 @@
 #include "game_systems.h"
-
-uint64_t AI_ID;
-uint64_t ANIM_ID;
-uint64_t NAME_ID;
-uint64_t POS_ID;
-uint64_t INPUT_ID;
-uint64_t PHYS_ID;
-uint64_t LVL_ID;
-uint64_t CAM_ID;
-uint64_t TRACK_ID;
-uint64_t SPR_ID;
-uint64_t TYPE_ID;
-uint64_t FOLLOW_ID;
-uint64_t STATE_ID;
-uint64_t STAT_ID;
-uint64_t FORCE_ID;
-uint64_t EXPIR_ID;
+#include "component_define.h"
+#include "components.h"
 
 int PHYS_SYS;
 
-void RegisterComponentData(world_t* w) {
-  ANIM_ID = REGISTER_COMPONENT(w, anim_comp_t);
-  
-  NAME_ID = REGISTER_COMPONENT(w, name_comp_t);
-  POS_ID = REGISTER_COMPONENT(w, pos_comp_t);
-
-  INPUT_ID = REGISTER_COMPONENT(w, input_comp_t);
-  PHYS_ID = REGISTER_COMPONENT(w, phys_comp_t);//DuplicateRigidBody);
-  LVL_ID = REGISTER_COMPONENT(w, lvl_comp_t);
-  CAM_ID = REGISTER_COMPONENT(w, cam_comp_t);
-  TRACK_ID = REGISTER_COMPONENT(w, track_comp_t);
-  SPR_ID = REGISTER_COMPONENT(w, spr_comp_t);
-  TYPE_ID = REGISTER_COMPONENT(w, type_comp_t);
-
-  FOLLOW_ID = REGISTER_COMPONENT(w, follow_comp_t);
-
-  AI_ID = REGISTER_COMPONENT(w, ai_comp_t);
-
-  STATE_ID = REGISTER_COMPONENT(w, state_comp_t);
-  
-  STAT_ID = REGISTER_COMPONENT(w, stat_comp_t);
-
-  FORCE_ID = REGISTER_COMPONENT(w, force_comp_t);
-
-  EXPIR_ID = REGISTER_COMPONENT(w, lifetime_t);
-   
-}
-
 void RegisterSystemData(world_t* w){
-  SystemCB atick[UPDATE_DONE] = {0};
-  //atick[UPDATE_PRE] = AnimBehavior;
-  atick[UPDATE_FIXED] = AnimSystem;
-  atick[UPDATE_DRAW] = AnimRender;
-
-  SystemCB aset[GAME_DONE] = {0};
-
-  aset[GAME_READY] = AnimLoad;
-
-  system_t* asys = SystemRegister(w, atick, aset, NULL);
-
-  SystemRequire(asys, ANIM_ID);
-  SystemRequire(asys, POS_ID);
-
-  SystemCB intick[UPDATE_DONE] = {0};
-  intick[UPDATE_FRAME] = InputSystem;
-
-  SystemCB inset[GAME_DONE] = {0};
-  inset[GAME_READY] = InputLoad;
-  system_t* insys = SystemRegister(w, intick, inset, NULL);
-
-  SystemRequire(insys, INPUT_ID);
-  SystemRequire(insys, POS_ID);
-
-  SystemCB potick[UPDATE_DONE] = {0};
-
-  SystemCB poset[GAME_DONE] = {0};
-  poset[GAME_READY] = PositionLoad;
-  system_t* posys = SystemRegister(w, potick, poset, NULL);
-  SystemRequire(posys, POS_ID);
-
-  SystemCB phtick[UPDATE_DONE] = {0};
-  phtick[UPDATE_PRE] = PhysicsCollision;
-  phtick[UPDATE_POST] = PhysicsSystem;
-  phtick[UPDATE_DRAW] = PhysicsDebug;
-
-  SystemCB phset[GAME_DONE] = {0};
-  phset[GAME_READY] = PhysicsLoad;
-  system_t* phsys = SystemRegister(w, phtick, phset, PhysicsInit);
-  phsys->needs_iter = true;
-  PHYS_SYS = phsys->index;
-  SystemRequire(phsys, PHYS_ID);
-  SystemRequire(phsys, POS_ID);
-
   SystemCB ltick[UPDATE_DONE] = {0};
   SystemCB lset[GAME_DONE] = {0};
 
@@ -166,6 +79,22 @@ void RegisterSystemData(world_t* w){
 
   SystemRequire(cmbsys, );
 */
-
-
 }
+
+const component_define_t CORE_COMPONENTS[NUM_COMP_CORE] = {
+  {"Position",  sizeof(position_t)},
+  {"Physics",   sizeof(rigid_body_t)},
+  {"Animation", sizeof(anim_comp_t)},
+  {"Sprite",    sizeof(sprite_t)},
+  {"Input",     sizeof(input_t)},
+  {"Camera",    sizeof(cam_comp_t)},
+  {"Track",     sizeof(track_comp_t)},
+  {"Type",      sizeof(EntityType)},
+  {"Stat",      sizeof(stat_t)},
+  {"Force",     sizeof(force_t)},
+  {"Name",      0}, //TODO
+  {"State",     sizeof(state_comp_t)},
+  {"Follow",    sizeof(follow_comp_t)},
+  {"Level",     sizeof(level_t)},
+  {"Expiry",    sizeof(lifetime_t)}
+};

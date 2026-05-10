@@ -1,0 +1,125 @@
+{
+  "systems":[
+    {"name": "Animations",
+      "components": ["Animation", "Position"],
+      "functions": [
+        {"step": "UPDATE_FIXED",  "fn": "AnimSystem"},
+        {"step": "UPDATE_DRAW",   "fn": "AnimRender"},
+        {"step": "GAME_READY",    "fn": "AnimLoad"}
+      ]
+    },
+    {"name": "Controller",
+      "components": ["Input", "Position"],
+      "functions": [
+        {"step": "UPDATE_FRAME",  "fn": "InputSystem"},
+        {"step": "GAME_READY",    "fn": "InputLoad"}
+      ]
+    },
+    {"name": "Animations",
+      "components": ["Animation", "Position"],
+      "functions": [
+        {"step": "UPDATE_FIXED",  "fn": "AnimSystem"},
+        {"step": "UPDATE_DRAW",   "fn": "AnimRender"},
+        {"step": "GAME_READY",    "fn": "AnimLoad"}
+      ]
+    },
+    {"name": "Positions",
+      "components": ["Position"],
+      "functions": [
+        {"step": "GAME_READY",    "fn": "PositionLoad"}
+      ]
+    },
+    {"name": "Physics",
+      "components": ["RigidBody", "Position"],
+      "functions": [
+        {"step": "UPDATE_POST",   "fn": "PhysicsSystem"},
+        {"step": "UPDATE_PRE" ,   "fn": "PhysicsCollision"},
+        {"step": "GAME_READY",    "fn": "PhysicsLoad"}
+      ]
+    },
+  ],
+  "components": [
+    "Sprite", "Animation", "Position", "Input", "RigidBody", "Force"
+  ],
+  "Sprite":{
+    "list": [
+      {"name": "tiles", "sheet_id": "SHEET_TILE"}
+    ]
+  },
+  "Animation": {
+    "list": [
+      {"name": "player", "sheet_id": "SHEET_PLAYER",
+        "states": [
+          {"state": "WALK", "loop": false, "end": "SUPSEND",
+            "sequences": [
+              {"tag": "walk0",   "dir": 0},
+              {"tag": "walk90",  "dir": 1},
+              {"tag": "walk180", "dir": 2},
+              {"tag": "walk270", "dir": 3}
+            ]
+          },
+          {"state": "IDLE", "loop": true,
+            "sequences": [
+              {"tag": "idle0",   "dir": 0},
+              {"tag": "idle90",  "dir": 1},
+              {"tag": "idle180", "dir": 2},
+              {"tag": "idle270", "dir": 3}
+            ]
+          },
+          {"state": "ATTACK", "loop": false,
+            "end": "SUSPEND", "start": "HURTBOX",
+            "sequences": [
+              {"tag": "attack0",   "dir": 0},
+              {"tag": "attack90",  "dir": 1},
+              {"tag": "attack180", "dir": 2},
+              {"tag": "attack270", "dir": 3}
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "RigidBody":{
+    "list": [
+      {"name": "player",  "shape": "rect", "width": 10, "height": 12}
+    ]
+  },
+  "Force": {
+    "list": [
+      {"name": "player-steering",
+        "type": "STEERING", "event": "FORCE_EVENT_ACCEL",
+        "speed": 0.67, "max": 1.675, "threshold": 0.1, "frict": 0.65
+      },
+      {"name": "player-bump",
+        "type": "IMPULSE", "event": "PHYS_EVENT_COLL",
+        "speed": "0.5", "max": 1.15, "threshold": 0.1, "frict": 0.8
+      }
+    ]
+  },
+  "prefabs": [
+    {
+      "name": "player",
+      "count": 4,
+      "list": ["Animation", "Position", "RigidBody", "Input"]
+    },
+    {
+      "name": "tile",
+      "count": 2,
+      "list": ["Sprite", "Position"]
+    }
+  ],
+  "relations": [
+    {
+      "name": "player",
+      "count": 1,
+      "list":[
+        {"name": "Force", "count": 2,
+          "sublist": [
+            {"name": "player-steering", "type": "AppliesTo"},
+            {"name": "player-bump",      "type": "AppliesTo"}
+          ]
+        }
+      ]
+    }
+  ]
+}

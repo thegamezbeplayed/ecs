@@ -1,5 +1,6 @@
 #include "scene_loader.h"
 #include "scene_data.h"
+#include "game_assets.h"
 
 bool SceneLoadByIndex(int index, Scene* out){
   if (!SceneLoadHeader(index, out))
