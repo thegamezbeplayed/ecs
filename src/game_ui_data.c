@@ -41,7 +41,7 @@ ui_element_d ELEM_DATA[ELE_COUNT] = {
   },
 
   {"TITLE_MENU_DOM", VECTOR2_ZERO, FIXED_MENU_FULL, UI_CONTAINER,
-    ELEMENT_NONE, LAYOUT_STACK, ALIGN_MID | ALIGN_CENTER,
+    ELEMENT_NONE, LAYOUT_VERTICAL, ALIGN_MID | ALIGN_CENTER,
     .cb = {
       [ELEMENT_IDLE] = ElementActivateChildren,
       [ELEMENT_SHOW] = ElementShowChildren,
@@ -50,9 +50,10 @@ ui_element_d ELEM_DATA[ELE_COUNT] = {
       [UI_MARGIN_TOP] = 8, [UI_MARGIN_LEFT] = 6,
       [UI_PADDING_TOP] = 24, [UI_PADDING_LEFT] = 8 
     },
-    1, {
+    2, {
     //  "TITLE_BACKGROUND"
       "TITLE_PANEL",
+      "PLAY_BUTTON",
     },
     .text = "signals crossed"
   },
@@ -85,15 +86,22 @@ ui_element_d ELEM_DATA[ELE_COUNT] = {
     {
       [UI_MARGIN_TOP] = -36, [UI_PADDING_BOT] = 36, [UI_PADDING_TOP] = -24
     },
-    5,{
+    4,{
       "TITLE_HEADER",
       "TEXT_HEADER",
       "TEXT_HEADER",
-      "TEXT_HEADER",
-      "FLASHY_TEXT"
+      "TEXT_HEADER"
     },
-    .text = "SIGNALS CROSSED, A puzzle and memory game made in 72 hours, Made by August Karbowski, Music by Danego, Press Enter to Jam!",
+    .text = "SIGNALS CROSSED, A puzzle and memory game made in 72 hours, Made by August Karbowski, Music by Danego",
     .delimiter = ','
+  },
+  {"PLAY_BUTTON", VECTOR2_ZERO, (Vector2){172, 48}, UI_BUTTON, ELEMENT_NONE,
+    LAYOUT_FREE, ALIGN_CENTER,
+    .cb = {
+      [ELEMENT_ACTIVATE] = UITransitionScreen,
+    },
+    .text = "Press Enter to Jam!",
+    .texture = UI_TEXTURE_9SLICE
   },
   {"TITLE_HEADER", VECTOR2_ZERO, VECTOR2_ZERO, UI_TITLE, ELEMENT_NONE,
     LAYOUT_HORIZONTAL, ALIGN_MID | ALIGN_CENTER,
@@ -172,4 +180,3 @@ ui_element_d ELEM_DATA[ELE_COUNT] = {
     .text = "RESTART"
   }
 };
-

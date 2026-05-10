@@ -5,14 +5,14 @@
 // Title Screen Initialization logic
 void InitTitleScreen(void)
 {
-//  MenuSetState(&ui.menus[MENU_MAIN],MENU_READY);
+  MenuSetState(&ui.menus[MENU_MAIN],MENU_READY);
 
 }
 
 // Title Screen Update logic
 void UpdateTitleScreen(void)
 {
-  //UISync(FETCH_UPDATE);
+  UISync(FETCH_UPDATE);
 }
 
 // Title Screen Draw logic
@@ -20,7 +20,7 @@ void DrawTitleScreen(void)
 {
   BeginDrawing();
   ClearBackground(RAYWHITE);
-  //UIRender();
+  UIRender();
   EndDrawing();
 }
 
@@ -28,5 +28,5 @@ void DrawTitleScreen(void)
 void UnloadTitleScreen(void)
 {
     // TODO: Unload TITLE screen variables here!
-  //MenuSetState(&ui.menus[MENU_MAIN],MENU_INACTIVE);
+  MenuSetState(&ui.menus[MENU_MAIN],MENU_INACTIVE);
 }

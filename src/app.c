@@ -35,7 +35,8 @@ int main(void)
   InitAudioDevice();      // Initialize audio device
 
   InitResources();
-  
+  InitUI();
+
   InitGameProcess();
 
   //SetTargetFPS(60);

@@ -115,6 +115,11 @@ typedef enum{
 }ElementType;
 
 typedef enum{
+  UI_TEXTURE_NONE,
+  UI_TEXTURE_9SLICE
+}UITexture;
+
+typedef enum{
   LAYOUT_FREE,
   LAYOUT_VERTICAL,
   LAYOUT_HORIZONTAL,
@@ -263,6 +268,7 @@ struct ui_element_s{
   float               width,height;
   UILayout            layout;
   UIAlignment         align;
+  UITexture           texture;
   int                 spacing[UI_POSITIONING];
   char*               text;
   ElementSetValue     set_val;
@@ -296,6 +302,7 @@ typedef struct{
   char                text[MAX_LINE_LEN];
   const char          format;
   const char          delimiter; 
+  UITexture           texture;
 }ui_element_d;
 extern ui_element_d ELEM_DATA[ELE_COUNT];
 

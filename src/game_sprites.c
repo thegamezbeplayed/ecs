@@ -70,6 +70,8 @@ void InitResources(){
   SpriteLoadSubTextures(TILE_SPRITES,SHEET_TILE, NUM_TILE);
   *SHEETS[SHEET_TILE].sprite_sheet = LoadTextureFromImage(tilesImg);
 */
+  s = &SHEETS[SHEET_UI];
+  s->texture = LoadTexture("resources/textures_npatch.png");
 }
 
 sprite_t* InitSprite(SheetID s, int index){

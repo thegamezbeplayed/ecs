@@ -11,6 +11,46 @@
 
 static ui_element_t* active_tooltip = NULL;
 
+static void DrawElementTexture(UITexture texture, Rectangle bounds){
+  switch(texture){
+    case UI_TEXTURE_9SLICE: {
+      NPatchInfo patch = {
+        (Rectangle){0.0f, 0.0f, 64.0f, 64.0f},
+        16, 16, 16, 16,
+        NPATCH_NINE_PATCH
+      };
+
+      DrawTextureNPatch(SHEETS[SHEET_UI].texture, patch, bounds, VECTOR2_ZERO, 0.0f, DARKBLUE);
+    } break;
+    case UI_TEXTURE_NONE:
+    default:
+      break;
+  }
+}
+
+static int GuiTextureButton(ui_element_t* e){
+  GuiState state = guiState;
+
+  if ((state != STATE_DISABLED) && !guiLocked && !guiControlExclusiveMode){
+    Vector2 mouse = GetMousePosition();
+
+    if(CheckCollisionPointRec(mouse, e->bounds)){
+      if(IsMouseButtonDown(MOUSE_LEFT_BUTTON))
+        state = STATE_PRESSED;
+      else
+        state = STATE_FOCUSED;
+    }
+  }
+
+  if(e->text && e->text[0] != '\0'){
+    Rectangle text_bounds = e->bounds;
+    text_bounds.y += (e->bounds.height - ui.text_size) / 2.0f;
+    text_bounds.height = ui.text_size;
+    GuiDrawText(e->text, text_bounds, TEXT_ALIGN_CENTER, GetColor(GuiGetStyle(BUTTON, TEXT + (state*3))));
+  }
+
+  return state;
+}
 
 ui_element_t* InitElementByName(const char* name, ui_menu_t* m, ui_element_t* o){
   ui_element_d d;
@@ -28,6 +68,7 @@ ui_element_t* InitElementByName(const char* name, ui_menu_t* m, ui_element_t* o)
       .state    = d.state,
       .layout   = d.layout,
       .align    = d.align,
+      .texture  = d.texture,
       .set_val  = d.set,
       .get_ctx  = d.context,
       .menu     = m,
@@ -46,11 +87,6 @@ ui_element_t* InitElementByName(const char* name, ui_menu_t* m, ui_element_t* o)
       e->text[0] = '\0';
     else
       ElementSetText( e, d.text);
-/*
-
-   if(d.texture > 0)
-      e->texture = InitScalingElement(d.texture); 
-      */
     strcpy(e->name ,d.identifier);
     replace_char(e->name, '_', ' ');
     for (int j = 0; j < UI_POSITIONING; j++)
@@ -382,9 +418,15 @@ void ElementRender(ui_element_t* e){
   int state = 0;
   int clicked = 0,toggle = 0,focused = 0;
 
+  if(e->texture > UI_TEXTURE_NONE)
+    DrawElementTexture(e->texture, e->bounds);
+
   switch(e->type){
     case UI_BUTTON:
-      state = GuiButton(e->bounds,e->text);
+      if(e->texture > UI_TEXTURE_NONE)
+        state = GuiTextureButton(e);
+      else
+        state = GuiButton(e->bounds,e->text);
       break;
     case UI_PANEL:
   
@@ -711,6 +753,8 @@ bool ElementActivateChildren(ui_element_t* e){
     ElementSetState(e->children[i], ELEMENT_LOAD);
     ElementSetState(e->children[i], ELEMENT_IDLE);
   }
+
+  ElementResize(e);
   return ElementSetState(e, ELEMENT_SHOW);
 }
 

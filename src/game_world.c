@@ -118,12 +118,12 @@ void InitGameProcess(){
   GP.update_steps[SCREEN_ENDING][UPDATE_DRAW] = DrawEndScreen;
   GP.update_steps[SCREEN_ENDING][UPDATE_FRAME] = UpdateEndScreen;
 
-  //GP.screen = SCREEN_TITLE;
-  GP.screen = SCREEN_GAMEPLAY;
-  //GP.state[SCREEN_GAMEPLAY] = GAME_LOADING;
+  GP.screen = SCREEN_TITLE;
+  // GP.screen = SCREEN_GAMEPLAY;
+  // GP.state[SCREEN_GAMEPLAY] = GAME_LOADING;
 
  
-  GP.phase[SCREEN_GAMEPLAY][GAME_LOADING]();
+  GP.phase[SCREEN_TITLE][GAME_LOADING]();
 }
 
 void InitGameEvents(){
@@ -131,6 +131,7 @@ void InitGameEvents(){
   GP.game_frames = 0; 
 
   GP.bus[SCREEN_GAMEPLAY] = InitEventBus(128);
+  GP.bus[SCREEN_TITLE] = InitEventBus(64);
   GP.notifications = InitNotifications(64);
 }
 
@@ -139,11 +140,11 @@ bool GameTransitionScreen(){
   GameScreen prepare = GP.next[current];
   if(GP.state[current] >= GAME_FINISHED)
     return false;
-  GP.phase[prepare][GAME_LOADING]();
   GP.state[current] = GAME_FINISHED;
   GP.phase[current][GAME_FINISHED]();
   GP.screen = prepare;
-  
+  GP.phase[prepare][GAME_LOADING]();
+
   //AudioPlayMusic(GP.album_id[prepare]);
 
   return true;
