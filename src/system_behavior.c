@@ -3,6 +3,7 @@
 
 #include "game_behaviors.h"
 
+/*
 void OnBehaviorEvent(event_t* ev, void* data){
   position_t* p = ev->data;
   rigid_body_t* rb = data;
@@ -15,4 +16,4 @@ void BehaviorSystem(world_t* w, Entity e){
   state_comp_t *sc = GET_COMPONENT(w, e, state_comp_t, STATE_ID);
 }
 
-
+*/

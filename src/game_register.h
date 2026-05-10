@@ -1,9 +1,8 @@
 #ifndef __GAME_REG__
 #define __GAME_REG__
 
-#include "game_components.h"
+#include "components.h"
 #include "game_process.h"
-#include "game_define.h"
 
 #define MAX_TERMS 8
 #define MAX_PREFABS 128
@@ -62,18 +61,6 @@ static void SystemRequire(system_t* s, comp_id_t id) {
 }
 
 typedef struct {
-  comp_id_t  id;
-
-  int        entities[MAX_ENTITIES];
-  int        sparse[MAX_ENTITIES];
-  size_t     size;
-
-  size_t            elem_size;   // size of component (Position, etc)
-  void*             data;        // dense array of component data
-} component_pool_t;
-bool HasComponent(component_pool_t* pool, Entity e);
-
-typedef struct {
     char          name[64];
     Entity        entity;        // the template entity
     comp_id_t     components[MAX_TERMS];  // list of components it has
@@ -115,12 +102,12 @@ entity_iter_t EntityIterStart(world_t*, system_t*);
 bool EntityIterNext(entity_iter_t*, world_t*);
 
 component_pool_t* ComponentQueryInner(world_t* w, system_t* s);
-void WorldInit(world_t* w, int sys_cap);
+void WorldInit(world_t* w);
+
+comp_id_t ComponentRegister(world_t* w, const char*, size_t);
 void* ComponentAdd(world_t* w, Entity e, comp_id_t id);
 void* ComponentGet(world_t* w, Entity e, comp_id_t id);
-comp_id_t ComponentRegister(world_t* w, size_t);
-
-void RegisterComponentData(world_t* w);
+void ComponentSet(world_t* w, Entity e, comp_id_t id, void* set);
 void RegisterSystemData(world_t* w);
 void RegisterEntityData(world_t* w);
 

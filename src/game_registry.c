@@ -1,8 +1,9 @@
-#include "game_register.h"
+#include "game_define.h"
 #include "game_systems.h"
 #include "game_common.h"
+#include "component_define.h"
 
-void WorldInit(world_t* w, int sys_cap) {
+void WorldInit(world_t* w) {
   // Zero everything first
   memset(w, 0, sizeof(world_t));
 
@@ -18,7 +19,7 @@ void WorldInit(world_t* w, int sys_cap) {
 
   // Init systems
   w->num_sys = 0;
-  w->systems = GameCalloc("WorldInit", sys_cap, sizeof(system_t));
+  w->systems = GameCalloc("WorldInit", NUM_SYS, sizeof(system_t));
 
   w->iter = GameCalloc("WorldInit", 1, sizeof(entity_iter_t));
 }
@@ -29,7 +30,7 @@ void PrefabRegistryInit(world_t* w) {
 
 Entity PrefabCreate(world_t* w, const char* name) {
   if (w->prefabs.count >= MAX_PREFABS) {
-    printf("ERROR: Too many prefabs!\n");
+    TraceLog(LOG_WARNING, "ERROR: Too many prefabs!\n");
     return (Entity){0};
   }
 
@@ -40,7 +41,6 @@ Entity PrefabCreate(world_t* w, const char* name) {
   p->entity = e;
   p->comp_count = 0;
 
-  printf("Prefab created: %s (id %u)\n", name, e.id);
   return e;
 }
 
@@ -75,12 +75,12 @@ Entity PrefabInstantiate(world_t* w, Entity prefab, Vector2 override_pos) {
 
   // Apply overrides
   if (override_pos.x != -9999.0f) {  // special value = no override
-    pos_comp_t* pc = GET_COMPONENT(w, instance, pos_comp_t, POS_ID);
-    phys_comp_t* phc = GET_COMPONENT(w, instance, phys_comp_t, PHYS_ID);
-    if (pc) {
-      pc->pos.vpos = override_pos;
-      if(phc)
-        RigidBodySetPos(&phc->rb, override_pos);
+    position_t* pos = GET_COMPONENT(w, instance, position_t, POS_ID);
+    rigid_body_t* rb = GET_COMPONENT(w, instance, rigid_body_t, PHYS_ID);
+    if (pos) {
+      pos->vpos = override_pos;
+      if(rb)
+        RigidBodySetPos(rb, override_pos);
     }
   }
 
@@ -90,7 +90,7 @@ Entity PrefabInstantiate(world_t* w, Entity prefab, Vector2 override_pos) {
 Entity PrefabSpawn(world_t* w, const char* name, Vector2 world_pos){
   prefab_t* p = PrefabFind(w, name);
   if (!p) {
-    printf("Prefab not found: %s\n", name);
+    TraceLog(LOG_WARNING, "Prefab not found: %s\n", name);
     return (Entity){0};
   }
   return PrefabInstantiate(w, p->entity, world_pos);
