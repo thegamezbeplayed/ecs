@@ -53,7 +53,7 @@ ui_element_d ELEM_DATA[ELE_COUNT] = {
     2, {
     //  "TITLE_BACKGROUND"
       "TITLE_PANEL",
-      "TITLE_PLAY",
+      "PLAY_BUTTON",
     },
     .text = "signals crossed"
   },
@@ -95,9 +95,13 @@ ui_element_d ELEM_DATA[ELE_COUNT] = {
     .text = "SIGNALS CROSSED, A puzzle and memory game made in 72 hours, Made by August Karbowski, Music by Danego",
     .delimiter = ','
   },
-  {"TITLE_PLAY", VECTOR2_ZERO, (Vector2){172, 48}, UI_9SLICE, ELEMENT_NONE,
+  {"PLAY_BUTTON", VECTOR2_ZERO, (Vector2){172, 48}, UI_BUTTON, ELEMENT_NONE,
     LAYOUT_FREE, ALIGN_CENTER,
-    .text = "Press Enter to Jam!"
+    .cb = {
+      [ELEMENT_ACTIVATE] = UITransitionScreen,
+    },
+    .text = "Press Enter to Jam!",
+    .texture = UI_TEXTURE_9SLICE
   },
   {"TITLE_HEADER", VECTOR2_ZERO, VECTOR2_ZERO, UI_TITLE, ELEMENT_NONE,
     LAYOUT_HORIZONTAL, ALIGN_MID | ALIGN_CENTER,
