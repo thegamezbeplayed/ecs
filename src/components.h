@@ -9,7 +9,7 @@
 #define MAX_PLAYERS     2
 
 #define POS_ID       ComponentGetID("Position")
-#define PHYS_ID      ComponentGetID("Physics")
+#define PHYS_ID      ComponentGetID("RigidBody")
 #define ANIM_ID      ComponentGetID("Animation")
 #define SPR_ID       ComponentGetID("Sprite")
 #define INPUT_ID     ComponentGetID("Input")
@@ -23,8 +23,10 @@
 #define FOLLOW_ID    ComponentGetID("Follow")
 #define LVL_ID       ComponentGetID("Level")
 #define EXPIR_ID     ComponentGetID("Expiry")
+#define COORD_ID     ComponentGetID("Coordinate")
 
 typedef uint64_t comp_id_t;
+extern comp_id_t INVALID_COMPONENT;
 
 typedef struct{
   const char*   name;

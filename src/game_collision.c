@@ -1,6 +1,5 @@
 #include "game_physics.h"
 #include "game_process.h"
-#include "game_define.h"
 #include "game_helpers.h"
 
 rigid_body_t* InitRigidBody(Vector2 pos, ShapeType shape, float wid, float hei){
@@ -58,3 +57,8 @@ bool CheckCollision(rigid_body_t *a, rigid_body_t *b, int len) {
 
   return col;
 }
+
+bool RigidBodyInit(void* comp, component_entry_t* data){
+  rigid_body_t* rb = comp;
+}
+

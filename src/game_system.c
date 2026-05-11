@@ -1,4 +1,4 @@
-#include "game_register.h"
+#include "game_define.h"
 #include "game_enum.h"
 
 void OnSystemEvent(event_t* ev, void* data){
@@ -38,6 +38,41 @@ system_t* SystemRegister(world_t* w, SystemCB tick[UPDATE_DONE], SystemCB set[GA
   }
 
   s->init = init;
+  return s;
+}
+
+system_t* SystemCreate(world_t* w, system_define_t* def){
+  system_t* s = &w->systems[w->num_sys];
+  memset(s, 0, sizeof(system_t));
+  s->index = w->num_sys++;
+
+  for (int i = 0; i < UPDATE_DONE; i++){
+    if(!def->steps[i])
+      continue;
+
+    s->tick[i] = def->steps[i];
+    uint64_t n = GameEvent_ToNotif(GAME_EVENT_STEP);
+    TargetSubscribe(n, OnSystemEvent, s, i);
+  }
+
+  for (int i = 0; i < GAME_DONE; i++){
+    if(!def->states[i])
+      continue;
+
+    s->set[i] = def->states[i];
+    uint64_t n = GameEvent_ToNotif(GAME_EVENT_STATE);
+    TargetSubscribe(n, OnSystemEvent, s, i);
+  }
+
+  for (int i = 0; i < NUM_REL; i++){
+    comp_id_t cid = ComponentGetID(def->components[i]);
+    if(cid != INVALID_COMPONENT)
+      SystemRequire(s, cid);
+
+  }
+  if(def->init)
+    s->init = def->init;
+
   return s;
 }
 

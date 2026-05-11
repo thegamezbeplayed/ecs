@@ -1,5 +1,6 @@
 #include "game_views.h"
 #include "game_define.h"
+#include "component_define.h"
 
 camera_t* InitCamera(float zoom, float rot, Vector2 offset){
   camera_t* c = GameCalloc("InitCamera", 1,sizeof(camera_t));
@@ -47,4 +48,10 @@ void TrackingFollow(camera_t* cam, track_mode_d t, Vector2 v){
       cam->target = Vector2Lerp(cam->target, v, t.speed);
       break;
   }
+}
+
+bool CameraInit(void* comp, component_entry_t* json){
+  cam_comp_t* cc = comp;
+
+  return ParseCameraComponent(json->data, cc);
 }

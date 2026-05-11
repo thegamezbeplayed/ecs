@@ -28,6 +28,14 @@ typedef struct{
   uint8_t  flags;
 }tile_t;
 
+typedef struct{
+  Cell  pos;
+}coordinate_t;
+void PositionFromCoords(position_t* p, coordinate_t* coords, float);
+static void CoordinateSet(coordinate_t* c, Cell pos){
+  c->pos = pos;
+}
+
 static inline bool LESS_THAN(int a, int b){
   return a<b;
 }

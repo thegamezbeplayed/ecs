@@ -1,5 +1,5 @@
 #include "game_assets.h"
-#include "game_define.h"
+#include "game_systems.h"
 
 static ResourcePool RES_POOL;
 static game_t       GAME_DEF;
@@ -120,20 +120,24 @@ void ResourceInit(int count){
   RES_POOL.refs = GameCalloc("ResourceInit", count, sizeof(ResourceRef));
 }
 
-void LoadGameDefine(const char* path){
+game_t* LoadGameDefine(const char* path){
   cJSON* root = ParseRoot(path);
 
   bool load = ParseGameDefinition(root, &GAME_DEF);
 
   if(!load){
     TraceLog(LOG_WARNING, "=== GAME DEF NOT LOADED===");
-    return;
+    return NULL;
   }
 
   ComponentInit(GAME_DEF.num_comps);
   for(int i = 0; i < GAME_DEF.num_comps; i++)
     ComponentRegisterCore(GAME_DEF.comps[i]);
 
+  for(int i = 0; i < GAME_DEF.num_sys; i++)
+    SystemCreate(&world, &GAME_DEF.systems[i]);
+
+  return &GAME_DEF;
 }
 
 void ResourceLoad(ResourceRef ref){
@@ -145,4 +149,38 @@ void ResourceLoad(ResourceRef ref){
     case RES_JSON:
       ResourceLoadJSON(entry);
   }
+}
+
+void UnloadGameDefine(game_t* g){
+  if(!g)
+    return;
+  for (int i = 0; i < g->num_prefabs; i++) {
+    prefab_entity_t* p = &g->prefabs[i];
+    if(p->name)
+      GameFree("UnloadGameDefine", (void*)p->name);
+    for (int j = 0; j < g->prefabs[i].num_comp; j++) {
+      GameFree("UnloadGameDefine", (void*)p->components[j]);
+    }
+  }
+  GameFree("UnloadGameDefine", g->prefabs);
+
+  // Relations
+  for (int i = 0; i < g->relation_count; i++) {
+    entity_relation_t* er = &g->relations[i];
+    GameFree("UnloadGameDefine", (void*)er->name);
+
+    for (int j = 0; j < MAX_RELATIONS; j++) {
+      component_relation_t* cr = &er->comps[j];
+      GameFree("UnloadGameDefine", (void*)cr->comp);
+
+      for (int k = 0; k < MAX_RELATIONS_PER_ENTITY; k++) {
+        GameFree("UnloadGameDefine", (void*)cr->pairs[k].name);
+      }
+    }
+  }
+  GameFree("UnloadGameDefine", g->relations);
+
+  memset(g, 0, sizeof(*g));
+
+
 }

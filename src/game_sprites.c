@@ -5,6 +5,8 @@
 #include "game_define.h"
 #include "game_process.h"
 #include "game_helpers.h"
+#include "component_define.h"
+
 //#include "screens.h"
 
 sprite_sheet_d SHEETS[SHEET_ALL];
@@ -27,7 +29,7 @@ void SpriteRenderSplash(void){
 }
 
 void InitResources(){
-  s = &SHEETS[SHEET_UI];
+  sprite_sheet_d *s = &SHEETS[SHEET_UI];
   s->texture = LoadTexture("resources/textures_npatch.png");
 }
 
@@ -254,4 +256,14 @@ Rectangle GetHurtbox(const ase_sprite_sheet_d* sheet, int frame)
 {
     Rectangle r = GetSlice(sheet, "hurtbox", frame);
     return r;
+}
+
+bool SpriteInit(void* comp, component_entry_t* j){
+  sprite_t* spr = comp;
+
+  return ParseSpriteComponent(j->data, spr);
+}
+
+bool AnimInit(void* comp, component_entry_t* data){
+  anim_comp_t* ac = comp;
 }

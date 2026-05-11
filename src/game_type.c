@@ -1,6 +1,13 @@
 #include "game_define.h"
+#include "component_define.h"
 #include "game_helpers.h"
 #include "game_process.h"
+
+bool PositionInit(void* comp, component_entry_t* j){
+  position_t* p = comp;
+
+  return ParsePositionComponent(j->data, p);
+}
 
 position_t* InitPosition(Vector2 pos){
   position_t* p = GameCalloc("InitPosition", 1, sizeof(position_t));
@@ -31,3 +38,11 @@ void PositionSetDest(position_t* p, Vector2 v){
   p->angle = angle_snap_to_card(dir);
 }
 
+bool CoordInit(void* comp, component_entry_t* data){
+
+}
+
+void PositionFromCoords(position_t* p, coordinate_t* coords, float scale){
+  p->vpos = p->last_vpos = cell_to_vec(coords->pos, scale);
+
+}

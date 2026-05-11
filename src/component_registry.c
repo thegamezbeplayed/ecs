@@ -1,6 +1,6 @@
 #include "game_define.h"
 
-static comp_id_t INVALID_COMPONENT = 0;
+comp_id_t INVALID_COMPONENT = -1;
 
 static hash_map_t COMP_REGISTER;
 
@@ -86,6 +86,9 @@ void* ComponentAdd(world_t* w, Entity e, comp_id_t id){
 
 void* ComponentGet(world_t* w, Entity e, comp_id_t id){
   component_pool_t* pool = w->pools[id];
+
+  if(!pool || id >= w->next_component_id)
+    return NULL;
 
   int idx = pool->sparse[e.id];
   if (idx == -1) return NULL;

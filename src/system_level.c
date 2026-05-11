@@ -6,6 +6,7 @@ static choice_pool_t* locations;
 void LevelLoad(world_t* w, Entity e){
   level_t* l = GET_COMPONENT(w, e, level_t, LVL_ID);
 
+  if(l)
   l->bounds = Rect(0, 0, l->wid, l->hei);
 }
 
@@ -19,6 +20,7 @@ void LevelSystem(world_t* w, Entity e){
 void LevelRender(world_t* w, Entity e){
   level_t* l = GET_COMPONENT(w, e, level_t, LVL_ID);
 
+  if(l)
   DrawRectangleLinesEx(l->bounds, 1.5f, RED);
 
 

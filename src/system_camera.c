@@ -28,6 +28,9 @@ void CameraSystem(world_t* w, Entity e){
   cam_comp_t* c = GET_COMPONENT(w, e, cam_comp_t, CAM_ID);
   track_comp_t* t = GET_COMPONENT(w, e, track_comp_t, TRACK_ID);
 
+  if(!t || !t->target)
+    return;
+
   Entity tar = EntityGet(&w->manager, t->target);
 
   if(!EntityValid(&w->manager, tar))

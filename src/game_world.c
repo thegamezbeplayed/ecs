@@ -13,20 +13,26 @@ game_process_t GP;
 void InitEntityComponentSystem(void){
   WorldInit(&world);
   
-  LoadGameDefine("resources/data/definitions.json");
-  RegisterComponentData(&world);
-  RegisterSystemData(&world);
+  game_t* g = LoadGameDefine("resources/data/definitions.json");
 
+  if(!g)
+    return;
+
+  GameInitPrefabs(&world, g);
   for(int i = 0; i < world.num_sys; i++){
     if(world.systems[i].init)
       world.systems[i].init(&world);
   }
 
+//  GameSpawn(&world, g);
+  UnloadGameDefine(g);
   Scene* test = GameCalloc("InitEntityComponentSystem", 1, sizeof(Scene));
 
   bool scene = SceneLoadByIndex(0, test);
 
   TraceLog(LOG_INFO," ==== LOADED SCENE %s %s", test->name, test->display_name);
+
+  SceneSetup(&world, test);
 }
 
 void Subscribe(uint64_t event, EventCallback cb, void* data){
@@ -66,10 +72,12 @@ void ScheduleEvent(uint64_t event, void* data, uint64_t uid, TimeFrame tf, int s
 }
 
 void GameEvent(uint64_t event, void* data, uint64_t uid){
-  event_t* ev = InitEvent(GP.notifications, event, data, uid);
+  if(BUS->count == 0)
+    return;
 
-  if(BUS->count)
-    EventEmit(BUS, ev);
+  event_t* ev = InitEvent(GP.notifications, event, data, uid);
+  EventEmit(BUS, ev);
+  GameFree("GameEvent", ev);
 }
 
 void GameSetState(GameState state){
@@ -139,12 +147,7 @@ void InitGameEvents(){
   GP.children[SCREEN_GAMEPLAY].process = PROCESS_LEVEL;
   GP.game_frames = 0; 
 
-<<<<<<< HEAD
-  GP.bus[SCREEN_GAMEPLAY] = InitEventBus(128);
-  GP.bus[SCREEN_TITLE] = InitEventBus(64);
-=======
   GP.bus = InitEventBus(128);
->>>>>>> 5c2424b (added app thread loader)
   GP.notifications = InitNotifications(64);
 }
 

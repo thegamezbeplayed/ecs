@@ -13,6 +13,7 @@ bool SceneLoad(const char* sceneName, Scene* out);
 bool SceneLoadByIndex(int sceneIndex, Scene* out);
 bool SceneInit(LoadQueue* l);
 void SceneMapResources(LoadQueue* l);
+void SceneSetup(world_t* w, Scene* s);
 
 int  SceneLoaderGetSceneCount(void);
 const char* SceneLoaderGetSceneName(int index);

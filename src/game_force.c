@@ -124,3 +124,8 @@ bool ForceStep(force_t *force, bool accelerate){
   return Vector2Length(force->vel) > force->threshold;
 }
 
+bool ForceInit(void* comp, component_entry_t* data){
+  force_t* f = comp;
+}
+
+
