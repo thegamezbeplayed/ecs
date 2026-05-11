@@ -9,7 +9,11 @@
 #define MAX_PLAYERS     2
 
 #define POS_ID       ComponentGetID("Position")
+<<<<<<< HEAD
 #define PHYS_ID      ComponentGetID("RigidBody")
+=======
+#define PHYS_ID      ComponentGetID("Physics")
+>>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
 #define ANIM_ID      ComponentGetID("Animation")
 #define SPR_ID       ComponentGetID("Sprite")
 #define INPUT_ID     ComponentGetID("Input")
@@ -23,10 +27,15 @@
 #define FOLLOW_ID    ComponentGetID("Follow")
 #define LVL_ID       ComponentGetID("Level")
 #define EXPIR_ID     ComponentGetID("Expiry")
+<<<<<<< HEAD
 #define COORD_ID     ComponentGetID("Coordinate")
 
 typedef uint64_t comp_id_t;
 extern comp_id_t INVALID_COMPONENT;
+=======
+
+typedef uint64_t comp_id_t;
+>>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
 
 typedef struct{
   const char*   name;

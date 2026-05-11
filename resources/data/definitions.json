@@ -8,6 +8,7 @@
         {"step": "GAME_READY",    "fn": "AnimLoad"}
       ]
     },
+<<<<<<< HEAD
     {"name": "Sprites",
       "components": ["Sprite", "Position"],
       "functions": [
@@ -15,6 +16,8 @@
         {"step": "GAME_READY",    "fn": "SpriteLoad"}
       ]
     },
+=======
+>>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
     {"name": "Controller",
       "components": ["Input", "Position"],
       "functions": [
@@ -22,6 +25,17 @@
         {"step": "GAME_READY",    "fn": "InputLoad"}
       ]
     },
+<<<<<<< HEAD
+=======
+    {"name": "Animations",
+      "components": ["Animation", "Position"],
+      "functions": [
+        {"step": "UPDATE_FIXED",  "fn": "AnimSystem"},
+        {"step": "UPDATE_DRAW",   "fn": "AnimRender"},
+        {"step": "GAME_READY",    "fn": "AnimLoad"}
+      ]
+    },
+>>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
     {"name": "Positions",
       "components": ["Position"],
       "functions": [
@@ -34,6 +48,7 @@
         {"step": "UPDATE_POST",   "fn": "PhysicsSystem"},
         {"step": "UPDATE_PRE" ,   "fn": "PhysicsCollision"},
         {"step": "GAME_READY",    "fn": "PhysicsLoad"}
+<<<<<<< HEAD
       ],
       "init": "PhysicsInit"
     },
@@ -92,6 +107,20 @@
   },
   "Animation": {
     "func": "AnimInit",
+=======
+      ]
+    },
+  ],
+  "components": [
+    "Sprite", "Animation", "Position", "Input", "RigidBody", "Force"
+  ],
+  "Sprite":{
+    "list": [
+      {"name": "tiles", "sheet_id": "SHEET_TILE"}
+    ]
+  },
+  "Animation": {
+>>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
     "list": [
       {"name": "player", "sheet_id": "SHEET_PLAYER",
         "states": [
@@ -125,13 +154,19 @@
     ]
   },
   "RigidBody":{
+<<<<<<< HEAD
     "func": "RigidBodyInit",
+=======
+>>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
     "list": [
       {"name": "player",  "shape": "rect", "width": 10, "height": 12}
     ]
   },
   "Force": {
+<<<<<<< HEAD
     "func": "ForceInit",
+=======
+>>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
     "list": [
       {"name": "player-steering",
         "type": "STEERING", "event": "FORCE_EVENT_ACCEL",
@@ -143,6 +178,7 @@
       }
     ]
   },
+<<<<<<< HEAD
   "Camera": {
     "func": "CameraInit",
     "list": [
@@ -196,6 +232,20 @@
       }
     ]
   },
+=======
+  "prefabs": [
+    {
+      "name": "player",
+      "count": 4,
+      "list": ["Animation", "Position", "RigidBody", "Input"]
+    },
+    {
+      "name": "tile",
+      "count": 2,
+      "list": ["Sprite", "Position"]
+    }
+  ],
+>>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
   "relations": [
     {
       "name": "player",

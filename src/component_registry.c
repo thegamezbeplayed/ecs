@@ -1,6 +1,10 @@
 #include "game_define.h"
 
+<<<<<<< HEAD
 comp_id_t INVALID_COMPONENT = -1;
+=======
+static comp_id_t INVALID_COMPONENT = 0;
+>>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
 
 static hash_map_t COMP_REGISTER;
 

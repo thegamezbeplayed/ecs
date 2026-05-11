@@ -2,9 +2,12 @@
 #define __GAME_SYS__
 #include "game_define.h"
 #include "component_define.h"
+<<<<<<< HEAD
 
 #define NUM_FUNCTIONS 32
 system_t* SystemCreate(world_t* w, system_define_t* def);
+=======
+>>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
 
 void OnPositionEvent(event_t* ev, void* data);
 void PositionLoad(world_t* w, Entity e);

@@ -1,5 +1,9 @@
 #include "game_assets.h"
+<<<<<<< HEAD
 #include "game_systems.h"
+=======
+#include "game_define.h"
+>>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
 
 static ResourcePool RES_POOL;
 static game_t       GAME_DEF;
@@ -120,24 +124,35 @@ void ResourceInit(int count){
   RES_POOL.refs = GameCalloc("ResourceInit", count, sizeof(ResourceRef));
 }
 
+<<<<<<< HEAD
 game_t* LoadGameDefine(const char* path){
+=======
+void LoadGameDefine(const char* path){
+>>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
   cJSON* root = ParseRoot(path);
 
   bool load = ParseGameDefinition(root, &GAME_DEF);
 
   if(!load){
     TraceLog(LOG_WARNING, "=== GAME DEF NOT LOADED===");
+<<<<<<< HEAD
     return NULL;
+=======
+    return;
+>>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
   }
 
   ComponentInit(GAME_DEF.num_comps);
   for(int i = 0; i < GAME_DEF.num_comps; i++)
     ComponentRegisterCore(GAME_DEF.comps[i]);
 
+<<<<<<< HEAD
   for(int i = 0; i < GAME_DEF.num_sys; i++)
     SystemCreate(&world, &GAME_DEF.systems[i]);
 
   return &GAME_DEF;
+=======
+>>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
 }
 
 void ResourceLoad(ResourceRef ref){
@@ -150,6 +165,7 @@ void ResourceLoad(ResourceRef ref){
       ResourceLoadJSON(entry);
   }
 }
+<<<<<<< HEAD
 
 void UnloadGameDefine(game_t* g){
   if(!g)
@@ -184,3 +200,5 @@ void UnloadGameDefine(game_t* g){
 
 
 }
+=======
+>>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594

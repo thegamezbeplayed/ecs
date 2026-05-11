@@ -13,7 +13,11 @@ static const ResourceRef RESOURCES[NUM_RES] = {
 };
 
 static const SceneHeader SCENE_HEADERS[NUM_SCENES] = {
+<<<<<<< HEAD
   {"stage_01", "resources/data/scenes/scene_01.json", 10, 10, 100, 1}
+=======
+  {"stage_01", "resources/scenes/scene_01.json", 10, 10, 100, 1}
+>>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
 };
 
 

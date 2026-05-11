@@ -1,6 +1,7 @@
 #include "game_assets.h"
 #include "game_define.h"
 #include "game_strings.h"
+<<<<<<< HEAD
 #include "game_systems.h"
 #include "scene.h"
 
@@ -12,24 +13,43 @@ char* Json_GetString(cJSON* obj, const char* key, char* out)
   if (item && cJSON_IsString(item) && out) {
     strncpy(out, item->valuestring, max_len);
     out[max_len] = '\0';
+=======
+#include "scene.h"
+
+static char* Json_GetString(cJSON* obj, const char* key, char* out, int max_len)
+{
+  cJSON* item = cJSON_GetObjectItem(obj, key);
+  if (item && cJSON_IsString(item) && out) {
+    strncpy(out, item->valuestring, max_len - 1);
+    out[max_len-1] = '\0';
+>>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
     return out;
   }
   out[0] = '\0';
   return out;
 }
 
+<<<<<<< HEAD
 int Json_GetInt(cJSON* obj, const char* key, int default_val)
+=======
+static int Json_GetInt(cJSON* obj, const char* key, int default_val)
+>>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
 {
   cJSON* item = cJSON_GetObjectItem(obj, key);
   return cJSON_IsNumber(item) ? item->valueint : default_val;
 }
 
+<<<<<<< HEAD
 float Json_GetFloat(cJSON* obj, const char* key, float default_val)
+=======
+static float Json_GetFloat(cJSON* obj, const char* key, float default_val)
+>>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
 {
   cJSON* item = cJSON_GetObjectItem(obj, key);
   return cJSON_IsNumber(item) ? (float)item->valuedouble : default_val;
 }
 
+<<<<<<< HEAD
 bool ParseSpriteComponent(cJSON* j, sprite_t* out){
 
   int sheet = Json_GetInt(j, "sheet_id", -1);
@@ -94,12 +114,15 @@ bool ParseCameraComponent(cJSON* j, cam_comp_t* out){
 }
 
 
+=======
+>>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
 RelationType RelationTypeLookup(char* str){
   for(int i = 0; i < NUM_REL; i++){
     if (strcmp(str, RELATION_LOOKUP[i].name) == 0)
       return RELATION_LOOKUP[i].type;
   }
 }
+<<<<<<< HEAD
 
 ComponentInitFn ComponentFuncLookup(const char* name){
   if (!name) return NULL;
@@ -154,6 +177,8 @@ UpdateType GetUpdateStep(const char* name){
 
   return -1;
 }
+=======
+>>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
 
 SheetID StringToSheetID(const char* str)
 {
@@ -299,7 +324,11 @@ void Unloadsprite_sheet_d(sprite_sheet_d* sheet)
 }
 
 bool ParseScene(cJSON* root, Scene* scene){
+<<<<<<< HEAD
   Json_GetString(root, "display_name", scene->display_name);
+=======
+  Json_GetString(root, "display_name", scene->display_name, 128);
+>>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
 
   scene->pixel_width  = Json_GetInt(root, "pixel_width", 800);
   scene->pixel_height = Json_GetInt(root, "pixel_height", 600);
@@ -312,6 +341,7 @@ bool ParseScene(cJSON* root, Scene* scene){
   cJSON* tile_array = cJSON_GetObjectItem(root, "tiles");
   if (tile_array && cJSON_IsArray(tile_array)) {
     scene->tile_count = cJSON_GetArraySize(tile_array);
+<<<<<<< HEAD
     scene->tiles = GameCalloc("ParseScene", scene->tile_count, sizeof(tile_instance_t));
 
     for (int i = 0; i < scene->tile_count; i++) {
@@ -319,6 +349,14 @@ bool ParseScene(cJSON* root, Scene* scene){
       tile_instance_t* t = &scene->tiles[i];
       t->name = GameCalloc("ParseScene", MAX_NAME_LEN, sizeof(char));
       Json_GetString(item, "name", t->name);
+=======
+    scene->tiles = GameCalloc("ParseScene", scene->tile_count, sizeof(TileInstance));
+
+    for (int i = 0; i < scene->tile_count; i++) {
+      cJSON* item = cJSON_GetArrayItem(tile_array, i);
+      TileInstance* t = &scene->tiles[i];
+      t->tile_index = Json_GetInt(item, "tile_index", 0);
+>>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
       t->cell_x      = Json_GetInt(item, "cell_x", 0);
       t->cell_y      = Json_GetInt(item, "cell_y", 0);
       t->rotation   = Json_GetInt(item, "rotation", 0);
@@ -331,6 +369,7 @@ bool ParseScene(cJSON* root, Scene* scene){
   cJSON* ent_array = cJSON_GetObjectItem(root, "entities");
   if (ent_array && cJSON_IsArray(ent_array)) {
     scene->entity_count = cJSON_GetArraySize(ent_array);
+<<<<<<< HEAD
     scene->entities = GameCalloc("ParseScene", scene->entity_count, sizeof(entity_instance_t));
 
     for (int i = 0; i < scene->entity_count; i++) {
@@ -339,6 +378,14 @@ bool ParseScene(cJSON* root, Scene* scene){
       e->prefab = GameCalloc("ParseScene", MAX_NAME_LEN, sizeof(char));
 
       Json_GetString(item, "name", e->prefab);
+=======
+    scene->entities = GameCalloc("ParseScene", scene->entity_count, sizeof(EntityInstance));
+
+    for (int i = 0; i < scene->entity_count; i++) {
+      cJSON* item = cJSON_GetArrayItem(ent_array, i);
+      EntityInstance* e = &scene->entities[i];
+      Json_GetString(item, "prefab", e->prefab, 64);
+>>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
       e->x = Json_GetFloat(item, "x", 0.0f);
       e->y = Json_GetFloat(item, "y", 0.0f);
       e->type = Json_GetInt(item, "type", 0);
@@ -356,6 +403,7 @@ bool ParseScene(cJSON* root, Scene* scene){
 
 }
 
+<<<<<<< HEAD
 bool ParseSystems(cJSON* root, game_t* out)
 {
   if (!root || !out) return false;
@@ -550,6 +598,65 @@ bool ParsePrefabs(cJSON* root, game_t* out){
 }
 
 bool ParseRelations(cJSON* root, game_t* out){
+=======
+bool ParseGameDefinition(cJSON* root, game_t* out){
+  if (!root || !out) return false;
+  memset(out, 0, sizeof(*out));
+
+  // ==================== COMPONENTS======================
+  cJSON* comp_json = cJSON_GetObjectItem(root, "components");
+  if(cJSON_IsArray(comp_json)){
+    
+    cJSON* c;
+    cJSON_ArrayForEach(c, comp_json){
+       if (cJSON_IsString(c))
+         out->comps[out->num_comps++] = c->valuestring;
+    }
+
+  }
+
+  // ====================== PREFABS ======================
+  cJSON* prefabs_json = cJSON_GetObjectItem(root, "prefabs");
+  if (cJSON_IsArray(prefabs_json))
+  {
+    out->num_prefabs = cJSON_GetArraySize(prefabs_json);
+    out->prefabs = GameCalloc("ParseGameDef", out->num_prefabs, sizeof(prefab_entity_t));
+    if (!out->prefabs) return false;
+
+    int i = 0;
+    cJSON* item;
+    cJSON_ArrayForEach(item, prefabs_json)
+    {
+      prefab_entity_t* p = &out->prefabs[i++];
+
+      cJSON* name  = cJSON_GetObjectItem(item, "name");
+      cJSON* count = cJSON_GetObjectItem(item, "count");
+      cJSON* list  = cJSON_GetObjectItem(item, "list");
+
+      if (cJSON_IsString(name))
+        p->name = strdup(name->valuestring);
+
+      if (cJSON_IsNumber(count))
+        p->num_comp = count->valueint;   // note: "count" in JSON is instance count, not component count
+
+      if (cJSON_IsArray(list))
+      {
+        int comp_idx = 0;
+        cJSON* comp;
+        cJSON_ArrayForEach(comp, list)
+        {
+          if (cJSON_IsString(comp) && comp_idx < MAX_COMPONENTS)
+          {
+            p->components[comp_idx++] = strdup(comp->valuestring);
+          }
+        }
+        p->num_comp = comp_idx;   // actual number of components in the list
+      }
+    }
+  }
+
+  // ====================== RELATIONS ======================
+>>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
   cJSON* relations_json = cJSON_GetObjectItem(root, "relations");
   if (cJSON_IsArray(relations_json))
   {
@@ -562,8 +669,16 @@ bool ParseRelations(cJSON* root, game_t* out){
     cJSON_ArrayForEach(rel_item, relations_json)
     {
       entity_relation_t* er = &out->relations[rel_idx++];
+<<<<<<< HEAD
       er->name = GameCalloc("ParseRelations", MAX_NAME_LEN, sizeof(char));
       Json_GetString(rel_item, "name", er->name);
+=======
+
+      // The key is the entity name (e.g. "player")
+      cJSON* rname  = cJSON_GetObjectItem(rel_item, "name");
+      er->name = strdup(rname->valuestring);
+
+>>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
 
       cJSON* count = cJSON_GetObjectItem(rel_item, "count");
       if (cJSON_IsNumber(count))
@@ -579,12 +694,23 @@ bool ParseRelations(cJSON* root, game_t* out){
         if (comp_rel_idx >= MAX_RELATIONS) break;
 
         component_relation_t* cr = &er->comps[comp_rel_idx++];
+<<<<<<< HEAD
         cr->comp = GameCalloc("ParseRelations", MAX_NAME_LEN, sizeof(char));
 
         Json_GetString(comp_rel, "name", cr->comp);
         cJSON* ccount = cJSON_GetObjectItem(comp_rel, "count");
         cJSON* sublist = cJSON_GetObjectItem(comp_rel, "sublist");
 
+=======
+
+        cJSON* cname  = cJSON_GetObjectItem(comp_rel, "name");
+        cJSON* ccount = cJSON_GetObjectItem(comp_rel, "count");
+        cJSON* sublist = cJSON_GetObjectItem(comp_rel, "sublist");
+
+        if (cJSON_IsString(cname))
+          cr->comp = strdup(cname->valuestring);
+
+>>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
         if (cJSON_IsNumber(ccount))
           cr->count = ccount->valueint;
 
@@ -596,10 +722,18 @@ bool ParseRelations(cJSON* root, game_t* out){
           {
             if (pair_idx >= MAX_RELATIONS_PER_ENTITY) break;
 
+<<<<<<< HEAD
             cJSON* ptype = cJSON_GetObjectItem(pair, "type");
             cr->pairs[pair_idx].name = GameCalloc("ParseRelations", MAX_NAME_LEN, sizeof(char));
 
             Json_GetString(pair, "name", cr->pairs[pair_idx].name);
+=======
+            cJSON* pname = cJSON_GetObjectItem(pair, "name");
+            cJSON* ptype = cJSON_GetObjectItem(pair, "type");
+
+            if (cJSON_IsString(pname))
+              cr->pairs[pair_idx].name = strdup(pname->valuestring);
+>>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
 
             if (cJSON_IsString(ptype))
               cr->pairs[pair_idx].type = RelationTypeLookup(ptype->valuestring);
@@ -608,6 +742,7 @@ bool ParseRelations(cJSON* root, game_t* out){
         }
       }
     }
+<<<<<<< HEAD
 
     return true;
   }
@@ -642,6 +777,8 @@ bool ParseGameDefinition(cJSON* root, game_t* out){
   if(!ParseRelations(root, out)){
     TraceLog(LOG_ERROR, "===PARSE GAME DEF===\n Relations parse error");
     return false;
+=======
+>>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
   }
 
   return true;

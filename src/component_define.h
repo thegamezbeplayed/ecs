@@ -8,6 +8,7 @@
 #include "game_stats.h"
 #include "game_behaviors.h"
 
+<<<<<<< HEAD
 bool SpriteInit(void* comp, component_entry_t* data);
 bool ForceInit(void* comp, component_entry_t* data);
 bool RigidBodyInit(void* comp, component_entry_t* data);
@@ -21,6 +22,8 @@ bool ParseRigidBodyComponent(cJSON* j, rigid_body_t* out);
 bool ParseForceComponent(cJSON* j, force_t* out);
 bool ParsePositionComponent(cJSON* j, position_t* out);
 
+=======
+>>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
 typedef struct{
   anim_player_t   player;
   AnimEventID       event;
@@ -29,7 +32,10 @@ typedef struct{
   collision_d     hurtboxes[MAX_SLICES];
   anim_t          sequences[ANIM_DONE][MAX_DIRECTIONS];
 }anim_comp_t;
+<<<<<<< HEAD
 bool ParseAnimComponent(cJSON* j, anim_comp_t* out);
+=======
+>>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
 
 typedef struct{
   char  name[MAX_NAME_LEN];
@@ -46,7 +52,10 @@ typedef struct{
   viewport_t  view;
   Camera2D    camera;
 }cam_comp_t;
+<<<<<<< HEAD
 bool ParseCameraComponent(cJSON* j, cam_comp_t* out);
+=======
+>>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
 
 typedef struct{
   camera_ctx_t      ctx;
