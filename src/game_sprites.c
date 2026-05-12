@@ -5,72 +5,31 @@
 #include "game_define.h"
 #include "game_process.h"
 #include "game_helpers.h"
+#include "component_define.h"
+
 //#include "screens.h"
-#include "player_atlas.h"
-#include "mob_atlas.h"
-#include "tile_atlas.h"
 
 sprite_sheet_d SHEETS[SHEET_ALL];
+static splash_tex_t splash_tex;
+
+void SpriteLoadSplash(const char* path, Vector2 screen){
+  splash_tex.tex = GameMalloc("SpriteLoadSplash", sizeof(Texture2D));
+  *splash_tex.tex = LoadTexture(path);
+
+  splash_tex.offset.x = (screen.x - splash_tex.tex->width)/2;
+  splash_tex.offset.y = (screen.y - splash_tex.tex->height)/2;
+
+  splash_tex.bg = (Color){9,13,24,255};
+}
+
+void SpriteRenderSplash(void){
+  ClearBackground(splash_tex.bg);
+
+  DrawTextureV(*splash_tex.tex, splash_tex.offset, WHITE);
+}
 
 void InitResources(){
-  ase_sprite_sheet_d* parse = GameCalloc("InitResources", 1,
-      sizeof(ase_sprite_sheet_d));
-
-  sprite_sheet_d *s = &SHEETS[SHEET_CHAR];
-  s->texture = *LoadAsepriteSheet("resources/player-sheet.json", parse);
-
-  for(int i = 0; i < parse->num_tags ; i++){
-    anim_tag_t tag = parse->tags[i];
-    for(int j = tag.index_start; j <= tag.index_end; j++){
-      AsepriteToSprite(SHEET_CHAR, parse, tag, j, &s->sprites[j]); 
-      s->num_sprites++;
-    }
-  }
- 
-  for (int i = 0; i < parse->num_slices; i++){
-    slice_d sdat = parse->slices[i];
-    for (int j = 0; j < sdat.num_keys; j++){
-      slice_key_t skdat = sdat.keys[j];
-
-      anim_frame_t* f = &parse->frames[skdat.frame];
-      s->coll[s->num_coll++] = *InitSpriteCollision(f, skdat.type,
-          SHAPE_REC, skdat.bounds);
-    }
-  } 
-  TraceLog(LOG_INFO, "=== LOADED %i SPRITES FROM ASEPRITE ===", SHEETS[SHEET_CHAR].num_sprites);
-  
-  s = &SHEETS[SHEET_MOB];
-  s->texture = *LoadAsepriteSheet("resources/slime-sheet.json", parse);
-
-  for(int i = 0; i < parse->num_tags ; i++){
-    anim_tag_t tag = parse->tags[i];
-    for(int j = tag.index_start; j <= tag.index_end; j++){
-      AsepriteToSprite(SHEET_MOB, parse, tag, j, &s->sprites[j]); 
-      s->num_sprites++;
-    }
-  }
- 
-  for (int i = 0; i < parse->num_slices; i++){
-    slice_d sdat = parse->slices[i];
-    for (int j = 0; j < sdat.num_keys; j++){
-      slice_key_t skdat = sdat.keys[j];
-
-      anim_frame_t* f = &parse->frames[skdat.frame];
-      s->coll[s->num_coll++] = *InitSpriteCollision(f, skdat.type,
-          SHAPE_REC, skdat.bounds);
-    }
-  } 
-  TraceLog(LOG_INFO, "=== LOADED %i SPRITES FROM ASEPRITE ===", SHEETS[SHEET_MOB].num_sprites);
-  /*
-
-  
-  TEXTURES[SHEET_TILE] = TILE_SPRITES;
-  Image tilesImg = LoadImage(TextFormat("resources/%s",TILE_IMAGE_PATH));
-  SHEETS[SHEET_TILE].sprite_sheet = GameMalloc("",sizeof(Texture2D));
-  SpriteLoadSubTextures(TILE_SPRITES,SHEET_TILE, NUM_TILE);
-  *SHEETS[SHEET_TILE].sprite_sheet = LoadTextureFromImage(tilesImg);
-*/
-  s = &SHEETS[SHEET_UI];
+  sprite_sheet_d *s = &SHEETS[SHEET_UI];
   s->texture = LoadTexture("resources/textures_npatch.png");
 }
 
@@ -268,40 +227,6 @@ anim_t* AnimRegisterState(SheetID id, const char* name, char* group){
   return a;
 }
 
-void AsepriteToSprite(SheetID id, const ase_sprite_sheet_d* ase, anim_tag_t tag, int index, sprite_d* out){
-  if (!ase || !out || index < 0 || index >= ase->num_frames) {
-    memset(out, 0, sizeof(sprite_d));
-    return;
-  }
-    const anim_frame_t* f = &ase->frames[index];
-
-    // Basic info
-    out->tag   = tag.hash;
-    out->sheet_index = index;
-    out->sheet_id = id;
-    out->duration = f->duration;
-    out->slice.scale = 1.0f;
-    out->group = tag.group;
-
-    strcpy(out->name, tag.name);
-    out->repeat = tag.repeat;
-
-    if(strcmp(tag.direction, "reverse") == 0)
-      out->mirror = true;
-    out->slice.bounds = f->frame_rect;
-
-    out->slice.sheet = id;
-    out->slice.center = (Vector2){
-        f->source_rect.width  * 0.5f,
-        f->source_rect.height * 0.5f
-    };
-
-    if(out->mirror){
-      out->slice.center.x = out->slice.bounds.width - out->slice.center.x;
-      out->slice.bounds.width*=-1;
-    }
-}
-
 Rectangle GetSlice(const ase_sprite_sheet_d* sheet, const char* slice_name, int frame)
 {
     if (!sheet || !slice_name) return (Rectangle){0};
@@ -331,4 +256,16 @@ Rectangle GetHurtbox(const ase_sprite_sheet_d* sheet, int frame)
 {
     Rectangle r = GetSlice(sheet, "hurtbox", frame);
     return r;
+}
+
+bool SpriteInit(void* comp, component_entry_t* j){
+  sprite_t* spr = comp;
+
+  return ParseSpriteComponent(j->data, spr);
+}
+
+bool AnimInit(void* comp, component_entry_t* j){
+  anim_comp_t* ac = comp;
+
+  return ParseAnimComponent(j->data, ac);
 }

@@ -1,31 +1,49 @@
-#include "game_register.h"
+#include "game_define.h"
 
-static hash_map_t COMP_MAP;
-static hash_map_t COMP_IMPORT;
-static comp_id_t INVALID_COMPONENT = 0;
+comp_id_t INVALID_COMPONENT = -1;
 
-void ComponentMap(const char* name, comp_id_t* id, ComponentImportFn fn){
-  uint64_t key = hash_str_64(name);
-  HashPut(&COMP_MAP, key, id);
-  HashPut(&COMP_IMPORT, key, fn);
+static hash_map_t COMP_REGISTER;
+
+static int CompCount = 0;
+
+void ComponentInit(int count)
+{
+  HashInit(&COMP_REGISTER, next_pow2_int(count*2));
 }
 
-comp_id_t* ComponentMapGetID(const char* name){
-  uint64_t key = hash_str_64(name);
-  return HashGet(&COMP_MAP, key);
+void ComponentRegisterCore(const char* name)
+{
+  for(int i = 0; i < NUM_COMP_CORE; i++){
+    component_define_t def = CORE_COMPONENTS[i];
+    if(strcmp(name, def.name) == 0 && def.size > 0){
+      ComponentRegister(&world, def.name, def.size);
+      return;
+    }
+  }
+
+  TraceLog(LOG_WARNING, "=== COMPONENT REGISTER CORE ====\n %s NOT FOUND!", name);
 }
 
-ComponentImportFn ComponentMapFn(const char* name){
-  uint64_t key = hash_str_64(name);
-  return HashGet(&COMP_IMPORT, key);
+comp_id_t ComponentGetID(const char* name)
+{
+    if (!name) return 0;
+
+    uint64_t hash = hash_str_64(name);
+
+    component_t* exists = HashGet(&COMP_REGISTER, hash);
+
+    if(exists)
+      return exists->id;
+
+    return INVALID_COMPONENT;
 }
 
-void InitComponentMap(int size){
-  HashInit(&COMP_MAP, next_pow2_int(size*2));
-  HashInit(&COMP_IMPORT, next_pow2_int(size*2));
-}
+comp_id_t ComponentRegister(world_t* w, const char* name, size_t elem_size){
 
-comp_id_t ComponentRegister(world_t* w, size_t elem_size){
+  comp_id_t exists = ComponentGetID(name);
+  if(exists != INVALID_COMPONENT)
+    return exists;
+  
   comp_id_t id = w->next_component_id++;
 
   component_pool_t* pool = GameCalloc("ComponentRegister", 1, sizeof(component_pool_t));
@@ -41,7 +59,13 @@ comp_id_t ComponentRegister(world_t* w, size_t elem_size){
 
   w->pools[id] = pool;
 
+  component_t *comp = GameCalloc("ComponentRegister", 1, sizeof(component_t));
+  comp->id = id;
+  comp->name = name;
 
+  uint64_t hash = hash_str_64(name);
+
+  HashPut(&COMP_REGISTER, hash, comp);
   return id;
 }
 
@@ -63,6 +87,9 @@ void* ComponentAdd(world_t* w, Entity e, comp_id_t id){
 void* ComponentGet(world_t* w, Entity e, comp_id_t id){
   component_pool_t* pool = w->pools[id];
 
+  if(!pool || id >= w->next_component_id)
+    return NULL;
+
   int idx = pool->sparse[e.id];
   if (idx == -1) return NULL;
 
@@ -81,3 +108,4 @@ bool HasComponent(component_pool_t* pool, Entity e) {
     return (pool->entities[idx] == e.id);
 
 }
+

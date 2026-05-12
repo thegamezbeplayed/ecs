@@ -314,7 +314,7 @@ void EventEmit(event_bus_t* bus, event_t* e){
     e->calls++;
   }
 
-  if(e->max != -1 && e->calls >= e->max)
+  if(e->max > -1 && e->calls >= e->max)
     EventRemove(bus, e->uid);
 }
 

@@ -24,13 +24,4 @@ static bool COMPARE_ALL_BOOL(bool *all, int count){
   return true;
 }
 
-static collision_d* GetAnimCollData( anim_comp_t* ac, int index){
-  for(int i = 0; i < MAX_SLICES; i++){
-    if(ac->hurtboxes[i].frame == index)
-      return &ac->hurtboxes[i];
-  }
-
-  return NULL;
-}
-
 #endif

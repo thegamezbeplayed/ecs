@@ -1,186 +1,85 @@
 #include "game_systems.h"
-#include "scene_data.h"
+#include "component_define.h"
+#include "components.h"
 
-uint64_t AI_ID;
-uint64_t ANIM_ID;
-uint64_t NAME_ID;
-uint64_t POS_ID;
-uint64_t INPUT_ID;
-uint64_t PHYS_ID;
-uint64_t LVL_ID;
-uint64_t CAM_ID;
-uint64_t TRACK_ID;
-uint64_t SPR_ID;
-uint64_t TYPE_ID;
-uint64_t FOLLOW_ID;
-uint64_t STATE_ID;
-uint64_t STAT_ID;
-uint64_t FORCE_ID;
-uint64_t EXPIR_ID;
+const component_define_t CORE_COMPONENTS[NUM_COMP_CORE] = {
+  {"Position",  sizeof(position_t)},
+  {"RigidBody", sizeof(rigid_body_t)},
+  {"Animation", sizeof(anim_comp_t)},
+  {"Sprite",    sizeof(sprite_t)},
+  {"Input",     sizeof(input_t)},
+  {"Camera",    sizeof(cam_comp_t)},
+  {"Track",     sizeof(track_comp_t)},
+  {"Type",      sizeof(EntityType)},
+  {"Stat",      sizeof(stat_t)},
+  {"Force",     sizeof(force_t)},
+  {"Name",      0}, //TODO
+  {"State",     sizeof(state_comp_t)},
+  {"Follow",    sizeof(follow_comp_t)},
+  {"Level",     sizeof(level_t)},
+  {"Expiry",    sizeof(lifetime_t)}
+};
 
-int PHYS_SYS;
+const component_func_t COMPFUNC_LOOKUP[NUM_COMP_CORE] = {
+  {"Animation",   AnimInit},
+  {"Sprite",      SpriteInit},
+  {"Anim",        AnimInit},
+  {"RigidBody",   RigidBodyInit},
+  {"Force",       ForceInit},
+  {"Camera",      CameraInit},
+  {"Input",       InputInit},
+  {"Position",    PositionInit},
+};
 
-void RegisterComponentData(world_t* w) {
-  ANIM_ID = REGISTER_COMPONENT(w, anim_comp_t);
-  ComponentMap("Animation", &ANIM_ID, AnimationImport);
-  
-  NAME_ID = REGISTER_COMPONENT(w, name_comp_t);
-  ComponentMap("Name", &NAME_ID, NULL);
-  POS_ID = REGISTER_COMPONENT(w, pos_comp_t);
-  ComponentMap("Position", &POS_ID, PositionImport);
+component_entry_t* GetGameComponentDefine(game_t* g, const char* comp, const char* name){
+  for(int i = 0; i < g->num_defs; i++){
+    component_entry_t* entry = &g->comp_defs[i];
+    if(strcmp(comp, entry->comp) != 0)
+      continue;
 
-  INPUT_ID = REGISTER_COMPONENT(w, input_comp_t);
-  ComponentMap("Input", &INPUT_ID, InputImport);
-  PHYS_ID = REGISTER_COMPONENT(w, phys_comp_t);//DuplicateRigidBody);
-  ComponentMap("Physics", &PHYS_ID, PhysicsImport);
-  LVL_ID = REGISTER_COMPONENT(w, lvl_comp_t);
-  ComponentMap("Level", &LVL_ID, LevelImport);
-  CAM_ID = REGISTER_COMPONENT(w, cam_comp_t);
-  ComponentMap("Camera", &CAM_ID, CameraImport);
-  TRACK_ID = REGISTER_COMPONENT(w, track_comp_t);
-  ComponentMap("Track", &TRACK_ID, TrackingImport);
-  SPR_ID = REGISTER_COMPONENT(w, spr_comp_t);
-  ComponentMap("Sprite", &SPR_ID, SpriteImport);
-  TYPE_ID = REGISTER_COMPONENT(w, type_comp_t);
-  ComponentMap("Type", &TYPE_ID, TypeImport);
+    if(strcmp(name, entry->name) == 0)
+      return entry;
+  }
 
-  FOLLOW_ID = REGISTER_COMPONENT(w, follow_comp_t);
-  ComponentMap("Follow", &FOLLOW_ID, NULL);
-
-  AI_ID = REGISTER_COMPONENT(w, ai_comp_t);
-
-  STATE_ID = REGISTER_COMPONENT(w, state_comp_t);
-  
-  STAT_ID = REGISTER_COMPONENT(w, stat_comp_t);
-  ComponentMap("Stat", &STAT_ID, StatImport);
-
-  FORCE_ID = REGISTER_COMPONENT(w, force_comp_t);
-  ComponentMap("Force", &FORCE_ID, ForceImport);
-
-  EXPIR_ID = REGISTER_COMPONENT(w, lifetime_t);
-  ComponentMap("Lifetime", &EXPIR_ID, NULL);
-   
+  return NULL;
 }
 
-void RegisterSystemData(world_t* w){
-  SystemCB atick[UPDATE_DONE] = {0};
-  //atick[UPDATE_PRE] = AnimBehavior;
-  atick[UPDATE_FIXED] = AnimSystem;
-  atick[UPDATE_DRAW] = AnimRender;
+void GameInitPrefabs(world_t* w, game_t* g){
+  PrefabRegistryInit(w);
+  
+  for (int i = 0; i < g->num_prefabs; i++){
+    prefab_entity_t def = g->prefabs[i];
+    Entity prefab = PrefabCreate(w, def.name);
 
-  SystemCB aset[GAME_DONE] = {0};
+    for(int j = 0; j < def.num_comp; j++){
+      comp_id_t cid = ComponentGetID(def.components[j]);
 
-  aset[GAME_READY] = AnimLoad;
+      if(cid == INVALID_COMPONENT)
+        continue;
 
-  system_t* asys = SystemRegister(w, atick, aset, NULL);
+      ComponentInitFn fn = ComponentFuncLookup(def.components[j]);
+     
+      if(!fn){
+        TraceLog(LOG_WARNING, "=== INIT PREFABS ===\n unable to find %s function", def.components[j]);
+       continue;
+      }
+      component_entry_t *data = GetGameComponentDefine(g, def.components[j], def.name);
 
-  SystemRequire(asys, ANIM_ID);
-  SystemRequire(asys, POS_ID);
+      if(!data){
+        TraceLog(LOG_WARNING, "=== INIT PREFABS ===\n unable to find %s data for %s", def.components[j], def.name);
 
-  SystemCB intick[UPDATE_DONE] = {0};
-  intick[UPDATE_FRAME] = InputSystem;
+        continue;
+      }
+        
+      fn(ComponentAdd(w, prefab, cid), data);
+    }
+  }
+}
 
-  SystemCB inset[GAME_DONE] = {0};
-  inset[GAME_READY] = InputLoad;
-  system_t* insys = SystemRegister(w, intick, inset, NULL);
-
-  SystemRequire(insys, INPUT_ID);
-  SystemRequire(insys, POS_ID);
-
-  SystemCB potick[UPDATE_DONE] = {0};
-
-  SystemCB poset[GAME_DONE] = {0};
-  poset[GAME_READY] = PositionLoad;
-  system_t* posys = SystemRegister(w, potick, poset, NULL);
-  SystemRequire(posys, POS_ID);
-
-  SystemCB phtick[UPDATE_DONE] = {0};
-  phtick[UPDATE_PRE] = PhysicsCollision;
-  phtick[UPDATE_POST] = PhysicsSystem;
-  phtick[UPDATE_DRAW] = PhysicsDebug;
-
-  SystemCB phset[GAME_DONE] = {0};
-  phset[GAME_READY] = PhysicsLoad;
-  system_t* phsys = SystemRegister(w, phtick, phset, PhysicsInit);
-  phsys->needs_iter = true;
-  PHYS_SYS = phsys->index;
-  SystemRequire(phsys, PHYS_ID);
-  SystemRequire(phsys, POS_ID);
-
-  SystemCB ltick[UPDATE_DONE] = {0};
-  SystemCB lset[GAME_DONE] = {0};
-
-  lset[GAME_LOADING] = LevelLoad;
-  lset[GAME_READY] = LevelReady;
-
-  ltick[UPDATE_DRAW] = LevelRender;
-  system_t* lvlsys = SystemRegister(w, ltick, lset, NULL);
-  SystemRequire(lvlsys, LVL_ID);
-
-  SystemCB rntick[UPDATE_DONE] = {0};
-  rntick[UPDATE_DRAW_BEGIN] = RenderBegin;
-  rntick[UPDATE_DRAW_END] = RenderEnd;
-
-  SystemCB rnset[GAME_DONE] = {0};
-  rnset[GAME_READY] = RenderLoad;
-
-  system_t* rnsys = SystemRegister(w, rntick, rnset, NULL);
-
-  SystemRequire(rnsys, CAM_ID);
-
-  SystemCB cftick[UPDATE_DONE] = {0};
-  cftick[UPDATE_POST] = CameraSystem;
-
-  SystemCB cfset[GAME_DONE] = {0};
-  cfset[GAME_LOADING] = CameraLoad;
-  cfset[GAME_READY] = CameraReady;
-
-  system_t* cfsys = SystemRegister(w, cftick, cfset, NULL);
-  SystemRequire(cfsys, CAM_ID);
-  SystemRequire(cfsys, TRACK_ID);
-
-  SystemCB sptick[UPDATE_DONE] = {0};
-  sptick[UPDATE_DRAW] = SpriteRender;
-
-  SystemCB spset[GAME_DONE] = {0};
-
-  system_t* spsys = SystemRegister(w, sptick, spset, NULL);
-
-  SystemRequire(spsys, SPR_ID);
-  SystemRequire(spsys, POS_ID);
-
-  SystemCB frtick[UPDATE_DONE] = {0};
-  frtick[UPDATE_FIXED] = ForceSystem;
-  frtick[UPDATE_FINAL] = ForceCleanup;
-
-  SystemCB frset[GAME_DONE] = {0};
-  frset[GAME_READY] = ForceLoad;
-
-  system_t* frsys = SystemRegister(w, frtick, frset, NULL);
-
-  SystemRequire(frsys, FORCE_ID);
-
-  SystemCB lftick[UPDATE_DONE] = {0};
-  lftick[UPDATE_FINAL] = ExpirationSystem;
-
-  SystemCB lfset[GAME_DONE] = {0};
-
-  system_t* lfsys = SystemRegister(w, lftick, lfset, NULL);
-
-  SystemRequire(lfsys, EXPIR_ID);
-
-
-  /*
-  SystemCB cmbtick[UPDATE_DONE] = {0};
-  cmbtick[UPDATE_FIXED] = CombatSystem;
-
-  SystemCB cmbset[GAME_DONE] = {0};
-  cmbset[GAME_READY] = CombatLoad;
-
-  system_t* cmbsys = SystemRegister(w, cmbtick, cmbset);
-
-  SystemRequire(cmbsys, );
-*/
-
-
+void GameSpawn(world_t* w, game_t* g){
+  for(int i = 0; i < w->prefabs.count; i++){
+    prefab_t* prefab = &w->prefabs.prefabs[i];
+    if(prefab)
+      PrefabSpawn(w, prefab->name, VEC_UNSET); 
+  }
 }

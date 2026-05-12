@@ -3,23 +3,33 @@
 #include "game_process.h"
 #include "game_utils.h"
 #include "game_register.h"
-#include "game_import.h"
-
-#define BUS (event_bus_t*){GP.bus[GP.screen]}
+#include "game_define.h"
+#include "scene_loader.h"
+#define BUS (event_bus_t*){GP.bus}
 
 world_t world;
 game_process_t GP;
 
 void InitEntityComponentSystem(void){
-  WorldInit(&world, NUM_SYS);
-  RegisterComponentData(&world);
-  RegisterSystemData(&world);
-  SceneImport(&world, "resources/scene.json");
+  WorldInit(&world);
+  
+  game_t* g = LoadGameDefine("resources/data/definitions.json");
 
+  if(!g)
+    return;
+
+  GameInitPrefabs(&world, g);
   for(int i = 0; i < world.num_sys; i++){
     if(world.systems[i].init)
       world.systems[i].init(&world);
   }
+
+  UnloadGameDefine(g);
+  Scene* test = GameCalloc("InitEntityComponentSystem", 1, sizeof(Scene));
+
+  bool scene = SceneLoadByIndex(0, test);
+
+  SceneSetup(&world, test);
 }
 
 void Subscribe(uint64_t event, EventCallback cb, void* data){
@@ -59,17 +69,18 @@ void ScheduleEvent(uint64_t event, void* data, uint64_t uid, TimeFrame tf, int s
 }
 
 void GameEvent(uint64_t event, void* data, uint64_t uid){
-  event_t* ev = InitEvent(GP.notifications, event, data, uid);
+  if(BUS->count == 0)
+    return;
 
-  if(BUS->count)
-    EventEmit(BUS, ev);
+  event_t* ev = InitEvent(GP.notifications, event, data, uid);
+  EventEmit(BUS, ev);
+  GameFree("GameEvent", ev);
 }
 
 void GameSetState(GameState state){
   if(GP.state[SCREEN_GAMEPLAY] == state)
     return;
 
-  TraceLog(LOG_INFO, "==== GAME STATE ====\n set to %i", state);
   GP.state[SCREEN_GAMEPLAY] = state;
   GameEvent(GameEvent_ToNotif(GAME_EVENT_STATE), &world , state);
 
@@ -91,7 +102,13 @@ void InitGameProcess(){
 
   GP.cb[GAME_LOADING] = GameStepState;
   GP.cb[GAME_READY] = GameStepState;
-  
+   
+  GP.next[SCREEN_LOGO] = SCREEN_GAMEPLAY;
+  GP.phase[SCREEN_LOGO][GAME_LOADING] = InitLogoScreen;
+  GP.phase[SCREEN_LOGO][GAME_FINISHED] = UnloadLogoScreen;
+  GP.update_steps[SCREEN_LOGO][UPDATE_DRAW] = DrawLogoScreen;
+  GP.update_steps[SCREEN_LOGO][UPDATE_FRAME] = UpdateLogoScreen;
+ 
   GP.next[SCREEN_TITLE] = SCREEN_GAMEPLAY;
   GP.phase[SCREEN_TITLE][GAME_LOADING] = InitTitleScreen;
   GP.phase[SCREEN_TITLE][GAME_FINISHED] = UnloadTitleScreen;
@@ -117,21 +134,16 @@ void InitGameProcess(){
   GP.phase[SCREEN_ENDING][GAME_FINISHED] = UnloadEndScreen;
   GP.update_steps[SCREEN_ENDING][UPDATE_DRAW] = DrawEndScreen;
   GP.update_steps[SCREEN_ENDING][UPDATE_FRAME] = UpdateEndScreen;
-
-  GP.screen = SCREEN_TITLE;
-  // GP.screen = SCREEN_GAMEPLAY;
-  // GP.state[SCREEN_GAMEPLAY] = GAME_LOADING;
-
- 
-  GP.phase[SCREEN_TITLE][GAME_LOADING]();
+  
+  GP.screen = SCREEN_LOGO;
+  GP.phase[SCREEN_LOGO][GAME_LOADING]();
 }
 
 void InitGameEvents(){
   GP.children[SCREEN_GAMEPLAY].process = PROCESS_LEVEL;
   GP.game_frames = 0; 
 
-  GP.bus[SCREEN_GAMEPLAY] = InitEventBus(128);
-  GP.bus[SCREEN_TITLE] = InitEventBus(64);
+  GP.bus = InitEventBus(128);
   GP.notifications = InitNotifications(64);
 }
 
@@ -179,11 +191,9 @@ void GameProcessSync(bool wait){
 }
 
 void GameStepState(GameState s){
-  if(s < GAME_DONE){
-    TraceLog(LOG_INFO, "=== GAME STATE ===\n step state to %i", s+1);
+  if(s < GAME_DONE)
     GameSetState(s+1);
 
-  }
 }
 
 void GameProcessEnd(){

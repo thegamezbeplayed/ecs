@@ -3,6 +3,7 @@
 
 #include "game_tools.h"
 #include "game_utils.h"
+#include "game_define.h"
 
 #define MAX_FORCES 64
 #define GRAVITY 0.65f
@@ -117,4 +118,5 @@ static void RigidBodySetBounds(rigid_body_t* b, Vector2 size){
 
 
 bool CheckCollision(rigid_body_t *a, rigid_body_t *b, int len);
+
 #endif

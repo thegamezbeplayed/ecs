@@ -65,7 +65,7 @@ typedef struct{
   GameStateCB          cb[GAME_DONE];
   notification_pool_t* notifications;
   interaction_pool_t   interactions;
-  event_bus_t          *bus[SCREEN_DONE];
+  event_bus_t          *bus;
   int                  album_id[SCREEN_DONE];
   UpdateFn             phase[SCREEN_DONE][GAME_DONE];
   UpdateFn             update_steps[SCREEN_DONE][UPDATE_DONE];

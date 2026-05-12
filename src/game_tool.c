@@ -1,4 +1,6 @@
 #include "game_tools.h"
+#include "game_process.h"
+
 static int TOTAL_SIZE = 0;
 void HashInit(hash_map_t* m, uint32_t cap) {
   assert((cap & (cap - 1)) == 0); // power of two
@@ -141,9 +143,12 @@ void* GameCalloc(const char* func, int count, size_t size){
   *raw = total_size;
   TOTAL_SIZE += total_size;
 
+  if(TOTAL_SIZE > 10485760)
+    DO_NOTHING();
+
   double mb = TOTAL_SIZE / (1024.0 * 1024.0);
   double gb = TOTAL_SIZE / (1024.0 * 1024.0 * 1024.0);
-  //TraceLog(LOG_INFO,"%s is Allocating %zu bytes. Total %.2f MB (%.2f GB)\n", func, total_size, mb, gb);
+  //TraceLog(LOG_INFO,"%s is Allocating %zu bytes. Total %.2f MB (%.2f GB)\nat frame %i", func, total_size, mb, gb, WorldGetTime());
 
   return (void*)(raw + 1);
 }
@@ -158,7 +163,7 @@ void* GameMalloc(const char* func, size_t size){
 
   double mb = TOTAL_SIZE / (1024.0 * 1024.0);
   double gb = TOTAL_SIZE / (1024.0 * 1024.0 * 1024.0);
-  //TraceLog(LOG_INFO, "%s is Allocating %zu bytes. Total %.2f MB (%.2f GB)\n", func, size, mb, gb);
+//  TraceLog(LOG_INFO, "%s is Allocating %zu bytes. Total %.2f MB (%.2f GB)\n", func, size, mb, gb);
 
   return (void*)(raw + 1);   // return pointer after header
 }
@@ -201,7 +206,7 @@ void* GameRealloc(const char* func, void* ptr, size_t new_size)
 
   double mb = TOTAL_SIZE / (1024.0*1024.0);
   double gb = TOTAL_SIZE / (1024.0*1024.0*1024.0);
-  //    TraceLog(LOG_INFO,"%s realloc: %zu bytes (old %zu). Total %.2f MB (%.2f GB)\n",
+//      TraceLog(LOG_INFO,"%s realloc: %zu bytes (old %zu). Total %.2f MB (%.2f GB)\n",
   //        func, new_size, old_size, mb, gb);
 
   return (void*)(new_raw + 1);

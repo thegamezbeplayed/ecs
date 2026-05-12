@@ -1,81 +1,230 @@
 #include "game_assets.h"
+#include "game_define.h"
 #include "game_strings.h"
+#include "game_systems.h"
+#include "scene.h"
 
-SheetID StringToSheetID(const char* str)
+char* Json_GetString(cJSON* obj, const char* key, char* out)
 {
+  size_t max_len = MAX_NAME_LEN -1;
+
+  cJSON* item = cJSON_GetObjectItem(obj, key);
+  if (item && cJSON_IsString(item) && out) {
+    strncpy(out, item->valuestring, max_len);
+    out[max_len] = '\0';
+    return out;
+  }
+  out[0] = '\0';
+  return out;
+}
+
+int Json_GetInt(cJSON* obj, const char* key, int default_val)
+{
+  cJSON* item = cJSON_GetObjectItem(obj, key);
+  return cJSON_IsNumber(item) ? item->valueint : default_val;
+}
+
+float Json_GetFloat(cJSON* obj, const char* key, float default_val)
+{
+  cJSON* item = cJSON_GetObjectItem(obj, key);
+  return cJSON_IsNumber(item) ? (float)item->valuedouble : default_val;
+}
+
+bool Json_GetBool(cJSON* obj, const char* key){
+  cJSON* item = cJSON_GetObjectItem(obj, key);
+  if (!cJSON_IsBool(item))
+   return false;
+ 
+  return item->valueint != 0;;
+}
+
+AnimState StringToAnimState(char* str){
+ if (strcmp(str, "IDLE") == 0) return ANIM_IDLE;
+ if (strcmp(str, "WALK") == 0) return ANIM_WALK;
+ if (strcmp(str, "ATTACK") == 0) return ANIM_ATTACK;
+ if (strcmp(str, "DIE") == 0) return ANIM_DIE;
+ if (strcmp(str, "HURT") == 0) return ANIM_HURT;
+
+ return ANIM_NONE;
+}
+
+SheetID StringToSheetID(const char* str){
   if (strcmp(str, "SHEET_CHAR") == 0) return SHEET_CHAR;
+  if (strcmp(str, "SHEET_PLAYER") == 0) return SHEET_CHAR;
   if (strcmp(str, "SHEET_MOB") == 0)  return SHEET_MOB;
   if (strcmp(str, "SHEET_TILE") == 0) return SHEET_TILE;
   // ... add others
   return SHEET_ALL;
 }
 
-// Parse the JSON file
-sprite_sheet_d LoadSpriteSheet(SheetID sid, const char* jsonPath, const char* imagePath)
-{
-  /*
-     sprite_sheet_d sheet = {0};
+bool ParseSpriteComponent(cJSON* j, sprite_t* out){
 
-  // Load JSON
-  char* jsonData = LoadFileText(jsonPath);
-  if (!jsonData) {
-  TraceLog(LOG_WARNING,"Failed to load %s\n", jsonPath);
-  return sheet;
-  }
+  char sheet[MAX_NAME_LEN];
+  Json_GetString(j, "sheet_id", sheet);
+  int sheet_id = StringToSheetID(sheet);
+  int idx = Json_GetInt(j, "sheet_index", -1);
 
-  cJSON* root = cJSON_Parse(jsonData);
-  UnloadFileText(jsonData);
-
-  if (!root) {
-  TraceLog(LOG_WARNING,"JSON parse error\n");
-  return sheet;
-  }
-
-  cJSON* framesObj = cJSON_GetObjectItem(root, "frames");
-  if (!framesObj || !cJSON_IsObject(framesObj)) {
-  TraceLog(LOG_WARNING,"No 'frames' object found\n");
-  cJSON_Delete(root);
-  return sheet;
-  }
-
-  // Count frames
-  sheet.num_sprites = cJSON_GetArraySize(framesObj);
-
-  int index = 0;
-  cJSON* frameItem = NULL;
-  cJSON_ArrayForEach(frameItem, framesObj)
-  {
-  cJSON* frameData = cJSON_GetObjectItem(frameItem, "frame");
-  cJSON* duration  = cJSON_GetObjectItem(frameItem, "duration");
-
-  if (frameData) {
-  sheet.sprites[index].slice.sheet = sid;
-  sheet.sprites[index].slice.scale = 1;
-  sheet.sprites[index].slice.bounds.x = (float)cJSON_GetObjectItem(frameData, "x")->valueint;
-  sheet.sprites[index].slice.bounds.y = (float)cJSON_GetObjectItem(frameData, "y")->valueint;
-  sheet.sprites[index].slice.bounds.width  = (float)cJSON_GetObjectItem(frameData, "w")->valueint;
-  sheet.sprites[index].slice.bounds.height = (float)cJSON_GetObjectItem(frameData, "h")->valueint;
-  }
-
-  if (duration) {
-  sheet.sprites[index].duration = cJSON_GetObjectItem(frameItem, "duration")->valueint;
-  } else {
-  sheet.sprites[index].duration = 100; // default
-  }
-
-  index++;
-  }
-
-  // Load the texture
-  sheet.texture = LoadTexture(imagePath);
-
-  cJSON_Delete(root);
-  return sheet;
-  */
+  out->sheet_id = sheet_id;
+  out->index = idx;
 }
 
-cJSON* ParseRoot(const char* path)
+bool ParseInputComponent(cJSON* j, input_t* out){
+
+}
+
+bool ParseRigidBodyComponent(cJSON* j, rigid_body_t* out){
+
+}
+
+bool ParseForceComponent(cJSON* j, force_t* out){
+
+}
+
+bool ParseAnimComponent(cJSON* j, anim_comp_t* out){
+  char sheet[MAX_NAME_LEN];
+  Json_GetString(j, "sheet_id", sheet);
+  int sheet_id = StringToSheetID(sheet);
+
+  cJSON* state_json = cJSON_GetObjectItem(j, "states");
+
+  char* name = GameCalloc("ParseAnimComponent", MAX_NAME_LEN, sizeof(char));
+
+  Json_GetString(j, "name", name);
+
+  out->player.sheet_id = sheet_id;
+  out->player.dir = 3;
+  out->player.state = ANIM_IDLE;
+  int sidx = 0;
+  cJSON* s;
+  cJSON_ArrayForEach(s, state_json){
+    char* state_str = GameCalloc("ParseAnimComponent", MAX_NAME_LEN, sizeof(char));
+    Json_GetString(s, "state", state_str);
+
+    bool loop = Json_GetBool(s, "loop");
+    AnimState state = StringToAnimState(state_str);
+    if(state == ANIM_NONE){
+      TraceLog(LOG_WARNING,"=== PARSE ANIM COMP ===\n unable to find state %s for prefab %s", state_str, name);
+    }
+    cJSON* seq_json = cJSON_GetObjectItem(s, "sequences");
+    cJSON* seq;
+    cJSON_ArrayForEach(seq, seq_json){
+      int dir = Json_GetInt(seq, "dir", -1);
+      if(dir < 0)
+        continue;
+
+      char tag[MAX_NAME_LEN];
+      Json_GetString(seq, "tag", tag);
+      out->sequences[state][dir] = *AnimRegisterState(sheet_id, name, tag);
+    }  
+  }
+
+}
+
+bool ParsePositionComponent(cJSON* j, position_t* out){
+  if(!j)
+    return false;
+
+  float x = Json_GetFloat(j, "posx", 0.f);
+  float y = Json_GetFloat(j, "posy", 0.f);
+
+  Vector2 pos = VEC_NEW(x,y);
+  out->last_vpos = out->vpos = pos;
+
+  out->rad = 0;
+  out->angle = 0;
+  return true;
+}
+
+bool ParseCameraComponent(cJSON* j, cam_comp_t* out){
+  if(!j)
+    return false;
+
+  float zoom = Json_GetFloat(j, "zoom", 1.f);
+  float rot = Json_GetFloat(j, "rotation", 0.f);
+
+  float offx = Json_GetFloat(j, "offset_x", 0.f);
+  float offy = Json_GetFloat(j, "offset_y", 0.f);
+
+  Vector2 offset = VEC_NEW(offx, offy);
+
+  out->camera = *InitCamera(zoom, rot, offset);
+
+  float bx = Json_GetFloat(j, "bounds_x", 0.f);
+  float by = Json_GetFloat(j, "bounds_y", 0.f);
+  float bw = Json_GetFloat(j, "bounds_w", 0.f);
+  float bh = Json_GetFloat(j, "bounds_h", 0.f);
+ 
+  Rectangle bounds = RECT(bx, by, bw, bh);
+  Vector2 size = VEC_NEW(bw, bh); 
+
+  out->view = *InitView(size, bounds, 0);
+
+  return true;
+}
+
+RelationType RelationTypeLookup(char* str){
+  for(int i = 0; i < NUM_REL; i++){
+    if (strcmp(str, RELATION_LOOKUP[i].name) == 0)
+      return RELATION_LOOKUP[i].type;
+  }
+}
+
+ComponentInitFn ComponentFuncLookup(const char* name){
+  if (!name) return NULL;
+
+  for (int i = 0; i < NUM_COMP_CORE; i++)   // your function registry
+  { 
+    if (strcmp(COMPFUNC_LOOKUP[i].name, name) == 0)
+      return COMPFUNC_LOOKUP[i].func;   // cast if needed
+  }
+
+  TraceLog(LOG_WARNING,"=== COMPONENT FUNC LOOKUP ===\n function '%s' not registered!\n", name);
+  return NULL;
+
+}
+
+SystemFn SystemFunctionLookup(const char* name)
 {
+  if (!name) return NULL;
+
+  for (int i = 0; i < NUM_FUNCTIONS; i++)   // your function registry
+  {
+    if (strcmp(FUNCTION_LOOKUP[i].name, name) == 0)
+      return (SystemFn)FUNCTION_LOOKUP[i].func;   // cast if needed
+  }
+
+  TraceLog(LOG_WARNING,"=== SYSTEM LOOKUP ===\n system function '%s' not registered!\n", name);
+  return NULL;
+}
+
+GameState GetGameState(const char* name){
+  if(!name) return -1;
+
+  for(int i = 0; i < GAME_DONE; i++){
+    if (strcmp(GAMESTATE_LOOKUP[i].name, name) == 0)
+      return GAMESTATE_LOOKUP[i].state;
+  }
+
+  TraceLog(LOG_WARNING,"==== GAMESTATE LOOKUP ====\n %s not found!", name);
+
+  return -1;
+} 
+
+UpdateType GetUpdateStep(const char* name){
+  if(!name) return -1;
+
+  for(int i = 0; i < UPDATE_DONE; i++){
+    if (strcmp(UPDATE_LOOKUP[i].name, name) == 0)
+      return UPDATE_LOOKUP[i].type;
+  }
+
+  TraceLog(LOG_WARNING,"==== UPDATE LOOKUP ====\n %s not found!", name);
+
+  return -1;
+}
+
+
+cJSON* ParseRoot(const char* path){
   char* json_str = LoadFileText(path);   // Raylib helper
   if (!json_str) {
     TraceLog(LOG_ERROR, "Failed to load %s", path);
@@ -92,102 +241,9 @@ cJSON* ParseRoot(const char* path)
   return root;
 }
 
-bool LoadSceneAnimData(const char* path, const char* name, anim_d* out)
-{
-  cJSON* root = ParseRoot(path);
-/*
-  cJSON* animations = cJSON_GetObjectItem(root, "animations");
-  if (!animations) {
-    TraceLog(LOG_ERROR, "No 'animations' object in JSON");
-    cJSON_Delete(root);
-    //UnloadFileText(json_str);
-    return false;
-  }
-
-  cJSON* entity_anim = cJSON_GetObjectItem(animations, name);
-  if (!entity_anim) {
-    TraceLog(LOG_WARNING, "No animation data for entity: %s", name);
-    cJSON_Delete(root);
-    //UnloadFileText(json_str);
-    return false;
-  }
-
-  cJSON* sheet_item = cJSON_GetObjectItem(entity_anim, "sheet");
-  if (sheet_item)
-    out->sheet = StringToSheetID(sheet_item->valuestring);
-
-  // Get sequences object
-  cJSON* sequences = cJSON_GetObjectItem(entity_anim, "sequences");
-  if (!sequences) {
-    TraceLog(LOG_ERROR, "'sequences' object not found for %s", name);
-    cJSON_Delete(root);
-
-    return false;
-  }
-  SheetID sheet = StringToSheetID(cJSON_GetObjectItem(entity_anim, "sheet")->valuestring);
-
-  out->sheet = sheet;
-  const char* seq_names[] = {"idle", "walk"};
-  int seq_ids[] = {ANIM_IDLE, ANIM_WALK};
-
-  for (int s = 0; s < 2; s++) {                    // for each sequence type
-    cJSON* seq = cJSON_GetObjectItem(sequences, seq_names[s]);
-    if (!seq) continue;
-
-    bool loop = cJSON_GetObjectItem(seq, "loop")->valueint;
-    cJSON* groups = cJSON_GetObjectItem(seq, "groups");
-
-    for (int i = 0; i < MAX_DIRECTIONS && i < cJSON_GetArraySize(groups); i++) {
-      const char* group_name = cJSON_GetArrayItem(groups, i)->valuestring;
-
-      strcpy(out->sequences[seq_ids[s]][i].name, group_name);
-      out->sequences[seq_ids[s]][i].loop = loop;
-
-      //out->num_groups[seq_ids[s]]++;
-      // Handle on_end
-      cJSON* on_end = cJSON_GetObjectItem(seq, "on_end");
-      if (on_end && on_end->valuestring) {
-        if (strcmp(on_end->valuestring, "AnimIdle") == 0)
-        //  out->sequences[seq_ids[s]][i].on_end = AnimIdle;
-        // add more callbacks as needed
-      }
-    }
-  }
-*/
-  cJSON_Delete(root);
-
-  return true;
-}
-
-Texture2D* LoadAsepriteSheet(const char* json_path, ase_sprite_sheet_d* sheet)
-{
-  if (!sheet) return NULL;
-  memset(sheet, 0, sizeof(ase_sprite_sheet_d));
-
-  Texture2D* out = GameCalloc("LoadAsepriteSheet", 1, sizeof(Texture2D));
-  char* text = LoadFileText(json_path);
-  if (!text) {
-    TraceLog(LOG_ERROR, "Failed to read file: %s", json_path);
-    return NULL;
-  }
-
-  cJSON* root = cJSON_Parse(text);
-  if (!root) {
-    TraceLog(LOG_ERROR, "JSON parse failed: %s", json_path);
-    UnloadFileText(text);
-    return NULL;
-  }
-
+bool LoadAsepriteSheet(cJSON* root, ase_sprite_sheet_d* sheet){
+  if (!sheet) return false;
   cJSON* meta = cJSON_GetObjectItem(root, "meta");
-
-  // ====================== LOAD TEXTURE ======================
-  cJSON* image_item = cJSON_GetObjectItem(meta, "image");
-  if (image_item && image_item->valuestring) {
-    *out = LoadTexture(TextFormat("resources/%s",image_item->valuestring));
-    TraceLog(LOG_INFO, "Loaded texture: %s (%dx%d)", 
-        image_item->valuestring, 
-        out->width, out->height);
-  }
 
   // ====================== PARSE TAGS (frameTags) ======================
   cJSON* tags_json = cJSON_GetObjectItem(meta, "frameTags");
@@ -279,7 +335,7 @@ Texture2D* LoadAsepriteSheet(const char* json_path, ase_sprite_sheet_d* sheet)
       CollType ct = COL_HURT;
       if(name){
         if(strcmp(name, "hitbox") == 0)
-        ct = COL_HIT;
+          ct = COL_HIT;
       }
 
       int k_frame = cJSON_GetObjectItem(key, "frame")->valueint;
@@ -291,16 +347,386 @@ Texture2D* LoadAsepriteSheet(const char* json_path, ase_sprite_sheet_d* sheet)
       slice->keys[k_count].bounds.height = (float)cJSON_GetObjectItem(b, "h")->valuedouble;
       k_count++;
     }
-    
+
     slice->num_keys = k_count;
   }
 
-  cJSON_Delete(root);
-  UnloadFileText(text);
-
-  return out;
+  return true;
 }
 // Cleanup
 void Unloadsprite_sheet_d(sprite_sheet_d* sheet)
 {
+}
+
+bool ParseScene(cJSON* root, Scene* scene){
+  Json_GetString(root, "display_name", scene->display_name);
+
+  scene->pixel_width  = Json_GetInt(root, "pixel_width", 800);
+  scene->pixel_height = Json_GetInt(root, "pixel_height", 600);
+  scene->grid_width   = Json_GetInt(root, "grid_width", 18);
+  scene->grid_height  = Json_GetInt(root, "grid_height", 11);
+  scene->cell_width   = Json_GetInt(root, "cell_width", 80);
+  scene->cell_height  = Json_GetInt(root, "cell_height", 80);
+
+  // Parse Tiles
+  cJSON* tile_array = cJSON_GetObjectItem(root, "tiles");
+  if (tile_array && cJSON_IsArray(tile_array)) {
+    scene->tile_count = cJSON_GetArraySize(tile_array);
+    scene->tiles = GameCalloc("ParseScene", scene->tile_count, sizeof(tile_instance_t));
+
+    for (int i = 0; i < scene->tile_count; i++) {
+      cJSON* item = cJSON_GetArrayItem(tile_array, i);
+      tile_instance_t* t = &scene->tiles[i];
+      t->name = GameCalloc("ParseScene", MAX_NAME_LEN, sizeof(char));
+      Json_GetString(item, "name", t->name);
+      t->cell_x      = Json_GetInt(item, "cell_x", 0);
+      t->cell_y      = Json_GetInt(item, "cell_y", 0);
+      t->rotation   = Json_GetInt(item, "rotation", 0);
+      t->flip_x     = cJSON_IsTrue(cJSON_GetObjectItem(item, "flip_x"));
+      t->flip_y     = cJSON_IsTrue(cJSON_GetObjectItem(item, "flip_y"));
+    }
+  }
+
+  // Parse Entities
+  cJSON* ent_array = cJSON_GetObjectItem(root, "entities");
+  if (ent_array && cJSON_IsArray(ent_array)) {
+    scene->entity_count = cJSON_GetArraySize(ent_array);
+    scene->entities = GameCalloc("ParseScene", scene->entity_count, sizeof(entity_instance_t));
+
+    for (int i = 0; i < scene->entity_count; i++) {
+      cJSON* item = cJSON_GetArrayItem(ent_array, i);
+      entity_instance_t* e = &scene->entities[i];
+      e->prefab = GameCalloc("ParseScene", MAX_NAME_LEN, sizeof(char));
+
+      Json_GetString(item, "name", e->prefab);
+      e->x = Json_GetFloat(item, "x", 0.0f);
+      e->y = Json_GetFloat(item, "y", 0.0f);
+      e->type = Json_GetInt(item, "type", 0);
+    }
+  }
+
+  // Metadata
+  cJSON* meta = cJSON_GetObjectItem(root, "metadata");
+  if (meta)
+    scene->metadata = meta;
+
+  cJSON_Delete(root);
+  return true;
+
+
+}
+
+bool ParseSystems(cJSON* root, game_t* out)
+{
+  if (!root || !out) return false;
+
+  cJSON* systems_json = cJSON_GetObjectItem(root, "systems");
+  if (!cJSON_IsArray(systems_json))
+  {
+    printf("ERROR: 'systems' array not found or invalid.\n");
+    return false;
+  }
+
+  out->num_sys = cJSON_GetArraySize(systems_json);
+  if (out->num_sys > NUM_SYS)
+  {
+    printf("WARNING: Too many systems (%d > %d). Truncating.\n", out->num_sys, NUM_SYS);
+    out->num_sys = NUM_SYS;
+  }
+
+  int sys_idx = 0;
+  cJSON* sys_item;
+  cJSON_ArrayForEach(sys_item, systems_json)
+  {
+    if (sys_idx >= NUM_SYS) break;
+
+    system_define_t* sys = &out->systems[sys_idx++];
+
+    // --- Name ---
+    sys->name = GameCalloc("ParseSystems", MAX_NAME_LEN, sizeof(char));
+    Json_GetString(sys_item, "name", sys->name);
+
+    // --- Components ---
+    cJSON* comps_json = cJSON_GetObjectItem(sys_item, "components");
+    if (cJSON_IsArray(comps_json))
+    {
+      int cidx = 0;
+      cJSON* c;
+      cJSON_ArrayForEach(c, comps_json)
+      {
+        if (!cJSON_IsString(c) || cidx >= NUM_REL)
+          continue;
+
+          sys->components[cidx] = GameCalloc("ParseSystems", MAX_NAME_LEN, sizeof(char));
+          sys->components[cidx++] = c->valuestring;
+      }
+      sys->num_req = cidx;
+    }
+
+    // --- Init function (optional) ---
+    cJSON* init_json = cJSON_GetObjectItem(sys_item, "init");
+    if (cJSON_IsString(init_json))
+      sys->init = SystemFunctionLookup(init_json->valuestring);
+
+    // --- Functions array ---
+    cJSON* funcs_json = cJSON_GetObjectItem(sys_item, "functions");
+    if (cJSON_IsArray(funcs_json))
+    {
+      cJSON* f;
+      cJSON_ArrayForEach(f, funcs_json)
+      {
+        cJSON* step_json = cJSON_GetObjectItem(f, "step");
+        cJSON* fn_json   = cJSON_GetObjectItem(f, "fn");
+
+        if (!cJSON_IsString(step_json) || !cJSON_IsString(fn_json))
+          continue;
+
+        SystemCB callback = (SystemCB)SystemFunctionLookup(fn_json->valuestring);
+        if (!callback) continue;
+
+        if(step_json->valuestring[0] == 'U'){
+        UpdateType step = GetUpdateStep(step_json->valuestring);
+        if (step < 0 || step >= UPDATE_DONE)
+          continue;
+
+          sys->steps[step] = callback;
+        }
+        else
+        {
+          GameState state = GetGameState(step_json->valuestring);
+          if (state >= 0 && state < GAME_DONE)
+            sys->states[state] = callback;
+        }
+      }
+    }
+  }
+
+  return true;
+}
+
+bool ParseComponents(cJSON* root, game_t* out){
+  cJSON* comp_json = cJSON_GetObjectItem(root, "components");
+  if(cJSON_IsArray(comp_json)){
+    int idx = 0;
+    out->num_defs = Json_GetInt(root, "num_comp_def", NUM_COMP_CORE);
+    out->comp_defs = GameCalloc("ParseComponents", out->num_defs, sizeof(component_entry_t));
+
+    cJSON* c;
+    cJSON_ArrayForEach(c, comp_json){
+      if (!cJSON_IsString(c))
+        continue;
+
+      out->comps[out->num_comps++] = c->valuestring;
+
+      cJSON* comp_obj = cJSON_GetObjectItem(root, c->valuestring);
+
+      if(!comp_obj){
+        TraceLog(LOG_WARNING, "==== PARSE COMPONENTS ===\n %s missing definition!", c->valuestring);
+        continue;
+      }
+
+      cJSON* list  = cJSON_GetObjectItem(comp_obj, "list");
+
+      cJSON* entry;
+      cJSON_ArrayForEach(entry, list){
+        cJSON* contain_list = cJSON_GetObjectItem(entry, "contains");
+        if(!contain_list){
+          component_entry_t* sc = &out->comp_defs[idx++];
+          sc->name = GameCalloc("ParseComponents", MAX_NAME_LEN, sizeof(char));
+          sc->comp = GameCalloc("ParseComponents", MAX_NAME_LEN, sizeof(char));
+
+          Json_GetString(entry, "name", sc->name);
+          sc->func = ComponentFuncLookup(c->valuestring);
+          sc->data = entry;
+          sc->comp = c->valuestring;
+        }
+        else{
+          cJSON* sub;
+          cJSON_ArrayForEach(sub, contain_list){
+            component_entry_t* comp = &out->comp_defs[idx++];
+            comp->name = GameCalloc("ParseComponents", MAX_NAME_LEN, sizeof(char));
+            comp->comp = GameCalloc("ParseComponents", MAX_NAME_LEN, sizeof(char));
+
+            strcpy(comp->name, sub->valuestring);
+
+            comp->comp = c->valuestring;
+            comp->func = ComponentFuncLookup(c->valuestring);
+            comp->data = entry;
+          }
+        }
+      }
+    }
+    return true;
+  }
+
+  return false;
+}
+
+void ParsePrefab(cJSON* item, prefab_entity_t* out){
+  cJSON* comp_json = cJSON_GetObjectItem(item, "list");
+  if (cJSON_IsArray(comp_json))
+  {
+    int comp_idx = 0;
+    cJSON* comp;
+    cJSON_ArrayForEach(comp, comp_json)
+    {
+      if (cJSON_IsString(comp) && comp_idx < MAX_COMPONENTS)
+      {
+        size_t len = strlen(comp->valuestring) + 1;
+        out->components[comp_idx] = GameMalloc("ParsePrefabs", len);
+        strcpy((char*)out->components[comp_idx], comp->valuestring);
+        comp_idx++;
+      }
+    }
+    out->num_comp = comp_idx;
+  }
+
+}
+
+bool ParsePrefabs(cJSON* root, game_t* out){
+  cJSON* prefabs_json = cJSON_GetObjectItem(root, "prefabs");
+  cJSON* list_json = cJSON_GetObjectItem(prefabs_json, "list");
+  if (!cJSON_IsArray(list_json))
+  {
+    TraceLog(LOG_ERROR, "ParseGameDef: 'prefabs.list' is not an array");
+    return false;
+  }
+
+
+  out->num_prefabs = Json_GetInt(prefabs_json, "count", 0);
+  if (out->num_prefabs == 0)
+  {
+    TraceLog(LOG_WARNING, "ParseGameDef: No prefabs defined");
+    return false;
+  }
+
+  out->prefabs = GameCalloc("ParsePrefabs", out->num_prefabs, sizeof(prefab_entity_t));
+
+  int i = 0;
+  cJSON* item;
+  cJSON_ArrayForEach(item, list_json)
+  {
+
+    prefab_entity_t* p;// = &out->prefabs[i++];
+
+    cJSON* contains_json = cJSON_GetObjectItem(item, "contains");
+    if (cJSON_IsArray(contains_json))
+    {
+      cJSON* variant;
+      cJSON_ArrayForEach(variant, contains_json){
+        p = &out->prefabs[i++];
+        p->name = GameCalloc("ParsePrefabs", MAX_NAME_LEN, sizeof(char));
+        strcpy(p->name, variant->valuestring);
+        ParsePrefab(item, p);
+      }
+    }
+    else{
+      p = &out->prefabs[i++];
+      p->name = GameCalloc("ParsePrefabs", MAX_NAME_LEN, sizeof(char));
+
+      Json_GetString(item, "name", p->name);
+      ParsePrefab(item, p);
+    }
+  }
+  return true;
+
+}
+
+bool ParseRelations(cJSON* root, game_t* out){
+  cJSON* relations_json = cJSON_GetObjectItem(root, "relations");
+  if (cJSON_IsArray(relations_json))
+  {
+    out->relation_count = cJSON_GetArraySize(relations_json);
+    out->relations = GameCalloc("ParseGameDef", out->relation_count, sizeof(entity_relation_t));
+    if (!out->relations) return false;
+
+    int rel_idx = 0;
+    cJSON* rel_item;
+    cJSON_ArrayForEach(rel_item, relations_json)
+    {
+      entity_relation_t* er = &out->relations[rel_idx++];
+      er->name = GameCalloc("ParseRelations", MAX_NAME_LEN, sizeof(char));
+      Json_GetString(rel_item, "name", er->name);
+
+      cJSON* count = cJSON_GetObjectItem(rel_item, "count");
+      if (cJSON_IsNumber(count))
+        er->count = count->valueint;
+
+      cJSON* list = cJSON_GetObjectItem(rel_item, "list");
+      if (!cJSON_IsArray(list)) continue;
+
+      int comp_rel_idx = 0;
+      cJSON* comp_rel;
+      cJSON_ArrayForEach(comp_rel, list)
+      {
+        if (comp_rel_idx >= MAX_RELATIONS) break;
+
+        component_relation_t* cr = &er->comps[comp_rel_idx++];
+        cr->comp = GameCalloc("ParseRelations", MAX_NAME_LEN, sizeof(char));
+
+        Json_GetString(comp_rel, "name", cr->comp);
+        cJSON* ccount = cJSON_GetObjectItem(comp_rel, "count");
+        cJSON* sublist = cJSON_GetObjectItem(comp_rel, "sublist");
+
+        if (cJSON_IsNumber(ccount))
+          cr->count = ccount->valueint;
+
+        if (cJSON_IsArray(sublist))
+        {
+          int pair_idx = 0;
+          cJSON* pair;
+          cJSON_ArrayForEach(pair, sublist)
+          {
+            if (pair_idx >= MAX_RELATIONS_PER_ENTITY) break;
+
+            cr->pairs[pair_idx].name = GameCalloc("ParseRelations", MAX_NAME_LEN, sizeof(char));
+
+            Json_GetString(pair, "name", cr->pairs[pair_idx].name);
+            cJSON* ptype = cJSON_GetObjectItem(pair, "type");
+
+            if (cJSON_IsString(ptype))
+              cr->pairs[pair_idx].type = RelationTypeLookup(ptype->valuestring);
+            pair_idx++;
+          }
+        }
+      }
+    }
+
+    return true;
+  }
+
+  return false;
+}
+
+bool ParseGameDefinition(cJSON* root, game_t* out){
+  if (!root || !out) return false;
+  memset(out, 0, sizeof(*out));
+
+  // ===================== SYSTEMS  ======================
+  if(!ParseSystems(root, out)){
+    TraceLog(LOG_ERROR, "===PARSE GAME DEF===\n Systems parse error");
+    return false;
+  }
+
+  // ==================== COMPONENTS======================
+
+  if(!ParseComponents(root, out)){
+    TraceLog(LOG_ERROR, "===PARSE GAME DEF===\n Components parse error");
+    return false;
+  }
+
+  // ====================== PREFABS ======================
+  if(!ParsePrefabs(root, out)){
+    TraceLog(LOG_ERROR, "===PARSE GAME DEF===\n Prefabs parse error");
+    return false;
+  }
+
+  // ====================== RELATIONS ======================
+  if(!ParseRelations(root, out)){
+    TraceLog(LOG_ERROR, "===PARSE GAME DEF===\n Relations parse error");
+    return false;
+  }
+
+  return true;
+
 }
