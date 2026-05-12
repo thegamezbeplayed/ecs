@@ -1,4 +1,5 @@
 {
+  "num_comp_def": 20,
   "systems":[
     {"name": "Animations",
       "components": ["Animation", "Position"],
@@ -8,7 +9,6 @@
         {"step": "GAME_READY",    "fn": "AnimLoad"}
       ]
     },
-<<<<<<< HEAD
     {"name": "Sprites",
       "components": ["Sprite", "Position"],
       "functions": [
@@ -16,8 +16,6 @@
         {"step": "GAME_READY",    "fn": "SpriteLoad"}
       ]
     },
-=======
->>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
     {"name": "Controller",
       "components": ["Input", "Position"],
       "functions": [
@@ -25,17 +23,6 @@
         {"step": "GAME_READY",    "fn": "InputLoad"}
       ]
     },
-<<<<<<< HEAD
-=======
-    {"name": "Animations",
-      "components": ["Animation", "Position"],
-      "functions": [
-        {"step": "UPDATE_FIXED",  "fn": "AnimSystem"},
-        {"step": "UPDATE_DRAW",   "fn": "AnimRender"},
-        {"step": "GAME_READY",    "fn": "AnimLoad"}
-      ]
-    },
->>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
     {"name": "Positions",
       "components": ["Position"],
       "functions": [
@@ -48,7 +35,6 @@
         {"step": "UPDATE_POST",   "fn": "PhysicsSystem"},
         {"step": "UPDATE_PRE" ,   "fn": "PhysicsCollision"},
         {"step": "GAME_READY",    "fn": "PhysicsLoad"}
-<<<<<<< HEAD
       ],
       "init": "PhysicsInit"
     },
@@ -92,7 +78,7 @@
     }
   ],
   "components": [
-    "Sprite", "Animation", "Position", "Input", "RigidBody", "Force", "Camera", "Coordinate"
+    "Sprite", "Animation", "Position", "Input", "RigidBody", "Force", "Camera"
   ],
   "Sprite":{
     "func": "SpriteInit",
@@ -107,20 +93,6 @@
   },
   "Animation": {
     "func": "AnimInit",
-=======
-      ]
-    },
-  ],
-  "components": [
-    "Sprite", "Animation", "Position", "Input", "RigidBody", "Force"
-  ],
-  "Sprite":{
-    "list": [
-      {"name": "tiles", "sheet_id": "SHEET_TILE"}
-    ]
-  },
-  "Animation": {
->>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
     "list": [
       {"name": "player", "sheet_id": "SHEET_PLAYER",
         "states": [
@@ -154,19 +126,13 @@
     ]
   },
   "RigidBody":{
-<<<<<<< HEAD
     "func": "RigidBodyInit",
-=======
->>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
     "list": [
       {"name": "player",  "shape": "rect", "width": 10, "height": 12}
     ]
   },
   "Force": {
-<<<<<<< HEAD
     "func": "ForceInit",
-=======
->>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
     "list": [
       {"name": "player-steering",
         "type": "STEERING", "event": "FORCE_EVENT_ACCEL",
@@ -178,7 +144,6 @@
       }
     ]
   },
-<<<<<<< HEAD
   "Camera": {
     "func": "CameraInit",
     "list": [
@@ -186,8 +151,8 @@
         "name": "main_cam",
         "zoom":     2.0,
         "rotation": 0,
-        "offset_x": 0,
-        "offset_y": 0,
+        "offset_x": 100,
+        "offset_y": 150,
         "width":    1600,
         "height":   1200,
         "bounds_x": 0,
@@ -199,16 +164,30 @@
   },
   "Position": {
     "func": "PositionInit",
+    "count":  8,
     "list": [
       {
         "name": "main_cam",
         "posx": 800,
         "posy": 600
+      },
+      {
+        "name": "player",
+        "posx": 400,
+        "posy": 300
+      },
+      {
+        "name": "tile",
+        "contains":  ["tile_blank", "tile_tiwaz", "tile_algiz",
+          "tile_raidho", "tile_laguz", "tile_ingwaz"],
+          "posx": 0,
+          "posy": 0
       }
     ]
   },
-  "Coordinate": {
-    "func": "CoordInit"
+  "Input": {
+    "func": "InputInit",
+    "list": [{"name": "player"}]
   },
   "prefabs": {
     "count": 8,
@@ -220,8 +199,8 @@
       },
       {
         "name": "player",
-        "count": 5,
-        "list": ["Follow", "Animation", "Position", "RigidBody", "Input"]
+        "count": 2,
+        "list": ["Animation", "Position"]
       },
       {
         "name": "tile",
@@ -232,20 +211,6 @@
       }
     ]
   },
-=======
-  "prefabs": [
-    {
-      "name": "player",
-      "count": 4,
-      "list": ["Animation", "Position", "RigidBody", "Input"]
-    },
-    {
-      "name": "tile",
-      "count": 2,
-      "list": ["Sprite", "Position"]
-    }
-  ],
->>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
   "relations": [
     {
       "name": "player",

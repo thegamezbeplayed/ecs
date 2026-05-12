@@ -5,20 +5,16 @@
 #include "scene.h"
 
 #define NUM_SCENES  1
-#define NUM_RES     1
+#define NUM_RES     2
 // Scene Registry
 
 static const ResourceRef RESOURCES[NUM_RES] = {
-  {RES_JSON, RES_ASEPRITE, RES_SPRITE, "resources/tile_sheet.json", "resources/tile_sheet.png", SHEET_TILE}
+  {RES_JSON, RES_ASEPRITE, RES_SPRITE, "resources/tile_sheet.json", "resources/tile_sheet.png", SHEET_TILE},
+  {RES_JSON, RES_ASEPRITE, RES_ANIM, "resources/player-sheet.json", "resources/player-sheet.png", SHEET_CHAR}
 };
 
 static const SceneHeader SCENE_HEADERS[NUM_SCENES] = {
-<<<<<<< HEAD
   {"stage_01", "resources/data/scenes/scene_01.json", 10, 10, 100, 1}
-=======
-  {"stage_01", "resources/scenes/scene_01.json", 10, 10, 100, 1}
->>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
 };
-
 
 #endif

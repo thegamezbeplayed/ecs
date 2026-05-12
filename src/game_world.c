@@ -13,13 +13,7 @@ game_process_t GP;
 void InitEntityComponentSystem(void){
   WorldInit(&world);
   
-<<<<<<< HEAD
   game_t* g = LoadGameDefine("resources/data/definitions.json");
-=======
-  LoadGameDefine("resources/data/definitions.json");
-  RegisterComponentData(&world);
-  RegisterSystemData(&world);
->>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
 
   if(!g)
     return;
@@ -30,21 +24,12 @@ void InitEntityComponentSystem(void){
       world.systems[i].init(&world);
   }
 
-<<<<<<< HEAD
-//  GameSpawn(&world, g);
   UnloadGameDefine(g);
-=======
->>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
   Scene* test = GameCalloc("InitEntityComponentSystem", 1, sizeof(Scene));
 
   bool scene = SceneLoadByIndex(0, test);
 
-  TraceLog(LOG_INFO," ==== LOADED SCENE %s %s", test->name, test->display_name);
-<<<<<<< HEAD
-
   SceneSetup(&world, test);
-=======
->>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
 }
 
 void Subscribe(uint64_t event, EventCallback cb, void* data){
@@ -96,7 +81,6 @@ void GameSetState(GameState state){
   if(GP.state[SCREEN_GAMEPLAY] == state)
     return;
 
-  TraceLog(LOG_INFO, "==== GAME STATE ====\n set to %i", state);
   GP.state[SCREEN_GAMEPLAY] = state;
   GameEvent(GameEvent_ToNotif(GAME_EVENT_STATE), &world , state);
 
@@ -150,17 +134,8 @@ void InitGameProcess(){
   GP.phase[SCREEN_ENDING][GAME_FINISHED] = UnloadEndScreen;
   GP.update_steps[SCREEN_ENDING][UPDATE_DRAW] = DrawEndScreen;
   GP.update_steps[SCREEN_ENDING][UPDATE_FRAME] = UpdateEndScreen;
-<<<<<<< HEAD
   
   GP.screen = SCREEN_LOGO;
-=======
-
-  //GP.screen = SCREEN_TITLE;
-  GP.screen = SCREEN_LOGO;
-  //GP.state[SCREEN_GAMEPLAY] = GAME_LOADING;
-
- 
->>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
   GP.phase[SCREEN_LOGO][GAME_LOADING]();
 }
 
@@ -216,11 +191,9 @@ void GameProcessSync(bool wait){
 }
 
 void GameStepState(GameState s){
-  if(s < GAME_DONE){
-    TraceLog(LOG_INFO, "=== GAME STATE ===\n step state to %i", s+1);
+  if(s < GAME_DONE)
     GameSetState(s+1);
 
-  }
 }
 
 void GameProcessEnd(){

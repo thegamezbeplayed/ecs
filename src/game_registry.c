@@ -65,22 +65,19 @@ Entity PrefabInstantiate(world_t* w, Entity prefab, Vector2 override_pos) {
     void* src = ComponentGet(w, prefab, pool->id);
     void* dst = ComponentAdd(w, instance, pool->id);
 
-    if (src && dst){
+    if (src && dst)
       memcpy(dst, src, pool->elem_size);
-      TraceLog(LOG_INFO, "Added Comp %i - %s to Ent: %i",
+    else
+      TraceLog(LOG_WARNING, "Unable to add Comp %i - %s to Ent: %i",
          pool->id, CORE_COMPONENTS[pool->id], instance.id);
-    }
   }
 
   // Apply overrides
   if (override_pos.x != -9999.0f) {  // special value = no override
     position_t* pos = GET_COMPONENT(w, instance, position_t, POS_ID);
     rigid_body_t* rb = GET_COMPONENT(w, instance, rigid_body_t, PHYS_ID);
-<<<<<<< HEAD
+    
     if (pos && !vec_compare(override_pos, VEC_UNSET)) {
-=======
-    if (pos) {
->>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
       pos->vpos = override_pos;
       if(rb)
         RigidBodySetPos(rb, override_pos);
@@ -96,7 +93,6 @@ Entity PrefabSpawn(world_t* w, const char* name, Vector2 world_pos){
     TraceLog(LOG_WARNING, "Prefab not found: %s\n", name);
     return (Entity){0};
   }
-  TraceLog(LOG_INFO, "===== SPAWN PREFAB %s ====", name);
   return PrefabInstantiate(w, p->entity, world_pos);
 }
 

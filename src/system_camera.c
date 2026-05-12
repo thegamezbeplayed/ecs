@@ -2,6 +2,7 @@
 #include "component_define.h"
 
 void CameraLoad(world_t* w, Entity e){
+  return;
   QueryBegin();
   comp_id_t seek[1];
   seek[0] = FOLLOW_ID;

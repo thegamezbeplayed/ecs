@@ -180,7 +180,7 @@ void GameFree(const char* func, void* ptr){
   TOTAL_SIZE-= size;
   double mb = TOTAL_SIZE / (1024 * 1024);
   double gb = TOTAL_SIZE / (1024 * 1024 * 1024);
-  TraceLog(LOG_INFO, "%s is freeing %zu\n TOTAL SIZE %.2f MB (%.2f GB)\n", func, size, mb, gb);
+  //TraceLog(LOG_INFO, "%s is freeing %zu\n TOTAL SIZE %.2f MB (%.2f GB)\n", func, size, mb, gb);
 
   free(raw);
 
@@ -206,8 +206,8 @@ void* GameRealloc(const char* func, void* ptr, size_t new_size)
 
   double mb = TOTAL_SIZE / (1024.0*1024.0);
   double gb = TOTAL_SIZE / (1024.0*1024.0*1024.0);
-      TraceLog(LOG_INFO,"%s realloc: %zu bytes (old %zu). Total %.2f MB (%.2f GB)\n",
-          func, new_size, old_size, mb, gb);
+//      TraceLog(LOG_INFO,"%s realloc: %zu bytes (old %zu). Total %.2f MB (%.2f GB)\n",
+  //        func, new_size, old_size, mb, gb);
 
   return (void*)(new_raw + 1);
 };

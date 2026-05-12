@@ -29,12 +29,8 @@ void SpriteRenderSplash(void){
 }
 
 void InitResources(){
-<<<<<<< HEAD
   sprite_sheet_d *s = &SHEETS[SHEET_UI];
   s->texture = LoadTexture("resources/textures_npatch.png");
-=======
-      
->>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
 }
 
 sprite_t* InitSprite(SheetID s, int index){
@@ -268,6 +264,8 @@ bool SpriteInit(void* comp, component_entry_t* j){
   return ParseSpriteComponent(j->data, spr);
 }
 
-bool AnimInit(void* comp, component_entry_t* data){
+bool AnimInit(void* comp, component_entry_t* j){
   anim_comp_t* ac = comp;
+
+  return ParseAnimComponent(j->data, ac);
 }

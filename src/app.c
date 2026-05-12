@@ -79,11 +79,8 @@ int main(void)
   pthread_create(&t, NULL, AppBackgroundLoader, &loader);
   pthread_detach(t); 
   InitResources();
-<<<<<<< HEAD
   InitUI();
-=======
   
->>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
 
   //SetTargetFPS(60);
 #if defined(PLATFORM_WEB)

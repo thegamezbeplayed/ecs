@@ -1,7 +1,10 @@
 #include "game_types.h"
 #include "game_process.h"
 #include "game_control.h"
+#include "component_define.h"
+
 input_t player_input;
+
 
 BehaviorStatus InputActionMove(input_t* gi, KeyboardKey k){
   Cell dir = CELL_UNSET;
@@ -46,6 +49,21 @@ BehaviorStatus InputActionAttack(input_t* gi, KeyboardKey k){
 
   gi->last_act = ACT_ATTACK;
   return BEHAVIOR_SUCCESS;
+}
+
+bool InputInit(void* comp, component_entry_t* j){
+  input_t* in = comp;
+
+  in->turn = -1;
+  in->step =  CELL_UNSET;
+  in->actions[ACT_MOVE] = (action_key_t){
+    ACT_MOVE,12,{KEY_H, KEY_J, KEY_K, KEY_L, KEY_D,KEY_A,KEY_W,KEY_S,KEY_LEFT, KEY_RIGHT,KEY_UP,KEY_DOWN},InputActionMove, 0};
+
+  in->actions[ACT_ATTACK] = (action_key_t){
+    ACT_ATTACK,1,{KEY_TAB},InputActionAttack, 0};
+
+  return true;
+  //return ParseInputComponent(j->data, in);
 }
 
 input_t* InitInput(void){

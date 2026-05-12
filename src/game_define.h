@@ -13,8 +13,6 @@ DEFINE_EVENT_SPACE(CombatEvent, EVENT_COMBAT_BASE);
 
 extern int PHYS_SYS;
 
-<<<<<<< HEAD
-
 typedef struct tile_instance_t {
   char* name;
   int   tile_index;      // from tileset
@@ -30,8 +28,7 @@ typedef struct entity_instance_t {
   char*       prefab;           // "player", "slime", etc.
   int         type;             // ENT_PLAYER, ENT_MOB, ...
   float       x, y;
-} entity_instance_t;
-
+}entity_instance_t;
 
 typedef struct{
   char*  name;
@@ -60,6 +57,7 @@ typedef struct component_entry_s component_entry_t;
 typedef bool (*ComponentInitFn)(void*, component_entry_t*);
 
 struct component_entry_s{
+  char*           comp;
   char*           name;
   int             index;
   ComponentInitFn func;
@@ -78,6 +76,7 @@ typedef struct{
   SystemFn    init;
   SystemCB    steps[UPDATE_DONE];
   SystemCB    states[GAME_DONE];
+  int         num_req;
   const char* components[NUM_REL];
 }system_define_t;
 
@@ -86,7 +85,8 @@ typedef struct{
   system_define_t     systems[NUM_SYS];
   int                 num_comps;
   const char*         comps[NUM_COMP_CORE];
-  component_entry_t   comp_defs[NUM_COMP_CORE];
+  int                 num_defs;
+  component_entry_t   *comp_defs;
   int                 num_prefabs;
   prefab_entity_t*    prefabs;
   int                 relation_count;
@@ -152,62 +152,4 @@ static const update_define_t UPDATE_LOOKUP[UPDATE_DONE] = {
   {UPDATE_FINAL,      "UPDATE_FINAL"},
 };
 
-=======
-typedef struct{
-  const char*  name;
-  int          num_comp;
-  const char*  components[MAX_COMPONENTS];
-}prefab_entity_t;
-
-typedef struct{
-  const char*   name;
-  RelationType  type;
-}relation_pair_t;
-
-typedef struct{
-  const char*     comp;
-  int             count;
-  relation_pair_t pairs[MAX_RELATIONS_PER_ENTITY];
-}component_relation_t;
-
-typedef struct{
-    const char*           name;
-    int                   count;
-    component_relation_t  comps[MAX_RELATIONS];
-}entity_relation_t;
-
-typedef struct{
-  int                 num_comps;
-  const char*         comps[NUM_COMP_CORE];
-  int                 num_prefabs;
-  prefab_entity_t*    prefabs;
-  int                 relation_count;
-  entity_relation_t*  relations;
-}game_t;
-bool ParseGameDefinition(cJSON* root, game_t* out);
-void LoadGameDefine(const char* path);
-
-extern const component_define_t CORE_COMPONENTS[NUM_COMP_CORE];
-
-typedef struct{
-  RelationType    type;
-  const char      name[MAX_NAME_LEN];
-}relation_str_t;
-
-static const relation_str_t RELATION_LOOKUP[NUM_REL] = {
-  {REL_AppliesTo,   "AppliesTo"},
-  {REL_ChildOf,     "ChildOf"},
-  {REL_Owner,       "Owner"},
-  {REL_Target,      "Target"}
-};
-
-static int FindComponentIndex(const char* name)
-{
-    for (int i = 0; i < NUM_COMP_CORE; i++) {
-        if (strcmp(CORE_COMPONENTS[i].name, name) == 0)
-            return i;
-    }
-    return -1;
-}
->>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
 #endif

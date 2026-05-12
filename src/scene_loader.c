@@ -35,7 +35,6 @@ bool SceneInit(LoadQueue* l){
   return l->count > 0;
 }
 
-<<<<<<< HEAD
 void SceneSetup(world_t* w, Scene* s){
   for(int i = 0; i < s->tile_count; i++){
     tile_instance_t t = s->tiles[i];
@@ -55,5 +54,3 @@ void SceneSetup(world_t* w, Scene* s){
 
   }
 }
-=======
->>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594

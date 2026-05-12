@@ -64,7 +64,7 @@ system_t* SystemCreate(world_t* w, system_define_t* def){
     TargetSubscribe(n, OnSystemEvent, s, i);
   }
 
-  for (int i = 0; i < NUM_REL; i++){
+  for (int i = 0; i < def->num_req; i++){
     comp_id_t cid = ComponentGetID(def->components[i]);
     if(cid != INVALID_COMPONENT)
       SystemRequire(s, cid);
@@ -101,7 +101,6 @@ void SystemTick(world_t* w, system_t* s, UpdateType u){
   component_pool_t* base = ComponentQueryInner(w, s);
   if (!base) return;
 
-  //TraceLog(LOG_INFO,"CALL SYSTEM %i Update %i at frame %i", s->index, u, WorldGetTime());
   if(s->needs_iter)
     *w->iter = EntityIterStart(w, s);
 

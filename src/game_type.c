@@ -37,15 +37,3 @@ void PositionSetDest(position_t* p, Vector2 v){
   Vector2 dir = vec_dir_between(p->vpos, p->vdest);
   p->angle = angle_snap_to_card(dir);
 }
-
-<<<<<<< HEAD
-bool CoordInit(void* comp, component_entry_t* data){
-
-}
-
-void PositionFromCoords(position_t* p, coordinate_t* coords, float scale){
-  p->vpos = p->last_vpos = cell_to_vec(coords->pos, scale);
-
-}
-=======
->>>>>>> 9a78f7bda89d2d6c55d3d73a5974c422944a4594
