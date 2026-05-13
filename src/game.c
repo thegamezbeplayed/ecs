@@ -26,19 +26,23 @@ void PreUpdate(void){
 void FixedUpdate(void){
   GP.game_frames++;
   GameEvent(GameEvent_ToNotif(GAME_EVENT_STEP), &world , UPDATE_FIXED);
+  GameEvent(GameEvent_ToNotif(GAME_EVENT_SYNC), &world , UPDATE_FIXED);
 }
 
 void PostUpdate(void){
   GameEvent(GameEvent_ToNotif(GAME_EVENT_STEP), &world , UPDATE_POST);
+  GameEvent(GameEvent_ToNotif(GAME_EVENT_SYNC), &world , UPDATE_POST);
 } 
 
 void FinalUpdate(void){
   GameEvent(GameEvent_ToNotif(GAME_EVENT_STEP), &world , UPDATE_FINAL);
+  GameEvent(GameEvent_ToNotif(GAME_EVENT_SYNC), &world , UPDATE_FINAL);
 }
 
 // Gameplay Screen Update logic
 void UpdateGameplayScreen(void){
   GameEvent(GameEvent_ToNotif(GAME_EVENT_STEP), &world , UPDATE_FRAME);
+  GameEvent(GameEvent_ToNotif(GAME_EVENT_SYNC), &world , UPDATE_FRAME);
 
 }
 
@@ -46,10 +50,17 @@ void UpdateGameplayScreen(void){
 void BeginDraw(void){
 
   GameEvent(GameEvent_ToNotif(GAME_EVENT_STEP), &world , UPDATE_DRAW_BEGIN);
+  GameEvent(GameEvent_ToNotif(GAME_EVENT_SYNC), &world , UPDATE_DRAW_BEGIN);
 }
 
+void DrawGameplayScreen(void){
+
+  GameEvent(GameEvent_ToNotif(GAME_EVENT_STEP), &world , UPDATE_DRAW);
+  GameEvent(GameEvent_ToNotif(GAME_EVENT_SYNC), &world , UPDATE_DRAW);
+}
 void EndDraw(void){
   GameEvent(GameEvent_ToNotif(GAME_EVENT_STEP), &world , UPDATE_DRAW_END);
+  GameEvent(GameEvent_ToNotif(GAME_EVENT_SYNC), &world , UPDATE_DRAW_END);
 
 }
 

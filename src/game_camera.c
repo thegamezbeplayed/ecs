@@ -51,7 +51,13 @@ void TrackingFollow(camera_t* cam, track_mode_d t, Vector2 v){
 }
 
 bool CameraInit(void* comp, component_entry_t* json){
-  cam_comp_t* cc = comp;
+  camera_t* cc = comp;
 
   return ParseCameraComponent(json->data, cc);
+}
+
+bool ViewInit(void* comp, component_entry_t* json){
+  view_comp_t* vc = comp;
+
+  return ParseViewComponent(json->data, vc);
 }

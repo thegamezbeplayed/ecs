@@ -65,8 +65,13 @@ Entity PrefabInstantiate(world_t* w, Entity prefab, Vector2 override_pos) {
     void* src = ComponentGet(w, prefab, pool->id);
     void* dst = ComponentAdd(w, instance, pool->id);
 
-    if (src && dst)
+    if (src && dst){
       memcpy(dst, src, pool->elem_size);
+      char notif_str[MAX_NAME_LEN];
+      sprintf(notif_str, "ADD_NEW_%s", CORE_COMPONENTS[pool->id]);
+      notification n = GameNotification(notif_str);
+      GameEvent(n, dst, instance.id);
+    }
     else
       TraceLog(LOG_WARNING, "Unable to add Comp %i - %s to Ent: %i",
          pool->id, CORE_COMPONENTS[pool->id], instance.id);

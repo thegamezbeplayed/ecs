@@ -62,10 +62,11 @@ bool ParseSpriteComponent(cJSON* j, sprite_t* out){
   char sheet[MAX_NAME_LEN];
   Json_GetString(j, "sheet_id", sheet);
   int sheet_id = StringToSheetID(sheet);
-  int idx = Json_GetInt(j, "sheet_index", -1);
-
+  out->index = Json_GetInt(j, "sheet_index", -1);
+  out->layer = Json_GetInt(j, "layer", -1);
   out->sheet_id = sheet_id;
-  out->index = idx;
+
+  return sheet_id > -1;
 }
 
 bool ParseInputComponent(cJSON* j, input_t* out){
@@ -135,30 +136,36 @@ bool ParsePositionComponent(cJSON* j, position_t* out){
   return true;
 }
 
-bool ParseCameraComponent(cJSON* j, cam_comp_t* out){
+bool ParseCameraComponent(cJSON* j, camera_t* out){
   if(!j)
     return false;
 
-  float zoom = Json_GetFloat(j, "zoom", 1.f);
-  float rot = Json_GetFloat(j, "rotation", 0.f);
+  out->zoom = Json_GetFloat(j, "zoom", 1.f);
+  out->rotation = Json_GetFloat(j, "rotation", 0.f);
 
   float offx = Json_GetFloat(j, "offset_x", 0.f);
   float offy = Json_GetFloat(j, "offset_y", 0.f);
 
   Vector2 offset = VEC_NEW(offx, offy);
 
-  out->camera = *InitCamera(zoom, rot, offset);
+  out->offset = offset;
+  out->target = offset;
+  return true;
+}
+bool ParseViewComponent(cJSON* j, view_comp_t* out){
+  if(!j)
+    return false;
 
   float bx = Json_GetFloat(j, "bounds_x", 0.f);
   float by = Json_GetFloat(j, "bounds_y", 0.f);
   float bw = Json_GetFloat(j, "bounds_w", 0.f);
   float bh = Json_GetFloat(j, "bounds_h", 0.f);
- 
+
   Rectangle bounds = RECT(bx, by, bw, bh);
   Vector2 size = VEC_NEW(bw, bh); 
 
   out->view = *InitView(size, bounds, 0);
-
+  out->layer = Json_GetInt(j, "layer", -1);
   return true;
 }
 
@@ -420,12 +427,7 @@ bool ParseSystems(cJSON* root, game_t* out)
 {
   if (!root || !out) return false;
 
-  cJSON* systems_json = cJSON_GetObjectItem(root, "systems");
-  if (!cJSON_IsArray(systems_json))
-  {
-    printf("ERROR: 'systems' array not found or invalid.\n");
-    return false;
-  }
+  cJSON* systems_json = cJSON_GetObjectItem(root,"systems");
 
   out->num_sys = cJSON_GetArraySize(systems_json);
   if (out->num_sys > NUM_SYS)
@@ -435,16 +437,17 @@ bool ParseSystems(cJSON* root, game_t* out)
   }
 
   int sys_idx = 0;
-  cJSON* sys_item;
-  cJSON_ArrayForEach(sys_item, systems_json)
+  cJSON* sys_name;
+  cJSON_ArrayForEach(sys_name, systems_json)
   {
+    cJSON* sys_item = cJSON_GetObjectItem(root, sys_name->valuestring);
     if (sys_idx >= NUM_SYS) break;
 
     system_define_t* sys = &out->systems[sys_idx++];
 
     // --- Name ---
     sys->name = GameCalloc("ParseSystems", MAX_NAME_LEN, sizeof(char));
-    Json_GetString(sys_item, "name", sys->name);
+    strcpy(sys->name, sys_name->valuestring);
 
     // --- Components ---
     cJSON* comps_json = cJSON_GetObjectItem(sys_item, "components");
@@ -464,16 +467,17 @@ bool ParseSystems(cJSON* root, game_t* out)
     }
 
     // --- Init function (optional) ---
+    
     cJSON* init_json = cJSON_GetObjectItem(sys_item, "init");
-    if (cJSON_IsString(init_json))
+    if(init_json){
       sys->init = SystemFunctionLookup(init_json->valuestring);
-
+    }
     // --- Functions array ---
-    cJSON* funcs_json = cJSON_GetObjectItem(sys_item, "functions");
-    if (cJSON_IsArray(funcs_json))
+    cJSON* sync_json = cJSON_GetObjectItem(sys_item, "syncs");
+    if (cJSON_IsArray(sync_json))
     {
       cJSON* f;
-      cJSON_ArrayForEach(f, funcs_json)
+      cJSON_ArrayForEach(f, sync_json)
       {
         cJSON* step_json = cJSON_GetObjectItem(f, "step");
         cJSON* fn_json   = cJSON_GetObjectItem(f, "fn");
@@ -484,21 +488,56 @@ bool ParseSystems(cJSON* root, game_t* out)
         SystemCB callback = (SystemCB)SystemFunctionLookup(fn_json->valuestring);
         if (!callback) continue;
 
-        if(step_json->valuestring[0] == 'U'){
         UpdateType step = GetUpdateStep(step_json->valuestring);
         if (step < 0 || step >= UPDATE_DONE)
           continue;
 
-          sys->steps[step] = callback;
-        }
-        else
-        {
-          GameState state = GetGameState(step_json->valuestring);
-          if (state >= 0 && state < GAME_DONE)
-            sys->states[state] = callback;
-        }
+          sys->syncs[step] = callback;
       }
     }
+    cJSON* state_json = cJSON_GetObjectItem(sys_item, "states");
+    if (cJSON_IsArray(state_json))
+    {
+      cJSON* f;
+      cJSON_ArrayForEach(f, state_json)
+      {
+        cJSON* step_json = cJSON_GetObjectItem(f, "step");
+        cJSON* fn_json   = cJSON_GetObjectItem(f, "fn");
+
+        if (!cJSON_IsString(step_json) || !cJSON_IsString(fn_json))
+          continue;
+
+        SystemCB callback = (SystemCB)SystemFunctionLookup(fn_json->valuestring);
+        if (!callback) continue;
+
+        GameState state = GetGameState(step_json->valuestring);
+        if (state >= 0 && state < GAME_DONE)
+          sys->states[state] = callback;
+      }
+    }
+
+    cJSON* steps_json = cJSON_GetObjectItem(sys_item, "steps");
+    if (cJSON_IsArray(steps_json))
+    {
+      cJSON* f;
+      cJSON_ArrayForEach(f, steps_json)
+      {
+        cJSON* step_json = cJSON_GetObjectItem(f, "step");
+        cJSON* fn_json   = cJSON_GetObjectItem(f, "fn");
+
+        if (!cJSON_IsString(step_json) || !cJSON_IsString(fn_json))
+          continue;
+
+        SystemFn callback = (SystemFn)SystemFunctionLookup(fn_json->valuestring);
+        if (!callback) continue;
+
+        UpdateType step = GetUpdateStep(step_json->valuestring);
+        if (step < 0 || step >= UPDATE_DONE)
+          sys->steps[step] = callback;
+      }
+    }
+
+
   }
 
   return true;
@@ -511,6 +550,10 @@ bool ParseComponents(cJSON* root, game_t* out){
     out->num_defs = Json_GetInt(root, "num_comp_def", NUM_COMP_CORE);
     out->comp_defs = GameCalloc("ParseComponents", out->num_defs, sizeof(component_entry_t));
 
+    int comps_present = cJSON_GetArraySize(comp_json);
+
+    if(comps_present > out->num_defs)
+      TraceLog(LOG_WARNING, " === ParseComponents === Num components capped at %i but %i present", out->num_defs, comps_present);
     cJSON* c;
     cJSON_ArrayForEach(c, comp_json){
       if (!cJSON_IsString(c))

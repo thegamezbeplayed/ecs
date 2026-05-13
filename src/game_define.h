@@ -74,7 +74,8 @@ extern const component_func_t COMPFUNC_LOOKUP[NUM_COMP_CORE];
 typedef struct{
   char*       name;
   SystemFn    init;
-  SystemCB    steps[UPDATE_DONE];
+  SystemFn    steps[UPDATE_DONE];
+  SystemCB    syncs[UPDATE_DONE];
   SystemCB    states[GAME_DONE];
   int         num_req;
   const char* components[NUM_REL];

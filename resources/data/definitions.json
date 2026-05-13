@@ -1,94 +1,118 @@
 {
-  "num_comp_def": 20,
-  "systems":[
-    {"name": "Animations",
-      "components": ["Animation", "Position"],
-      "functions": [
-        {"step": "UPDATE_FIXED",  "fn": "AnimSystem"},
-        {"step": "UPDATE_DRAW",   "fn": "AnimRender"},
-        {"step": "GAME_READY",    "fn": "AnimLoad"}
-      ]
-    },
-    {"name": "Sprites",
-      "components": ["Sprite", "Position"],
-      "functions": [
-        {"step": "UPDATE_DRAW",   "fn": "SpriteRender"},
-        {"step": "GAME_READY",    "fn": "SpriteLoad"}
-      ]
-    },
-    {"name": "Controller",
-      "components": ["Input", "Position"],
-      "functions": [
-        {"step": "UPDATE_FRAME",  "fn": "InputSystem"},
-        {"step": "GAME_READY",    "fn": "InputLoad"}
-      ]
-    },
-    {"name": "Positions",
-      "components": ["Position"],
-      "functions": [
-        {"step": "GAME_READY",    "fn": "PositionLoad"}
-      ]
-    },
-    {"name": "Physics",
-      "components": ["RigidBody", "Position"],
-      "functions": [
-        {"step": "UPDATE_POST",   "fn": "PhysicsSystem"},
-        {"step": "UPDATE_PRE" ,   "fn": "PhysicsCollision"},
-        {"step": "GAME_READY",    "fn": "PhysicsLoad"}
-      ],
-      "init": "PhysicsInit"
-    },
-    {"name": "Forces",
-      "components": ["Force"],
-      "functions": [
-        {"step": "UPDATE_FIXED",  "fn": "ForceSystem"},
-        {"step": "UPDATE_FINAL",  "fn": "ForceCleanup"},
-        {"step": "GAME_READY",    "fn": "ForceLoad"}
-      ]
-    },
-    {"name": "Levels",
-      "components": ["Level"],
-      "functions": [
-        {"step": "UPDATE_DRAW",   "fn": "LevelRender"},
-        {"step": "GAME_LOADING",  "fn": "LevelLoad"},
-        {"step": "GAME_READY",    "fn": "LevelReady"}
-      ]
-    },
-    {"name": "Render",
-      "components": ["Camera"],
-      "functions": [
-        {"step": "UPDATE_DRAW_BEGIN","fn": "RenderBegin"},
-        {"step": "UPDATE_DRAW_END",  "fn": "RenderEnd"},
-        {"step": "GAME_READY",       "fn": "RenderLoad"}
-      ]
-    },
-    {"name": "Cameras",
-      "components": ["Camera", "Tracking"],
-      "functions": [
-        {"step": "UPDATE_POST",   "fn": "CameraSystem"},
-        {"step": "GAME_LOADING",  "fn": "CameraLoad"},
-        {"step": "GAME_READY",    "fn": "CameraReady"}
-      ]
-    },
-     {"name": "Expiration",
-      "components": ["Expiry"],
-      "functions": [
-        {"step": "UPDATE_FINAL",  "fn": "ExpirationSystem"}
-      ]
-    }
-  ],
+  "num_comp_def": 22,
   "components": [
-    "Sprite", "Animation", "Position", "Input", "RigidBody", "Force", "Camera"
+    "Sprite", "Animation", "View", "Position", "Input", "Camera"
   ],
+  "systems": ["Animations", "Sprites", "Cameras", "Render"],
+  "Animations":{
+    "components": ["Animation", "Sprite"],
+    "syncs": [
+      {"step": "UPDATE_FIXED",  "fn": "AnimSystem"}
+    ],
+    "states": [
+      {"step": "GAME_READY",    "fn": "AnimLoad"}
+    ]
+  },
+  "Sprites" : {
+    "components": ["Sprite", "Position"],
+    "init": "SpritesInit"
+  },
+  "Controller": {
+    "components": ["Input", "Position"],
+    "syncs": [
+      {"step": "UPDATE_FRAME",  "fn": "InputSystem"}
+    ],
+    "states":[
+      {"step": "GAME_READY",    "fn": "InputLoad"}
+    ]
+  },
+  "Positions": {
+    "components": ["Position"],
+    "states": [
+      {"step": "GAME_READY",    "fn": "PositionLoad"}
+    ]
+  },
+  "Physics": {
+    "components": ["RigidBody", "Position"],
+    "syncs": [
+      {"step": "UPDATE_POST",   "fn": "PhysicsSystem"},
+      {"step": "UPDATE_PRE" ,   "fn": "PhysicsCollision"}
+    ],
+    "states": [
+      {"step": "GAME_READY",    "fn": "PhysicsLoad"}
+    ],
+    "init": "PhysicsInit"
+  },
+  "Forces": {
+    "components": ["Force"],
+    "syncs": [
+      {"step": "UPDATE_FIXED",  "fn": "ForceSystem"},
+      {"step": "UPDATE_FINAL",  "fn": "ForceCleanup"}
+    ],
+    "states": [
+      {"step": "GAME_READY",    "fn": "ForceLoad"}
+    ]
+  },
+  "Levels": {
+    "components": ["Level"],
+    "states": [
+      {"step": "GAME_LOADING",  "fn": "LevelLoad"},
+      {"step": "GAME_READY",    "fn": "LevelReady"}
+    ]
+  },
+  "Render": {
+    "components": ["View"],
+    "syncs": [
+      {"step": "UPDATE_DRAW_BEGIN","fn": "RenderBegin"},
+      {"step": "UPDATE_DRAW_END",  "fn": "RenderEnd"},
+      {"step": "UPDATE_DRAW",      "fn": "RenderDraw"}
+    ],
+    "states": [
+      {"step": "GAME_READY",       "fn": "RenderLoad"}
+    ]
+  },
+  "Cameras": {
+    "components": ["Camera"],
+    "syncs": [
+      {"step": "UPDATE_POST",      "fn": "CameraSystem"},
+      {"step": "UPDATE_DRAW_BEGIN","fn": "CameraBegin"},
+      {"step": "UPDATE_DRAW_END",  "fn": "CameraEnd"}
+    ],
+    "states": [
+      {"step": "GAME_LOADING",     "fn": "CameraLoad"},
+      {"step": "GAME_READY",       "fn": "CameraReady"}
+    ]
+  },
+  "Expiration": {
+    "components": ["Expiry"],
+    "syncs": [
+      {"step": "UPDATE_FINAL",  "fn": "ExpirationSystem"}
+    ]
+  },
   "Sprite":{
     "func": "SpriteInit",
     "list": [
-      {"name": "tile_blank", "sheet_id": "SHEET_TILE", "sheet_index": 0},
-      {"name": "tile_tiwaz", "sheet_id": "SHEET_TILE", "sheet_index": 1},
-      {"name": "tile_algiz", "sheet_id": "SHEET_TILE", "sheet_index": 2},
-      {"name": "tile_raidho","sheet_id": "SHEET_TILE", "sheet_index": 3},
-      {"name": "tile_laguz", "sheet_id": "SHEET_TILE", "sheet_index": 4},
-      {"name": "tile_ingwaz","sheet_id": "SHEET_TILE", "sheet_index": 5}
+      {"name": "player", "layer": 1,
+        "sheet_id": "SHEET_CHAR", "sheet_index": 0
+      },
+      {"name": "tile_blank", "layer": 0, 
+        "sheet_id": "SHEET_TILE", "sheet_index": 0
+      },
+      {"name": "tile_tiwaz", "layer": 0,
+        "sheet_id": "SHEET_TILE", "sheet_index": 1
+      },
+      {"name": "tile_algiz", "layer": 0,
+        "sheet_id": "SHEET_TILE", "sheet_index": 2
+      },
+      {"name": "tile_raidho", "layer": 0,
+        "sheet_id": "SHEET_TILE", "sheet_index": 3
+      },
+      {"name": "tile_laguz", "layer": 0,
+        "sheet_id": "SHEET_TILE", "sheet_index": 4
+      },
+      {"name": "tile_ingwaz", "layer": 0,
+        "sheet_id": "SHEET_TILE", "sheet_index": 5
+      }
     ]
   },
   "Animation": {
@@ -149,16 +173,10 @@
     "list": [
       {
         "name": "main_cam",
-        "zoom":     2.0,
+        "zoom":     1.0,
         "rotation": 0,
         "offset_x": 100,
-        "offset_y": 150,
-        "width":    1600,
-        "height":   1200,
-        "bounds_x": 0,
-        "bounds_y": 0,
-        "bounds_w": 1600,
-        "bounds_h": 1200
+        "offset_y": 150
       }
     ]
   },
@@ -185,12 +203,33 @@
       }
     ]
   },
+  "View": {
+    "func": "ViewInit",
+    "list": [
+      {
+        "name":     "bg",
+        "layer":    0,
+        "bounds_x": 0,
+        "bounds_y": 0,
+        "bounds_w": 1600,
+        "bounds_h": 1200
+      },
+      {
+        "name":     "main",
+        "layer":    1,
+        "bounds_x": 0,
+        "bounds_y": 0,
+        "bounds_w": 1600,
+        "bounds_h": 1200
+      }
+    ]
+  },
   "Input": {
     "func": "InputInit",
     "list": [{"name": "player"}]
   },
   "prefabs": {
-    "count": 8,
+    "count": 10,
     "list":[
       {
         "name": "main_cam",
@@ -198,9 +237,15 @@
         "list": ["Position", "Camera"]
       },
       {
+        "name":     "views",
+        "count":    2,
+        "list":     ["View"],
+        "contains": ["bg","main"]
+      },
+      {
         "name": "player",
-        "count": 2,
-        "list": ["Animation", "Position"]
+        "count": 3,
+        "list": ["Sprite", "Animation", "Position"]
       },
       {
         "name": "tile",

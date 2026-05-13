@@ -61,6 +61,8 @@
   ],
   "entities": [
     {"name": "main_cam", "pos_x": 0, "pos_y": 0},
+    {"name": "bg", "pos_x": 0, "pos_y": 0},
+    {"name": "main", "pos_x": 0, "pos_y": 0},
     {"name": "player",   "pos_x": 800, "pos_y": 600}
   ],  
   "metadata": {

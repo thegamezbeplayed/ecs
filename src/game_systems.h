@@ -12,7 +12,6 @@ void PositionLoad(world_t* w, Entity e);
 void AnimLoad(world_t* w, Entity e);
 //void AnimBehavior(world_t* w, Entity e);
 void AnimSystem(world_t* w, Entity e);
-void AnimRender(world_t* w, Entity e);
 
 void OnInputEvent(event_t* ev, void* data);
 void InputLoad(world_t* w, Entity e);
@@ -35,15 +34,21 @@ void LevelRender(world_t* w, Entity e);
 
 void RenderLoad(world_t* w, Entity e);
 void RenderBegin(world_t* w, Entity e);
+void RenderDraw(world_t* w, Entity e);
 void RenderEnd(world_t* w, Entity e);
-
-void CameraSystem(world_t* w, Entity e);
 
 void CameraLoad(world_t* w, Entity e);
 void CameraReady(world_t* w, Entity e);
+void CameraSystem(world_t* w, Entity e);
+void CameraBegin(world_t* w, Entity e);
+void CameraEnd(world_t* w, Entity e);
 
-void SpriteRender(world_t* w, Entity e);
-void SpriteLoad(world_t* w, Entity e);
+typedef struct{
+  int     count, cap;
+  int     *ents;
+}sprite_layer_t;
+
+void SpritesInit(world_t* w);
 
 void BehaviorSystem(world_t* w, Entity e);
 
@@ -65,7 +70,6 @@ static system_function_lookup_t FUNCTION_LOOKUP[NUM_FUNCTIONS] = {
 
     {"AnimLoad",            AnimLoad},
     {"AnimSystem",          AnimSystem},
-    {"AnimRender",          AnimRender},
 
     {"OnInputEvent",        OnInputEvent},
     {"InputLoad",           InputLoad},
@@ -85,23 +89,19 @@ static system_function_lookup_t FUNCTION_LOOKUP[NUM_FUNCTIONS] = {
     {"LevelLoad",           LevelLoad},
     {"LevelReady",          LevelReady},
     {"LevelSystem",         LevelSystem},
-    {"LevelRender",         LevelRender},
 
     {"RenderLoad",          RenderLoad},
     {"RenderBegin",         RenderBegin},
+    {"RenderDraw",         RenderDraw},
     {"RenderEnd",           RenderEnd},
 
     {"CameraSystem",        CameraSystem},
+    {"CameraBegin",         CameraBegin},
+    {"CameraEnd",           CameraEnd},
     {"CameraLoad",          CameraLoad},
     {"CameraReady",         CameraReady},
 
-    {"SpriteRender",        SpriteRender},
-
-    {"SpriteLoad",          SpriteLoad},
-
-    {"CombatLoad",          CombatLoad},
-    {"CombatSystem",        CombatSystem},
-
+    {"SpritesInit",         SpritesInit},
     {"ExpirationSystem",    ExpirationSystem}
 };
 
