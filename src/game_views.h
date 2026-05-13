@@ -16,13 +16,6 @@ typedef enum{
 typedef Camera2D camera_t;
 camera_t* InitCamera(float zoom, float rot, Vector2 offset);
 
-typedef struct{
-  const char  name[MAX_NAME_LEN];
-  float       zoom, rot;
-  int         offset_x, offset_y, wid, hei;
-  int         bx, by, bw, bh;
-}cam_d;
-
 typedef enum{
   CAM_NONE,
   CAM_FOLLOW,
@@ -38,6 +31,7 @@ typedef enum{
 
 typedef struct{
   Rectangle       view, bounds, border;
+  Vector2         origin;
   float           border_distance;
   RenderTexture2D tex;
 }viewport_t;

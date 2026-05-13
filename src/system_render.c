@@ -15,7 +15,7 @@ void RenderDraw(world_t* w, Entity e){
   notification n = ViewEvent_ToNotif(VIEW_EVENT_DRAW);
   GameEvent(n, vc, vc->layer);
   EndTextureMode();
-  DrawTexturePro(vc->view.tex.texture, vc->view.view, vc->view.bounds, VECTOR2_ZERO, 0, WHITE);
+  DrawTexturePro(vc->view.tex.texture, vc->view.view, vc->view.bounds, vc->view.origin, 0, WHITE);
 
 }
 

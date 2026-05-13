@@ -364,7 +364,6 @@ notification_t* RegisterNotification(notification_pool_t* p, char* name){
   strcpy(notif->name, name);
   HashPut(&p->map, n, notif);
   p->count++;
-  TraceLog(LOG_INFO, "==== REGISTER NOTIFICATION\n %s %d", name, n);
   return notif; 
 }
 

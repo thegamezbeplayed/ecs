@@ -63,7 +63,7 @@
     {"name": "main_cam", "pos_x": 0, "pos_y": 0},
     {"name": "bg", "pos_x": 0, "pos_y": 0},
     {"name": "main", "pos_x": 0, "pos_y": 0},
-    {"name": "player",   "pos_x": 800, "pos_y": 600}
+    {"name": "player",   "pos_x": 400, "pos_y": 200}
   ],  
   "metadata": {
     "points": 10

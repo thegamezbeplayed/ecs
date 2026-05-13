@@ -188,21 +188,17 @@ static inline Vector2 math_normal_rec(Rectangle collider, Rectangle target, Rect
   Vector2 result = Vector2Zero();
   if (overlap.width < overlap.height - threshold) {
     if (col_pos.x > tar_pos.x){
-//      TraceLog(LOG_INFO,"Hit from the left side of target\n");
       result.x = -1;
     }
     else{
-  //    TraceLog(LOG_INFO,"Hit from the right side of target\n");
       result.x = 1;
     }
   }
   else if (overlap.height < overlap.width - threshold) {
     if (col_pos.y > tar_pos.y){
-    //  TraceLog(LOG_INFO,"Hit from the top side of target\n");
       result.y = -1;
     }
     else{
-      //TraceLog(LOG_INFO,"Hit from the bottom side of target\n");
       result.y = 1;
     }
   }

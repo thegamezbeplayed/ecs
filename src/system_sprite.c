@@ -3,20 +3,6 @@
 
 static sprite_layer_t SPRITE_LAYERS[LAYER_DONE] = {0};
 
-void SpriteComponentEvent(event_t* ev, void* data){
-  world_t* w = data;
-  sprite_t*  spr = ev->data;
-
-  if(spr->layer < LAYER_BG || spr->layer >= LAYER_DONE){
-    TraceLog(LOG_WARNING, "==== SPRITE COMPONENT EVENT ===\n Ent %i invalid sprite layer %i", ev->eid, spr->layer);
-    return;
-  }
-
-  int *slot = &SPRITE_LAYERS[spr->layer].ents[SPRITE_LAYERS[spr->layer].count++];
-
-  *slot = ev->eid;
-}
-
 void SpriteRender(world_t* w, RenderLayer l){
   sprite_layer_t sprl = SPRITE_LAYERS[l];
 
@@ -25,12 +11,7 @@ void SpriteRender(world_t* w, RenderLayer l){
     sprite_t* s      = GET_COMPONENT(w, e, sprite_t, SPR_ID);
     position_t* pos  = GET_COMPONENT(w, e, position_t, POS_ID);
 
-
-    sprite_slice_t* slice = &SHEETS[s->sheet_id].sprites[s->index].slice;
-    if(!slice)
-      continue;
-
-    DrawSlice(slice, pos->vpos, 0);
+    DrawSprite(s, pos->vpos);
   }
 }
 
@@ -40,12 +21,22 @@ void SpriteViewEvent(event_t* ev, void* data){
   SpriteRender(w, ev->eid);
 }
 
+void SpriteLoad(world_t* w, Entity e){
+  sprite_t* s      = GET_COMPONENT(w, e, sprite_t, SPR_ID);
+  
+  if(s->layer < LAYER_BG || s->layer >= LAYER_DONE){
+    TraceLog(LOG_WARNING, "==== SPRITE LOAD ===\n Ent %i invalid sprite layer %i", e.id, s->layer);
+    return;
+  }
+
+  int *slot = &SPRITE_LAYERS[s->layer].ents[SPRITE_LAYERS[s->layer].count++];
+
+  *slot = e.id;
+
+}
+
 void SpritesInit(world_t* w){
   notification n = ViewEvent_ToNotif(VIEW_EVENT_DRAW);
-
-  n = GameNotification("ADD_NEW_Sprite");
-  Subscribe(n, SpriteComponentEvent, w);
-  n = ViewEvent_ToNotif(VIEW_EVENT_DRAW);
 
   for(int i = 0; i < LAYER_DONE; i++){
     SPRITE_LAYERS[i].cap = MAX_LAYER_SPRITES;

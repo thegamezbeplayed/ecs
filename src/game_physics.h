@@ -42,21 +42,6 @@ typedef enum{
   REACT_BLOCK,
 }ReactType;
 
-typedef struct{
-  const char     name[MAX_NAME_LEN];
-  ForceType      type;
-  float          speed, max_vel, threshold;
-  Vector2        frict;
-  PhysicsEventID event;
-  ReactType      react;
-}force_d;
-
-typedef struct{
-  const char  name[MAX_NAME_LEN];
-  ShapeType   shape;
-  int         wid, hei;
-}phys_d;
-
 force_t* ForceReactBump(rigid_body_t* a, rigid_body_t* b, force_t*);
 force_t* ForceReactBlock(rigid_body_t* a, rigid_body_t* b, force_t*);
 

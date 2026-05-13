@@ -59,12 +59,12 @@ void CameraBegin(world_t* w, Entity e){
   camera_t* c = GET_COMPONENT(w, e, camera_t, CAM_ID);
   BeginDrawing();
   ClearBackground(BLACK);
-  BeginMode2D(*c);
+//  BeginMode2D(*c);
 }
 
 void CameraEnd(world_t* w, Entity e){
   //camera_t* c = GET_COMPONENT(w, e, camera_t, CAM_ID);
-  EndMode2D();
+  //EndMode2D();
   DrawFPS(10,10);
   EndDrawing();
 }

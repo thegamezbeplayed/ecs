@@ -15,6 +15,9 @@
   },
   "Sprites" : {
     "components": ["Sprite", "Position"],
+    "states": [
+      {"step": "GAME_READY", "fn": "SpriteLoad"}
+    ],
     "init": "SpritesInit"
   },
   "Controller": {
@@ -92,7 +95,7 @@
   "Sprite":{
     "func": "SpriteInit",
     "list": [
-      {"name": "player", "layer": 1,
+      {"name": "player", "layer": 1, "scale": 2.5,
         "sheet_id": "SHEET_CHAR", "sheet_index": 0
       },
       {"name": "tile_blank", "layer": 0, 
@@ -118,7 +121,7 @@
   "Animation": {
     "func": "AnimInit",
     "list": [
-      {"name": "player", "sheet_id": "SHEET_PLAYER",
+      {"name": "player", "sheet_id": "SHEET_CHAR",
         "states": [
           {"state": "WALK", "loop": false, "end": "SUPSEND",
             "sequences": [
@@ -175,8 +178,10 @@
         "name": "main_cam",
         "zoom":     1.0,
         "rotation": 0,
-        "offset_x": 100,
-        "offset_y": 150
+        "offset_x": 320,
+        "offset_y": 120,
+        "target_x": 160,
+        "target_y": 60
       }
     ]
   },
@@ -186,8 +191,8 @@
     "list": [
       {
         "name": "main_cam",
-        "posx": 800,
-        "posy": 600
+        "posx": 400,
+        "posy": 300
       },
       {
         "name": "player",
@@ -211,16 +216,20 @@
         "layer":    0,
         "bounds_x": 0,
         "bounds_y": 0,
-        "bounds_w": 1600,
-        "bounds_h": 1200
+        "bounds_w": 1920,
+        "bounds_h": 1080,
+        "offset_x": -680,
+        "offset_y": -420
       },
       {
         "name":     "main",
         "layer":    1,
         "bounds_x": 0,
         "bounds_y": 0,
-        "bounds_w": 1600,
-        "bounds_h": 1200
+        "bounds_w": 1920,
+        "bounds_h": 1080,
+        "offset_x": -680,
+        "offset_y": -420
       }
     ]
   },

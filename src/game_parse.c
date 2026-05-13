@@ -64,6 +64,7 @@ bool ParseSpriteComponent(cJSON* j, sprite_t* out){
   int sheet_id = StringToSheetID(sheet);
   out->index = Json_GetInt(j, "sheet_index", -1);
   out->layer = Json_GetInt(j, "layer", -1);
+  out->scale = Json_GetFloat(j, "scale", 1);
   out->sheet_id = sheet_id;
 
   return sheet_id > -1;
@@ -119,6 +120,7 @@ bool ParseAnimComponent(cJSON* j, anim_comp_t* out){
     }  
   }
 
+  return sheet_id > -1;
 }
 
 bool ParsePositionComponent(cJSON* j, position_t* out){
@@ -146,10 +148,12 @@ bool ParseCameraComponent(cJSON* j, camera_t* out){
   float offx = Json_GetFloat(j, "offset_x", 0.f);
   float offy = Json_GetFloat(j, "offset_y", 0.f);
 
-  Vector2 offset = VEC_NEW(offx, offy);
+  float tarx = Json_GetFloat(j, "target_x", 0.f);
+  float tary = Json_GetFloat(j, "target_y", 0.f);
 
-  out->offset = offset;
-  out->target = offset;
+  out->offset = VEC_NEW(offx, offy);
+  out->target = VEC_NEW(tarx, tary);
+
   return true;
 }
 bool ParseViewComponent(cJSON* j, view_comp_t* out){
@@ -166,6 +170,8 @@ bool ParseViewComponent(cJSON* j, view_comp_t* out){
 
   out->view = *InitView(size, bounds, 0);
   out->layer = Json_GetInt(j, "layer", -1);
+  out->view.origin.x = Json_GetFloat(j, "offset_x", 0);
+  out->view.origin.y = Json_GetFloat(j, "offset_y", 0);
   return true;
 }
 
@@ -406,8 +412,8 @@ bool ParseScene(cJSON* root, Scene* scene){
       e->prefab = GameCalloc("ParseScene", MAX_NAME_LEN, sizeof(char));
 
       Json_GetString(item, "name", e->prefab);
-      e->x = Json_GetFloat(item, "x", 0.0f);
-      e->y = Json_GetFloat(item, "y", 0.0f);
+      e->x = Json_GetFloat(item, "pos_x", 0.0f);
+      e->y = Json_GetFloat(item, "pos_y", 0.0f);
       e->type = Json_GetInt(item, "type", 0);
     }
   }

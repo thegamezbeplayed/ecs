@@ -49,7 +49,7 @@ typedef struct{
 }sprite_layer_t;
 
 void SpritesInit(world_t* w);
-
+void SpriteLoad(world_t* w, Entity e);
 void BehaviorSystem(world_t* w, Entity e);
 
 void CombatLoad(world_t* w, Entity e);
@@ -102,6 +102,7 @@ static system_function_lookup_t FUNCTION_LOOKUP[NUM_FUNCTIONS] = {
     {"CameraReady",         CameraReady},
 
     {"SpritesInit",         SpritesInit},
+    {"SpriteLoad",          SpriteLoad},
     {"ExpirationSystem",    ExpirationSystem}
 };
 

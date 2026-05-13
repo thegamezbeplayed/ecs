@@ -36,6 +36,14 @@ bool SceneInit(LoadQueue* l){
 }
 
 void SceneSetup(world_t* w, Scene* s){
+  for(int i = 0; i < s->entity_count; i++){
+    entity_instance_t e = s->entities[i];
+
+    Vector2 pos = VEC_NEW(e.x, e.y);
+    Entity spawn = PrefabSpawn(w, e.prefab, pos);
+
+  }
+
   for(int i = 0; i < s->tile_count; i++){
     tile_instance_t t = s->tiles[i];
     Entity tile = PrefabSpawn(w, t.name, VEC_UNSET);
@@ -46,11 +54,4 @@ void SceneSetup(world_t* w, Scene* s){
     PositionSet(p, pos);
   }
 
-  for(int i = 0; i < s->entity_count; i++){
-    entity_instance_t e = s->entities[i];
-
-    Vector2 pos = VEC_NEW(e.x, e.y);
-    Entity spawn = PrefabSpawn(w, e.prefab, pos);
-
-  }
 }

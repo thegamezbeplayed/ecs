@@ -65,7 +65,6 @@ void SystemSet(world_t* w, system_t* s, GameState g){
   component_pool_t* base = ComponentQueryInner(w, s);
   if (!base) return;
 
-  //TraceLog(LOG_INFO,"CALL SYSTEM %i State %i at frame %i", s->index, g, WorldGetTime());
   for (int i = 0; i < base->size; i++) {
     Entity e = { base->entities[i], w->manager.generation[base->entities[i]] };
 

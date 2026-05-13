@@ -45,8 +45,10 @@ void InitResources();
 typedef enum{
   LAYER_ROOT = -1,
   LAYER_BG,
+  LAYER_FLOOR,
   LAYER_MAIN,
   LAYER_TOP,
+  LAYER_UI,
   LAYER_DONE
 }RenderLayer;
 
@@ -148,13 +150,13 @@ bool AnimPlayerState(anim_player_t*, anim_t*, AnimState s);
 //SPRITE_T===>
 struct sprite_s{
   int         sheet_id, index;
-  float       rot;
+  float       rot, scale;
   Vector2     offset;
   RenderLayer layer;
   collision_d coll;
 };
 sprite_t* InitSprite(SheetID, int);
-
+void DrawSprite(sprite_t* spr, Vector2 position);
 sprite_slice_t* InitSliceFromData(sprite_d*);
 void DrawSlice(sprite_slice_t*, Vector2 position,float rot);
 #endif
