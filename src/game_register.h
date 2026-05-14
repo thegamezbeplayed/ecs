@@ -46,15 +46,13 @@ typedef struct {
   comp_id_t terms[MAX_TERMS];
   int       term_count;
   SystemFn  init;
+  SystemFn  step[UPDATE_DONE];
   SystemCB  set[GAME_DONE];
   SystemCB  tick[UPDATE_DONE];
   bool      needs_iter;
 } system_t;
 
 system_t* SystemRegister(world_t* w, SystemCB*, SystemCB*, SystemFn);
-
-void SystemTick(world_t* w, system_t* s, UpdateType u);
-void SystemSet(world_t* w, system_t* s, GameState g);
 
 static void SystemRequire(system_t* s, comp_id_t id) {
     s->terms[s->term_count++] = id;

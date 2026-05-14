@@ -205,7 +205,11 @@ static uint64_t hash_64_from_int(int x)
 
     return z;
 }
-
+static int int_from_hash_64(uint64_t h)
+{
+    h ^= h >> 32;
+    return (int)h;                    // simple and fast
+}
 static uint32_t hash_float(float f) {
     uint32_t bits;
     memcpy(&bits, &f, sizeof(float)); // safe bit copy

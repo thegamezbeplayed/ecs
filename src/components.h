@@ -3,7 +3,7 @@
 #include "game_tools.h"
 #include "game_common.h"
 
-#define NUM_COMP_CORE   15
+#define NUM_COMP_CORE   14
 #define MAX             1024
 #define MAX_COMPONENTS  512
 #define MAX_PLAYERS     2
@@ -12,6 +12,7 @@
 #define PHYS_ID      ComponentGetID("RigidBody")
 #define ANIM_ID      ComponentGetID("Animation")
 #define SPR_ID       ComponentGetID("Sprite")
+#define VIEW_ID      ComponentGetID("View")
 #define INPUT_ID     ComponentGetID("Input")
 #define CAM_ID       ComponentGetID("Camera")
 #define TRACK_ID     ComponentGetID("Track")

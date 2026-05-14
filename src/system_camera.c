@@ -26,7 +26,7 @@ void CameraReady(world_t* w, Entity e){
 }
 
 void CameraSystem(world_t* w, Entity e){
-  cam_comp_t* c = GET_COMPONENT(w, e, cam_comp_t, CAM_ID);
+  camera_t* c = GET_COMPONENT(w, e, camera_t, CAM_ID);
   track_comp_t* t = GET_COMPONENT(w, e, track_comp_t, TRACK_ID);
 
   if(!t || !t->target)
@@ -42,8 +42,8 @@ void CameraSystem(world_t* w, Entity e){
   if(!pos)
     return;
 
-  TRACK(t->ctx.tracking, &c->camera, pos->vpos);
-
+  TRACK(t->ctx.tracking, c, pos->vpos);
+/*
   Rectangle cropped_bounds = RECT_CROP(c->view.border, c->view.border_distance);
 
   Vector2 clamped = clamp_point_to_rect(c->camera.target, cropped_bounds);
@@ -52,4 +52,20 @@ void CameraSystem(world_t* w, Entity e){
     return;
 
   c->camera.target = clamped;
+  */
 }
+
+void CameraBegin(world_t* w, Entity e){
+  camera_t* c = GET_COMPONENT(w, e, camera_t, CAM_ID);
+  BeginDrawing();
+  ClearBackground(BLACK);
+//  BeginMode2D(*c);
+}
+
+void CameraEnd(world_t* w, Entity e){
+  //camera_t* c = GET_COMPONENT(w, e, camera_t, CAM_ID);
+  //EndMode2D();
+  DrawFPS(10,10);
+  EndDrawing();
+}
+

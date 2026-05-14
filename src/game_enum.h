@@ -8,7 +8,8 @@
 #define EVENT_PHYS_BASE   0x3000
 #define EVENT_POS_BASE    0x4000
 #define EVENT_ANIM_BASE   0x5000
-#define EVENT_COMBAT_BASE 0x6000
+#define EVENT_VIEW_BASE   0x6000
+#define EVENT_COMBAT_BASE 0x7000
 #define EVENT_BASE_MASK   0xFFFFF000
 #define EVENT_ID_MASK     0x00000FFF
 
@@ -28,6 +29,7 @@ static inline uint32_t EVENT_ID(uint64_t n) {
 }
 typedef enum{
   GAME_EVENT_STATE,
+  GAME_EVENT_SYNC,
   GAME_EVENT_STEP,
   GAME_EVENT_COUNT
 }GameEventID;

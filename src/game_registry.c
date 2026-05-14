@@ -65,19 +65,20 @@ Entity PrefabInstantiate(world_t* w, Entity prefab, Vector2 override_pos) {
     void* src = ComponentGet(w, prefab, pool->id);
     void* dst = ComponentAdd(w, instance, pool->id);
 
-    if (src && dst)
+    if (src && dst){
       memcpy(dst, src, pool->elem_size);
+    }
     else
       TraceLog(LOG_WARNING, "Unable to add Comp %i - %s to Ent: %i",
          pool->id, CORE_COMPONENTS[pool->id], instance.id);
   }
 
   // Apply overrides
-  if (override_pos.x != -9999.0f) {  // special value = no override
+  if(!vec_compare(override_pos, VEC_UNSET)) {
     position_t* pos = GET_COMPONENT(w, instance, position_t, POS_ID);
     rigid_body_t* rb = GET_COMPONENT(w, instance, rigid_body_t, PHYS_ID);
     
-    if (pos && !vec_compare(override_pos, VEC_UNSET)) {
+    if (pos){
       pos->vpos = override_pos;
       if(rb)
         RigidBodySetPos(rb, override_pos);

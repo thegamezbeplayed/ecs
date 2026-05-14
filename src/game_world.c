@@ -121,6 +121,7 @@ void InitGameProcess(){
   GP.update_steps[SCREEN_GAMEPLAY][UPDATE_FIXED] = FixedUpdate;
   GP.update_steps[SCREEN_GAMEPLAY][UPDATE_PRE] = PreUpdate;
   GP.update_steps[SCREEN_GAMEPLAY][UPDATE_DRAW_BEGIN] = BeginDraw;
+  GP.update_steps[SCREEN_GAMEPLAY][UPDATE_DRAW] = DrawGameplayScreen;
   GP.update_steps[SCREEN_GAMEPLAY][UPDATE_DRAW_END] = EndDraw;
   GP.update_steps[SCREEN_GAMEPLAY][UPDATE_FRAME] = UpdateGameplayScreen;
   GP.update_steps[SCREEN_GAMEPLAY][UPDATE_POST] = PostUpdate;

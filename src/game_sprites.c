@@ -80,6 +80,33 @@ void DrawSlice(sprite_slice_t *s, Vector2 position,float rot){
   return;
 }
 
+void DrawSprite(sprite_t* spr, Vector2 pos){
+  sprite_slice_t* s  = &SHEETS[spr->sheet_id].sprites[spr->index].slice;
+  Rectangle src = s->bounds;
+
+  Vector2 origin = (Vector2){
+    s->center.x * spr->scale,//offset.x,
+      s->center.y * spr->scale//offset.y
+  };
+
+  Vector2 position = Vector2Add(pos,s->center);
+  Rectangle dst = {
+    position.x,
+    position.y,
+    abs(s->bounds.width * spr->scale),
+    s->bounds.height * spr->scale
+  };
+
+  Texture sheet = SHEETS[s->sheet].texture;
+  Color col = s->color.a > 0? s->color: WHITE;
+  DrawTexturePro(sheet,src,dst, origin, spr->rot, col);
+
+  return;
+
+
+
+}
+
 void SpriteLoadSubTextures(sub_texture_t* data, SheetID id, int sheet_cap){
   /*
   for(int i = 0; i < sheet_cap;i++){

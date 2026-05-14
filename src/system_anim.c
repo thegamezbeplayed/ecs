@@ -119,34 +119,16 @@ void AnimLoad(world_t* w, Entity e){
 
 void AnimSystem(world_t* w, Entity e){
   anim_comp_t* ac = GET_COMPONENT(w, e, anim_comp_t, ANIM_ID);
+  sprite_t* spr = GET_COMPONENT(w, e, sprite_t, SPR_ID);
   anim_player_t* ap = &ac->player;
   anim_t* a = &ac->sequences[ap->state][ap->dir];
-  position_t* pos = GET_COMPONENT(w, e, position_t, POS_ID);
 
   int spr_index = a->frames[a->cur_index];
+
+  spr->index = spr_index;
 
   AnimEventID ev = AnimPlay(a);
 
   ac->event = ev;
   AnimBehaviorHandler(w, e, ac, a);
-}
-
-void AnimRender(world_t* w, Entity e){
-  anim_comp_t* ac = GET_COMPONENT(w, e, anim_comp_t, ANIM_ID);
-  position_t*  pos = GET_COMPONENT(w, e, position_t, POS_ID);
-
-  anim_player_t* ap = &ac->player;
-
-  anim_t* a = &ac->sequences[ap->state][ap->dir];
-
-  if(!a)
-    return;
-
-  int spr_index = a->frames[a->cur_index];
-
-  sprite_slice_t* spr = &SHEETS[ap->sheet_id].sprites[spr_index].slice;
-  if(!spr)
-    return;
-
-  DrawSlice(spr, pos->vpos, 0);
 }
