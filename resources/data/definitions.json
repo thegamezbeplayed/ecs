@@ -123,7 +123,7 @@
     "list": [
       {"name": "player", "sheet_id": "SHEET_CHAR",
         "states": [
-          {"state": "WALK", "interupt": true, "loop": false, "end": "SUPSEND",
+          {"state": "WALK", "interupt": true, "loop": false, "end": "SUSPEND",
             "sequences": [
               {"tag": "walk0",   "dir": 0},
               {"tag": "walk90",  "dir": 1},

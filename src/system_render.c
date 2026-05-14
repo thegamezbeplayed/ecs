@@ -1,13 +1,10 @@
 #include "game_systems.h"
 
-static bool clear = true;
-
 void RenderLoad(world_t* w, Entity e){
 
 }
 
 void RenderBegin(world_t* w, Entity e){
-  view_comp_t* vc = GET_COMPONENT(w, e, view_comp_t, VIEW_ID);
 }
 
 void RenderDraw(world_t* w, Entity e){
@@ -22,5 +19,4 @@ void RenderDraw(world_t* w, Entity e){
 }
 
 void RenderEnd(world_t* w, Entity e){
-  view_comp_t* vc = GET_COMPONENT(w, e, view_comp_t, VIEW_ID);
 }
