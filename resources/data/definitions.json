@@ -1,9 +1,9 @@
 {
-  "num_comp_def": 22,
+  "num_comp_def": 23,
   "components": [
-    "Sprite", "Animation", "View", "Position", "Input", "Camera"
+    "RigidBody", "Force", "Sprite", "Animation", "View", "Position", "Input", "Camera"
   ],
-  "systems": ["Animations", "Sprites", "Cameras", "Render"],
+  "systems": ["Physics", "Controller", "Animations", "Sprites", "Cameras", "Render"],
   "Animations":{
     "components": ["Animation", "Sprite"],
     "syncs": [
@@ -123,7 +123,7 @@
     "list": [
       {"name": "player", "sheet_id": "SHEET_CHAR",
         "states": [
-          {"state": "WALK", "loop": false, "end": "SUPSEND",
+          {"state": "WALK", "interupt": true, "loop": false, "end": "SUPSEND",
             "sequences": [
               {"tag": "walk0",   "dir": 0},
               {"tag": "walk90",  "dir": 1},
@@ -131,7 +131,7 @@
               {"tag": "walk270", "dir": 3}
             ]
           },
-          {"state": "IDLE", "loop": true,
+          {"state": "IDLE","interupt": true, "loop": true,
             "sequences": [
               {"tag": "idle0",   "dir": 0},
               {"tag": "idle90",  "dir": 1},
@@ -139,8 +139,8 @@
               {"tag": "idle270", "dir": 3}
             ]
           },
-          {"state": "ATTACK", "loop": false,
-            "end": "SUSPEND", "start": "HURTBOX",
+          {"state": "ATTACK",
+            "end": "SUSPEND", "start": "HURTBOX", 
             "sequences": [
               {"tag": "attack0",   "dir": 0},
               {"tag": "attack90",  "dir": 1},
@@ -253,8 +253,8 @@
       },
       {
         "name": "player",
-        "count": 3,
-        "list": ["Sprite", "Animation", "Position"]
+        "count": 4,
+        "list": ["Input", "Sprite", "Animation", "Position"]
       },
       {
         "name": "tile",

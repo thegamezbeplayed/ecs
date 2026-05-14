@@ -38,6 +38,14 @@ bool Json_GetBool(cJSON* obj, const char* key){
   return item->valueint != 0;;
 }
 
+AnimBehavior StringToAnimBehavior(char* str){
+ if (strcmp(str, "BLANK") == 0) return ANIM_BLANK;
+ if (strcmp(str, "SUSPEND") == 0) return ANIM_SUSPEND;
+ if (strcmp(str, "HURTBOX") == 0) return ANIM_HURTBOX;
+
+ return ANIM_BLANK;
+}
+
 AnimState StringToAnimState(char* str){
  if (strcmp(str, "IDLE") == 0) return ANIM_IDLE;
  if (strcmp(str, "WALK") == 0) return ANIM_WALK;
@@ -103,6 +111,15 @@ bool ParseAnimComponent(cJSON* j, anim_comp_t* out){
     Json_GetString(s, "state", state_str);
 
     bool loop = Json_GetBool(s, "loop");
+    bool interupt = Json_GetBool(s, "interupt");
+    char end_str[MAX_NAME_LEN];
+    Json_GetString(s, "end", end_str);
+    AnimBehavior on_end = StringToAnimBehavior(end_str); 
+
+    char start_str[MAX_NAME_LEN];
+    Json_GetString(s, "start", start_str);
+    AnimBehavior on_start = StringToAnimBehavior(start_str);
+
     AnimState state = StringToAnimState(state_str);
     if(state == ANIM_NONE){
       TraceLog(LOG_WARNING,"=== PARSE ANIM COMP ===\n unable to find state %s for prefab %s", state_str, name);
@@ -117,9 +134,25 @@ bool ParseAnimComponent(cJSON* j, anim_comp_t* out){
       char tag[MAX_NAME_LEN];
       Json_GetString(seq, "tag", tag);
       out->sequences[state][dir] = *AnimRegisterState(sheet_id, name, tag);
+      out->sequences[state][dir].loop = loop;
+      out->sequences[state][dir].interupt = interupt;
+      out->sequences[state][dir].on_end = on_end;
     }  
   }
 
+  sprite_sheet_d sh = SHEETS[sheet_id];
+  for(int i = 0; i < MAX_SLICES; i++){
+    collision_d cd = sh.coll[i];
+
+    switch(cd.type){
+      case COL_HIT:
+        out->hitbox = cd;
+        break;
+      default:
+        continue;
+        break;
+    }
+  }
   return sheet_id > -1;
 }
 
