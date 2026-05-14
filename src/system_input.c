@@ -24,7 +24,7 @@ void InputLoad(world_t* w, Entity e){
   position_t* p = GET_COMPONENT(w, e, position_t, POS_ID);
 
   notification n = InputEvent_ToNotif(INPUT_EVENT_MOVE);
-  TargetSubscribe(n, OnInputEvent, &p, e.id );
+  TargetSubscribe(n, OnInputEvent, p, e.id );
 
   n = InputEvent_ToNotif(INPUT_EVENT_BINDING);
   for(int i = 0; i < ACT_DONE; i++){

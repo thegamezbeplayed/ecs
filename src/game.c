@@ -54,7 +54,6 @@ void BeginDraw(void){
 }
 
 void DrawGameplayScreen(void){
-
   GameEvent(GameEvent_ToNotif(GAME_EVENT_STEP), &world , UPDATE_DRAW);
   GameEvent(GameEvent_ToNotif(GAME_EVENT_SYNC), &world , UPDATE_DRAW);
 }
