@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "raylib.h"
-#include "game_assets.h"
+#include "asset_define.h"
 #include "game_utils.h"
 
 #define MAX_LINE_ITEMS 12

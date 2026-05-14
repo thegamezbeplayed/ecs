@@ -94,20 +94,49 @@ Entity PrefabSpawn(world_t* w, const char* name, Vector2 world_pos){
     TraceLog(LOG_WARNING, "Prefab not found: %s\n", name);
     return (Entity){0};
   }
-  return PrefabInstantiate(w, p->entity, world_pos);
+  Entity spawn = PrefabInstantiate(w, p->entity, world_pos);
+
+  for(int i = 0; i < p->rel_count; i++){
+    relation_t* rel = &p->relations[i];
+    if(!rel)
+      continue;
+
+    prefab_t* rp = PrefabFind(w, rel->name);
+
+    Entity r = PrefabInstantiate(w, rp->entity, VEC_UNSET);
+
+    EntityAddRelation(w, r, rel->type, spawn);
+    EntityAddRelation(w, spawn, REL_Target, r);
+    TraceLog(LOG_INFO, "=== PREFAB SPAWN ===\n Spawn %s has relation %s", name, rel->name);
+  }
+
+  return spawn;
 }
 
-void EntityAddRelation(world_t* w, Entity e, RelationType type, Entity target){
+relation_t* EntityAddRelation(world_t* w, Entity e, RelationType type, Entity target){
   if (!EntityValid(&w->manager, target)) 
-    return;
+    return NULL;
 
   w->relations[e.id] = (relation_t){ .target = target, .type = type };
   w->has_relation[e.id] = true;
+
+  return &w->relations[e.id];
 }
 
 void EntityRemoveRelation(world_t* w, Entity e){
   if (e.id >= MAX_ENTITIES) return;
   w->has_relation[e.id] = false;
+}
+
+relation_t* EntityGetRelation(world_t* w, Entity e){
+  if (!EntityValid(&w->manager, e))
+    return NULL;
+
+  if (!w->has_relation[e.id])
+    return NULL;
+
+  // Currently only one relation per entity
+  return &w->relations[e.id];
 }
 
 Entity EntityGetRelationTarget(world_t* w, Entity e, RelationType rel){

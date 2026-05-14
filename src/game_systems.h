@@ -3,14 +3,14 @@
 #include "game_define.h"
 #include "component_define.h"
 
-#define NUM_FUNCTIONS 32
+#define NUM_FUNCTIONS 38
 system_t* SystemCreate(world_t* w, system_define_t* def);
 
 void OnPositionEvent(event_t* ev, void* data);
 void PositionLoad(world_t* w, Entity e);
 
 void AnimLoad(world_t* w, Entity e);
-//void AnimBehavior(world_t* w, Entity e);
+void AnimReady(world_t* w, Entity e);
 void AnimSystem(world_t* w, Entity e);
 
 void OnInputEvent(event_t* ev, void* data);
@@ -50,6 +50,18 @@ typedef struct{
 
 void SpritesInit(world_t* w);
 void SpriteLoad(world_t* w, Entity e);
+
+typedef struct {
+  Entity  ents[MAX_PARTICLES];
+  bool    in_use[MAX_PARTICLES];
+} particle_layer_t;
+
+void ParticleEmitterLoad(world_t* w, Entity e);
+void ParticleEmitterSystem(world_t* w, Entity e);
+void ParticleSystem(world_t* w, Entity e);
+void ParticleCleanup(world_t* w, Entity e);
+void ParticlesInit(world_t* w);
+
 void BehaviorSystem(world_t* w, Entity e);
 
 void CombatLoad(world_t* w, Entity e);
@@ -69,6 +81,7 @@ static system_function_lookup_t FUNCTION_LOOKUP[NUM_FUNCTIONS] = {
     {"PositionLoad",        PositionLoad},
 
     {"AnimLoad",            AnimLoad},
+    {"AnimReady",            AnimReady},
     {"AnimSystem",          AnimSystem},
 
     {"OnInputEvent",        OnInputEvent},
@@ -100,6 +113,12 @@ static system_function_lookup_t FUNCTION_LOOKUP[NUM_FUNCTIONS] = {
     {"CameraEnd",           CameraEnd},
     {"CameraLoad",          CameraLoad},
     {"CameraReady",         CameraReady},
+
+    {"ParticleEmitterLoad",   ParticleEmitterLoad},
+    {"ParticleEmitterSystem", ParticleEmitterSystem},
+    {"ParticleSystem",        ParticleSystem},
+    {"ParticleCleanup",       ParticleCleanup},
+    {"ParticlesInit",         ParticlesInit},
 
     {"SpritesInit",         SpritesInit},
     {"SpriteLoad",          SpriteLoad},

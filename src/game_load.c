@@ -1,4 +1,3 @@
-#include "game_assets.h"
 #include "game_systems.h"
 #include "game_define.h"
 

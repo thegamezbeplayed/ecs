@@ -5,7 +5,7 @@
 #include "game_types.h"
 #include "game_enum.h"
 
-#define MAX_ENTITIES 640
+#define MAX_ENTITIES 8192
 #define MAX_NAME_LEN 128
 #define MAX_QUERY_SET 64
 #define ENT_MAX_ADD  32
@@ -26,8 +26,8 @@ typedef struct {
 void EntityInit(EntityManager* em);
 Entity EntityCreate(EntityManager* em);
 Entity EntityCreatePrefab(EntityManager* em);
+void EntiyBatchReserve(EntityManager*, int count, Entity pool[count]);
 bool EntityValid(EntityManager* em, Entity e);
 bool EntityReady(EntityManager* em, Entity e);
 Entity EntityGet(EntityManager* em, uint32_t id);
-
 #endif

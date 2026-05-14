@@ -96,6 +96,19 @@ void AnimBehaviorHandler(world_t* w, Entity e, anim_comp_t* ac, anim_t* a){
   }
 }
 
+void AnimReady(world_t* w, Entity e){
+  anim_comp_t* ac = GET_COMPONENT(w, e, anim_comp_t, ANIM_ID);
+  Entity rel = EntityGetRelationTarget(w, e, REL_Target);
+  
+  if(rel.id != INVALID_ENTITY.id){
+    notification n = ParticleEvent_ToNotif(PARTICLE_EVENT_START);
+    particle_emitter_t* ec = GET_COMPONENT(w, rel, particle_emitter_t, EMITTER_ID);
+    if(ec){
+      GameEvent(n, ec, rel.id);
+    }
+  }
+}
+
 void AnimLoad(world_t* w, Entity e){
   anim_comp_t* ac = GET_COMPONENT(w, e, anim_comp_t, ANIM_ID);
 

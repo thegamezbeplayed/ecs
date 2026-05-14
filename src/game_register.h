@@ -26,16 +26,17 @@
 
 typedef uint32_t RelationType;
 typedef struct {
-    Entity       target;      // INVALID_ENTITY = no relation
-    RelationType type;
+  char         name[MAX_NAME_LEN];  
+  Entity       target;      // INVALID_ENTITY = no relation
+  RelationType type;
 } relation_t;
 
 typedef struct world_s world_t;
-void EntityAddRelation(world_t*, Entity, RelationType, Entity);
+relation_t* EntityAddRelation(world_t*, Entity, RelationType, Entity);
 void EntityRemoveRelation(world_t*, Entity);
 Entity EntityGetRelationTarget(world_t*, Entity, RelationType);
 bool EntityHasRelation(world_t*, Entity, RelationType);
-
+relation_t* EntityGetRelation(world_t* w, Entity e);
 void EntityRelationEnd(world_t*, Entity);
 
 typedef void (*SystemCB)(world_t* w, Entity e);
@@ -62,7 +63,8 @@ typedef struct {
     char          name[64];
     Entity        entity;        // the template entity
     comp_id_t     components[MAX_TERMS];  // list of components it has
-    int           comp_count;
+    int           comp_count, rel_count;
+    relation_t    relations[MAX_RELATIONS];
 } prefab_t;
 
 typedef struct {
@@ -106,6 +108,8 @@ comp_id_t ComponentRegister(world_t* w, const char*, size_t);
 void* ComponentAdd(world_t* w, Entity e, comp_id_t id);
 void* ComponentGet(world_t* w, Entity e, comp_id_t id);
 void ComponentSet(world_t* w, Entity e, comp_id_t id, void* set);
+void ComponentsClear(world_t* w, Entity e);
+
 void RegisterSystemData(world_t* w);
 void RegisterEntityData(world_t* w);
 

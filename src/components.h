@@ -3,7 +3,7 @@
 #include "game_tools.h"
 #include "game_common.h"
 
-#define NUM_COMP_CORE   14
+#define NUM_COMP_CORE   16
 #define MAX             1024
 #define MAX_COMPONENTS  512
 #define MAX_PLAYERS     2
@@ -24,6 +24,8 @@
 #define FOLLOW_ID    ComponentGetID("Follow")
 #define LVL_ID       ComponentGetID("Level")
 #define EXPIR_ID     ComponentGetID("Expiry")
+#define PARTICLE_ID  ComponentGetID("Particle")
+#define EMITTER_ID   ComponentGetID("ParticleEmitter")
 
 typedef uint64_t comp_id_t;
 extern comp_id_t INVALID_COMPONENT;

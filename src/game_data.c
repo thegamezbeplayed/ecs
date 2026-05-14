@@ -18,7 +18,9 @@ const component_define_t CORE_COMPONENTS[NUM_COMP_CORE] = {
   {"State",     sizeof(state_comp_t)},
   {"Follow",    sizeof(follow_comp_t)},
   {"Level",     sizeof(level_t)},
-  {"Expiry",    sizeof(lifetime_t)}
+  {"Expiry",    sizeof(lifetime_t)},
+  {"Particle",        sizeof(particle_t)},
+  {"ParticleEmitter", sizeof(particle_emitter_t)}
 };
 
 const component_func_t COMPFUNC_LOOKUP[NUM_COMP_CORE] = {
@@ -31,6 +33,8 @@ const component_func_t COMPFUNC_LOOKUP[NUM_COMP_CORE] = {
   {"Camera",      CameraInit},
   {"Input",       InputInit},
   {"Position",    PositionInit},
+  {"Particle",        ParticleInit},
+  {"ParticleEmitter", ParticleEmitterInit}
 };
 
 component_entry_t* GetGameComponentDefine(game_t* g, const char* comp, const char* name){
@@ -78,6 +82,62 @@ void GameInitPrefabs(world_t* w, game_t* g){
       if(!fn(ComponentAdd(w, prefab, cid), data))
         TraceLog(LOG_WARNING, "=== INIT PREFABS ===\n Failed to add component %s to Entity %s", def.components[j], def.name);
 
+    }
+  }
+
+  for (int i = 0; i < g->relation_count; i++){
+    entity_relation_t rel = g->relations[i];
+
+    prefab_t* tar = PrefabFind(w, rel.name);
+
+    if(!tar){
+      TraceLog(LOG_WARNING, "=== GAME INIT PREFABS RELATIONS ===\n unable to find prefab %s for Comp %s", rel.name, rel.comps[0].comp);
+      continue;
+    }
+
+    for(int j = 0; j < rel.count; j++){
+      component_relation_t comp = rel.comps[j];
+
+      comp_id_t rcid = ComponentGetID(comp.comp);
+      if(rcid == INVALID_COMPONENT){
+        TraceLog(LOG_WARNING, "=== GAME INIT PREFAB RELATIONS ===\n unable to find compnent %s", comp.comp);
+        continue;
+
+      }
+
+      ComponentInitFn pfn = ComponentFuncLookup(comp.comp);
+      
+      for(int k = 0; k < comp.count; k++){
+        relation_pair_t pair = comp.pairs[k];
+
+        component_entry_t *pdata = GetGameComponentDefine(g, comp.comp, pair.name);
+        if(!pdata){
+          TraceLog(LOG_WARNING, "=== GAME INIT PREFAB RELATIONS ===\n unable to find %s data for %s", comp.comp, pair.name);
+
+          continue;
+        }
+
+        Entity r = PrefabCreate(w, pair.name);
+
+        if(!pfn(ComponentAdd(w, r, rcid), pdata)){
+          TraceLog(LOG_WARNING, "=== GAME INIT PREFAB RELATIONS ===\n Failed to add component %s to Entity %s", comp.comp, pair.name);
+
+          continue;
+        }
+
+        for(int l = 0; l < pair.num_comp; l++){
+          comp_id_t add_cid = ComponentGetID(pair.components[l]);
+          ComponentAdd(w, r, add_cid);
+        }
+        relation_t* rt = EntityAddRelation(w, r, pair.type, tar->entity);
+        if(!rt){
+          TraceLog(LOG_WARNING, "=== PREFAB RELATION ===\n failed to add %s relation to %i", pair.name, r.id); 
+          continue;
+        }
+
+        strcpy(rt->name, pair.name);
+        tar->relations[tar->rel_count++] = *rt;
+      }
     }
   }
 }
