@@ -58,7 +58,7 @@ void GameStepState(GameState s);
 
 typedef struct{
   GameScreen           screen;
-  int                  game_frames;
+  int                  fps, game_frames;
   child_process_t      children[SCREEN_DONE];
   GameScreen           next[SCREEN_DONE];
   GameState            state[SCREEN_DONE];
@@ -112,5 +112,10 @@ static uint64_t MakeGUID(char* str, int index){
 
 void InitEntityComponentSystem(void);
 
+static void GameSetFrameRate(int rate){
+  GP.fps = rate;
+}
+
+static int GameGetFrameRate(void){ return GP.fps;}
 #endif
 

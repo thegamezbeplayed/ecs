@@ -39,6 +39,8 @@ typedef struct{
 typedef struct{
   char*         name;
   RelationType  type;
+  int           num_comp;
+  char*         components[MAX_COMPONENTS];
 }relation_pair_t;
 
 typedef struct{

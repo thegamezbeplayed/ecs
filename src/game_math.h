@@ -121,6 +121,34 @@ static int isqrt(int n) {
     }
     return x;
 }
+
+static float rand_range_float(float min, float max)
+{
+    if (min > max) {
+        // Swap to handle reversed range
+        float temp = min;
+        min = max;
+        max = temp;
+    }
+    
+    // rand() / (RAND_MAX + 1.0) gives [0.0, 1.0)
+    float scale = (float)rand() / (RAND_MAX + 1.0f);
+    return min + scale * (max - min);
+}
+
+static int rand_range_int(int min, int max) {
+    return min + rand() % (max - min + 1);
+}
+
+static Vector2 rand_range_vec(Vector2 min, Vector2 max){
+  return (Vector2){
+    .x = rand_range_float(min.x, max.x),
+      .y = rand_range_float(min.y, max.y)
+  };
+}
+
+//TODO
+//DEPRICATE
 static int RandRange(int min, int max) {
     return min + rand() % (max - min + 1);
 }

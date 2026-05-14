@@ -109,3 +109,22 @@ bool HasComponent(component_pool_t* pool, Entity e) {
 
 }
 
+void ComponentRemove(world_t* w, Entity e, comp_id_t id){
+  component_pool_t* pool = w->pools[id];
+
+  if(!pool || id >= w->next_component_id)
+    return;
+
+  pool->sparse[e.id] = -1;
+}
+
+void ComponentsClear(world_t* w, Entity e) {
+  if (!EntityValid(&w->manager, e)) return;
+
+  for (int i = 0; i < w->next_component_id; ++i)   // GP = your global game state
+  {
+    ComponentRemove(w, e, i);
+  }
+
+}
+

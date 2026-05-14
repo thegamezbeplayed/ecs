@@ -1,7 +1,7 @@
 #ifndef __COMP_DEF__
 #define __COMP_DEF__
 
-#include "game_assets.h"
+#include "asset_vfx.h"
 #include "game_control.h"
 #include "game_physics.h"
 #include "game_views.h"
@@ -17,6 +17,8 @@ bool AnimInit(void* comp, component_entry_t* data);
 bool CameraInit(void* comp, component_entry_t* data);
 bool PositionInit(void* comp, component_entry_t* data);
 bool CoordInit(void* comp, component_entry_t* data);
+bool ParticleInit(void* comp, component_entry_t* data);
+bool ParticleEmitterInit(void* comp, component_entry_t* data);
 
 bool ParseSpriteComponent(cJSON* j, sprite_t* out);
 bool ParseRigidBodyComponent(cJSON* j, rigid_body_t* out);
@@ -24,6 +26,7 @@ bool ParseForceComponent(cJSON* j, force_t* out);
 bool ParsePositionComponent(cJSON* j, position_t* out);
 bool ParseInputComponent(cJSON* j, input_t* out);
 bool ParseCameraComponent(cJSON* j, camera_t* out);
+bool ParseParticleEmitterComponent(cJSON*, particle_emitter_t*);
 
 typedef struct{
   anim_player_t   player;

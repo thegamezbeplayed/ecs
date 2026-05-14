@@ -1,5 +1,5 @@
-#ifndef __GAME_ASSETS__
-#define __GAME_ASSETS__
+#ifndef __ASSETS_DEF__
+#define __ASSETS_DEF__
 
 //#include "raylib.h"
 #include "game_resources.h"
@@ -159,4 +159,5 @@ sprite_t* InitSprite(SheetID, int);
 void DrawSprite(sprite_t* spr, Vector2 position);
 sprite_slice_t* InitSliceFromData(sprite_d*);
 void DrawSlice(sprite_slice_t*, Vector2 position,float rot);
+
 #endif

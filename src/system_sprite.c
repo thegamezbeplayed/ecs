@@ -1,4 +1,3 @@
-#include "game_assets.h"
 #include "game_systems.h"
 
 static sprite_layer_t SPRITE_LAYERS[LAYER_DONE] = {0};
