@@ -15,7 +15,6 @@ Entity ParticlePoolGetAvailable(RenderLayer l){
 }
 
 void ParticleRender(world_t* w, RenderLayer l){
-  int draw_calls = 0;
   for(int i = 0; i < MAX_PARTICLES; i++){
     if(!PARTICLE_LAYERS[l].in_use[i])
       continue;
@@ -32,22 +31,16 @@ void ParticleRender(world_t* w, RenderLayer l){
       case PARTICLE_SPRITE:
         break;
       case PARTICLE_RECT:
-        draw_calls++;
         DrawRectangle(poc->vpos.x, poc->vpos.y, pac->wid, pac->hei, pac->color);
         break;
       case PARTICLE_CIRCLE:
-        draw_calls++;
         DrawCircleV(poc->vpos, pac->radius, pac->color);
         break;
       case PARTICLE_PIXEL:
-        draw_calls++;
         DrawPixelV(poc->vpos, pac->color);
         break;
     }
   }
-
-  if(draw_calls > 0)
-    TraceLog(LOG_INFO, "=== PARTICLE RENDER %i particles ===", draw_calls);
 }
 
 void ParticleEmitEvent(event_t* ev, void* data){
