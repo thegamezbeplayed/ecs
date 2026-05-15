@@ -4,6 +4,7 @@
 
 #include "game_define.h"
 #include "game_register.h"
+#include "asset_sfx.h"
 #include "screens.h"
 //----------------------------------------------------------------------------------
 // Gameplay Screen Functions Definition
@@ -18,13 +19,13 @@ void InitGameplayScreen(void){
 }
 
 void PreUpdate(void){
-  
   GameProcessStep();
   GameEvent(GameEvent_ToNotif(GAME_EVENT_STEP), &world , UPDATE_PRE);
 }
 
 void FixedUpdate(void){
   GP.game_frames++;
+  AudioStep();
   GameEvent(GameEvent_ToNotif(GAME_EVENT_STEP), &world , UPDATE_FIXED);
   GameEvent(GameEvent_ToNotif(GAME_EVENT_SYNC), &world , UPDATE_FIXED);
 }
