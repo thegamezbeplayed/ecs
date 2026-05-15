@@ -119,6 +119,9 @@ bool ParseParticleEmitterComponent(cJSON* j, particle_emitter_t* out){
 
   out->scale_end = Json_GetFloat(j, "scale_end", 0);
 
+  out->drag = Json_GetFloat(j, "drag", 0);
+  out->wid = Json_GetFloat(j, "width", 0);
+  out->hei = Json_GetFloat(j, "height", 0);
   char start_col_str[MAX_NAME_LEN];
   Json_GetString(j, "start_color", start_col_str);
   out->start_color = ColorFromHexString(start_col_str);

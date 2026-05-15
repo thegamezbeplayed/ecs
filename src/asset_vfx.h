@@ -73,7 +73,8 @@ typedef struct {
   Vector2          velocity_min;
   Vector2          velocity_max;
   Vector2          acceleration;
-  
+
+  float            drag;  
   float            scale_min, scale_max, scale_end;
 
   float            rotation_min;

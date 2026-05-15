@@ -32,8 +32,12 @@ void ParticleRender(world_t* w, RenderLayer l){
       case PARTICLE_SPRITE:
         break;
       case PARTICLE_RECT:
+        draw_calls++;
+        DrawRectangle(poc->vpos.x, poc->vpos.y, pac->wid, pac->hei, pac->color);
         break;
       case PARTICLE_CIRCLE:
+        draw_calls++;
+        DrawCircleV(poc->vpos, pac->radius, pac->color);
         break;
       case PARTICLE_PIXEL:
         draw_calls++;
@@ -42,8 +46,8 @@ void ParticleRender(world_t* w, RenderLayer l){
     }
   }
 
-  if(l == 3 && draw_calls == 0)
-    DO_NOTHING();
+  if(draw_calls > 0)
+    TraceLog(LOG_INFO, "=== PARTICLE RENDER %i particles ===", draw_calls);
 }
 
 void ParticleEmitEvent(event_t* ev, void* data){

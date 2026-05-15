@@ -35,7 +35,8 @@ Entity ParticleSpawn(world_t* w, const particle_emitter_t* ec, Vector2 origin){
   pc->end_scale = ec->scale_end;
   pc->color = pc->start_color = ec->start_color;
   pc->end_color = ec->end_color;
-  
+
+  pc->drag = ec->drag;  
   pc->accel = ec->acceleration;
 
   switch(pc->draw_type){
