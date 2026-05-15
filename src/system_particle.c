@@ -15,6 +15,7 @@ Entity ParticlePoolGetAvailable(RenderLayer l){
 }
 
 void ParticleRender(world_t* w, RenderLayer l){
+  int draw_calls = 0;
   for(int i = 0; i < MAX_PARTICLES; i++){
     if(!PARTICLE_LAYERS[l].in_use[i])
       continue;
@@ -23,6 +24,10 @@ void ParticleRender(world_t* w, RenderLayer l){
     particle_t* pac = GET_COMPONENT(w, e, particle_t, PARTICLE_ID);
     position_t* poc = GET_COMPONENT(w, e, position_t, POS_ID);
 
+    if(!pac || !pac->active){
+      PARTICLE_LAYERS[l].in_use[i] = false;
+      return;
+    }
     switch(pac->draw_type){
       case PARTICLE_SPRITE:
         break;
@@ -31,10 +36,14 @@ void ParticleRender(world_t* w, RenderLayer l){
       case PARTICLE_CIRCLE:
         break;
       case PARTICLE_PIXEL:
+        draw_calls++;
         DrawPixelV(poc->vpos, pac->color);
         break;
     }
   }
+
+  if(l == 3 && draw_calls == 0)
+    DO_NOTHING();
 }
 
 void ParticleEmitEvent(event_t* ev, void* data){
@@ -116,6 +125,7 @@ void ParticleCleanup(world_t* w, Entity e){
 
   if(pac->active)
     return;
+
 
   ComponentsClear(w, e);
 }

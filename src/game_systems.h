@@ -118,7 +118,7 @@ static system_function_lookup_t FUNCTION_LOOKUP[NUM_FUNCTIONS] = {
     {"ParticleEmitterSystem", ParticleEmitterSystem},
     {"ParticleSystem",        ParticleSystem},
     {"ParticleCleanup",       ParticleCleanup},
-    {"ParticleFreeup",       ParticleFreeup},
+//    {"ParticleFreeup",       ParticleFreeup},
     {"ParticlesInit",         ParticlesInit},
 
     {"SpritesInit",         SpritesInit},

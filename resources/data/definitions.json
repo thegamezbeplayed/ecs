@@ -29,9 +29,6 @@
         {"step": "UPDATE_FIXED", "fn": "ParticleSystem"},
         {"step": "UPDATE_POST", "fn": "ParticleCleanup"}
       ],
-      "steps": [
-        {"step": "UPDATE_FINAL": "fn": "ParticleFreeup"}
-      ],
       "init": "ParticlesInit"
     },
     "ParticleEmitters": {
