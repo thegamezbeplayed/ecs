@@ -6,15 +6,13 @@
 #define MAX_CAMERA 4
 
 #define TRACK(x, c, v)(x.fn(c, x, v))
-DEFINE_EVENT_SPACE(ViewEvent, EVENT_VIEW_BASE);
-typedef enum{
-  VIEW_EVENT_NONE,
-  VIEW_EVENT_DRAW,
-  VIEW_EVENT_COUNT
-}ViewEventID;
 
 typedef Camera2D camera_t;
 camera_t* InitCamera(float zoom, float rot, Vector2 offset);
+
+static void CameraSetOffset(camera_t* c, Vector2 offset){
+  c->offset = offset;
+}
 
 typedef enum{
   CAM_NONE,

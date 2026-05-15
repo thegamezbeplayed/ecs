@@ -107,7 +107,6 @@ Entity PrefabSpawn(world_t* w, const char* name, Vector2 world_pos){
 
     EntityAddRelation(w, r, rel->type, spawn);
     EntityAddRelation(w, spawn, REL_Target, r);
-    TraceLog(LOG_INFO, "=== PREFAB SPAWN ===\n Spawn %s has relation %s", name, rel->name);
   }
 
   return spawn;

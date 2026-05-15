@@ -5,6 +5,9 @@
 #include "game_utils.h"
 
 #define MAX_CAMERA 4
+extern subject_t window;
+
+void InitScreenWindow(float w, float h, const char* name);
 
 typedef struct{
   bool    is_dragging;

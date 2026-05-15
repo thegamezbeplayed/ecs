@@ -61,8 +61,18 @@ void ParticleEmitEvent(event_t* ev, void* data){
   }
 }
 
+void ParticleOnRender(void* o_data, void* s, void* e_data) {
+  render_ctx_t* r = e_data;
+
+  world_t* w = o_data;
+
+  ParticleRender(w, r->layer);
+}
+
 void ParticleEmitterLoad(world_t* w, Entity e){
   particle_emitter_t* ec = GET_COMPONENT(w, e, particle_emitter_t, EMITTER_ID);
+
+  SubjectAddObserver(&renderer, ParticleOnRender, w);
 
   for( int i = 0; i < PARTICLE_EVENT_COUNT; i++){
     notification n = ParticleEvent_ToNotif(i);
@@ -102,19 +112,9 @@ void ParticleSystem(world_t* w, Entity e){
   pac->active = false;
 }
 
-void ParticleViewEvent(event_t* ev, void* data){
-  world_t* w = data;
-
-  ParticleRender(w, ev->eid);
-}
-
 void ParticlesInit(world_t* w){
-  notification n = ViewEvent_ToNotif(VIEW_EVENT_DRAW);
-
-  for(int i = 0; i < LAYER_DONE; i++){
+  for(int i = 0; i < LAYER_DONE; i++)
     EntiyBatchReserve(&w->manager, MAX_PARTICLES, PARTICLE_LAYERS[i].ents);
-    TargetSubscribe(n, ParticleViewEvent, w, i);
-  }
 }
 
 void ParticleCleanup(world_t* w, Entity e){

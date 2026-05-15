@@ -261,23 +261,12 @@ bool ParseCameraComponent(cJSON* j, camera_t* out){
 
   return true;
 }
-bool ParseViewComponent(cJSON* j, view_comp_t* out){
+bool ParseRenderComponent(cJSON* j, render_ctx_t* out){
   if(!j)
     return false;
-
-  float bx = Json_GetFloat(j, "bounds_x", 0.f);
-  float by = Json_GetFloat(j, "bounds_y", 0.f);
-  float bw = Json_GetFloat(j, "bounds_w", 0.f);
-  float bh = Json_GetFloat(j, "bounds_h", 0.f);
-
-  Rectangle bounds = RECT(bx, by, bw, bh);
-  Vector2 size = VEC_NEW(bw, bh); 
-
-  out->view = *InitView(size, bounds, 0);
+  
   out->layer = Json_GetInt(j, "layer", -1);
-  out->view.origin.x = Json_GetFloat(j, "offset_x", 0);
-  out->view.origin.y = Json_GetFloat(j, "offset_y", 0);
-  return true;
+  return out->layer > -1;
 }
 
 RelationType RelationTypeLookup(char* str){
@@ -350,9 +339,9 @@ cJSON* ParseRoot(const char* path){
   }
 
   cJSON* root = cJSON_Parse(json_str);
+  UnloadFileText(json_str);
   if (!root) {
     TraceLog(LOG_ERROR, "JSON parse error: %s", path);
-    UnloadFileText(json_str);
     return NULL;
   }
 
@@ -534,8 +523,7 @@ bool ParseScene(cJSON* root, Scene* scene){
 
 }
 
-bool ParseSystems(cJSON* root, game_t* out)
-{
+bool ParseSystems(cJSON* root, game_t* out){
   if (!root || !out) return false;
 
   cJSON* systems_json = cJSON_GetObjectItem(root,"systems");
@@ -577,21 +565,34 @@ bool ParseSystems(cJSON* root, game_t* out)
       sys->num_req = cidx;
     }
 
-    // --- Init function (optional) ---
     
-    cJSON* init_json = cJSON_GetObjectItem(sys_item, "init");
-    if(init_json){
-      sys->init = SystemFunctionLookup(init_json->valuestring);
-    }
-    // --- Functions array ---
+    cJSON* state_json = cJSON_GetObjectItem(sys_item, "states");
+    if (cJSON_IsArray(state_json)){
+      cJSON* state;
+      cJSON_ArrayForEach(state, state_json){
+        cJSON* step_json = cJSON_GetObjectItem(state, "step");
+        cJSON* fn_json   = cJSON_GetObjectItem(state, "fn");
+        if (!cJSON_IsString(step_json) || !cJSON_IsString(fn_json))
+          continue;
+
+        SystemFn callback = (SystemFn)SystemFunctionLookup(fn_json->valuestring);
+        if (!callback) continue;
+
+        GameState gs = GetGameState(step_json->valuestring);
+        if (gs >= 0 && gs < GAME_DONE)
+          sys->states[gs] = callback;
+
+      }
+    } 
+    
     cJSON* sync_json = cJSON_GetObjectItem(sys_item, "syncs");
     if (cJSON_IsArray(sync_json))
     {
-      cJSON* f;
-      cJSON_ArrayForEach(f, sync_json)
+      cJSON* sync;
+      cJSON_ArrayForEach(sync, sync_json)
       {
-        cJSON* step_json = cJSON_GetObjectItem(f, "step");
-        cJSON* fn_json   = cJSON_GetObjectItem(f, "fn");
+        cJSON* step_json = cJSON_GetObjectItem(sync, "step");
+        cJSON* fn_json   = cJSON_GetObjectItem(sync, "fn");
 
         if (!cJSON_IsString(step_json) || !cJSON_IsString(fn_json))
           continue;
@@ -606,14 +607,14 @@ bool ParseSystems(cJSON* root, game_t* out)
           sys->syncs[step] = callback;
       }
     }
-    cJSON* state_json = cJSON_GetObjectItem(sys_item, "states");
-    if (cJSON_IsArray(state_json))
+    cJSON* set_json = cJSON_GetObjectItem(sys_item, "sets");
+    if (cJSON_IsArray(set_json))
     {
-      cJSON* f;
-      cJSON_ArrayForEach(f, state_json)
+      cJSON* set;
+      cJSON_ArrayForEach(set, set_json)
       {
-        cJSON* step_json = cJSON_GetObjectItem(f, "step");
-        cJSON* fn_json   = cJSON_GetObjectItem(f, "fn");
+        cJSON* step_json = cJSON_GetObjectItem(set, "step");
+        cJSON* fn_json   = cJSON_GetObjectItem(set, "fn");
 
         if (!cJSON_IsString(step_json) || !cJSON_IsString(fn_json))
           continue;
@@ -621,20 +622,20 @@ bool ParseSystems(cJSON* root, game_t* out)
         SystemCB callback = (SystemCB)SystemFunctionLookup(fn_json->valuestring);
         if (!callback) continue;
 
-        GameState state = GetGameState(step_json->valuestring);
-        if (state >= 0 && state < GAME_DONE)
-          sys->states[state] = callback;
+        GameState gs = GetGameState(step_json->valuestring);
+        if (gs >= 0 && gs < GAME_DONE)
+          sys->sets[gs] = callback;
       }
     }
 
     cJSON* steps_json = cJSON_GetObjectItem(sys_item, "steps");
     if (cJSON_IsArray(steps_json))
     {
-      cJSON* f;
-      cJSON_ArrayForEach(f, steps_json)
+      cJSON* steps;
+      cJSON_ArrayForEach(steps, steps_json)
       {
-        cJSON* step_json = cJSON_GetObjectItem(f, "step");
-        cJSON* fn_json   = cJSON_GetObjectItem(f, "fn");
+        cJSON* step_json = cJSON_GetObjectItem(steps, "step");
+        cJSON* fn_json   = cJSON_GetObjectItem(steps, "fn");
 
         if (!cJSON_IsString(step_json) || !cJSON_IsString(fn_json))
           continue;
@@ -862,13 +863,10 @@ bool ParseGameDefinition(cJSON* root, game_t* out){
   if (!root || !out) return false;
   memset(out, 0, sizeof(*out));
 
-  // ===================== SYSTEMS  ======================
   if(!ParseSystems(root, out)){
     TraceLog(LOG_ERROR, "===PARSE GAME DEF===\n Systems parse error");
     return false;
   }
-
-  // ==================== COMPONENTS======================
 
   if(!ParseComponents(root, out)){
     TraceLog(LOG_ERROR, "===PARSE GAME DEF===\n Components parse error");
@@ -888,5 +886,6 @@ bool ParseGameDefinition(cJSON* root, game_t* out){
   }
 
   return true;
+
 
 }

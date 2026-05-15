@@ -3,15 +3,9 @@
 #include "game_define.h"
 #include "game_resources.h"
 
-#define NUM_COMPONENTS  8
-
 typedef struct {
     const char* scene_name;
     const char* json_path;        // ← New: relative path to rich data
-    int         grid_width;
-    int         grid_height;
-    int         tile_count;
-    int         entity_count;
 } SceneHeader;
 const SceneHeader* SceneGetHeader(int index);
 const char* SceneGetJsonPath(int index);   

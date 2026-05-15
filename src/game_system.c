@@ -19,6 +19,13 @@ component_pool_t* ComponentQueryInner(world_t* w, system_t* s) {
   return best;
 }
 
+void SystemState(world_t* w, system_t* s, GameState g){
+  if(!s->state[g])
+    return;
+
+  s->state[g](w);
+}
+ 
 void SystemStep(world_t* w, system_t* s, UpdateType u){
   if(!s->step[u])
     return;
@@ -93,6 +100,7 @@ void OnSystemEvent(event_t* ev, void* data){
   system_t* s = data;
   world_t*  w = ev->data;
   UpdateType u;
+  GameState state;
   switch((GameEventID)EVENT_ID(ev->type)){
     case GAME_EVENT_SYNC:
       u = ev->eid;
@@ -102,9 +110,12 @@ void OnSystemEvent(event_t* ev, void* data){
       u = ev->eid;
       SystemStep(w, s, u);
       break;
-    case GAME_EVENT_STATE:
-      GameState state = ev->eid;
+    case GAME_EVENT_SET:
+      state = ev->eid;
       SystemSet(w, s, state);
+    case GAME_EVENT_STATE:
+      state = ev->eid;
+      SystemState(w, s, state);
       break;
   }
 }
@@ -129,8 +140,6 @@ system_t* SystemRegister(world_t* w, SystemCB tick[UPDATE_DONE], SystemCB set[GA
     uint64_t n = GameEvent_ToNotif(GAME_EVENT_STATE);
     TargetSubscribe(n, OnSystemEvent, s, i);
   }
-
-  s->init = init;
   return s;
 }
 
@@ -158,10 +167,19 @@ system_t* SystemCreate(world_t* w, system_define_t* def){
   }
 
   for (int i = 0; i < GAME_DONE; i++){
+    if(!def->sets[i])
+      continue;
+
+    s->set[i] = def->sets[i];
+    uint64_t n = GameEvent_ToNotif(GAME_EVENT_SET);
+    TargetSubscribe(n, OnSystemEvent, s, i);
+  }
+
+  for (int i = 0; i < GAME_DONE; i++){
     if(!def->states[i])
       continue;
 
-    s->set[i] = def->states[i];
+    s->state[i] = def->states[i];
     uint64_t n = GameEvent_ToNotif(GAME_EVENT_STATE);
     TargetSubscribe(n, OnSystemEvent, s, i);
   }
@@ -173,9 +191,5 @@ system_t* SystemCreate(world_t* w, system_define_t* def){
 
   }
 
-  if(def->init){
-    s->init = def->init;
-    s->init(w);
-  }
   return s;
 }

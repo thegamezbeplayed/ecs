@@ -12,8 +12,8 @@
 #endif
 
 LoadQueue loader = {0};
-float screenWidth = 1920.0f;
-float screenHeight = 1080.0f; 
+float screenWidth = 1280.0f;
+float screenHeight = 720.0f; 
 double currentTime = 0.0;           // Current time measure
 double updateDrawTime = 0.0;        // Update + Draw time
 double previousTime = 0.0;    // Previous time measure
@@ -39,6 +39,7 @@ bool IsLoadingFinished(void)
 
 float GetLoadingProgress(void)
 {
+
   for (int i = 0; i < loader.count; i++){
     LoadJob* job = &loader.jobs[i];
 
@@ -68,8 +69,9 @@ int main(void)
 {
   GameSetFrameRate(tarFPS);
   srand((unsigned int)time(NULL));  // seed once using current time
-
-  InitWindow(screenWidth,screenHeight, "raylib game template");
+ 
+  InitScreenWindow(screenWidth,screenHeight, "raylib game template");
+   
   InitAudioDevice();      // Initialize audio device
 
   SpriteLoadSplash("resources/splash.png", VEC_NEW(screenWidth,screenHeight));

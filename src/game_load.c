@@ -3,6 +3,10 @@
 
 static ResourcePool RES_POOL;
 static game_t       GAME_DEF;
+static cJSON* def;
+static cJSON* sys;
+
+
 void AsepriteToAnim(SheetID id, const ase_sprite_sheet_d* ase, anim_tag_t tag, int index, sprite_d* out){
   if (!ase || !out || index < 0 || index >= ase->num_frames) {
     memset(out, 0, sizeof(sprite_d));
@@ -121,10 +125,13 @@ void ResourceInit(int count){
 }
 
 game_t* LoadGameDefine(const char* path){
-  cJSON* root = ParseRoot(path);
+  bool load;
 
-  bool load = ParseGameDefinition(root, &GAME_DEF);
-
+  def = ParseRoot(path);
+  if(def)
+    load = ParseGameDefinition(def, &GAME_DEF);
+  
+  
   if(!load){
     TraceLog(LOG_WARNING, "=== GAME DEF NOT LOADED===");
     return NULL;
@@ -180,4 +187,7 @@ void UnloadGameDefine(game_t* g){
   }
   GameFree("UnloadGameDefine", g->relations);
   memset(g, 0, sizeof(*g));
+
+  if (def) cJSON_Delete(def);
+  if (sys) cJSON_Delete(sys);
 }

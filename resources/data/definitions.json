@@ -1,27 +1,24 @@
 {
-  "num_comp_def": 25,
-  "components": [
-    "Sprite", "Animation", "Particle", "ParticleEmitter", "Force", 
-    "View", "Position", "Input", "Camera"
-  ],
   "systems": ["Animations", "Sprites", "Particles", "ParticleEmitters",
-    "Cameras", "Render"],
+    "Cameras", "Renderer"],
     "Animations":{
       "components": ["Animation", "Sprite"],
       "syncs": [
         {"step": "UPDATE_FIXED",  "fn": "AnimSystem"}
       ],
-      "states": [
+      "sets": [
         {"step": "GAME_LOADING",  "fn": "AnimLoad"},
         {"step": "GAME_READY",    "fn": "AnimReady"}
       ]
     },
     "Sprites" : {
       "components": ["Sprite", "Position"],
-      "states": [
+      "sets": [
         {"step": "GAME_READY", "fn": "SpriteLoad"}
       ],
-      "init": "SpritesInit"
+      "states": [
+        {"step": "GAME_LOADING", "fn": "SpritesInit"}
+      ]
     },
     "Particles": {
       "components": ["Particle", "Position"],
@@ -29,14 +26,16 @@
         {"step": "UPDATE_FIXED", "fn": "ParticleSystem"},
         {"step": "UPDATE_POST", "fn": "ParticleCleanup"}
       ],
-      "init": "ParticlesInit"
+      "states": [
+        {"step": "GAME_LOADING", "fn": "ParticlesInit"}
+      ]
     },
     "ParticleEmitters": {
       "components": ["ParticleEmitter", "Position"],
       "syncs": [
         {"step": "UPDATE_FIXED", "fn": "ParticleEmitterSystem"}
       ],
-      "states": [
+      "sets": [
         {"step": "GAME_LOADING", "fn": "ParticleEmitterLoad"}
       ]
     },
@@ -45,26 +44,28 @@
       "syncs": [
         {"step": "UPDATE_FRAME",  "fn": "InputSystem"}
       ],
-      "states":[
+      "sets":[
         {"step": "GAME_READY",    "fn": "InputLoad"}
       ]
     },
     "Positions": {
       "components": ["Position"],
-      "states": [
+      "sets": [
         {"step": "GAME_READY",    "fn": "PositionLoad"}
       ]
     },
     "Physics": {
       "components": ["RigidBody", "Position"],
       "syncs": [
-        {"step": "UPDATE_POST",   "fn": "PhysicsSystem"},
-        {"step": "UPDATE_PRE" ,   "fn": "PhysicsCollision"}
+        {"step": "UPDATE_POST",  "fn": "PhysicsSystem"},
+        {"step": "UPDATE_PRE" ,  "fn": "PhysicsCollision"}
+      ],
+      "sets": [
+        {"step": "GAME_READY",   "fn": "PhysicsLoad"}
       ],
       "states": [
-        {"step": "GAME_READY",    "fn": "PhysicsLoad"}
-      ],
-      "init": "PhysicsInit"
+        {"step": "GAME_LOADING", "fn": "PhysicsInit"}
+      ]
     },
     "Forces": {
       "components": ["Force"],
@@ -72,26 +73,29 @@
         {"step": "UPDATE_FIXED",  "fn": "ForceSystem"},
         {"step": "UPDATE_FINAL",  "fn": "ForceCleanup"}
       ],
-      "states": [
+      "sets": [
         {"step": "GAME_READY",    "fn": "ForceLoad"}
       ]
     },
     "Levels": {
       "components": ["Level"],
-      "states": [
+      "sets": [
         {"step": "GAME_LOADING",  "fn": "LevelLoad"},
         {"step": "GAME_READY",    "fn": "LevelReady"}
       ]
     },
-    "Render": {
-      "components": ["View"],
+    "Renderer": {
+      "components": ["Render"],
       "syncs": [
-        {"step": "UPDATE_DRAW_BEGIN","fn": "RenderBegin"},
-        {"step": "UPDATE_DRAW_END",  "fn": "RenderEnd"},
-        {"step": "UPDATE_DRAW",      "fn": "RenderDraw"}
+        {"step": "UPDATE_DRAW",        "fn": "RenderDraw"},
+        {"step": "UPDATE_DRAW_BEGIN",  "fn": "RenderBegin"},
+        {"step": "UPDATE_DRAW_END",  "fn": "RenderEnd"}
+      ],
+      "sets": [
+        {"step": "GAME_LOADING",   "fn": "RenderLoad"}
       ],
       "states": [
-        {"step": "GAME_READY",       "fn": "RenderLoad"}
+        {"step": "GAME_READY", "fn": "RenderInit"}
       ]
     },
     "Cameras": {
@@ -101,7 +105,7 @@
         {"step": "UPDATE_DRAW_BEGIN","fn": "CameraBegin"},
         {"step": "UPDATE_DRAW_END",  "fn": "CameraEnd"}
       ],
-      "states": [
+      "sets": [
         {"step": "GAME_LOADING",     "fn": "CameraLoad"},
         {"step": "GAME_READY",       "fn": "CameraReady"}
       ]
@@ -112,13 +116,19 @@
         {"step": "UPDATE_FINAL",  "fn": "ExpirationSystem"}
       ]
     },
+
+    "num_comp_def": 25,
+    "components": [
+      "Sprite", "Animation", "Particle", "ParticleEmitter", "Force",
+      "Render", "Position", "Input", "Camera"
+    ],
     "Sprite":{
       "func": "SpriteInit",
       "list": [
         {"name": "player", "layer": 2, "scale": 2.5,
           "sheet_id": "SHEET_CHAR", "sheet_index": 0
         },
-        {"name": "tile_blank", "layer": 1, 
+        {"name": "tile_blank", "layer": 1,
           "sheet_id": "SHEET_TILE", "sheet_index": 0
         },
         {"name": "tile_tiwaz", "layer": 1,
@@ -160,7 +170,7 @@
               ]
             },
             {"state": "ATTACK",
-              "end": "SUSPEND", "start": "HURTBOX", 
+              "end": "SUSPEND", "start": "HURTBOX",
               "sequences": [
                 {"tag": "attack0",   "dir": 0},
                 {"tag": "attack90",  "dir": 1},
@@ -260,38 +270,24 @@
         }
       ]
     },
-    "View": {
-      "func": "ViewInit",
+    "Render": {
+      "func": "RenderInit",
       "list": [
         {
           "name":     "bg",
-          "layer":    1,
-          "bounds_x": 0,
-          "bounds_y": 0,
-          "bounds_w": 1920,
-          "bounds_h": 1080,
-          "offset_x": -680,
-          "offset_y": -420
+          "layer":    0
+        },
+        {
+          "name":     "floor",
+          "layer":    1
         },
         {
           "name":     "main",
-          "layer":    2,
-          "bounds_x": 0,
-          "bounds_y": 0,
-          "bounds_w": 1920,
-          "bounds_h": 1080,
-          "offset_x": -680,
-          "offset_y": -420
+          "layer":    2
         },
         {
           "name":     "vfx",
-          "layer":    3,
-          "bounds_x": 0,
-          "bounds_y": 0,
-          "bounds_w": 1920,
-          "bounds_h": 1080,
-          "offset_x": -680,
-          "offset_y": -420
+          "layer":    3
         }
       ]
     },
@@ -300,7 +296,7 @@
       "list": [{"name": "player"}]
     },
     "prefabs": {
-      "count": 11,
+      "count": 12,
       "list":[
         {
           "name": "main_cam",
@@ -308,10 +304,10 @@
           "list": ["Position", "Camera"]
         },
         {
-          "name":     "views",
+          "name":     "layers",
           "count":    1,
-          "list":     ["View"],
-          "contains": ["bg","main", "vfx"]
+          "list":     ["Render"],
+          "contains": ["bg", "floor", "main", "vfx"]
         },
         {
           "name": "player",
@@ -320,7 +316,7 @@
         },
         {
           "name": "tile",
-          "contains": ["tile_blank", "tile_tiwaz", "tile_algiz", 
+          "contains": ["tile_blank", "tile_tiwaz", "tile_algiz",
             "tile_raidho", "tile_laguz", "tile_ingwaz"],
             "count": 2,
             "list": ["Sprite", "Position"]
@@ -346,4 +342,3 @@
       }
     ]
 }
-

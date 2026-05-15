@@ -21,11 +21,6 @@ void InitEntityComponentSystem(void){
     return;
 
   GameInitPrefabs(&world, g);
-  for(int i = 0; i < world.num_sys; i++){
-    if(world.systems[i].init)
-      world.systems[i].init(&world);
-  }
-
   UnloadGameDefine(g);
   Scene* test = GameCalloc("InitEntityComponentSystem", 1, sizeof(Scene));
 
@@ -85,6 +80,7 @@ void GameSetState(GameState state){
 
   GP.state[SCREEN_GAMEPLAY] = state;
   GameEvent(GameEvent_ToNotif(GAME_EVENT_STATE), &world , state);
+  GameEvent(GameEvent_ToNotif(GAME_EVENT_SET), &world , state);
 
   if(GP.cb[state])
     GP.cb[state](state);

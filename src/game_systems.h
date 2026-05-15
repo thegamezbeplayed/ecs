@@ -32,6 +32,7 @@ void LevelReady(world_t* w, Entity e);
 void LevelSystem(world_t* w, Entity e);
 void LevelRender(world_t* w, Entity e);
 
+void RenderInit(world_t* w);
 void RenderLoad(world_t* w, Entity e);
 void RenderBegin(world_t* w, Entity e);
 void RenderDraw(world_t* w, Entity e);
@@ -103,9 +104,10 @@ static system_function_lookup_t FUNCTION_LOOKUP[NUM_FUNCTIONS] = {
     {"LevelReady",          LevelReady},
     {"LevelSystem",         LevelSystem},
 
+    {"RenderInit",          RenderInit},
     {"RenderLoad",          RenderLoad},
     {"RenderBegin",         RenderBegin},
-    {"RenderDraw",         RenderDraw},
+    {"RenderDraw",          RenderDraw},
     {"RenderEnd",           RenderEnd},
 
     {"CameraSystem",        CameraSystem},

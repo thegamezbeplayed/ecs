@@ -86,8 +86,6 @@ void PhysicsLoad(world_t* w, Entity e){
   SubscribeEntity(n, OnPositionEvent, p, e.id);
   n = PhysEvent_ToNotif(PHYS_EVENT_SPAWN);
   SubscribeEntity(n, OnPhysEvent, rb, e.id);
-  n = CombatEvent_ToNotif(COMB_EVENT_HIT);
-  SubscribeEntity(n, OnPhysEvent, rb, e.id);
 
   anim_comp_t* ac = GET_COMPONENT(w, e, anim_comp_t, ANIM_ID);
 
@@ -125,7 +123,7 @@ void PhysicsCollision(world_t* w, Entity e){
         break;
       case COLL_HIT:
         strcpy(estr, "RB_HIT");
-        n = CombatEvent_ToNotif(COMB_EVENT_HIT);
+        //n = CombatEvent_ToNotif(COMB_EVENT_HIT);
         evid = other.id;
         break;
     }

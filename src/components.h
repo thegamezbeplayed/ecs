@@ -12,7 +12,7 @@
 #define PHYS_ID      ComponentGetID("RigidBody")
 #define ANIM_ID      ComponentGetID("Animation")
 #define SPR_ID       ComponentGetID("Sprite")
-#define VIEW_ID      ComponentGetID("View")
+#define RENDER_ID    ComponentGetID("Render")
 #define INPUT_ID     ComponentGetID("Input")
 #define CAM_ID       ComponentGetID("Camera")
 #define TRACK_ID     ComponentGetID("Track")

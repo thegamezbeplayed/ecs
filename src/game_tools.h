@@ -28,6 +28,8 @@
 #define VEC_NEW(x,y)  (Vector2){x,y}
 #define Vector2XY(x,y) ((Vector2){ (x), (y) })
 #define Vector2Y(y) ((Vector2){ 0.0f, (y) })
+#define VEC_SUB(v1,v2) ((Vector2)Vector2Subtract(v1, v2))
+#define VEC_ADD(v1,v2) ((Vector2)Vector2Add(v1, v2))
 #define Vector2Inc(v,xi,yi) ((Vector2){ (v.x+xi), (v.y+yi) })
 #define RectStart(r1,r2) ((Vector2){(r1.width / 2 - r2.width/2),(r1.height/2 - r2.height/2)})
 #define RectCell(r) (Cell){(r.x),(r.y)}

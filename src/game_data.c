@@ -7,7 +7,7 @@ const component_define_t CORE_COMPONENTS[NUM_COMP_CORE] = {
   {"RigidBody", sizeof(rigid_body_t)},
   {"Animation", sizeof(anim_comp_t)},
   {"Sprite",    sizeof(sprite_t)},
-  {"View",      sizeof(view_comp_t)},
+  {"Render",    sizeof(render_ctx_t)},
   {"Input",     sizeof(input_t)},
   {"Camera",    sizeof(camera_t)},
   {"Track",     sizeof(track_comp_t)},
@@ -26,7 +26,7 @@ const component_define_t CORE_COMPONENTS[NUM_COMP_CORE] = {
 const component_func_t COMPFUNC_LOOKUP[NUM_COMP_CORE] = {
   {"Animation",   AnimInit},
   {"Sprite",      SpriteInit},
-  {"View",        ViewInit},
+  {"Render",      RenderContextInit},
   {"Anim",        AnimInit},
   {"RigidBody",   RigidBodyInit},
   {"Force",       ForceInit},

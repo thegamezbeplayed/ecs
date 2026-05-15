@@ -1,7 +1,18 @@
 #include "game_systems.h"
 #include "component_define.h"
 
+void CameraOnWindowResize(void* o_data, void* s, void* e_data) {
+  window_resize_t* w = e_data;
+  camera_t* c = o_data;
+
+  Vector2 offset = VEC_SCALE(VEC_NEW(w->width, w->height), 0.25);
+  CameraSetOffset(c, offset);
+}
+
 void CameraLoad(world_t* w, Entity e){
+  camera_t* c = GET_COMPONENT(w, e, camera_t, CAM_ID);
+  SubjectAddObserver(&window, CameraOnWindowResize, c);
+
   return;
   QueryBegin();
   comp_id_t seek[1];
@@ -43,16 +54,6 @@ void CameraSystem(world_t* w, Entity e){
     return;
 
   TRACK(t->ctx.tracking, c, pos->vpos);
-/*
-  Rectangle cropped_bounds = RECT_CROP(c->view.border, c->view.border_distance);
-
-  Vector2 clamped = clamp_point_to_rect(c->camera.target, cropped_bounds);
-
-  if(vec_compare(clamped, c->camera.target))
-    return;
-
-  c->camera.target = clamped;
-  */
 }
 
 void CameraBegin(world_t* w, Entity e){

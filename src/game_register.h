@@ -46,7 +46,7 @@ typedef struct {
   int       index;
   comp_id_t terms[MAX_TERMS];
   int       term_count;
-  SystemFn  init;
+  SystemFn  state[GAME_DONE];
   SystemFn  step[UPDATE_DONE];
   SystemCB  set[GAME_DONE];
   SystemCB  tick[UPDATE_DONE];

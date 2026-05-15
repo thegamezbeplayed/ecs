@@ -55,9 +55,3 @@ bool CameraInit(void* comp, component_entry_t* json){
 
   return ParseCameraComponent(json->data, cc);
 }
-
-bool ViewInit(void* comp, component_entry_t* json){
-  view_comp_t* vc = comp;
-
-  return ParseViewComponent(json->data, vc);
-}

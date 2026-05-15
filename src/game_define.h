@@ -4,14 +4,8 @@
 
 #include "game_register.h"
 
-#define MOB_MAX 64
 #define NUM_SYS 16
 #define NUM_REL 4
-#define ROOM_SIZE (Vector2){1600,1200}
-
-DEFINE_EVENT_SPACE(CombatEvent, EVENT_COMBAT_BASE);
-
-extern int PHYS_SYS;
 
 typedef struct tile_instance_t {
   char* name;
@@ -75,10 +69,10 @@ extern const component_func_t COMPFUNC_LOOKUP[NUM_COMP_CORE];
 
 typedef struct{
   char*       name;
-  SystemFn    init;
+  SystemFn    states[GAME_DONE];
   SystemFn    steps[UPDATE_DONE];
   SystemCB    syncs[UPDATE_DONE];
-  SystemCB    states[GAME_DONE];
+  SystemCB    sets[GAME_DONE];
   int         num_req;
   const char* components[NUM_REL];
 }system_define_t;
@@ -95,6 +89,7 @@ typedef struct{
   int                 relation_count;
   entity_relation_t*  relations;
 }game_t;
+bool ParseGameSystems(cJSON* root, game_t* out);
 bool ParseGameDefinition(cJSON* root, game_t* out);
 game_t* LoadGameDefine(const char* path);
 void GameInitPrefabs(world_t* w, game_t* g);

@@ -10,7 +10,7 @@
 
 bool InputInit(void* comp, component_entry_t* data);
 bool SpriteInit(void* comp, component_entry_t* data);
-bool ViewInit(void* comp, component_entry_t* data);
+bool RenderContextInit(void* comp, component_entry_t* data);
 bool ForceInit(void* comp, component_entry_t* data);
 bool RigidBodyInit(void* comp, component_entry_t* data);
 bool AnimInit(void* comp, component_entry_t* data);
@@ -27,6 +27,7 @@ bool ParsePositionComponent(cJSON* j, position_t* out);
 bool ParseInputComponent(cJSON* j, input_t* out);
 bool ParseCameraComponent(cJSON* j, camera_t* out);
 bool ParseParticleEmitterComponent(cJSON*, particle_emitter_t*);
+bool ParseRenderComponent(cJSON* j, render_ctx_t* out);
 
 typedef struct{
   anim_player_t   player;
@@ -49,11 +50,6 @@ typedef struct{
   Rectangle bounds;
 }level_t;
 
-typedef struct{
-  viewport_t    view;
-  RenderLayer   layer;
-}view_comp_t;
-bool ParseViewComponent(cJSON* j, view_comp_t* out);
 
 typedef struct{
   camera_ctx_t      ctx;

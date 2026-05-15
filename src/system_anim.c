@@ -114,13 +114,10 @@ void AnimLoad(world_t* w, Entity e){
 
   input_t* in = GET_COMPONENT(w, e, input_t, INPUT_ID);
 
-  notification n = CombatEvent_ToNotif(COMB_EVENT_HIT);
-  TargetSubscribe(n, AnimEvent, ac, e.id );
-
   if(!in)
     return;
 
-  n = InputEvent_ToNotif(INPUT_EVENT_MOVE);
+  notification n = InputEvent_ToNotif(INPUT_EVENT_MOVE);
   TargetSubscribe(n, AnimInputEvent, ac, e.id );
 
   n = InputEvent_ToNotif(INPUT_EVENT_ATTACK);

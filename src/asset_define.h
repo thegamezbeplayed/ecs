@@ -6,9 +6,12 @@
 #include "game_utils.h"
 #include "game_types.h"
 
-#define MAX_LAYER_SPRITES  64
+#define MAX_LAYER_SPRITES  128 
 #define FLOAT_TEXT_SIZE    54
 #define FLOAT_TEXT_SPACING 2
+
+#define EVENT_ANIM_BASE     0x5000
+#define EVENT_PARTICLE_BASE 0x6000
 
 typedef struct{
   Vector2     offset;
@@ -51,6 +54,11 @@ typedef enum{
   LAYER_UI,
   LAYER_DONE
 }RenderLayer;
+
+typedef struct{
+  RenderLayer layer;
+}render_ctx_t;
+extern subject_t renderer;
 
 struct sprite_slice_s{
   int       index, angle;
