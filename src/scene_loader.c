@@ -1,6 +1,6 @@
 #include "scene_loader.h"
 #include "scene_data.h"
-#include "game_assets.h"
+#include "asset_define.h"
 
 bool SceneLoadByIndex(int index, Scene* out){
   if (!SceneLoadHeader(index, out))
@@ -41,7 +41,6 @@ void SceneSetup(world_t* w, Scene* s){
 
     Vector2 pos = VEC_NEW(e.x, e.y);
     Entity spawn = PrefabSpawn(w, e.prefab, pos);
-
   }
 
   for(int i = 0; i < s->tile_count; i++){

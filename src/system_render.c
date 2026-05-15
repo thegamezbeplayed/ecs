@@ -9,6 +9,7 @@ void RenderBegin(world_t* w, Entity e){
 
 void RenderDraw(world_t* w, Entity e){
   view_comp_t* vc = GET_COMPONENT(w, e, view_comp_t, VIEW_ID);
+
   BeginTextureMode(vc->view.tex);
   ClearBackground(BLANK);
 

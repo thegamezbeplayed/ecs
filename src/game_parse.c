@@ -1,5 +1,4 @@
-#include "game_assets.h"
-#include "game_define.h"
+#include "game_helpers.h"
 #include "game_strings.h"
 #include "game_systems.h"
 #include "scene.h"
@@ -63,6 +62,79 @@ SheetID StringToSheetID(const char* str){
   if (strcmp(str, "SHEET_TILE") == 0) return SHEET_TILE;
   // ... add others
   return SHEET_ALL;
+}
+
+ParticleEmitMode StringToEmitMode(const char* str){
+  if(strcmp(str, "CONTINUOUS") == 0) return PARTICLE_EMIT_CONTINUOUS;
+  if(strcmp(str, "BURST") == 0) return PARTICLE_EMIT_BURST;
+  if(strcmp(str, "EVENT") == 0) return PARTICLE_EMIT_EVENT;
+
+  return PARTICLE_EMIT_NONE;
+}
+
+ParticleDrawType StringToDrawType(const char* str){
+  if(strcmp(str, "SPRITE") == 0) return PARTICLE_SPRITE;
+  if(strcmp(str, "RECT") == 0) return PARTICLE_RECT;
+  if(strcmp(str, "CIRCLE") == 0) return PARTICLE_CIRCLE;
+  if(strcmp(str, "PIXEL") == 0) return PARTICLE_PIXEL;
+
+  return PARTICLE_NONE;
+}
+
+bool ParseParticleEmitterComponent(cJSON* j, particle_emitter_t* out){
+  if(!j)
+    return false;
+
+  char mode_str[MAX_NAME_LEN];
+  Json_GetString(j, "mode", mode_str);
+  out->mode = StringToEmitMode(mode_str);
+
+  out->layer = Json_GetInt(j, "layer", -1);
+  out->active = Json_GetBool(j, "active");
+
+  out->max = Json_GetInt(j, "max_particles", -1);
+  out->rate = Json_GetInt(j, "rate", -1);
+  out->dur_max = Json_GetInt(j, "lifetime_max", -1);
+  out->dur_min = Json_GetInt(j, "lifetime_min", -1);
+  
+  float offx = Json_GetFloat(j, "offset_x", 0); 
+  float offy = Json_GetFloat(j, "offset_y", 0); 
+  out->offset = VEC_NEW(offx, offy);
+
+  float velocity_minx = Json_GetFloat(j, "velocity_min_x", 0); 
+  float velocity_miny = Json_GetFloat(j, "velocity_min_y", 0); 
+  out->acceleration = out->velocity_min = VEC_NEW(velocity_minx, velocity_miny);
+
+  float velocity_maxx = Json_GetFloat(j, "velocity_max_x", 0); 
+  float velocity_maxy = Json_GetFloat(j, "velocity_max_y", 0); 
+  out->velocity_max = VEC_NEW(velocity_maxx, velocity_maxy);
+
+
+  float spawnx = Json_GetFloat(j, "spawn_radius_x", 0); 
+  float spawny = Json_GetFloat(j, "spawn_radius_y", 0); 
+  out->spawn_radius = VEC_NEW(spawnx, spawny);
+
+  out->scale_max = Json_GetFloat(j, "scale_max", 1);
+  out->scale_min = Json_GetFloat(j, "scale_min", 0);
+
+  out->scale_end = Json_GetFloat(j, "scale_end", 0);
+
+  out->drag = Json_GetFloat(j, "drag", 0);
+  out->wid = Json_GetFloat(j, "width", 0);
+  out->hei = Json_GetFloat(j, "height", 0);
+  char start_col_str[MAX_NAME_LEN];
+  Json_GetString(j, "start_color", start_col_str);
+  out->start_color = ColorFromHexString(start_col_str);
+  
+  char end_col_str[MAX_NAME_LEN];
+  Json_GetString(j, "end_color", end_col_str);
+  out->end_color = ColorFromHexString(end_col_str);
+ 
+  char draw_str[MAX_NAME_LEN];
+  Json_GetString(j, "draw_type", draw_str);
+  
+  out->draw_type = StringToDrawType(draw_str);
+  return out->layer > -1;
 }
 
 bool ParseSpriteComponent(cJSON* j, sprite_t* out){
@@ -730,12 +802,10 @@ bool ParseRelations(cJSON* root, game_t* out){
       er->name = GameCalloc("ParseRelations", MAX_NAME_LEN, sizeof(char));
       Json_GetString(rel_item, "name", er->name);
 
-      cJSON* count = cJSON_GetObjectItem(rel_item, "count");
-      if (cJSON_IsNumber(count))
-        er->count = count->valueint;
 
       cJSON* list = cJSON_GetObjectItem(rel_item, "list");
       if (!cJSON_IsArray(list)) continue;
+      er->count = cJSON_GetArraySize(list);
 
       int comp_rel_idx = 0;
       cJSON* comp_rel;
@@ -747,11 +817,7 @@ bool ParseRelations(cJSON* root, game_t* out){
         cr->comp = GameCalloc("ParseRelations", MAX_NAME_LEN, sizeof(char));
 
         Json_GetString(comp_rel, "name", cr->comp);
-        cJSON* ccount = cJSON_GetObjectItem(comp_rel, "count");
         cJSON* sublist = cJSON_GetObjectItem(comp_rel, "sublist");
-
-        if (cJSON_IsNumber(ccount))
-          cr->count = ccount->valueint;
 
         if (cJSON_IsArray(sublist))
         {
@@ -768,8 +834,20 @@ bool ParseRelations(cJSON* root, game_t* out){
 
             if (cJSON_IsString(ptype))
               cr->pairs[pair_idx].type = RelationTypeLookup(ptype->valuestring);
+            
+            cJSON* relcomp_json = cJSON_GetObjectItem(pair, "components");
+            
+            int relidx = 0;
+            cJSON* relcomp;
+            cJSON_ArrayForEach(relcomp, relcomp_json){
+              cr->pairs[pair_idx].components[relidx] = GameCalloc("ParseRelations", MAX_NAME_LEN, sizeof(char));
+
+            strcpy(cr->pairs[pair_idx].components[relidx++], relcomp->valuestring);
+            }
+            cr->pairs[pair_idx].num_comp = relidx;
             pair_idx++;
           }
+          cr->count = pair_idx;
         }
       }
     }

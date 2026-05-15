@@ -38,6 +38,11 @@ Entity EntityCreate(EntityManager* em) {
   return e;
 }
 
+void EntiyBatchReserve(EntityManager* m, int count, Entity pool[count]){
+  for(int i = 0; i < count; i++)
+    pool[i] = EntityCreate(m);
+}
+
 void EntityDestroy(EntityManager* em, Entity e) {
   if (!em->alive[e.id]) return;
 

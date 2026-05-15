@@ -66,6 +66,7 @@ float GetLoadingProgress(void)
 
 int main(void)
 {
+  GameSetFrameRate(tarFPS);
   srand((unsigned int)time(NULL));  // seed once using current time
 
   InitWindow(screenWidth,screenHeight, "raylib game template");

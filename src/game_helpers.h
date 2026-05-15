@@ -24,4 +24,11 @@ static bool COMPARE_ALL_BOOL(bool *all, int count){
   return true;
 }
 
+static Color ColorFromHexString(const char* hex)
+{
+  if (!hex || strlen(hex) < 8) return BLACK;
+
+  unsigned int hexValue = (unsigned int)strtoul(hex, NULL, 16);
+  return GetColor(hexValue);        // raylib built-in function
+}
 #endif

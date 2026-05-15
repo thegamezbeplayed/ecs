@@ -1,6 +1,4 @@
 #include "screens.h"
-#include "game_assets.h"
-
 #include "app_resource.h"
 
 // Logo Screen Initialization logic

@@ -3,6 +3,7 @@
 #include "raylib.h"
 #include <pthread.h>
 #include <stdatomic.h>
+#include "asset_define.h"
 
 // One resource item
 typedef struct {

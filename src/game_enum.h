@@ -3,13 +3,13 @@
 
 #define BIT64(n) (1ULL << (n))
 
-#define EVENT_INPUT_BASE      0x1000
-#define EVENT_GAME_BASE       0x2000
-#define EVENT_PHYS_BASE       0x3000
-#define EVENT_POS_BASE        0x4000
-#define EVENT_ANIM_BASE       0x5000
-#define EVENT_VIEW_BASE       0x6000
-#define EVENT_PARTICLE_BASE   0x7000
+#define EVENT_INPUT_BASE  0x1000
+#define EVENT_GAME_BASE   0x2000
+#define EVENT_PHYS_BASE   0x3000
+#define EVENT_POS_BASE    0x4000
+#define EVENT_ANIM_BASE   0x5000
+#define EVENT_PARTICLE_BASE   0x6000
+#define EVENT_VIEW_BASE       0x7000
 #define EVENT_COMBAT_BASE     0x8000
 #define EVENT_BASE_MASK   0xFFFFF000
 #define EVENT_ID_MASK     0x00000FFF
