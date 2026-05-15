@@ -2,6 +2,7 @@
 #include "app_resource.h"
 #include "screens.h"    // NOTE: Declares global (extern) variables and screens functions
 #include "game_ui.h"
+#include "asset_sfx.h"
 #include "game_process.h"
 #include "scene_loader.h"
 
@@ -68,10 +69,11 @@ int main(void)
   srand((unsigned int)time(NULL));  // seed once using current time
 
   InitWindow(screenWidth,screenHeight, "raylib game template");
+  InitAudioDevice();      // Initialize audio device
 
   SpriteLoadSplash("resources/splash.png", VEC_NEW(screenWidth,screenHeight));
+  InitAudio();  
   InitGameProcess();
-  InitAudioDevice();      // Initialize audio device
 
   SceneInit(&loader);
 
@@ -80,7 +82,6 @@ int main(void)
   pthread_detach(t); 
   InitResources();
   InitUI();
-  
 
   //SetTargetFPS(60);
 #if defined(PLATFORM_WEB)

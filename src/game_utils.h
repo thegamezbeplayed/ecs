@@ -20,10 +20,6 @@
 #endif
 void UploadScore(void);
 
-//====FILE & STRINGS====>
-char* GetFileStem(const char* filename);
-//<==========
-//
 static inline void DO_NOTHING(void){}
 static inline bool BOOL_DO_NOTHING(){return false;}
 static inline const char* CHAR_DO_NOTHING(){return "\0";}

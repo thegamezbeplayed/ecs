@@ -5,6 +5,8 @@
 #include "game_register.h"
 #include "game_define.h"
 #include "scene_loader.h"
+#include "asset_sfx.h"
+
 #define BUS (event_bus_t*){GP.bus}
 
 world_t world;
@@ -126,7 +128,7 @@ void InitGameProcess(){
   GP.update_steps[SCREEN_GAMEPLAY][UPDATE_FRAME] = UpdateGameplayScreen;
   GP.update_steps[SCREEN_GAMEPLAY][UPDATE_POST] = PostUpdate;
   GP.update_steps[SCREEN_GAMEPLAY][UPDATE_FINAL] = FinalUpdate;
-  //GP.album_id[SCREEN_GAMEPLAY] = AudioBuildMusicTracks("bingbong");
+  GP.album_id[SCREEN_GAMEPLAY] = AudioBuildMusicTracks("bingbong");
 
   //GP.children[SCREEN_GAMEPLAY].update_steps[PROCESS_LEVEL][UPDATE_FIXED] = LevelFixedUpdate; 
   GP.children[PROCESS_LEVEL].process = PROCESS_LEVEL;
@@ -158,7 +160,7 @@ bool GameTransitionScreen(){
   GP.screen = prepare;
   GP.phase[prepare][GAME_LOADING]();
 
-  //AudioPlayMusic(GP.album_id[prepare]);
+  AudioPlayMusic(GP.album_id[prepare]);
 
   return true;
 }

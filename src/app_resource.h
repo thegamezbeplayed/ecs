@@ -26,5 +26,4 @@ typedef struct {
 float GetLoadingProgress(void);
 
 extern LoadQueue loader;
-
 #endif
