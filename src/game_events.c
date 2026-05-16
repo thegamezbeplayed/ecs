@@ -189,44 +189,154 @@ void StepTimers(timers_t* pool){
   }
 }
 
-event_t* InitEvent(notification_pool_t* p, uint64_t event, void* data, int uid){
-  event_t* ev = GameCalloc("InitEvent",1,sizeof(event_t));
+enum { EVENT_POOL_END = UINT32_MAX };
 
-  uint64_t guid = hash_combine_64(event, hash_64_from_int(uid));
-  *ev = (event_t){
-    guid, event, -1, 0, data, uid
+event_bus_t* InitEventBusEx(int sub_cap, int event_cap){
+  if (sub_cap <= 0) sub_cap = 1;
+  if (event_cap <= 0) event_cap = 1;
+
+  event_bus_t* bus = GameCalloc("InitEventBus",1,sizeof(event_bus_t));
+  *bus = (event_bus_t){
+    .cap = sub_cap,
+    .event_cap = event_cap,
+    .free_head = 0,
+    .subs = GameCalloc("InitEventBus", sub_cap, sizeof(event_sub_t)),
+    .events = GameCalloc("InitEventBus", event_cap, sizeof(event_slot_t)),
+    .due_events = GameCalloc("InitEventBus", event_cap, sizeof(uint64_t))
   };
-  return ev;
+
+  for (int i = 0; i < event_cap; i++) {
+    bus->events[i].next_free = (i == event_cap - 1) ? EVENT_POOL_END : (uint32_t)(i + 1);
+    bus->events[i].generation = 1;
+    bus->events[i].event.pool_index = (uint32_t)i;
+  }
+
+  HashInit(&bus->scheduled, next_pow2_int(event_cap*2));
+  return bus;
 }
 
 event_bus_t* InitEventBus(int cap){
-  event_bus_t* bus = GameCalloc("InitEventBus",1,sizeof(event_bus_t));
-  *bus = (event_bus_t){
-    .cap = cap,
-      .subs = GameCalloc("InitEventBus", cap, sizeof(event_sub_t))
-  };
+  return InitEventBusEx(cap, MAX_EVENTS);
+}
 
-  HashInit(&bus->scheduled, next_pow2_int(cap*2));
-  return bus;
+void EventBusUnload(event_bus_t* bus){
+  if (!bus)
+    return;
+
+  for (int i = 0; i < bus->event_cap; i++){
+    if (bus->events[i].in_use)
+      EventRelease(bus, &bus->events[i].event);
+  }
+
+  HashFree(&bus->scheduled);
+  GameFree("EventBusUnload", bus->due_events);
+  GameFree("EventBusUnload", bus->events);
+  GameFree("EventBusUnload", bus->subs);
+  GameFree("EventBusUnload", bus);
 }
 
 void EventBusEnsureCap(event_bus_t* bus){
   if (bus->count < bus->cap)
     return;
 
-  int new_cap = bus->cap + 64;
-  bus->subs = GameRealloc("EventBusEnsureCap", bus->subs, new_cap * sizeof(event_sub_t));
-  bus->cap = new_cap;
+  TraceLog(LOG_WARNING, "=== EVENT BUS ===\n subscription cap reached (%d)", bus->cap);
+}
+
+event_t* EventAcquire(event_bus_t* bus){
+  if (!bus || bus->free_head == EVENT_POOL_END) {
+    if (bus) bus->dropped_count++;
+    TraceLog(LOG_WARNING, "=== EVENT BUS ===\n event pool exhausted");
+    return NULL;
+  }
+
+  uint32_t index = bus->free_head;
+  event_slot_t* slot = &bus->events[index];
+
+  bus->free_head = slot->next_free;
+  slot->next_free = EVENT_POOL_END;
+  slot->in_use = true;
+  bus->event_count++;
+  if (bus->event_count > bus->active_peak)
+    bus->active_peak = bus->event_count;
+
+  memset(&slot->event, 0, sizeof(event_t));
+  slot->event.pool_index = index;
+  slot->event.generation = slot->generation;
+  slot->event.max = -1;
+  return &slot->event;
+}
+
+void EventRelease(event_bus_t* bus, event_t* e){
+  if (!bus || !e || e->pool_index >= (uint32_t)bus->event_cap)
+    return;
+
+  event_slot_t* slot = &bus->events[e->pool_index];
+  if (!slot->in_use || slot->generation != e->generation)
+    return;
+
+  uint32_t index = e->pool_index;
+
+  if (e->owns_data && e->data)
+    GameFree("EventRelease", e->data);
+
+  slot->in_use = false;
+  slot->generation++;
+  memset(&slot->event, 0, sizeof(event_t));
+  slot->event.pool_index = index;
+  slot->next_free = bus->free_head;
+  bus->free_head = index;
+  if (bus->event_count > 0)
+    bus->event_count--;
+}
+
+event_t* InitEvent(event_bus_t* bus, uint64_t event, void* data, int uid){
+  event_t* ev = EventAcquire(bus);
+  if (!ev)
+    return NULL;
+
+  uint32_t pool_index = ev->pool_index;
+  uint32_t generation = ev->generation;
+  uint64_t guid = hash_combine_64(event, hash_64_from_int(uid));
+  *ev = (event_t){
+    guid, event, -1, 0, data, uid, TF_NONE, 0,
+    pool_index, generation, false, 0
+  };
+  return ev;
+}
+
+event_t* InitEventCopy(event_bus_t* bus, uint64_t event, const void* data, size_t data_size, int uid){
+  event_t* ev = InitEvent(bus, event, NULL, uid);
+  if (!ev)
+    return NULL;
+
+  if (data && data_size > 0) {
+    ev->data = GameCalloc("InitEventCopy", 1, data_size);
+    if (!ev->data) {
+      EventRelease(bus, ev);
+      return NULL;
+    }
+    memcpy(ev->data, data, data_size);
+    ev->owns_data = true;
+    ev->data_size = data_size;
+  }
+
+  return ev;
 }
 
 void EventBusStep(event_bus_t* bus){
+  if (!bus)
+    return;
+
   hash_iter_t iter;
   HashStart(&bus->scheduled, &iter);
 
   hash_slot_t* s;
+  int due_count = 0;
 
   while((s = HashNext(&iter))){
     event_t* e = s->value;
+    if (!e)
+      continue;
 
     switch(e->timing){
       case TF_TURN:
@@ -242,40 +352,57 @@ void EventBusStep(event_bus_t* bus){
 
     }
 
+    if (due_count < bus->event_cap)
+      bus->due_events[due_count++] = e->uid;
+  }
+
+  for (int i = 0; i < due_count; i++) {
+    uint64_t uid = bus->due_events[i];
+    event_t* e = HashGet(&bus->scheduled, uid);
+    if (!e)
+      continue;
+
     EventEmit(bus, e);
-    HashRemove(&bus->scheduled, e->uid);
+    HashRemove(&bus->scheduled, uid);
+    EventRelease(bus, e);
   }
 }
 
 event_sub_t* EventSubscribe(event_bus_t* bus, notification event, EventCallback cb, void* u_data){
+  if (!bus || !cb)
+    return NULL;
+
   EventBusEnsureCap(bus);
+  if (bus->count >= bus->cap)
+    return NULL;
 
   event_sub_t* sub =  &bus->subs[bus->count++];
   *sub = (event_sub_t){
     .event = event,
-      .cb = cb,
-      .user_data = u_data
+    .cb = cb,
+    .eid = -1,
+    .user_data = u_data
   };
 
   return sub;
 }
 
 void EventRemove(event_bus_t* bus, uint64_t id){
+  EventUnsubscribeByOwner(bus, id);
+}
+
+void EventUnsubscribeByOwner(event_bus_t* bus, uint64_t id){
   if (!bus) return;
 
-  int index = -1;
-  for (int i = 0; i < bus->count; i++) {
-    if (bus->subs[i].eid != id)
+  for (int i = 0; i < bus->count;) {
+    if (bus->subs[i].eid != id) {
+      i++;
       continue;
-    index = i;
-    break;
+    }
+
+    bus->subs[i] = bus->subs[bus->count - 1];
+    bus->count--;
   }
-
-  if (index < 0) return; // not found
-
-  bus->subs[index] = bus->subs[bus->count - 1];
-  bus->count--;
-
 }
 
 void EventUnsubscribe(event_bus_t* bus, event_sub_t* sub)
@@ -299,6 +426,9 @@ void EventUnsubscribe(event_bus_t* bus, event_sub_t* sub)
 }
 
 void EventEmit(event_bus_t* bus, event_t* e){
+  if (!bus || !e)
+    return;
+
   for (int i = 0; i < bus->count; i++) {
     if (bus->subs[i].event != e->type)
       continue;
@@ -313,12 +443,12 @@ void EventEmit(event_bus_t* bus, event_t* e){
     bus->subs[i].cb(e, bus->subs[i].user_data);
     e->calls++;
   }
-
-  if(e->max > -1 && e->calls >= e->max)
-    EventRemove(bus, e->uid);
 }
 
 uint64_t EventSchedule(event_bus_t* bus, event_t* e){
+  if (!bus || !e)
+    return 0;
+
   uint64_t uid = hash_combine_64(hash_str_64("EVENT"),
       hash_combine_64(e->uid, WorldGetTime()));
 
@@ -326,6 +456,19 @@ uint64_t EventSchedule(event_bus_t* bus, event_t* e){
 
   HashPut(&bus->scheduled, uid, e);
   return uid;
+}
+
+bool EventUnschedule(event_bus_t* bus, uint64_t uid){
+  if (!bus || uid == 0)
+    return false;
+
+  event_t* e = HashGet(&bus->scheduled, uid);
+  if (!e)
+    return false;
+
+  HashRemove(&bus->scheduled, uid);
+  EventRelease(bus, e);
+  return true;
 }
 
 notification_t* NotificationGet(notification_pool_t* p, hash_key_t key ){

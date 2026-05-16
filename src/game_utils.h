@@ -45,6 +45,32 @@ typedef enum{
 }TimeFrame;
 
 typedef struct event_s event_t;
+typedef struct {
+    uint32_t index;
+    uint32_t generation;
+} event_handle_t;
+
+struct event_s{
+  uint64_t          uid;
+  notification      type;
+  int               max, calls;
+  void*             data;
+  int               eid;
+  TimeFrame         timing;
+  int               scheduled;
+  uint32_t          pool_index;
+  uint32_t          generation;
+  bool              owns_data;
+  size_t            data_size;
+};
+
+typedef struct {
+    event_t  event;
+    uint32_t next_free;
+    uint32_t generation;
+    bool     in_use;
+} event_slot_t;
+
 typedef void (*EventCallback)(
     event_t    *event,
     void*      user_data
@@ -59,26 +85,29 @@ typedef struct {
 
 typedef struct {
     event_sub_t* subs;
+    event_slot_t* events;
+    uint64_t*    due_events;
     hash_map_t   scheduled;
+    uint32_t     free_head;
     int          count, cap;
+    int          event_count, event_cap;
+    int          active_peak, dropped_count;
 } event_bus_t;
 
-struct event_s{
-  uint64_t          uid;
-  notification      type;
-  int               max, calls;
-  void*             data;
-  int               eid;
-  TimeFrame         timing;
-  int               scheduled;
-};
-event_t* InitEvent(notification_pool_t*, uint64_t, void*, int);
+event_t* InitEvent(event_bus_t*, uint64_t, void*, int);
+event_t* InitEventCopy(event_bus_t*, uint64_t, const void*, size_t, int);
 event_bus_t* InitEventBus(int cap);
+event_bus_t* InitEventBusEx(int sub_cap, int event_cap);
+void EventBusUnload(event_bus_t* bus);
+event_t* EventAcquire(event_bus_t* bus);
+void EventRelease(event_bus_t* bus, event_t* e);
 void EventBusStep(event_bus_t* bus);
 event_sub_t* EventSubscribe(event_bus_t* bus, notification event, EventCallback cb, void* u_data);
 void EventEmit(event_bus_t* bus, event_t*);
 void EventRemove(event_bus_t* bus, uint64_t id);
+void EventUnsubscribeByOwner(event_bus_t* bus, uint64_t id);
 uint64_t EventSchedule(event_bus_t* bus, event_t* e);
+bool EventUnschedule(event_bus_t* bus, uint64_t uid);
 
 typedef void (*CooldownCallback)(void* );
 
