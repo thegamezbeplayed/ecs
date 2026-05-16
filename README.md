@@ -13,14 +13,15 @@ A lightweight, data-oriented Entity Component System (ECS) written in C, designe
 
 | Workflow | Status | Description |
 |----------|--------|-------------|
-| **Build** | [![Build Status](https://github.com/thegamezbeplayed/ecs/actions/workflows/build.yml/badge.svg)](https://github.com/thegamezbeplayed/ecs/actions/workflows/build.yml) | CI build for native + Web (Emscripten) |
-| **Web Build** | (included in Build) | Emscripten compilation + size checks |
-
-**Last successful build**: Recent runs on `main` and feature branches complete in \~1 minute with no failures.
+| **Linux Desktop** | [![Linux Desktop](https://github.com/thegamezbeplayed/ecs/actions/workflows/linux-desktop.yml/badge.svg?branch=main)](https://github.com/thegamezbeplayed/ecs/actions/workflows/linux-desktop.yml) | Native Linux build + smoke run |
+| **Windows Desktop** | [![Windows Desktop](https://github.com/thegamezbeplayed/ecs/actions/workflows/windows-desktop.yml/badge.svg?branch=main)](https://github.com/thegamezbeplayed/ecs/actions/workflows/windows-desktop.yml) | Native Windows build + smoke run |
+| **Web** | [![Web](https://github.com/thegamezbeplayed/ecs/actions/workflows/web.yml/badge.svg?branch=main)](https://github.com/thegamezbeplayed/ecs/actions/workflows/web.yml) | Emscripten build + artifact checks |
 
 ### Quick Links
 - [All Workflow Runs](https://github.com/thegamezbeplayed/ecs/actions)
-- [Build Workflow Details](https://github.com/thegamezbeplayed/ecs/actions/workflows/build.yml)
+- [Linux Desktop Workflow](https://github.com/thegamezbeplayed/ecs/actions/workflows/linux-desktop.yml)
+- [Windows Desktop Workflow](https://github.com/thegamezbeplayed/ecs/actions/workflows/windows-desktop.yml)
+- [Web Workflow](https://github.com/thegamezbeplayed/ecs/actions/workflows/web.yml)
 
 ## Quick Start
 
