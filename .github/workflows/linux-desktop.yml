@@ -1,4 +1,4 @@
-name: Build
+name: Linux Desktop
 
 on:
   push:
@@ -8,6 +8,7 @@ on:
 
 jobs:
   linux-desktop:
+    name: linux-desktop
     runs-on: ubuntu-latest
 
     steps:
