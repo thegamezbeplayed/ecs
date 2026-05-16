@@ -83,10 +83,16 @@ void GameEvent(uint64_t event, void* data, uint64_t uid){
 }
 
 void GameSetState(GameState state){
-  if(GP.state[SCREEN_GAMEPLAY] == state)
+  if(GP.state[GP.screen] == state)
     return;
 
   GP.state[SCREEN_GAMEPLAY] = state;
+
+  if(state >= GAME_FINISHED)
+    GameTransitionScreen();
+  if(GP.screen != SCREEN_GAMEPLAY)
+    return;
+
   GameEvent(GameEvent_ToNotif(GAME_EVENT_STATE), &world , state);
   GameEvent(GameEvent_ToNotif(GAME_EVENT_SET), &world , state);
 
@@ -109,7 +115,7 @@ void InitGameProcess(){
   GP.cb[GAME_LOADING] = GameStepState;
   GP.cb[GAME_READY] = GameStepState;
    
-  GP.next[SCREEN_LOGO] = SCREEN_GAMEPLAY;
+  GP.next[SCREEN_LOGO] = SCREEN_TITLE;
   GP.phase[SCREEN_LOGO][GAME_LOADING] = InitLogoScreen;
   GP.phase[SCREEN_LOGO][GAME_FINISHED] = UnloadLogoScreen;
   GP.update_steps[SCREEN_LOGO][UPDATE_DRAW] = DrawLogoScreen;

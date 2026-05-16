@@ -1,3 +1,4 @@
+#if defined(PLATFORM_DESKTOP)
 #include <time.h>
 #include "app_resource.h"
 #include "screens.h"    // NOTE: Declares global (extern) variables and screens functions
@@ -7,9 +8,6 @@
 #include "scene_loader.h"
 
 #include "rlgl.h"
-#if defined(PLATFORM_WEB)
-#include <emscripten/emscripten.h>
-#endif
 
 LoadQueue loader = {0};
 float screenWidth = 1280.0f;
@@ -23,7 +21,6 @@ float deltaTime = 0.0f;             // Frame time (Update + Draw + Wait time)
 int tarFPS = 60;
 float progress = .0f;
 
-void UpdateDrawFrame(void);          // Update and draw one frame
 static void ChangeToScreen(GameScreen screen);     // Change to screen, no transition effect
 
 static void TransitionToScreen(GameScreen screen); // Request transition to next screen
@@ -87,11 +84,7 @@ int main(void)
   InitUI();
 
   //SetTargetFPS(60);
-#if defined(PLATFORM_WEB)
-  emscripten_set_main_loop(UpdateDrawFrame, 0, 1);
-#else
 
-  //SetExitKey(KEY_NULL);
   // Main game loop
   while (!WindowShouldClose() && !wantQuit)    // Detect window close button or ESC key
   {
@@ -130,7 +123,6 @@ int main(void)
 
     GameProcessSync(wait);
   }
-#endif
   // Unload global data loaded
   //UnloadFont(font);
   //  UnloadMusicStream(music);
@@ -141,16 +133,6 @@ int main(void)
                           //--------------------------------------------------------------------------------------
 
   return 0;
-}
-
-void UpdateDrawFrame(void){
-  if (IsKeyPressed(KEY_ENTER))// || IsGestureDetected(GESTURE_TAP))
-  {
-    GameTransitionScreen();
-  }
-
-  previousTime = currentTime;
-  GameProcessSync(false);
 }
 
 void* AppBackgroundLoader(void* arg)
@@ -172,3 +154,5 @@ void* AppBackgroundLoader(void* arg)
   pthread_mutex_unlock(&q->mutex);
   return NULL;
 }
+
+#endif

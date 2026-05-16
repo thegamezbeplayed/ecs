@@ -1,5 +1,6 @@
 #include "game_systems.h"
 #include "game_define.h"
+#include "asset_resources.h"
 
 static ResourcePool RES_POOL;
 static game_t       GAME_DEF;
