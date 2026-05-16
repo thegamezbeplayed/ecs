@@ -7,8 +7,6 @@
 #include "scene_loader.h"
 #include "asset_sfx.h"
 
-#define BUS (event_bus_t*){GP.bus}
-
 world_t world;
 game_process_t GP;
 
@@ -29,18 +27,25 @@ void InitEntityComponentSystem(void){
   SceneSetup(&world, test);
 }
 
+event_bus_t* GameBus(void){
+  return GP.bus;
+}
+
 void Subscribe(uint64_t event, EventCallback cb, void* data){
-  event_sub_t* sub = EventSubscribe(BUS, event , cb, data);
+  event_sub_t* sub = EventSubscribe(GameBus(), event , cb, data);
+  if (!sub) return;
   sub->eid = -1;
 }
 
 void SubscribeEntity(uint64_t event, EventCallback cb, void* data, int id){
-  event_sub_t* sub = EventSubscribe(BUS, event, cb, data);
+  event_sub_t* sub = EventSubscribe(GameBus(), event, cb, data);
+  if (!sub) return;
   sub->eid = id;
 }
 
 void TargetSubscribe(uint64_t event, EventCallback cb, void* data, int id){
-  event_sub_t* sub = EventSubscribe(BUS, event, cb, data);
+  event_sub_t* sub = EventSubscribe(GameBus(), event, cb, data);
+  if (!sub) return;
   sub->eid = id;
 }
 
@@ -57,21 +62,24 @@ void ScheduleEvent(uint64_t event, void* data, uint64_t uid, TimeFrame tf, int s
       break;
   }
 
-  event_t* ev = InitEvent(GP.notifications, event, data, uid);
+  event_t* ev = InitEvent(GameBus(), event, data, uid);
+  if (!ev) return;
 
   ev->timing = tf;
   ev->scheduled = step;
 
-  EventSchedule(BUS, ev);
+  EventSchedule(GameBus(), ev);
 }
 
 void GameEvent(uint64_t event, void* data, uint64_t uid){
-  if(BUS->count == 0)
+  event_bus_t* bus = GameBus();
+  if(!bus || bus->count == 0)
     return;
 
-  event_t* ev = InitEvent(GP.notifications, event, data, uid);
-  EventEmit(BUS, ev);
-  GameFree("GameEvent", ev);
+  event_t* ev = InitEvent(bus, event, data, uid);
+  if (!ev) return;
+  EventEmit(bus, ev);
+  EventRelease(bus, ev);
 }
 
 void GameSetState(GameState state){
@@ -142,7 +150,7 @@ void InitGameEvents(){
   GP.children[SCREEN_GAMEPLAY].process = PROCESS_LEVEL;
   GP.game_frames = 0; 
 
-  GP.bus = InitEventBus(128);
+  GP.bus = InitEventBusEx(128, MAX_EVENTS);
   GP.notifications = InitNotifications(64);
 }
 
@@ -162,8 +170,8 @@ bool GameTransitionScreen(){
 }
 
 void GameProcessStep(){
-  if(BUS)
-    EventBusStep(BUS);
+  if(GameBus())
+    EventBusStep(GameBus());
 }
 
 void GameProcessSync(bool wait){
@@ -196,4 +204,6 @@ void GameStepState(GameState s){
 }
 
 void GameProcessEnd(){
+  EventBusUnload(GP.bus);
+  GP.bus = NULL;
 }

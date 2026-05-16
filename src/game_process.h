@@ -73,6 +73,7 @@ typedef struct{
 extern game_process_t GP;
 
 void InitGameEvents();
+event_bus_t* GameBus(void);
 void InitGameProcess();
 void GameProcessStep();
 void GameProcessSync(bool wait);
@@ -118,4 +119,3 @@ static void GameSetFrameRate(int rate){
 
 static int GameGetFrameRate(void){ return GP.fps;}
 #endif
-

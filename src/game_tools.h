@@ -143,7 +143,7 @@ static hash_slot_t* HashNext(hash_iter_t* it) {
             return s;
 
         if (s->state == 2)
-          return NULL;
+          continue;
     }
 
     return NULL;
