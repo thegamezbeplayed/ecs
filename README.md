@@ -11,11 +11,11 @@ A lightweight, data-oriented Entity Component System (ECS) written in C, designe
 
 ## Workflow Status
 
-| Workflow | Status | Description |
-|----------|--------|-------------|
-| **Linux Desktop** | [![Linux Desktop](https://github.com/thegamezbeplayed/ecs/actions/workflows/linux-desktop.yml/badge.svg?branch=main)](https://github.com/thegamezbeplayed/ecs/actions/workflows/linux-desktop.yml) | Native Linux build + smoke run |
-| **Windows Desktop** | [![Windows Desktop](https://github.com/thegamezbeplayed/ecs/actions/workflows/windows-desktop.yml/badge.svg?branch=main)](https://github.com/thegamezbeplayed/ecs/actions/workflows/windows-desktop.yml) | Native Windows build + smoke run |
-| **Web** | [![Web](https://github.com/thegamezbeplayed/ecs/actions/workflows/web.yml/badge.svg?branch=main)](https://github.com/thegamezbeplayed/ecs/actions/workflows/web.yml) | Emscripten build + artifact checks |
+| Workflow            | Status                                                                                                                                                                                                   | Description                        |
+|---------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------|
+| **Linux Desktop**   | [![Linux Desktop](https://github.com/thegamezbeplayed/ecs/actions/workflows/linux-desktop.yml/badge.svg?branch=main)](https://github.com/thegamezbeplayed/ecs/actions/workflows/linux-desktop.yml)       | Native Linux build + smoke run     |
+| **Windows Desktop** | [![Windows Desktop](https://github.com/thegamezbeplayed/ecs/actions/workflows/windows-desktop.yml/badge.svg?branch=main)](https://github.com/thegamezbeplayed/ecs/actions/workflows/windows-desktop.yml) | Native Windows build + smoke run   |
+| **Web**             | [![Web](https://github.com/thegamezbeplayed/ecs/actions/workflows/web.yml/badge.svg?branch=main)](https://github.com/thegamezbeplayed/ecs/actions/workflows/web.yml)                                     | Emscripten build + artifact checks |
 
 ### Quick Links
 - [All Workflow Runs](https://github.com/thegamezbeplayed/ecs/actions)
