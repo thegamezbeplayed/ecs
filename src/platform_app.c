@@ -68,7 +68,8 @@ int main(void)
   srand((unsigned int)time(NULL));  // seed once using current time
  
   InitScreenWindow(screenWidth,screenHeight, "raylib game template");
-   
+
+  GameSetScreen(SCREEN_LOGO);  
   InitAudioDevice();      // Initialize audio device
 
   SpriteLoadSplash("resources/splash.png", VEC_NEW(screenWidth,screenHeight));

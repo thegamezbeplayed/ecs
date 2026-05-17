@@ -11,12 +11,14 @@
 //----------------------------------------------------------------------------------
 
 // Gameplay Screen Initialization logic
-void InitGameplayScreen(void){
+void InitGameplay(void){
   InitGameEvents();
-  
   InitEntityComponentSystem();
-  GameSetState(GAME_LOADING);
 }
+
+void ReadyGameplay(void){}
+
+void RunGameplay(void){}
 
 void PreUpdate(void){
   GameProcessStep();
@@ -41,7 +43,7 @@ void FinalUpdate(void){
 }
 
 // Gameplay Screen Update logic
-void UpdateGameplayScreen(void){
+void FrameUpdate(void){
   GameEvent(GameEvent_ToNotif(GAME_EVENT_STEP), &world , UPDATE_FRAME);
   GameEvent(GameEvent_ToNotif(GAME_EVENT_SYNC), &world , UPDATE_FRAME);
 
@@ -54,7 +56,7 @@ void BeginDraw(void){
   GameEvent(GameEvent_ToNotif(GAME_EVENT_SYNC), &world , UPDATE_DRAW_BEGIN);
 }
 
-void DrawGameplayScreen(void){
+void UpdateDraw(void){
   GameEvent(GameEvent_ToNotif(GAME_EVENT_STEP), &world , UPDATE_DRAW);
   GameEvent(GameEvent_ToNotif(GAME_EVENT_SYNC), &world , UPDATE_DRAW);
 }
@@ -65,13 +67,13 @@ void EndDraw(void){
 }
 
 // Gameplay Screen Unload logic
-void UnloadGameplayScreen(void)
+void UnloadGameplay(void)
 {
   GameProcessEnd();
 }
 
 // Gameplay Screen should finish?
-int FinishGameplayScreen(void)
+int FinishGameplay(void)
 {
   return 0;
 //  return finishScreen;

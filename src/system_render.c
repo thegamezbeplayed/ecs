@@ -9,6 +9,7 @@ bool RenderContextInit(void* comp, component_entry_t* j){
 }
 
 void RenderInit(world_t* w){
+  SubjectInit(&renderer);
   window_resize_t resize = {GetScreenWidth(), GetScreenHeight()};
   SubjectNotify(&window, &resize);
 }

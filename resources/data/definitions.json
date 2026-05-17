@@ -14,10 +14,10 @@
     "Sprites" : {
       "components": ["Sprite", "Position"],
       "sets": [
-        {"step": "GAME_READY", "fn": "SpriteLoad"}
+        {"step": "GAME_RUNNING", "fn": "SpriteLoad"}
       ],
       "states": [
-        {"step": "GAME_LOADING", "fn": "SpritesInit"}
+        {"step": "GAME_READY", "fn": "SpritesInit"}
       ]
     },
     "Particles": {
@@ -27,7 +27,7 @@
         {"step": "UPDATE_POST", "fn": "ParticleCleanup"}
       ],
       "states": [
-        {"step": "GAME_LOADING", "fn": "ParticlesInit"}
+        {"step": "GAME_READY", "fn": "ParticlesInit"}
       ]
     },
     "ParticleEmitters": {
@@ -95,7 +95,7 @@
         {"step": "GAME_LOADING",   "fn": "RenderLoad"}
       ],
       "states": [
-        {"step": "GAME_READY", "fn": "RenderInit"}
+        {"step": "GAME_LOADING", "fn": "RenderInit"}
       ]
     },
     "Cameras": {
