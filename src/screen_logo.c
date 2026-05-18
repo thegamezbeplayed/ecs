@@ -1,6 +1,6 @@
 #include "screens.h"
 #include "app_resource.h"
-#include "game_process.h"
+#include "process_define.h"
 
 int count = 0;
 // Logo Screen Initialization logic

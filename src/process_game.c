@@ -1,86 +1,7 @@
-#include <stdio.h>
-#include <unistd.h>
-#include "game_process.h"
-#include "game_utils.h"
-#include "game_register.h"
-#include "game_define.h"
-#include "scene_loader.h"
+#include "process_define.h"
 #include "asset_sfx.h"
 
-world_t world;
 game_process_t GP;
-
-void InitEntityComponentSystem(void){
-  WorldInit(&world);
-  
-  game_t* g = LoadGameDefine("resources/data/definitions.json");
-
-  if(!g)
-    return;
-
-  GameInitPrefabs(&world, g);
-  UnloadGameDefine(g);
-  Scene* test = GameCalloc("InitEntityComponentSystem", 1, sizeof(Scene));
-
-  bool scene = SceneLoadByIndex(0, test);
-
-  SceneSetup(&world, test);
-}
-
-event_bus_t* GameBus(void){
-  return GP.bus;
-}
-
-void Subscribe(uint64_t event, EventCallback cb, void* data){
-  event_sub_t* sub = EventSubscribe(GameBus(), event , cb, data);
-  if (!sub) return;
-  sub->eid = -1;
-}
-
-void SubscribeEntity(uint64_t event, EventCallback cb, void* data, int id){
-  event_sub_t* sub = EventSubscribe(GameBus(), event, cb, data);
-  if (!sub) return;
-  sub->eid = id;
-}
-
-void TargetSubscribe(uint64_t event, EventCallback cb, void* data, int id){
-  event_sub_t* sub = EventSubscribe(GameBus(), event, cb, data);
-  if (!sub) return;
-  sub->eid = id;
-}
-
-void ScheduleEvent(uint64_t event, void* data, uint64_t uid, TimeFrame tf, int step){
-  switch(tf){
-    case TF_TURN:
-//      step += WorldGetTurn();
-      break;
-    case TF_UPDATE:
-      step += WorldGetTime();
-      break;
-    default:
-      return;
-      break;
-  }
-
-  event_t* ev = InitEvent(GameBus(), event, data, uid);
-  if (!ev) return;
-
-  ev->timing = tf;
-  ev->scheduled = step;
-
-  EventSchedule(GameBus(), ev);
-}
-
-void GameEvent(uint64_t event, void* data, uint64_t uid){
-  event_bus_t* bus = GameBus();
-  if(!bus || bus->count == 0)
-    return;
-
-  event_t* ev = InitEvent(bus, event, data, uid);
-  if (!ev) return;
-  EventEmit(bus, ev);
-  EventRelease(bus, ev);
-}
 
 bool GameSetScreen(GameScreen s){
   if(GP.screen == s)
@@ -90,7 +11,6 @@ bool GameSetScreen(GameScreen s){
   GP.screen = s;
 
   return GameSetState(GAME_LOADING);
-
 }
 
 bool GameSetState(GameState state){
@@ -99,11 +19,9 @@ bool GameSetState(GameState state){
 
   GP.state[GP.screen] = state;
   GP.phase[GP.screen][state]();
-  
-  if(GP.screen == SCREEN_GAMEPLAY){ 
-    GameEvent(GameEvent_ToNotif(GAME_EVENT_STATE), &world , state);
-    GameEvent(GameEvent_ToNotif(GAME_EVENT_SET), &world , state);
 
+  if(GP.screen == SCREEN_GAMEPLAY){ 
+    GameOnStateChange(state);
     if(GP.cb[state])
       GP.cb[state](state);
   }
@@ -115,7 +33,7 @@ void InitGameProcess(){
     GP.album_id[s] = -1;
     for(int u = 0; u<UPDATE_DONE;u++){
       GP.update_steps[s][u] = DO_NOTHING;
-    
+
     }
     GP.children[s].process= PROCESS_NONE;
     for(int p = 0; p < PROCESS_DONE; p++)
@@ -124,13 +42,13 @@ void InitGameProcess(){
 
   GP.cb[GAME_LOADING] = GameStepState;
   GP.cb[GAME_READY] = GameStepState;
-   
+
   GP.next[SCREEN_LOGO] = SCREEN_TITLE;
   GP.phase[SCREEN_LOGO][GAME_LOADING] = InitLogoScreen;
   GP.phase[SCREEN_LOGO][GAME_FINISHED] = UnloadLogoScreen;
   GP.update_steps[SCREEN_LOGO][UPDATE_DRAW] = DrawLogoScreen;
   GP.update_steps[SCREEN_LOGO][UPDATE_FRAME] = UpdateLogoScreen;
- 
+
   GP.next[SCREEN_TITLE] = SCREEN_GAMEPLAY;
   GP.phase[SCREEN_TITLE][GAME_LOADING] = InitTitleScreen;
   GP.phase[SCREEN_TITLE][GAME_FINISHED] = UnloadTitleScreen;
@@ -161,14 +79,6 @@ void InitGameProcess(){
   GP.update_steps[SCREEN_ENDING][UPDATE_FRAME] = UpdateEndScreen;
 }
 
-void InitGameEvents(){
-  GP.children[SCREEN_GAMEPLAY].process = PROCESS_LEVEL;
-  GP.game_frames = 0; 
-
-  GP.bus = InitEventBusEx(128, MAX_EVENTS);
-  GP.notifications = InitNotifications(64);
-}
-
 bool GameTransitionScreen(){
   GameScreen current = GP.screen;
   GameScreen prepare = GP.next[current];
@@ -192,7 +102,7 @@ void GameProcessSync(bool wait){
     GP.update_steps[SCREEN_GAMEPLAY][UPDATE_DRAW]();
     return;
   }
-  
+
   for(int i = 0; i < UPDATE_DONE;i++){
     if(i > UPDATE_DRAW_END && wait)
       return;
@@ -214,9 +124,4 @@ void GameStepState(GameState s){
   if(s < GAME_DONE)
     GameSetState(s+1);
 
-}
-
-void GameProcessEnd(){
-  EventBusUnload(GP.bus);
-  GP.bus = NULL;
 }

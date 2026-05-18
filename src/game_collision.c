@@ -1,5 +1,4 @@
 #include "game_physics.h"
-#include "game_process.h"
 #include "game_helpers.h"
 
 rigid_body_t* InitRigidBody(Vector2 pos, ShapeType shape, float wid, float hei){

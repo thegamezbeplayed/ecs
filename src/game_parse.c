@@ -761,7 +761,6 @@ bool ParsePrefabs(cJSON* root, game_t* out){
   cJSON* item;
   cJSON_ArrayForEach(item, list_json)
   {
-
     prefab_entity_t* p;// = &out->prefabs[i++];
 
     cJSON* contains_json = cJSON_GetObjectItem(item, "contains");
@@ -857,35 +856,4 @@ bool ParseRelations(cJSON* root, game_t* out){
   }
 
   return false;
-}
-
-bool ParseGameDefinition(cJSON* root, game_t* out){
-  if (!root || !out) return false;
-  memset(out, 0, sizeof(*out));
-
-  if(!ParseSystems(root, out)){
-    TraceLog(LOG_ERROR, "===PARSE GAME DEF===\n Systems parse error");
-    return false;
-  }
-
-  if(!ParseComponents(root, out)){
-    TraceLog(LOG_ERROR, "===PARSE GAME DEF===\n Components parse error");
-    return false;
-  }
-
-  // ====================== PREFABS ======================
-  if(!ParsePrefabs(root, out)){
-    TraceLog(LOG_ERROR, "===PARSE GAME DEF===\n Prefabs parse error");
-    return false;
-  }
-
-  // ====================== RELATIONS ======================
-  if(!ParseRelations(root, out)){
-    TraceLog(LOG_ERROR, "===PARSE GAME DEF===\n Relations parse error");
-    return false;
-  }
-
-  return true;
-
-
 }

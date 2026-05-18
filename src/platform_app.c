@@ -4,7 +4,6 @@
 #include "screens.h"    // NOTE: Declares global (extern) variables and screens functions
 #include "game_ui.h"
 #include "asset_sfx.h"
-#include "game_process.h"
 #include "scene_loader.h"
 
 #include "rlgl.h"

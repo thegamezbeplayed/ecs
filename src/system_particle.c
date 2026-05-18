@@ -1,4 +1,5 @@
 #include "game_systems.h"
+#include "process_event.h"
 
 static particle_layer_t PARTICLE_LAYERS[LAYER_DONE] = {0};
 

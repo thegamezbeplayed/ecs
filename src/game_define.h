@@ -89,9 +89,12 @@ typedef struct{
   int                 relation_count;
   entity_relation_t*  relations;
 }game_t;
-bool ParseGameSystems(cJSON* root, game_t* out);
-bool ParseGameDefinition(cJSON* root, game_t* out);
-game_t* LoadGameDefine(const char* path);
+bool InitGameDefine(world_t*);
+bool ParseSystems(cJSON* root, game_t* out);
+bool ParseComponents(cJSON* root, game_t* out);
+bool ParsePrefabs(cJSON* root, game_t* out);
+bool ParseRelations(cJSON* root, game_t* out);
+bool LoadGameDefine(game_t*);
 void GameInitPrefabs(world_t* w, game_t* g);
 void UnloadGameDefine(game_t* g);
 void GameSpawn(world_t* w, game_t* g);
