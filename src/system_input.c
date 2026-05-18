@@ -1,5 +1,6 @@
 #include "process_event.h"
 #include "system_define.h"
+#include "process_event.h"
 
 void OnInputEvent(event_t* ev, void* data){
   input_t* in   = ev->data;

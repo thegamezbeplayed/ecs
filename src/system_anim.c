@@ -1,5 +1,6 @@
 #include "process_event.h"
 #include "system_define.h"
+#include "process_event.h"
 
 void AnimSet(anim_comp_t* ac, anim_t* a, AnimState s){
 
