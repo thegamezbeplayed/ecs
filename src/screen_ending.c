@@ -1,6 +1,6 @@
 #include "game_ui.h"
 #include "game_utils.h"
-#include "game_process.h"
+#include "game_tools.h"
 #include "screens.h"
 
 // Title Screen Initialization logic

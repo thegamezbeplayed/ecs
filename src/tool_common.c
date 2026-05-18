@@ -1,5 +1,4 @@
-#include "util_tools.h"
-#include "game_process.h"
+#include "game_tools.h"
 
 static int TOTAL_SIZE = 0;
 void HashInit(hash_map_t* m, uint32_t cap) {
@@ -142,9 +141,6 @@ void* GameCalloc(const char* func, int count, size_t size){
 
   *raw = total_size;
   TOTAL_SIZE += total_size;
-
-  if(TOTAL_SIZE > 10485760)
-    DO_NOTHING();
 
   double mb = TOTAL_SIZE / (1024.0 * 1024.0);
   double gb = TOTAL_SIZE / (1024.0 * 1024.0 * 1024.0);

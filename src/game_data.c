@@ -141,6 +141,25 @@ void GameInitPrefabs(world_t* w, game_t* g){
   }
 }
 
+bool InitGameDefine(world_t* w){
+ game_t* g = GameCalloc("InitGameDefine", 1, sizeof(game_t));
+
+  if(!LoadGameDefine(g))
+    return false;
+
+  ComponentInit(g->num_comps);
+  for(int i = 0; i < g->num_comps; i++)
+    ComponentRegisterCore(g->comps[i]);
+
+  for(int i = 0; i < g->num_sys; i++)
+    SystemCreate(&world, &g->systems[i]);
+
+  GameInitPrefabs(&world, g);
+  UnloadGameDefine(g);
+
+  return true;
+}
+
 void GameSpawn(world_t* w, game_t* g){
   for(int i = 0; i < w->prefabs.count; i++){
     prefab_t* prefab = &w->prefabs.prefabs[i];

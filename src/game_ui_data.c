@@ -1,5 +1,4 @@
 #include "game_ui.h"
-#include "game_process.h"
 
 ui_menu_d MENU_DATA[MENU_DONE] = {
   [MENU_MAIN] = {MENU_MAIN, "TITLE_MENU_DOM", MENU_INACTIVE, false,

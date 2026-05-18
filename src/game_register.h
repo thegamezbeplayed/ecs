@@ -2,7 +2,7 @@
 #define __GAME_REG__
 
 #include "components.h"
-#include "game_process.h"
+#include "process_define.h"
 
 #define MAX_TERMS 8
 #define MAX_PREFABS 128

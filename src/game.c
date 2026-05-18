@@ -1,7 +1,9 @@
 #include "raylib.h"
-#include "game_process.h"
+#include "game_tools.h"
 
-#include "game_define.h"
+#include "process_event.h"
+#include "process_load.h"
+
 #include "game_register.h"
 #include "asset_sfx.h"
 #include "screens.h"
@@ -12,10 +14,12 @@
 // Gameplay Screen Initialization logic
 void InitGameplay(void){
   InitGameEvents();
-  InitEntityComponentSystem();
+  InitGameWorld();
 }
 
-void ReadyGameplay(void){}
+void ReadyGameplay(void){
+  GameLoad();
+}
 
 void RunGameplay(void){}
 
@@ -68,7 +72,7 @@ void EndDraw(void){
 // Gameplay Screen Unload logic
 void UnloadGameplay(void)
 {
-  GameProcessEnd();
+  GameUnloadEvents();
 }
 
 // Gameplay Screen should finish?
