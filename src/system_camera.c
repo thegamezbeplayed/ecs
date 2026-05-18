@@ -2,7 +2,6 @@
 #include "system_define.h"
 
 void CameraOnWindowResize(void* o_data, void* s, void* e_data) {
-  TraceLog(LOG_INFO, "=== CAMERA RESIZE LISTENER ===");
   window_resize_t* w = e_data;
   camera_t* c = o_data;
 

@@ -62,6 +62,4 @@ void SpritesInit(world_t* w){
      
     SubjectAddObserver(LookupLayer(i), "SPRITES", SpriteOnRender, w);
   }
-  
-  SubjectAddObserver(&renderer, SpriteOnRender, w);
 }

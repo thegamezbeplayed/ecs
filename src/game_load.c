@@ -1,12 +1,13 @@
 #include "game_define.h"
 #include "asset_define.h"
+#include "asset_resources.h"
+
 #include "system_define.h"
 
 static ResourcePool RES_POOL;
 static game_t       GAME_DEF;
 static cJSON* def;
 static cJSON* sys;
-
 
 void AsepriteToAnim(SheetID id, const ase_sprite_sheet_d* ase, anim_tag_t tag, int index, sprite_d* out){
   if (!ase || !out || index < 0 || index >= ase->num_frames) {

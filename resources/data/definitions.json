@@ -297,6 +297,16 @@
         }
       ]
     },
+    "Observer": {
+      "func":	"ObserverInit",
+      "list":	[
+	{
+	  "name":	"observe-test",
+	  "type":	1,
+	  "comp":	"Position"
+	}
+      ]
+    },
     "Input": {
       "func": "InputInit",
       "list": [{"name": "player"}]

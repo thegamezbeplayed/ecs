@@ -2,12 +2,19 @@
 #define __UTIL_OBSERVE__
 
 #include "observer_types.h"
-#include "gbm_tools.h"
 #include "game_common.h"
 
 #define  MAX_SUBJECT_STORE  64
 #define MAX_LISTENERS       32
 // Forward declarations
+
+typedef enum{
+  OBS_NONE,
+  OBS_COMP,
+  OBS_DEFINE,
+  OBS_ALL
+}ObserveType;
+
 typedef struct subject_s subject_t;
 typedef struct observer_s observer_t;
 
@@ -15,6 +22,7 @@ typedef void (*ObserverCB)(void* obs_data, void* sub, void* ev_data);
 
 struct observer_s {
   char        name[MAX_NAME_LEN];  
+  ObserveType type;
   ObserverCB  callback;
   void* data;           // User data passed to callback (e.g., component pointer)
   observer_t* next;

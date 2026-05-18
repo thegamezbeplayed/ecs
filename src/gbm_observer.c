@@ -1,6 +1,23 @@
 #include "util_observe.h"
-
+#include "components.h"
 subject_pool_t SUBJECTS;
+
+subject_t* SubjectCheckExists(const char* name, const char* from){
+  hash_key_t hash = hash_str_64(name);
+  if(!SUBJECTS.initialized){
+    subject_store_t* store = HashGet(&SUBJECTS.stored, hash);
+    if(!store)
+      return NULL;
+
+    return store->subject;
+  }
+  subject_t* s = HashGet(&SUBJECTS.map, hash);
+  if(!s)
+    return NULL;
+
+  return s;
+}
+
 
 subject_t* SubjectGetEntry(const char* name, const char* from){
   hash_key_t hash = hash_str_64(name);
@@ -43,8 +60,22 @@ void SubjectStore(const char* name, void* data){
   SUBJECTS.num_store++;
 }
 
+subject_t* SubjectComponent(const char* name, uint32_t eid, comp_id_t compid){
+  uint64_t name_hash = hash_64_combine(hash_str_32(name), eid);
+  hash_key_t key = hash_combine_64(name_hash, compid);
+
+  subject_t* existing = HashGet(&SUBJECTS.map, key);
+  if(existing)
+    return existing;
+
+   subject_t* s = GameCalloc("SubjectRegister", 1, sizeof(subject_t));
+  strcpy(s->name, name);
+
+  HashPut(&SUBJECTS.map, key, s);
+}
+
 subject_t* SubjectRegister(const char* name){
-  subject_t* existing = SubjectGetEntry(name, "REGISTER");
+  subject_t* existing = SubjectCheckExists(name, "REGISTER");
   if(existing)
     return existing;
 
@@ -56,13 +87,27 @@ subject_t* SubjectRegister(const char* name){
   return s;
 }
 
+void SubjectAddObserverByComponent(const char* name, uint32_t eid, comp_id_t compid, const char* oname, ObserverCB cb, void* data){
+  uint64_t name_hash = hash_64_combine(hash_str_32(name), eid);
+  hash_key_t key = hash_combine_64(name_hash, compid);
+  subject_t* s = HashGet(&SUBJECTS.map, key);
+
+  observer_t* obs = (observer_t*)GameMalloc("SubjectAddObserver", sizeof(observer_t));
+  if (!obs || !s) return; // Handle OOM in production
+
+  strcpy(obs->name, oname);
+  obs->callback = cb;
+  obs->data = data;
+  obs->next = s->observers;
+  s->observers = obs;
+}
+
 void SubjectAddObserver(const char* name, const char* oname, ObserverCB cb, void* data){
   subject_t* s = SubjectGetEntry(name, "ADD OBSERVER");
 
   observer_t* obs = (observer_t*)GameMalloc("SubjectAddObserver", sizeof(observer_t));
   if (!obs || !s) return; // Handle OOM in production
 
-  TraceLog(LOG_INFO, "=== %s Observing %s ===", oname, name);
   strcpy(obs->name, oname);
   obs->callback = cb;
   obs->data = data;
@@ -92,7 +137,6 @@ void SubjectRemoveObserver(subject_t* s, ObserverCB cb, void* data){
 void SubjectRunNotify(subject_t* s, void* data){
   observer_t* current = s->observers;
   while (current) {
-    TraceLog(LOG_INFO, "=== OBSERVER NOTIFY ===\n Subject %s Observer %s", s->name, current->name);
     current->callback(current->data, s, data);
     current = current->next;
   }

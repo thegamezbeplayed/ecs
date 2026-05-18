@@ -55,5 +55,4 @@ typedef struct {
   void*             data;        // dense array of component data
 } component_pool_t;
 bool HasComponent(component_pool_t* pool, Entity e);
-
 #endif
