@@ -1,6 +1,5 @@
 #include "process_event.h"
 #include "system_define.h"
-#include "game_control.h"
 #include "process_event.h"
 #include "tool_lookup.h"
 
