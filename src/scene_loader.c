@@ -23,6 +23,14 @@ void SceneLoadResources(void){
     ResourceLoad(RESOURCES[i]);
 
 }
+
+bool SceneInitWeb(void){
+  ResourceInit(NUM_RES);
+
+  for(int i = 0; i < NUM_RES; i++)
+    RESOURCES[i].dest = &SHEETS[RESOURCES[i].sheet].texture;
+}
+
 bool SceneInit(LoadQueue* l){
   ResourceInit(NUM_RES);
 
@@ -33,6 +41,12 @@ bool SceneInit(LoadQueue* l){
   }
 
   return l->count > 0;
+}
+
+int SceneResourePaths(void){
+  ResourceInit(NUM_RES);
+
+  return NUM_RES;
 }
 
 void SceneSetup(world_t* w, Scene* s){

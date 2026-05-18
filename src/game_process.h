@@ -42,7 +42,8 @@ typedef enum{
   GAME_DONE
 }GameState;
 
-void GameSetState(GameState state);
+bool GameSetScreen(GameScreen s);
+bool GameSetState(GameState state);
 
 typedef struct{
   ProcessType process;

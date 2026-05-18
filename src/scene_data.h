@@ -3,12 +3,13 @@
 #define SCENE_DATA_H
 
 #include "scene.h"
+#include "asset_resources.h"
 
 #define NUM_SCENES  1
 #define NUM_RES     2
 // Scene Registry
 
-static const ResourceRef RESOURCES[NUM_RES] = {
+static ResourceRef RESOURCES[NUM_RES] = {
   {RES_JSON, RES_ASEPRITE, RES_SPRITE, "resources/tile_sheet.json", "resources/tile_sheet.png", SHEET_TILE},
   {RES_JSON, RES_ASEPRITE, RES_ANIM, "resources/player-sheet.json", "resources/player-sheet.png", SHEET_CHAR}
 };
