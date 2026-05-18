@@ -82,16 +82,32 @@ void GameEvent(uint64_t event, void* data, uint64_t uid){
   EventRelease(bus, ev);
 }
 
-void GameSetState(GameState state){
-  if(GP.state[SCREEN_GAMEPLAY] == state)
-    return;
+bool GameSetScreen(GameScreen s){
+  if(GP.screen == s)
+    return false;
 
-  GP.state[SCREEN_GAMEPLAY] = state;
-  GameEvent(GameEvent_ToNotif(GAME_EVENT_STATE), &world , state);
-  GameEvent(GameEvent_ToNotif(GAME_EVENT_SET), &world , state);
+  TraceLog(LOG_INFO, "=== GAME SCREEN SET TO %i ===", s);
+  GP.screen = s;
 
-  if(GP.cb[state])
-    GP.cb[state](state);
+  return GameSetState(GAME_LOADING);
+
+}
+
+bool GameSetState(GameState state){
+  if(GP.state[GP.screen] == state)
+    return false;
+
+  GP.state[GP.screen] = state;
+  GP.phase[GP.screen][state]();
+  
+  if(GP.screen == SCREEN_GAMEPLAY){ 
+    GameEvent(GameEvent_ToNotif(GAME_EVENT_STATE), &world , state);
+    GameEvent(GameEvent_ToNotif(GAME_EVENT_SET), &world , state);
+
+    if(GP.cb[state])
+      GP.cb[state](state);
+  }
+  return true;
 }
 
 void InitGameProcess(){
@@ -109,7 +125,7 @@ void InitGameProcess(){
   GP.cb[GAME_LOADING] = GameStepState;
   GP.cb[GAME_READY] = GameStepState;
    
-  GP.next[SCREEN_LOGO] = SCREEN_GAMEPLAY;
+  GP.next[SCREEN_LOGO] = SCREEN_TITLE;
   GP.phase[SCREEN_LOGO][GAME_LOADING] = InitLogoScreen;
   GP.phase[SCREEN_LOGO][GAME_FINISHED] = UnloadLogoScreen;
   GP.update_steps[SCREEN_LOGO][UPDATE_DRAW] = DrawLogoScreen;
@@ -122,14 +138,16 @@ void InitGameProcess(){
   GP.update_steps[SCREEN_TITLE][UPDATE_FRAME] = UpdateTitleScreen;
 
   GP.next[SCREEN_GAMEPLAY] = SCREEN_ENDING;
-  GP.phase[SCREEN_GAMEPLAY][GAME_LOADING] = InitGameplayScreen;
-  GP.phase[SCREEN_GAMEPLAY][GAME_FINISHED] = UnloadGameplayScreen;
+  GP.phase[SCREEN_GAMEPLAY][GAME_LOADING] = InitGameplay;
+  GP.phase[SCREEN_GAMEPLAY][GAME_READY] = ReadyGameplay;
+  GP.phase[SCREEN_GAMEPLAY][GAME_RUNNING] = RunGameplay;
+  GP.phase[SCREEN_GAMEPLAY][GAME_FINISHED] = UnloadGameplay;
   GP.update_steps[SCREEN_GAMEPLAY][UPDATE_FIXED] = FixedUpdate;
   GP.update_steps[SCREEN_GAMEPLAY][UPDATE_PRE] = PreUpdate;
   GP.update_steps[SCREEN_GAMEPLAY][UPDATE_DRAW_BEGIN] = BeginDraw;
-  GP.update_steps[SCREEN_GAMEPLAY][UPDATE_DRAW] = DrawGameplayScreen;
+  GP.update_steps[SCREEN_GAMEPLAY][UPDATE_DRAW] = UpdateDraw;
   GP.update_steps[SCREEN_GAMEPLAY][UPDATE_DRAW_END] = EndDraw;
-  GP.update_steps[SCREEN_GAMEPLAY][UPDATE_FRAME] = UpdateGameplayScreen;
+  GP.update_steps[SCREEN_GAMEPLAY][UPDATE_FRAME] = FrameUpdate;
   GP.update_steps[SCREEN_GAMEPLAY][UPDATE_POST] = PostUpdate;
   GP.update_steps[SCREEN_GAMEPLAY][UPDATE_FINAL] = FinalUpdate;
   GP.album_id[SCREEN_GAMEPLAY] = AudioBuildMusicTracks("bingbong");
@@ -141,9 +159,6 @@ void InitGameProcess(){
   GP.phase[SCREEN_ENDING][GAME_FINISHED] = UnloadEndScreen;
   GP.update_steps[SCREEN_ENDING][UPDATE_DRAW] = DrawEndScreen;
   GP.update_steps[SCREEN_ENDING][UPDATE_FRAME] = UpdateEndScreen;
-  
-  GP.screen = SCREEN_LOGO;
-  GP.phase[SCREEN_LOGO][GAME_LOADING]();
 }
 
 void InitGameEvents(){
@@ -157,12 +172,10 @@ void InitGameEvents(){
 bool GameTransitionScreen(){
   GameScreen current = GP.screen;
   GameScreen prepare = GP.next[current];
-  if(GP.state[current] >= GAME_FINISHED)
+  if(!GameSetState(GAME_FINISHED))
     return false;
-  GP.state[current] = GAME_FINISHED;
-  GP.phase[current][GAME_FINISHED]();
-  GP.screen = prepare;
-  GP.phase[prepare][GAME_LOADING]();
+
+  GameSetScreen(prepare);
 
   AudioPlayMusic(GP.album_id[prepare]);
 
