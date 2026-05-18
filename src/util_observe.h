@@ -2,8 +2,11 @@
 #define __UTIL_OBSERVE__
 
 #include "observer_types.h"
+#include "gbm_tools.h"
+#include "game_common.h"
 
-#define MAX_LISTENERS 32
+#define  MAX_SUBJECT_STORE  64
+#define MAX_LISTENERS       32
 // Forward declarations
 typedef struct subject_s subject_t;
 typedef struct observer_s observer_t;
@@ -11,20 +14,38 @@ typedef struct observer_s observer_t;
 typedef void (*ObserverCB)(void* obs_data, void* sub, void* ev_data);
 
 struct observer_s {
-    ObserverCB callback;
-    void* data;           // User data passed to callback (e.g., component pointer)
-    observer_t* next;
+  char        name[MAX_NAME_LEN];  
+  ObserverCB  callback;
+  void* data;           // User data passed to callback (e.g., component pointer)
+  observer_t* next;
 };
 
-// Subject (the thing being observed)
 struct subject_s {
-    observer_t* observers;
-    // Optional: you can add a type/ID for filtering if needed
+  char        name[MAX_NAME_LEN];
+  observer_t* observers;
 };
 
-void SubjectInit(subject_t* subject);
-void SubjectAddObserver(subject_t*, ObserverCB, void*) ;
+void InitSubject(subject_t* subject);
+void SubjectAddObserver(const char*, const char*, ObserverCB, void*) ;
 void SubjectRemoveObserver(subject_t*, ObserverCB, void*); // Optional
-void SubjectNotify(subject_t* subject, void* eventdata);
+void SubjectRunNotify(subject_t* s, void* data);
+void SubjectNotify(const char*, void* eventdata);
 void SubjectDestroy(subject_t* subject); // Cleanup
+
+typedef struct{
+  hash_key_t  key;
+  subject_t*  subject;
+  void*       data;
+}subject_store_t;
+
+typedef struct{
+  bool              initialized;
+  hash_map_t        map, stored;
+  int               cap, num_store;
+}subject_pool_t;
+extern subject_pool_t SUBJECTS;
+subject_t* SubjectRegister(const char* name);
+void SubjectStore(const char* name, void*);
+
+void InitSubjectPool(int cap);
 #endif

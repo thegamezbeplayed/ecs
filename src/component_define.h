@@ -19,6 +19,8 @@ bool PositionInit(void* comp, component_entry_t* data);
 bool CoordInit(void* comp, component_entry_t* data);
 bool ParticleInit(void* comp, component_entry_t* data);
 bool ParticleEmitterInit(void* comp, component_entry_t* data);
+bool ObserverInit(void* comp, component_entry_t* data);
+bool SubjectInit(void* comp, component_entry_t* data);
 
 bool ParseSpriteComponent(cJSON* j, sprite_t* out);
 bool ParseRigidBodyComponent(cJSON* j, rigid_body_t* out);

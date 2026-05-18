@@ -1,5 +1,6 @@
 #ifndef __GAME_ENUM__ 
 #define __GAME_ENUM__ 
+#include "gbm_tools.h"
 
 #define BIT64(n) (1ULL << (n))
 

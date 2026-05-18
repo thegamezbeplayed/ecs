@@ -3,7 +3,7 @@
 #include "game_define.h"
 #include "component_define.h"
 
-#define NUM_FUNCTIONS 38
+#define NUM_FUNCTIONS 39
 system_t* SystemCreate(world_t* w, system_define_t* def);
 
 void OnPositionEvent(event_t* ev, void* data);
@@ -43,6 +43,8 @@ void CameraReady(world_t* w, Entity e);
 void CameraSystem(world_t* w, Entity e);
 void CameraBegin(world_t* w, Entity e);
 void CameraEnd(world_t* w, Entity e);
+
+void ObserveInit(world_t* w);
 
 typedef struct{
   int     count, cap;
@@ -109,6 +111,8 @@ static system_function_lookup_t FUNCTION_LOOKUP[NUM_FUNCTIONS] = {
     {"RenderBegin",         RenderBegin},
     {"RenderDraw",          RenderDraw},
     {"RenderEnd",           RenderEnd},
+
+    {"ObserveInit",          ObserveInit},
 
     {"CameraSystem",        CameraSystem},
     {"CameraBegin",         CameraBegin},

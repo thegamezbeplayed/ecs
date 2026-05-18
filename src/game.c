@@ -1,6 +1,5 @@
 #include "raylib.h"
 #include "game_process.h"
-#include "game_tools.h"
 
 #include "game_define.h"
 #include "game_register.h"

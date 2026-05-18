@@ -82,12 +82,12 @@
     {"name": "tile_blank",   "cell_x": 11, "cell_y": 5 }
   ],
   "entities": [
-    {"name": "main_cam", "pos_x": 0, "pos_y": 0},
-    {"name": "bg", "pos_x": 0, "pos_y": 0},
-    {"name": "floor", "pos_x": 0, "pos_y": 0},
-    {"name": "main", "pos_x": 0, "pos_y": 0},
-    {"name": "vfx", "pos_x": 0, "pos_y": 0},
-    {"name": "player",   "pos_x": 400, "pos_y": 200}
+    {"name": "main_cam", 	"pos_x": 0, "pos_y": 0},
+    {"name": "LAYER_BACKGROUND","pos_x": 0, "pos_y": 0},
+    {"name": "LAYER_FLOOR",	"pos_x": 0, "pos_y": 0},
+    {"name": "LAYER_MAIN",	"pos_x": 0, "pos_y": 0},
+    {"name": "LAYER_VFX",	"pos_x": 0, "pos_y": 0},
+    {"name": "player",   	"pos_x": 400, "pos_y": 200}
   ],  
   "metadata": {
     "points": 10

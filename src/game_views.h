@@ -1,7 +1,7 @@
 #ifndef   __GAME_VIEW__
 #define   __GAME_VIEW__
-#include "game_tools.h"
-#include "game_strings.h"
+
+#include "gbm_tools.h"
 
 #define MAX_CAMERA 4
 

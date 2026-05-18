@@ -1,7 +1,6 @@
 #ifndef __GAME_PHYS__
 #define __GAME_PHYS__
 
-#include "game_tools.h"
 #include "game_utils.h"
 #include "game_define.h"
 
