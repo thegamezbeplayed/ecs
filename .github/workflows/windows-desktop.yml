@@ -1,0 +1,53 @@
+name: Windows Desktop
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - "docs/**"
+      - "*.md"
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "docs/**"
+      - "*.md"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows-desktop:
+    name: windows-desktop
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Configure
+        run: cmake -S . -B build-windows -G "Visual Studio 17 2022" -A x64
+
+      - name: Build
+        run: cmake --build build-windows --config Debug --target index --parallel
+
+      - name: Check artifact
+        shell: pwsh
+        run: |
+          if (!(Test-Path build-windows/Debug/index.exe)) {
+            exit 1
+          }
+
+      - name: Smoke run
+        shell: pwsh
+        run: |
+          $process = Start-Process -FilePath "build-windows/Debug/index.exe" -PassThru
+
+          if ($process.WaitForExit(15000)) {
+            exit $process.ExitCode
+          }
+
+          Stop-Process -Id $process.Id -Force
+          exit 0

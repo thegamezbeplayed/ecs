@@ -1,4 +1,4 @@
-#include "game_tools.h"
+#include "util_tools.h"
 
 static int TOTAL_SIZE = 0;
 void HashInit(hash_map_t* m, uint32_t cap) {

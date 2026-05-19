@@ -1,4 +1,5 @@
-#include "game_systems.h"
+#include "system_define.h"
+#include "tool_lookup.h"
 
 sprite_layer_t SPRITE_LAYERS[LAYER_DONE] = {0};
 
@@ -58,7 +59,7 @@ void SpritesInit(world_t* w){
     SPRITE_LAYERS[i].cap = MAX_LAYER_SPRITES;
     SPRITE_LAYERS[i].ents = GameCalloc("SpritesInit",
         MAX_LAYER_SPRITES, sizeof(int));
+     
+    SubjectAddObserver(LookupLayer(i), "SPRITES", SpriteOnRender, w);
   }
-  
-  SubjectAddObserver(&renderer, SpriteOnRender, w);
 }

@@ -1,5 +1,5 @@
-#include "game_systems.h"
 #include "component_define.h"
+#include "system_define.h"
 
 void CameraOnWindowResize(void* o_data, void* s, void* e_data) {
   window_resize_t* w = e_data;
@@ -11,7 +11,7 @@ void CameraOnWindowResize(void* o_data, void* s, void* e_data) {
 
 void CameraLoad(world_t* w, Entity e){
   camera_t* c = GET_COMPONENT(w, e, camera_t, CAM_ID);
-  SubjectAddObserver(&window, CameraOnWindowResize, c);
+  SubjectAddObserver("WINDOW", "CAMERA", CameraOnWindowResize, c);
 
   return;
   QueryBegin();

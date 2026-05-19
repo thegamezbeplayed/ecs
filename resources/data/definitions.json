@@ -1,0 +1,360 @@
+{
+  "systems": ["Animations", "Sprites", "Particles", "ParticleEmitters",
+    "Cameras", "Renderer", "Observe"],
+    "Observe": {
+      "components": ["Observe"],
+      "states": [
+        {"step": "GAME_LOADING", "fn": "ObserveInit"}
+      ]
+    },
+    "Animations":{
+      "components": ["Animation", "Sprite"],
+      "syncs": [
+        {"step": "UPDATE_FIXED",  "fn": "AnimSystem"}
+      ],
+      "sets": [
+        {"step": "GAME_LOADING",  "fn": "AnimLoad"},
+        {"step": "GAME_READY",    "fn": "AnimReady"}
+      ]
+    },
+    "Sprites" : {
+      "components": ["Sprite", "Position"],
+      "sets": [
+        {"step": "GAME_RUNNING", "fn": "SpriteLoad"}
+      ],
+      "states": [
+        {"step": "GAME_READY", "fn": "SpritesInit"}
+      ]
+    },
+    "Particles": {
+      "components": ["Particle", "Position"],
+      "syncs": [
+        {"step": "UPDATE_FIXED", "fn": "ParticleSystem"},
+        {"step": "UPDATE_POST", "fn": "ParticleCleanup"}
+      ],
+      "states": [
+        {"step": "GAME_READY", "fn": "ParticlesInit"}
+      ]
+    },
+    "ParticleEmitters": {
+      "components": ["ParticleEmitter", "Position"],
+      "syncs": [
+        {"step": "UPDATE_FIXED", "fn": "ParticleEmitterSystem"}
+      ],
+      "sets": [
+        {"step": "GAME_LOADING", "fn": "ParticleEmitterLoad"}
+      ]
+    },
+    "Controller": {
+      "components": ["Input", "Position"],
+      "syncs": [
+        {"step": "UPDATE_FRAME",  "fn": "InputSystem"}
+      ],
+      "sets":[
+        {"step": "GAME_READY",    "fn": "InputLoad"}
+      ]
+    },
+    "Positions": {
+      "components": ["Position"],
+      "sets": [
+        {"step": "GAME_READY",    "fn": "PositionLoad"}
+      ]
+    },
+    "Physics": {
+      "components": ["RigidBody", "Position"],
+      "syncs": [
+        {"step": "UPDATE_POST",  "fn": "PhysicsSystem"},
+        {"step": "UPDATE_PRE" ,  "fn": "PhysicsCollision"}
+      ],
+      "sets": [
+        {"step": "GAME_READY",   "fn": "PhysicsLoad"}
+      ],
+      "states": [
+        {"step": "GAME_LOADING", "fn": "PhysicsInit"}
+      ]
+    },
+    "Forces": {
+      "components": ["Force"],
+      "syncs": [
+        {"step": "UPDATE_FIXED",  "fn": "ForceSystem"},
+        {"step": "UPDATE_FINAL",  "fn": "ForceCleanup"}
+      ],
+      "sets": [
+        {"step": "GAME_READY",    "fn": "ForceLoad"}
+      ]
+    },
+    "Levels": {
+      "components": ["Level"],
+      "sets": [
+        {"step": "GAME_LOADING",  "fn": "LevelLoad"},
+        {"step": "GAME_READY",    "fn": "LevelReady"}
+      ]
+    },
+    "Renderer": {
+      "components": ["Render"],
+      "syncs": [
+        {"step": "UPDATE_DRAW",        "fn": "RenderDraw"},
+        {"step": "UPDATE_DRAW_BEGIN",  "fn": "RenderBegin"},
+        {"step": "UPDATE_DRAW_END",  "fn": "RenderEnd"}
+      ],
+      "sets": [
+        {"step": "GAME_LOADING",   "fn": "RenderLoad"}
+      ],
+      "states": [
+        {"step": "GAME_LOADING", "fn": "RenderInit"}
+      ]
+    },
+    "Cameras": {
+      "components": ["Camera"],
+      "syncs": [
+        {"step": "UPDATE_POST",      "fn": "CameraSystem"},
+        {"step": "UPDATE_DRAW_BEGIN","fn": "CameraBegin"},
+        {"step": "UPDATE_DRAW_END",  "fn": "CameraEnd"}
+      ],
+      "sets": [
+        {"step": "GAME_LOADING",     "fn": "CameraLoad"},
+        {"step": "GAME_READY",       "fn": "CameraReady"}
+      ]
+    },
+    "Expiration": {
+      "components": ["Expiry"],
+      "syncs": [
+        {"step": "UPDATE_FINAL",  "fn": "ExpirationSystem"}
+      ]
+    },
+
+    "num_comp_def": 25,
+    "components": [
+      "Sprite", "Animation", "Particle", "ParticleEmitter", "Force",
+      "Render", "Position", "Input", "Camera"
+    ],
+    "Sprite":{
+      "func": "SpriteInit",
+      "list": [
+        {"name": "player", "layer": 2, "scale": 2.5,
+          "sheet_id": "SHEET_CHAR", "sheet_index": 0
+        },
+        {"name": "tile_blank", "layer": 1,
+          "sheet_id": "SHEET_TILE", "sheet_index": 0
+        },
+        {"name": "tile_tiwaz", "layer": 1,
+          "sheet_id": "SHEET_TILE", "sheet_index": 1
+        },
+        {"name": "tile_algiz", "layer": 1,
+          "sheet_id": "SHEET_TILE", "sheet_index": 2
+        },
+        {"name": "tile_raidho", "layer": 1,
+          "sheet_id": "SHEET_TILE", "sheet_index": 3
+        },
+        {"name": "tile_laguz", "layer": 1,
+          "sheet_id": "SHEET_TILE", "sheet_index": 4
+        },
+        {"name": "tile_ingwaz", "layer": 1,
+          "sheet_id": "SHEET_TILE", "sheet_index": 5
+        }
+      ]
+    },
+    "Animation": {
+      "func": "AnimInit",
+      "list": [
+        {"name": "player", "sheet_id": "SHEET_CHAR",
+          "states": [
+            {"state": "WALK", "interupt": true, "loop": false, "end": "SUSPEND",
+              "sequences": [
+                {"tag": "walk0",   "dir": 0},
+                {"tag": "walk90",  "dir": 1},
+                {"tag": "walk180", "dir": 2},
+                {"tag": "walk270", "dir": 3}
+              ]
+            },
+            {"state": "IDLE","interupt": true, "loop": true,
+              "sequences": [
+                {"tag": "idle0",   "dir": 0},
+                {"tag": "idle90",  "dir": 1},
+                {"tag": "idle180", "dir": 2},
+                {"tag": "idle270", "dir": 3}
+              ]
+            },
+            {"state": "ATTACK",
+              "end": "SUSPEND", "start": "HURTBOX",
+              "sequences": [
+                {"tag": "attack0",   "dir": 0},
+                {"tag": "attack90",  "dir": 1},
+                {"tag": "attack180", "dir": 2},
+                {"tag": "attack270", "dir": 3}
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "ParticleEmitter": {
+      "func": "ParticleEmitterInit",
+      "list": [
+        {
+          "name": "player-dust",
+          "mode": "CONTINUOUS",
+          "layer": 3,
+          "active": false,
+          "rate": 18,
+          "max_particles": 128,
+          "lifetime_min": 72,
+          "lifetime_max": 128,
+          "offset_x": 16,
+          "offset_y": 16,
+          "spawn_radius_x": 16,
+          "spawn_radius_y": 16,
+          "velocity_min_x": -0.25,
+          "velocity_min_y": -0.1,
+          "velocity_max_x": 0.25,
+          "velocity_max_y": 0.1,
+          "drag":      0.33,
+          "width":     8,
+          "height":    12.5,
+          "scale_min": 0.5,
+          "scale_max": 1.0,
+          "scale_end": 0.1,
+          "start_color": "9B7653FF",
+          "end_color": "9B765300",
+          "draw_type": "PIXEL"
+        }
+      ]
+    },
+    "RigidBody":{
+      "func": "RigidBodyInit",
+      "list": [
+        {"name": "player",  "shape": "rect", "width": 10, "height": 12}
+      ]
+    },
+    "Force": {
+      "func": "ForceInit",
+      "list": [
+        {"name": "player-steering",
+          "type": "STEERING", "event": "FORCE_EVENT_ACCEL",
+          "speed": 0.67, "max": 1.675, "threshold": 0.1, "frict": 0.65
+        },
+        {"name": "player-bump",
+          "type": "IMPULSE", "event": "PHYS_EVENT_COLL",
+          "speed": "0.5", "max": 1.15, "threshold": 0.1, "frict": 0.8
+        }
+      ]
+    },
+    "Camera": {
+      "func": "CameraInit",
+      "list": [
+        {
+          "name": "main_cam",
+          "zoom":     1.0,
+          "rotation": 0,
+          "offset_x": 320,
+          "offset_y": 120,
+          "target_x": 160,
+          "target_y": 60
+        }
+      ]
+    },
+    "Position": {
+      "func": "PositionInit",
+      "count":  8,
+      "list": [
+        {
+          "name": "main_cam",
+          "posx": 400,
+          "posy": 300
+        },
+        {
+          "name": "player",
+          "posx": 400,
+          "posy": 300
+        },
+        {
+          "name": "tile",
+          "contains":  ["tile_blank", "tile_tiwaz", "tile_algiz",
+            "tile_raidho", "tile_laguz", "tile_ingwaz"],
+            "posx": 0,
+            "posy": 0
+        }
+      ]
+    },
+    "Render": {
+      "func": "RenderInit",
+      "list": [
+        {
+          "name":     "LAYER_BACKGROUOND",
+          "layer":    0
+        },
+        {
+          "name":     "LAYER_FLOOR",
+          "layer":    1
+        },
+        {
+          "name":     "LAYER_MAIN",
+          "layer":    2
+        },
+        {
+          "name":     "LAYER_VFX",
+          "layer":    3
+        }
+      ]
+    },
+    "Observer": {
+      "func":	"ObserverInit",
+      "list":	[
+	{
+	  "name":	"observe-test",
+	  "type":	1,
+	  "comp":	"Position"
+	}
+      ]
+    },
+    "Input": {
+      "func": "InputInit",
+      "list": [{"name": "player"}]
+    },
+    "prefabs": {
+      "count": 12,
+      "list":[
+        {
+          "name": "main_cam",
+          "count": 2,
+          "list": ["Position", "Camera"]
+        },
+        {
+          "name":     "layers",
+          "count":    1,
+          "list":     ["Render"],
+          "contains": ["LAYER_BACKGROUND", "LAYER_FLOOR", "LAYER_MAIN", "LAYER_VFX"]
+        },
+        {
+          "name": "player",
+          "count": 4,
+          "list": ["Input", "Sprite", "Animation", "Position"]
+        },
+        {
+          "name": "tile",
+          "contains": ["tile_blank", "tile_tiwaz", "tile_algiz",
+            "tile_raidho", "tile_laguz", "tile_ingwaz"],
+            "count": 2,
+            "list": ["Sprite", "Position"]
+        }
+      ]
+    },
+    "relations": [
+      {
+        "name": "player",
+        "list":[
+          {"name": "Force",
+            "sublist": [
+              {"name": "player-steering", "type": "AppliesTo"},
+              {"name": "player-bump",      "type": "AppliesTo"}
+            ]
+          },
+          {"name": "ParticleEmitter",
+            "sublist": [
+              {"name": "player-dust", "type": "ChildOf", "components": ["Position"]}
+            ]
+          }
+        ]
+      }
+    ]
+}

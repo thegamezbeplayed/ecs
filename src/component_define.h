@@ -19,6 +19,8 @@ bool PositionInit(void* comp, component_entry_t* data);
 bool CoordInit(void* comp, component_entry_t* data);
 bool ParticleInit(void* comp, component_entry_t* data);
 bool ParticleEmitterInit(void* comp, component_entry_t* data);
+bool ObserverInit(void* comp, component_entry_t* data);
+bool SubjectInit(void* comp, component_entry_t* data);
 
 bool ParseSpriteComponent(cJSON* j, sprite_t* out);
 bool ParseRigidBodyComponent(cJSON* j, rigid_body_t* out);
@@ -28,6 +30,7 @@ bool ParseInputComponent(cJSON* j, input_t* out);
 bool ParseCameraComponent(cJSON* j, camera_t* out);
 bool ParseParticleEmitterComponent(cJSON*, particle_emitter_t*);
 bool ParseRenderComponent(cJSON* j, render_ctx_t* out);
+bool ParseObserverComponent(cJSON* j, observer_t* out);
 
 typedef struct{
   anim_player_t   player;

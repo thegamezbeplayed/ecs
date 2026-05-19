@@ -1,6 +1,4 @@
 #include "raylib.h"
-#include "game_tools.h"
-
 #include "process_event.h"
 #include "process_load.h"
 

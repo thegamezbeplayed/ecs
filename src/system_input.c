@@ -1,5 +1,5 @@
-#include "game_systems.h"
 #include "process_event.h"
+#include "system_define.h"
 
 void OnInputEvent(event_t* ev, void* data){
   input_t* in   = ev->data;

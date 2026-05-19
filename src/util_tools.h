@@ -226,6 +226,16 @@ static uint32_t hash_float(float f) {
     return bits;
 }
 
+static inline uint64_t hash_64_combine(uint32_t a, uint32_t b)
+{
+    uint64_t combined = ((uint64_t)a << 32) | b;
+    // Simple but effective mixing
+    combined ^= combined >> 33;
+    combined *= 0xff51afd7ed558ccdull;   // 64-bit murmur constant
+    combined ^= combined >> 33;
+    return combined;
+}
+
 static inline uint64_t hash_combine_64(uint64_t h, uint64_t v) {
     h ^= v + 0x9e3779b97f4a7c15ULL + (h << 6) + (h >> 2);
     return h;

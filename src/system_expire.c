@@ -1,4 +1,4 @@
-#include "game_systems.h"
+#include "system_define.h"
 
 void ExpirationSystem(world_t* w, Entity e){
   lifetime_t* lf = GET_COMPONENT(w, e, lifetime_t, EXPIR_ID);

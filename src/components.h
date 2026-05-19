@@ -1,6 +1,5 @@
 #ifndef __GBM_COMP__
 #define __GBM_COMP__
-#include "game_tools.h"
 #include "game_common.h"
 
 #define NUM_COMP_CORE   16
@@ -26,6 +25,8 @@
 #define EXPIR_ID     ComponentGetID("Expiry")
 #define PARTICLE_ID  ComponentGetID("Particle")
 #define EMITTER_ID   ComponentGetID("ParticleEmitter")
+#define OBSERVE_ID   ComponentGetID("Observer")
+#define SUBJECT_ID   ComponentGetID("Subject")
 
 typedef uint64_t comp_id_t;
 extern comp_id_t INVALID_COMPONENT;
@@ -54,5 +55,4 @@ typedef struct {
   void*             data;        // dense array of component data
 } component_pool_t;
 bool HasComponent(component_pool_t* pool, Entity e);
-
 #endif

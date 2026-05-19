@@ -56,6 +56,7 @@ typedef enum{
 }RenderLayer;
 
 typedef struct{
+  char        name[MAX_NAME_LEN];
   RenderLayer layer;
 }render_ctx_t;
 extern subject_t renderer;
