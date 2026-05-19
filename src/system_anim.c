@@ -99,6 +99,20 @@ void AnimBehaviorHandler(world_t* w, Entity e, anim_comp_t* ac, anim_t* a){
   }
 }
 
+void AnimRender(world_t* w, Entity e){
+anim_comp_t* ac = GET_COMPONENT(w, e, anim_comp_t, ANIM_ID);
+  sprite_t* spr = GET_COMPONENT(w, e, sprite_t, SPR_ID);
+  anim_player_t* ap = &ac->player;
+  anim_t* a = &ac->sequences[ap->state][ap->dir];
+  position_t* pos = GET_COMPONENT(w, e, position_t, POS_ID);
+
+  int spr_index = a->frames[a->cur_index];
+  spr->index = spr_index;
+
+  DrawSprite(spr, pos->vpos);
+
+}
+
 void AnimReady(world_t* w, Entity e){
   anim_comp_t* ac = GET_COMPONENT(w, e, anim_comp_t, ANIM_ID);
   Entity rel = EntityGetRelationTarget(w, e, REL_Target);
@@ -113,6 +127,7 @@ void AnimReady(world_t* w, Entity e){
 }
 
 void AnimLoad(world_t* w, Entity e){
+
   anim_comp_t* ac = GET_COMPONENT(w, e, anim_comp_t, ANIM_ID);
 /*
   input_t* in = GET_COMPONENT(w, e, input_t, INPUT_ID);

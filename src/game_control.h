@@ -68,6 +68,7 @@ struct action_key_s{
 typedef hash_map_t macro_map_t;
 void InitMacroKeys(int);
 void RegisterMacro(char* name, KeyboardKey);
+action_key_t* InputGetAction(KeyboardKey key);
 
 struct input_s{
   KeyboardKey     last_key;
@@ -79,8 +80,7 @@ struct input_s{
 
 input_t* InitInput(void);
 
-bool InputCheck(input_t*, Entity);
-
+KeyboardKey InputCheck(input_t* gi, Entity e);
 
 
 #endif

@@ -4,8 +4,10 @@
 
 #include "game_register.h"
 
-#define NUM_SYS 16
-#define NUM_REL 4
+#define NUM_SYS      16
+#define MAX_COMP_DEF 32
+#define MAX_PREF_DEF 8
+#define NUM_REL      4
 
 typedef struct tile_instance_t {
   char* name;
@@ -82,10 +84,9 @@ typedef struct{
   system_define_t     systems[NUM_SYS];
   int                 num_comps;
   const char*         comps[NUM_COMP_CORE];
-  int                 num_defs;
-  component_entry_t   *comp_defs;
+  component_entry_t   comp_defs[MAX_COMP_DEF];
   int                 num_prefabs;
-  prefab_entity_t*    prefabs;
+  prefab_entity_t     prefabs[MAX_PREF_DEF];
   int                 relation_count;
   entity_relation_t*  relations;
 }game_t;

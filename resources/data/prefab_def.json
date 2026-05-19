@@ -1,6 +1,5 @@
 {
   "prefabs": {
-    "count": 8,
     "list":[
       {
         "name": "main_cam",
@@ -11,7 +10,7 @@
         "name":     "layers",
         "count":    1,
         "list":     ["Render"],
-        "contains": ["bg", "floor", "main", "vfx"]
+        "contains": ["LAYER_BACKGROUND", "LAYER_FLOOR", "LAYER_MAIN", "LAYER_VFX"]
       },
       {
         "name": "wiz",
@@ -19,10 +18,9 @@
         "list": ["Input", "Sprite", "Animation", "Position"]
       },
       {
-        "name": "tile",
-        "contains": ["tile_floor", "tile_wall"],
-          "count": 2,
-          "list": ["Sprite", "Position"]
+        "name": "tile_floor",
+        "count": 2,
+        "list": ["Sprite", "Position"]
       }
     ]
   },

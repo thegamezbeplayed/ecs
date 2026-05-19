@@ -25,26 +25,25 @@ void OnInputEvent(event_t* ev, void* data){
 }
 
 void InputLoad(world_t* w, Entity e){
-  input_t* in = GET_COMPONENT(w, e, input_t, INPUT_ID);
-  position_t* p = GET_COMPONENT(w, e, position_t, POS_ID);
-/*
-  notification n = InputEvent_ToNotif(INPUT_EVENT_MOVE);
-  TargetSubscribe(n, OnInputEvent, p, e.id );
 
-  n = InputEvent_ToNotif(INPUT_EVENT_BINDING);
-  for(int i = 0; i < ACT_DONE; i++){
-    action_key_t akey = in->actions[i];
-    for(int j = 0; j < akey.num_keys; j++)
-      TargetSubscribe(n, OnInputEvent, akey.fn, akey.keys[j]);
-  }
-*/
 }
 
 void InputSystem(world_t* w, Entity e){
   input_t* in = GET_COMPONENT(w, e, input_t, INPUT_ID);
 
-  if(!InputCheck(in, e))
+  KeyboardKey k = InputCheck(in, e);
+
+  if(k == 0)
     return;
+
+
+  action_key_t* ak = InputGetAction(k);
+
+  if(!ak)
+    return;
+
+  SubjectNotify(ak->name, in);
+
 }
 
 void InputRegister(world_t* w){

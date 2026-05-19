@@ -2,7 +2,7 @@
 #define __GBM_COMP__
 #include "game_common.h"
 
-#define NUM_COMP_CORE   16
+#define NUM_COMP_CORE   17
 #define MAX             1024
 #define MAX_COMPONENTS  512
 #define MAX_PLAYERS     2

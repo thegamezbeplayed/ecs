@@ -5,7 +5,8 @@
 #include "game_common.h"
 
 #define  MAX_SUBJECT_STORE  64
-#define MAX_LISTENERS       32
+#define MAX_LISTENERS       4 
+#define MAX_SUB_OBS         4 
 // Forward declarations
 
 typedef enum{
@@ -27,6 +28,12 @@ struct observer_s {
   void* data;           // User data passed to callback (e.g., component pointer)
   observer_t* next;
 };
+
+typedef struct{
+  ObserveType type;
+  char        subjects[MAX_SUBJ_OBS][MAX_NAME_LEN];
+  comp_id_t   observers[MAX_LISTENERS];
+}component_observer_t;
 
 struct subject_s {
   char        name[MAX_NAME_LEN];

@@ -1,9 +1,20 @@
 {
-  "num_comp_def": 17,
   "components": [
     "Sprite", "Animation", "Particle", "ParticleEmitter", "Force",
-    "Render", "Position", "Input", "Camera"
+    "Render", "Position", "Input", "Camera", "Observer", "RigidBody"
   ],
+  "Observer": {
+    "func":	"ObserverInit",
+    "list":	[
+      {
+        "name":	    "wiz-controller",
+        "type":	    1,
+        "comp":	    "Input",
+        "subjects": ["MOVE-LEFT", "MOVE-RIGHT", "MOVE-UP", "MOVE-DOWN"],
+        "listeners": ["Animation", "RigidBody"]
+      }
+    ]
+  },
   "Sprite":{
     "func": "SpriteInit",
     "list": [
@@ -119,7 +130,7 @@
   },
   "Position": {
     "func": "PositionInit",
-    "count":  4,
+    "count":  3,
     "list": [
       {
         "name": "main_cam",
@@ -132,10 +143,9 @@
         "posy": 300
       },
       {
-        "name": "tile",
-        "contains":  ["tile_wall", "tile_floor"],
-          "posx": 0,
-          "posy": 0
+        "name": "tile_floor",
+        "posx": 0,
+        "posy": 0
       }
     ]
   },
@@ -143,19 +153,19 @@
     "func": "RenderInit",
     "list": [
       {
-        "name":     "bg",
+        "name":     "LAYER_BACKGROUND",
         "layer":    0
       },
       {
-        "name":     "floor",
+        "name":     "LAYER_FLOOR",
         "layer":    1
       },
       {
-        "name":     "main",
+        "name":     "LAYER_MAIN",
         "layer":    2
       },
       {
-        "name":     "vfx",
+        "name":     "LAYER_VFX",
         "layer":    3
       }
     ]

@@ -1,6 +1,11 @@
 #include "util_observe.h"
+#include "game_define.h"
 #include "components.h"
 subject_pool_t SUBJECTS;
+
+bool ObserverInit(void* comp, component_entry_t* data){
+
+}
 
 subject_t* SubjectCheckExists(const char* name, const char* from){
   hash_key_t hash = hash_str_64(name);

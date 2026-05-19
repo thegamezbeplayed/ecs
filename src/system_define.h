@@ -3,7 +3,7 @@
 #include "game_define.h"
 #include "component_define.h"
 
-#define NUM_FUNCTIONS 40 
+#define NUM_FUNCTIONS 41 
 system_t* SystemCreate(world_t* w, system_define_t* def);
 
 void OnPositionEvent(event_t* ev, void* data);
@@ -11,6 +11,7 @@ void PositionLoad(world_t* w, Entity e);
 
 void AnimLoad(world_t* w, Entity e);
 void AnimReady(world_t* w, Entity e);
+void AnimRender(world_t* w, Entity e);
 void AnimSystem(world_t* w, Entity e);
 
 void OnInputEvent(event_t* ev, void* data);
@@ -86,6 +87,7 @@ static system_function_lookup_t FUNCTION_LOOKUP[NUM_FUNCTIONS] = {
 
     {"AnimLoad",            AnimLoad},
     {"AnimReady",            AnimReady},
+    {"AnimRender",            AnimRender},
     {"AnimSystem",          AnimSystem},
 
     {"OnInputEvent",        OnInputEvent},

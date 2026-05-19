@@ -16,6 +16,14 @@ void RegisterMacro(char* name, KeyboardKey key){
   a->key = key;
   strcpy(a->name, name);
   HashPut(&MACRO_KEYS, hash, a);
+
+  SubjectStore(name, NULL);
+
+}
+
+action_key_t* InputGetAction(KeyboardKey key){
+  hash_key_t hash = hash_64_from_int(key);
+  return HashGet(&MACRO_KEYS, hash);
 }
 
 bool InputInit(void* comp, component_entry_t* j){
@@ -33,45 +41,16 @@ input_t* InitInput(void){
   in->step =  CELL_UNSET;
 }
 
-bool InputCheck(input_t* gi, Entity e){
+KeyboardKey InputCheck(input_t* gi, Entity e){
   if(IsKeyDown(KEY_SPACE))
       DO_NOTHING();
 
   int key = GetKeyPressed();
 
-  notification n = 0;
-  if(key > 0){
-    n = InputEvent_ToNotif(INPUT_EVENT_BINDING);
-    GameEvent(n, gi, key);
+  if(key > 0)
     gi->last_key = key;
-  }
-  else if(IsKeyDown(gi->last_key)){
-    n = InputEvent_ToNotif(INPUT_EVENT_BINDING);
-    GameEvent(n, gi, gi->last_key);
-  }
-  else if(IsKeyReleased(gi->last_key)){
-    n = InputEvent_ToNotif(INPUT_EVENT_KEY_RELEASE);
-    GameEvent(n, gi, e.id);
+  else if(IsKeyReleased(gi->last_key))
     gi->last_key = 0;
-    return false;
-  }
-  else
-    return false;
 
-  notification an;
-  switch(gi->last_act){
-    case ACT_MOVE:
-      an = InputEvent_ToNotif(INPUT_EVENT_MOVE);
-      break;
-    case ACT_ATTACK:
-      an = InputEvent_ToNotif(INPUT_EVENT_ATTACK);
-      break;
-    default:
-      return false;
-      break;
-  }
-  
-  GameEvent(an, gi, e.id);
-
-  return true;
+  return gi->last_key;
 }

@@ -1,10 +1,17 @@
 {
   "systems": ["Input", "Animations", "Sprites", "Particles",
-    "ParticleEmitters","Cameras", "Renderer"],
+    "ParticleEmitters","Cameras", "Renderer", "Observe"],
+    "Observe": {
+      "components": ["Observe"],
+      "states": [
+        {"step": "GAME_LOADING", "fn": "ObserveInit"}
+      ]
+    },
     "Animations":{
       "components": ["Animation", "Sprite"],
       "syncs": [
-        {"step": "UPDATE_FIXED",  "fn": "AnimSystem"}
+        {"step": "UPDATE_FIXED",  "fn": "AnimSystem"},
+        {"step": "UPDATE_DRAW",  "fn": "AnimRender"}
       ],
       "sets": [
         {"step": "GAME_LOADING",  "fn": "AnimLoad"},
@@ -17,7 +24,7 @@
         {"step": "GAME_RUNNING", "fn": "SpriteLoad"}
       ],
       "states": [
-        {"step": "GAME_READY", "fn": "SpritesInit"}
+        {"step": "GAME_RUNNING", "fn": "SpritesInit"}
       ]
     },
     "Particles": {
@@ -95,7 +102,7 @@
         {"step": "UPDATE_DRAW_END",  "fn": "RenderEnd"}
       ],
       "sets": [
-        {"step": "GAME_LOADING",   "fn": "RenderLoad"}
+        {"step": "GAME_READY",   "fn": "RenderLoad"}
       ],
       "states": [
         {"step": "GAME_LOADING", "fn": "RenderInit"}

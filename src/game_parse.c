@@ -687,13 +687,8 @@ bool ParseComponents(cJSON* root, game_t* out){
   cJSON* comp_json = cJSON_GetObjectItem(root, "components");
   if(cJSON_IsArray(comp_json)){
     int idx = 0;
-    out->num_defs = Json_GetInt(root, "num_comp_def", NUM_COMP_CORE);
-    out->comp_defs = GameCalloc("ParseComponents", out->num_defs, sizeof(component_entry_t));
-
     int comps_present = cJSON_GetArraySize(comp_json);
 
-    if(comps_present > out->num_defs)
-      TraceLog(LOG_WARNING, " === ParseComponents === Num components capped at %i but %i present", out->num_defs, comps_present);
     cJSON* c;
     cJSON_ArrayForEach(c, comp_json){
       if (!cJSON_IsString(c))
@@ -776,15 +771,6 @@ bool ParsePrefabs(cJSON* root, game_t* out){
   }
 
 
-  out->num_prefabs = Json_GetInt(prefabs_json, "count", 0);
-  if (out->num_prefabs == 0)
-  {
-    TraceLog(LOG_WARNING, "ParseGameDef: No prefabs defined");
-    return false;
-  }
-
-  out->prefabs = GameCalloc("ParsePrefabs", out->num_prefabs, sizeof(prefab_entity_t));
-
   int i = 0;
   cJSON* item;
   cJSON_ArrayForEach(item, list_json)
@@ -810,6 +796,7 @@ bool ParsePrefabs(cJSON* root, game_t* out){
       ParsePrefab(item, p);
     }
   }
+  out->num_prefabs = i;
   return true;
 
 }
