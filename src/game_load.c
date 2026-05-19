@@ -1,9 +1,7 @@
 #include "game_define.h"
-#include "asset_define.h"
 #include "asset_resources.h"
 #include "gbm_paths.h"
 #include "asset_define.h"
-
 #include "system_define.h"
 
 static ResourcePool RES_POOL;

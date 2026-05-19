@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 #include "util_tools.h"
+=======
+#include "game_tools.h"
+>>>>>>> 58a9dd12ba192c4ccfc324508e69c055302ca620
 
 static int TOTAL_SIZE = 0;
 void HashInit(hash_map_t* m, uint32_t cap) {
