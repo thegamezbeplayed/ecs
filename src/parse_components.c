@@ -38,12 +38,8 @@ bool ParseObserverComponent(cJSON* j, component_observer_t* out){
   
   int l_num = 0;
   cJSON* l;
-  cJSON_ArrayForEach(l, listeners_json){
-    char c_name[MAX_NAME_LEN];
-    strcpy(c_name, l->valuestring);
-
-    out->observers[l_num++] = ComponentGetID(c_name);
-  }
+  cJSON_ArrayForEach(l, listeners_json)
+    strcpy(out->observers[l_num++], l->valuestring);
 
   return l_num > 0;
 }
@@ -60,20 +56,27 @@ bool ParseInputComponent(cJSON* j, input_t* out){
   if(!cJSON_IsArray(actions_json))
     return false;
 
+  int keys = 0;
   cJSON* action_json;
   cJSON_ArrayForEach(action_json, actions_json){
     cJSON* keys_json = cJSON_GetObjectItem(action_json, "keys");
     if(!cJSON_IsArray(keys_json))
       continue;
 
+    cJSON* aname = cJSON_GetObjectItem(action_json, "name");
     cJSON* key_json;
     cJSON_ArrayForEach(key_json, keys_json){
       int key = key_json->valueint;
 
-      RegisterMacro(name, key);
+      action_key_t *a = GameCalloc("ParseInputComponent", 1, sizeof(action_key_t));
+      a->key = key;
+      strcpy(a->name, aname->valuestring);
+
+      out->action_keys[keys++] = *a; 
     }
   }
 
+  return keys > 0;
 }
 
 bool ParseRigidBodyComponent(cJSON* j, rigid_body_t* out){
@@ -82,5 +85,6 @@ bool ParseRigidBodyComponent(cJSON* j, rigid_body_t* out){
 
 bool ParseForceComponent(cJSON* j, force_t* out){
 
+  return true;
 }
 

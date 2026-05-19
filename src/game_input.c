@@ -8,17 +8,10 @@ void InitMacroKeys(int cap){
   HashInit(&MACRO_KEYS, next_pow2_int(cap));
 }
 
-void RegisterMacro(char* name, KeyboardKey key){
-  hash_key_t hash = hash_64_from_int(key);
-
-  action_key_t *a = GameCalloc("RegisterMacro", 1, sizeof(action_key_t));
-
-  a->key = key;
-  strcpy(a->name, name);
+void RegisterMacro(action_key_t *a) {
+  hash_key_t hash = hash_64_from_int(a->key);
   HashPut(&MACRO_KEYS, hash, a);
-
-  SubjectStore(name, NULL);
-
+  SubjectRegister(a->name);
 }
 
 action_key_t* InputGetAction(KeyboardKey key){
@@ -29,9 +22,7 @@ action_key_t* InputGetAction(KeyboardKey key){
 bool InputInit(void* comp, component_entry_t* j){
   input_t* in = comp;
 
-  in->turn = -1;
-  in->step =  CELL_UNSET;
-  return true;
+  return ParseInputComponent(j->data, in);
 }
 
 input_t* InitInput(void){

@@ -1,4 +1,6 @@
 #include "process_define.h"
+#include "process_load.h"
+
 #include "asset_sfx.h"
 
 game_process_t GP;

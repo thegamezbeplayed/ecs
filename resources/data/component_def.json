@@ -11,7 +11,7 @@
         "type":	    1,
         "comp":	    "Input",
         "subjects": ["MOVE-LEFT", "MOVE-RIGHT", "MOVE-UP", "MOVE-DOWN"],
-        "listeners": ["Animation", "RigidBody"]
+        "listeners":["Animation"]
       }
     ]
   },

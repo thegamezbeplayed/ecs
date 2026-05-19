@@ -36,7 +36,7 @@ typedef struct{
   int         num_subj;
   comp_id_t   relation;
   char        subjects[MAX_SUBJ_OBS][MAX_NAME_LEN];
-  comp_id_t   observers[MAX_LISTENERS];
+  char        observers[MAX_LISTENERS][MAX_NAME_LEN];
 }component_observer_t;
 
 struct subject_s {

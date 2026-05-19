@@ -1,6 +1,9 @@
 #include "game_define.h"
 #include "game_common.h"
 #include "component_define.h"
+#include "tool_lookup.h"
+
+hash_map_t SYSTEM_SINK;
 
 void WorldInit(world_t* w) {
   // Zero everything first
@@ -20,6 +23,7 @@ void WorldInit(world_t* w) {
   w->num_sys = 0;
   w->systems = GameCalloc("WorldInit", NUM_SYS, sizeof(system_t));
 
+  HashInit(&SYSTEM_SINK, next_pow2_int(NUM_SYS));
   w->iter = GameCalloc("WorldInit", 1, sizeof(entity_iter_t));
 }
 

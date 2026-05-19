@@ -12,6 +12,5 @@ static const char* LookupLayer(int l){
   return RENDER_LAYER_LOOK[l];
 
 }
-
 #endif
 

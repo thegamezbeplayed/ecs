@@ -1,9 +1,9 @@
 #include "process_event.h"
 #include "system_define.h"
 #include "process_event.h"
+#include "tool_lookup.h"
 
 void AnimSet(anim_comp_t* ac, anim_t* a, AnimState s){
-
 }
 
 void AnimEvent(event_t* ev, void* data){
@@ -23,6 +23,13 @@ void AnimEvent(event_t* ev, void* data){
   }
 
   AnimSet(ac, a, s);
+}
+
+void AnimSink(void* obs_data, void* sub, void* ev_data){
+  anim_comp_t* ac = obs_data;
+  input_t* in = ev_data;
+  TraceLog(LOG_INFO, "ANIM SINK SUCCESS!");
+
 }
 
 void AnimInputEvent(event_t* ev, void* data){
@@ -160,4 +167,8 @@ void AnimSystem(world_t* w, Entity e){
 
   ac->event = ev;
   AnimBehaviorHandler(w, e, ac, a);
+}
+
+void AnimRegister(world_t* w){
+  LookAddSink("Animation", AnimSink);
 }

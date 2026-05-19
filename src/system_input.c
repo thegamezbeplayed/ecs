@@ -25,7 +25,13 @@ void OnInputEvent(event_t* ev, void* data){
 }
 
 void InputLoad(world_t* w, Entity e){
+  input_t* in = GET_COMPONENT(w, e, input_t, INPUT_ID);
 
+  for(int i = 0; i < MAX_MACROS; i++){
+    action_key_t* a = &in->action_keys[i];
+
+    RegisterMacro(a);
+  }
 }
 
 void InputSystem(world_t* w, Entity e){
@@ -46,6 +52,6 @@ void InputSystem(world_t* w, Entity e){
 }
 
 void InputRegister(world_t* w){
-  InitMacroKeys(32);//TODO USE A DEFINE
+  InitMacroKeys(MAX_MACROS);//TODO USE A DEFINE
 }
 

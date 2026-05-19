@@ -1,9 +1,6 @@
 #include "util_observe.h"
 #include "system_define.h"
-
-void ObserverTest(void* obs_data, void* sub, void* ev_data){
-  TraceLog(LOG_INFO, "OBSERVER TEST SUCCESS!");
-}
+#include "tool_lookup.h"
 
 void ObserveInit(world_t* w){
   InitSubjectPool(MAX_ENTITIES);
@@ -33,12 +30,17 @@ void ObserveReady(world_t* w, Entity e){
 
   for(int i = 0; i < c->num_subj; i++){
     for (int j = 0; i < MAX_LISTENERS; i++){
-      comp_id_t cid = c->observers[j];
+      comp_id_t cid = ComponentGetID(c->observers[j]);
       if(!ComponentValid(w, cid))
         continue;
 
-      SubjectAddObserverByComponent(c->subjects[i], e.id, cid, c->name,
-          ObserverTest, ComponentGet(w, e, cid));
+      ObserverCB cb = LookupSystemSink(c->observers[j]);
+      if(!cb){
+        TraceLog(LOG_WARNING, "=== OBSERVER READY ===\n No Observer Callback %s",c->observers[j]);
+        continue;
+      }
+
+      SubjectAddObserver(c->subjects[i], c->name, cb, ComponentGet(w, e, cid));
 
     }
   }
