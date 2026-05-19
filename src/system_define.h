@@ -3,7 +3,7 @@
 #include "game_define.h"
 #include "component_define.h"
 
-#define NUM_FUNCTIONS 39
+#define NUM_FUNCTIONS 40 
 system_t* SystemCreate(world_t* w, system_define_t* def);
 
 void OnPositionEvent(event_t* ev, void* data);
@@ -16,6 +16,7 @@ void AnimSystem(world_t* w, Entity e);
 void OnInputEvent(event_t* ev, void* data);
 void InputLoad(world_t* w, Entity e);
 void InputSystem(world_t* w, Entity e);
+void InputRegister(world_t* w);
 
 void OnForceEvent(event_t* ev, void* data);
 void ForceLoad(world_t* w, Entity e);
@@ -89,6 +90,7 @@ static system_function_lookup_t FUNCTION_LOOKUP[NUM_FUNCTIONS] = {
 
     {"OnInputEvent",        OnInputEvent},
     {"InputLoad",           InputLoad},
+    {"InputRegister",       InputRegister},
     {"InputSystem",         InputSystem},
 
     {"OnForceEvent",        OnForceEvent},

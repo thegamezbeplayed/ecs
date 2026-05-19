@@ -60,12 +60,14 @@ bool ActionInput(void);
 typedef BehaviorStatus (*ActionKeyCallback)(input_t* gi, KeyboardKey k);
 
 struct action_key_s{
-  ActionType        action;
-  int               num_keys;
-  KeyboardKey       keys[12];
+  char              name[MAX_NAME_LEN];
+  KeyboardKey       key;
   ActionKeyCallback fn;
-  int               binding;
 };
+
+typedef hash_map_t macro_map_t;
+void InitMacroKeys(int);
+void RegisterMacro(char* name, KeyboardKey);
 
 struct input_s{
   KeyboardKey     last_key;
@@ -73,8 +75,8 @@ struct input_s{
   int             angle;
   Cell            step;
   ActionType      last_act;
-  action_key_t    actions[ACT_DONE];
 };
+
 input_t* InitInput(void);
 
 bool InputCheck(input_t*, Entity);

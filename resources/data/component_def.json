@@ -1,5 +1,5 @@
 {
-  "num_comp_def": 25,
+  "num_comp_def": 17,
   "components": [
     "Sprite", "Animation", "Particle", "ParticleEmitter", "Force",
     "Render", "Position", "Input", "Camera"
@@ -7,33 +7,21 @@
   "Sprite":{
     "func": "SpriteInit",
     "list": [
-      {"name": "player", "layer": 2, "scale": 2.5,
+      {"name": "wiz", "layer": 2, "scale": 2.5,
         "sheet_id": "SHEET_CHAR", "sheet_index": 0
       },
-      {"name": "tile_blank", "layer": 1,
+      {"name": "tile_wall", "layer": 1,
         "sheet_id": "SHEET_TILE", "sheet_index": 0
       },
-      {"name": "tile_tiwaz", "layer": 1,
-        "sheet_id": "SHEET_TILE", "sheet_index": 1
-      },
-      {"name": "tile_algiz", "layer": 1,
-        "sheet_id": "SHEET_TILE", "sheet_index": 2
-      },
-      {"name": "tile_raidho", "layer": 1,
-        "sheet_id": "SHEET_TILE", "sheet_index": 3
-      },
-      {"name": "tile_laguz", "layer": 1,
-        "sheet_id": "SHEET_TILE", "sheet_index": 4
-      },
-      {"name": "tile_ingwaz", "layer": 1,
-        "sheet_id": "SHEET_TILE", "sheet_index": 5
+      {"name": "tile_floor", "layer": 1,
+        "sheet_id": "SHEET_TILE", "sheet_index": 12
       }
     ]
   },
   "Animation": {
     "func": "AnimInit",
     "list": [
-      {"name": "player", "sheet_id": "SHEET_CHAR",
+      {"name": "wiz", "sheet_id": "SHEET_CHAR",
         "states": [
           {"state": "WALK", "interupt": true, "loop": false, "end": "SUSPEND",
             "sequences": [
@@ -68,7 +56,7 @@
     "func": "ParticleEmitterInit",
     "list": [
       {
-        "name": "player-dust",
+        "name": "wiz-dust",
         "mode": "CONTINUOUS",
         "layer": 3,
         "active": false,
@@ -99,17 +87,17 @@
   "RigidBody":{
     "func": "RigidBodyInit",
     "list": [
-      {"name": "player",  "shape": "rect", "width": 10, "height": 12}
+      {"name": "wiz",  "shape": "rect", "width": 10, "height": 12}
     ]
   },
   "Force": {
     "func": "ForceInit",
     "list": [
-      {"name": "player-steering",
+      {"name": "wiz-steering",
         "type": "STEERING", "event": "FORCE_EVENT_ACCEL",
         "speed": 0.67, "max": 1.675, "threshold": 0.1, "frict": 0.65
       },
-      {"name": "player-bump",
+      {"name": "wiz-bump",
         "type": "IMPULSE", "event": "PHYS_EVENT_COLL",
         "speed": "0.5", "max": 1.15, "threshold": 0.1, "frict": 0.8
       }
@@ -131,7 +119,7 @@
   },
   "Position": {
     "func": "PositionInit",
-    "count":  8,
+    "count":  4,
     "list": [
       {
         "name": "main_cam",
@@ -139,14 +127,13 @@
         "posy": 300
       },
       {
-        "name": "player",
+        "name": "wiz",
         "posx": 400,
         "posy": 300
       },
       {
         "name": "tile",
-        "contains":  ["tile_blank", "tile_tiwaz", "tile_algiz",
-          "tile_raidho", "tile_laguz", "tile_ingwaz"],
+        "contains":  ["tile_wall", "tile_floor"],
           "posx": 0,
           "posy": 0
       }
@@ -175,6 +162,36 @@
   },
   "Input": {
     "func": "InputInit",
-    "list": [{"name": "player"}]
+    "list": [
+      {
+        "name":     "wiz",
+        "actions":  [
+          {
+            "name":   "MOVE-RIGHT",
+            "action": "MOVE",
+            "dir":    0,
+            "keys":   [68, 262, 76]
+          },
+          {
+            "name":   "MOVE-LEFT",
+            "action": "MOVE",
+            "dir":    180,
+            "keys":   [65, 263, 72]
+          },
+          {
+            "name":   "MOVE-UP",
+            "action": "MOVE",
+            "dir":    90,
+            "keys":   [87, 265, 75]
+          },
+          {
+            "name":   "MOVE-DOWN",
+            "action": "MOVE",
+            "dir":    270,
+            "keys":   [83, 264, 74]
+          }
+        ]
+      }
+    ]
   }
 }

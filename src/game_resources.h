@@ -6,8 +6,8 @@
 #define MAX_RESOURCES     4
 #define MAX_SPRITES       128
 #define MAX_SLICES        8
-#define MAX_SPRITE_FRAMES 80
-#define MAX_ANIM_GROUPS   16
+#define MAX_SPRITE_FRAMES 96
+#define MAX_ANIM_GROUPS   20
 #define MAX_ANIM_FRAMES   8
 
 cJSON* ParseRoot(const char* path);

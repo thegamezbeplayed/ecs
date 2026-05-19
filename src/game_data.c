@@ -1,5 +1,6 @@
 #include "component_define.h"
 #include "system_define.h"
+#include "game_control.h"
 #include "components.h"
 
 const component_define_t CORE_COMPONENTS[NUM_COMP_CORE] = {

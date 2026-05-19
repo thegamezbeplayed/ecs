@@ -2,11 +2,12 @@
 #define __COMP_DEF__
 
 #include "asset_vfx.h"
-#include "game_control.h"
 #include "game_physics.h"
 #include "game_views.h"
 #include "game_stats.h"
 #include "game_behaviors.h"
+
+typedef struct input_s input_t;
 
 bool InputInit(void* comp, component_entry_t* data);
 bool SpriteInit(void* comp, component_entry_t* data);

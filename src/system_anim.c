@@ -26,6 +26,7 @@ void AnimEvent(event_t* ev, void* data){
 }
 
 void AnimInputEvent(event_t* ev, void* data){
+/*
   anim_comp_t* ac = data;
   input_t*       in = ev->data;
 
@@ -60,7 +61,7 @@ void AnimInputEvent(event_t* ev, void* data){
     return;
 
   //if(AnimSetState(a, ANIM_START))
-
+*/
 }
 
 void AnimBehaviorHandler(world_t* w, Entity e, anim_comp_t* ac, anim_t* a){
@@ -113,7 +114,7 @@ void AnimReady(world_t* w, Entity e){
 
 void AnimLoad(world_t* w, Entity e){
   anim_comp_t* ac = GET_COMPONENT(w, e, anim_comp_t, ANIM_ID);
-
+/*
   input_t* in = GET_COMPONENT(w, e, input_t, INPUT_ID);
 
   if(!in)
@@ -127,6 +128,7 @@ void AnimLoad(world_t* w, Entity e){
 
   n = InputEvent_ToNotif(INPUT_EVENT_KEY_RELEASE);
   TargetSubscribe(n, AnimInputEvent, ac, e.id );
+*/
 }
 
 void AnimSystem(world_t* w, Entity e){

@@ -1,6 +1,6 @@
 {
   "prefabs": {
-    "count": 12,
+    "count": 8,
     "list":[
       {
         "name": "main_cam",
@@ -14,14 +14,13 @@
         "contains": ["bg", "floor", "main", "vfx"]
       },
       {
-        "name": "player",
+        "name": "wiz",
         "count": 4,
         "list": ["Input", "Sprite", "Animation", "Position"]
       },
       {
         "name": "tile",
-        "contains": ["tile_blank", "tile_tiwaz", "tile_algiz",
-          "tile_raidho", "tile_laguz", "tile_ingwaz"],
+        "contains": ["tile_floor", "tile_wall"],
           "count": 2,
           "list": ["Sprite", "Position"]
       }
@@ -29,17 +28,17 @@
   },
   "relations": [
     {
-      "name": "player",
+      "name": "wiz",
       "list":[
         {"name": "Force",
           "sublist": [
-            {"name": "player-steering", "type": "AppliesTo"},
-            {"name": "player-bump",      "type": "AppliesTo"}
+            {"name": "wiz-steering", "type": "AppliesTo"},
+            {"name": "wiz-bump",      "type": "AppliesTo"}
           ]
         },
         {"name": "ParticleEmitter",
           "sublist": [
-            {"name": "player-dust", "type": "ChildOf", "components": ["Position"]}
+            {"name": "wiz-dust", "type": "ChildOf", "components": ["Position"]}
           ]
         }
       ]
