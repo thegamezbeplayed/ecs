@@ -1,4 +1,4 @@
-#include "game_process.h"
+#include "process_define.h"
 
 payload_t* InitPayload(int count, param_t params[count]){
   payload_t* p = GameCalloc("InitPayload", 1, sizeof(payload_t));

@@ -1,4 +1,5 @@
 #include "component_define.h"
+#include "system_define.h"
 #include "components.h"
 
 const component_define_t CORE_COMPONENTS[NUM_COMP_CORE] = {
@@ -139,6 +140,25 @@ void GameInitPrefabs(world_t* w, game_t* g){
       }
     }
   }
+}
+
+bool InitGameDefine(world_t* w){
+ game_t* g = GameCalloc("InitGameDefine", 1, sizeof(game_t));
+
+  if(!LoadGameDefine(g))
+    return false;
+
+  ComponentInit(g->num_comps);
+  for(int i = 0; i < g->num_comps; i++)
+    ComponentRegisterCore(g->comps[i]);
+
+  for(int i = 0; i < g->num_sys; i++)
+    SystemCreate(&world, &g->systems[i]);
+
+  GameInitPrefabs(&world, g);
+  UnloadGameDefine(g);
+
+  return true;
 }
 
 void GameSpawn(world_t* w, game_t* g){

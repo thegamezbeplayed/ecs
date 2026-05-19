@@ -1,0 +1,119 @@
+{
+  "systems": ["Animations", "Sprites", "Particles",
+    "ParticleEmitters","Cameras", "Renderer"],
+    "Animations":{
+      "components": ["Animation", "Sprite"],
+      "syncs": [
+        {"step": "UPDATE_FIXED",  "fn": "AnimSystem"}
+      ],
+      "sets": [
+        {"step": "GAME_LOADING",  "fn": "AnimLoad"},
+        {"step": "GAME_READY",    "fn": "AnimReady"}
+      ]
+    },
+    "Sprites" : {
+      "components": ["Sprite", "Position"],
+      "sets": [
+        {"step": "GAME_RUNNING", "fn": "SpriteLoad"}
+      ],
+      "states": [
+        {"step": "GAME_READY", "fn": "SpritesInit"}
+      ]
+    },
+    "Particles": {
+      "components": ["Particle", "Position"],
+      "syncs": [
+        {"step": "UPDATE_FIXED", "fn": "ParticleSystem"},
+        {"step": "UPDATE_POST", "fn": "ParticleCleanup"}
+      ],
+      "states": [
+        {"step": "GAME_LOADING", "fn": "ParticlesInit"}
+      ]
+    },
+    "ParticleEmitters": {
+      "components": ["ParticleEmitter", "Position"],
+      "syncs": [
+        {"step": "UPDATE_FIXED", "fn": "ParticleEmitterSystem"}
+      ],
+      "sets": [
+        {"step": "GAME_LOADING", "fn": "ParticleEmitterLoad"}
+      ]
+    },
+    "Controller": {
+      "components": ["Input", "Position"],
+      "syncs": [
+        {"step": "UPDATE_FRAME",  "fn": "InputSystem"}
+      ],
+      "sets":[
+        {"step": "GAME_READY",    "fn": "InputLoad"}
+      ]
+    },
+    "Positions": {
+      "components": ["Position"],
+      "sets": [
+        {"step": "GAME_READY",    "fn": "PositionLoad"}
+      ]
+    },
+    "Physics": {
+      "components": ["RigidBody", "Position"],
+      "syncs": [
+        {"step": "UPDATE_POST",  "fn": "PhysicsSystem"},
+        {"step": "UPDATE_PRE" ,  "fn": "PhysicsCollision"}
+      ],
+      "sets": [
+        {"step": "GAME_READY",   "fn": "PhysicsLoad"}
+      ],
+      "states": [
+        {"step": "GAME_LOADING", "fn": "PhysicsInit"}
+      ]
+    },
+    "Forces": {
+      "components": ["Force"],
+      "syncs": [
+        {"step": "UPDATE_FIXED",  "fn": "ForceSystem"},
+        {"step": "UPDATE_FINAL",  "fn": "ForceCleanup"}
+      ],
+      "sets": [
+        {"step": "GAME_READY",    "fn": "ForceLoad"}
+      ]
+    },
+    "Levels": {
+      "components": ["Level"],
+      "sets": [
+        {"step": "GAME_LOADING",  "fn": "LevelLoad"},
+        {"step": "GAME_READY",    "fn": "LevelReady"}
+      ]
+    },
+    "Renderer": {
+      "components": ["Render"],
+      "syncs": [
+        {"step": "UPDATE_DRAW",        "fn": "RenderDraw"},
+        {"step": "UPDATE_DRAW_BEGIN",  "fn": "RenderBegin"},
+        {"step": "UPDATE_DRAW_END",  "fn": "RenderEnd"}
+      ],
+      "sets": [
+        {"step": "GAME_LOADING",   "fn": "RenderLoad"}
+      ],
+      "states": [
+        {"step": "GAME_LOADING", "fn": "RenderInit"}
+      ]
+    },
+    "Cameras": {
+      "components": ["Camera"],
+      "syncs": [
+        {"step": "UPDATE_POST",      "fn": "CameraSystem"},
+        {"step": "UPDATE_DRAW_BEGIN","fn": "CameraBegin"},
+        {"step": "UPDATE_DRAW_END",  "fn": "CameraEnd"}
+      ],
+      "sets": [
+        {"step": "GAME_LOADING",     "fn": "CameraLoad"},
+        {"step": "GAME_READY",       "fn": "CameraReady"}
+      ]
+    },
+    "Expiration": {
+      "components": ["Expiry"],
+      "syncs": [
+        {"step": "UPDATE_FINAL",  "fn": "ExpirationSystem"}
+      ]
+    }
+}

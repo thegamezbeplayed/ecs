@@ -1,5 +1,4 @@
 #include "game_physics.h"
-#include "game_process.h"
 
 force_t* ForceFromVec2(ForceType type, Vector2 vec){
   force_t* g = GameCalloc("ForceFromVec2", 1, sizeof(force_t));

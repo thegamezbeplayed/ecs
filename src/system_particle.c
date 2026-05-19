@@ -1,3 +1,4 @@
+#include "process_event.h"
 #include "system_define.h"
 #include "tool_lookup.h"
 
@@ -72,7 +73,6 @@ void ParticleOnRender(void* o_data, void* s, void* e_data) {
 
 void ParticleEmitterLoad(world_t* w, Entity e){
   particle_emitter_t* ec = GET_COMPONENT(w, e, particle_emitter_t, EMITTER_ID);
-
 
   for( int i = 0; i < PARTICLE_EVENT_COUNT; i++){
     notification n = ParticleEvent_ToNotif(i);

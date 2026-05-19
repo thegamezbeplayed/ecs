@@ -1,7 +1,6 @@
 #include "game_define.h"
 #include "component_define.h"
 #include "game_helpers.h"
-#include "game_process.h"
 
 bool PositionInit(void* comp, component_entry_t* j){
   position_t* p = comp;

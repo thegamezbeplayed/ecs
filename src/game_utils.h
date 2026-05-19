@@ -1,7 +1,9 @@
 #ifndef __GAME_UTIL__
 #define __GAME_UTIL__
 
-#include "game_types.h"
+#include <stdint.h>
+#include <stdbool.h>
+
 #include "game_common.h"
 #include "util_observe.h"
 

@@ -1,13 +1,14 @@
 #include "game_define.h"
-#include "asset_define.h"
 #include "asset_resources.h"
-
+#include "gbm_paths.h"
+#include "asset_define.h"
 #include "system_define.h"
 
 static ResourcePool RES_POOL;
-static game_t       GAME_DEF;
-static cJSON* def;
+static cJSON* comp;
 static cJSON* sys;
+static cJSON* pref;
+static bool s_load, c_load, p_load, r_load;
 
 void AsepriteToAnim(SheetID id, const ase_sprite_sheet_d* ase, anim_tag_t tag, int index, sprite_d* out){
   if (!ase || !out || index < 0 || index >= ase->num_frames) {
@@ -82,9 +83,13 @@ void ResourceMapAsepriteAnims(sprite_sheet_d* s, ase_sprite_sheet_d* ase){
 
 void ResourceMapAseprites(SheetID id, sprite_sheet_d* s, ase_sprite_sheet_d* ase){
 
-  for(int i = 0; i < ase->num_frames; i++){
-    AsepriteToSprite(id, ase, i, &s->sprites[s->num_sprites++]);
+  int i = 0;
+  for(i; i < ase->num_frames; i){
+    AsepriteToSprite(id, ase, i++, &s->sprites[s->num_sprites++]);
   }
+
+  if(i == 0)
+    TraceLog(LOG_WARNING, "=== RES: MAP ASEPRITE ===\n No Aseprite assets loaded!"); 
 }
 
 void ResourceLoadAseprite(cJSON* root, ResourceRef* ref){
@@ -126,27 +131,42 @@ void ResourceInit(int count){
   RES_POOL.refs = GameCalloc("ResourceInit", count, sizeof(ResourceRef));
 }
 
-game_t* LoadGameDefine(const char* path){
-  bool load;
-
-  def = ParseRoot(path);
-  if(def)
-    load = ParseGameDefinition(def, &GAME_DEF);
+bool LoadGameDefine(game_t* g){
+  comp = ParseRoot(PATH_DEF_COMP);
+  if(comp)
+    c_load = ParseComponents(comp, g);
   
-  
-  if(!load){
-    TraceLog(LOG_WARNING, "=== GAME DEF NOT LOADED===");
-    return NULL;
+  if(!c_load){
+    TraceLog(LOG_WARNING, "=== GAME COMPONENTS NOT LOADED===");
+    return false;
   }
 
-  ComponentInit(GAME_DEF.num_comps);
-  for(int i = 0; i < GAME_DEF.num_comps; i++)
-    ComponentRegisterCore(GAME_DEF.comps[i]);
+  sys = ParseRoot(PATH_DEF_SYST);
+  if(sys)
+    s_load = ParseSystems(sys, g);
 
-  for(int i = 0; i < GAME_DEF.num_sys; i++)
-    SystemCreate(&world, &GAME_DEF.systems[i]);
+  if(!s_load){
+    TraceLog(LOG_WARNING, "=== GAME SYSTEMS NOT LOADED===");
+    return false;
+  }
 
-  return &GAME_DEF;
+  pref = ParseRoot(PATH_DEF_PREF);
+  if(pref){
+    p_load = ParsePrefabs(pref, g);
+    r_load = ParseRelations(pref, g);
+  }
+
+  if(!p_load){
+    TraceLog(LOG_WARNING, "=== GAME PREFABS NOT LOADED===");
+    return false;
+  }
+  
+  if(!r_load){
+    TraceLog(LOG_WARNING, "=== GAME RELATIONS NOT LOADED===");
+    return false;
+  }
+
+  return c_load && s_load && p_load && r_load;
 }
 
 void ResourceLoad(ResourceRef ref){
@@ -163,6 +183,7 @@ void ResourceLoad(ResourceRef ref){
 void UnloadGameDefine(game_t* g){
   if(!g)
     return;
+
   for (int i = 0; i < g->num_prefabs; i++) {
     prefab_entity_t* p = &g->prefabs[i];
     if(p->name)
@@ -190,6 +211,6 @@ void UnloadGameDefine(game_t* g){
   GameFree("UnloadGameDefine", g->relations);
   memset(g, 0, sizeof(*g));
 
-  if (def) cJSON_Delete(def);
+  if (comp) cJSON_Delete(comp);
   if (sys) cJSON_Delete(sys);
 }

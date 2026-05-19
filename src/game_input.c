@@ -1,10 +1,8 @@
-#include "game_types.h"
-#include "game_process.h"
+#include "process_event.h"
 #include "game_control.h"
 #include "component_define.h"
 
 input_t player_input;
-
 
 BehaviorStatus InputActionMove(input_t* gi, KeyboardKey k){
   Cell dir = CELL_UNSET;
