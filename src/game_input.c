@@ -41,16 +41,20 @@ input_t* InitInput(void){
   in->step =  CELL_UNSET;
 }
 
-KeyboardKey InputCheck(input_t* gi, Entity e){
+bool InputCheck(input_t* gi, Entity e){
   if(IsKeyDown(KEY_SPACE))
       DO_NOTHING();
 
   int key = GetKeyPressed();
 
-  if(key > 0)
+  if(key > 0){
     gi->last_key = key;
-  else if(IsKeyReleased(gi->last_key))
+    return true;
+  }
+  else if(IsKeyReleased(gi->last_key)){
     gi->last_key = 0;
+    return true;
+  }
 
-  return gi->last_key;
+  return false;
 }

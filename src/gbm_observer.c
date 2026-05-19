@@ -1,9 +1,13 @@
 #include "util_observe.h"
 #include "game_define.h"
+#include "component_define.h"
 #include "components.h"
 subject_pool_t SUBJECTS;
 
-bool ObserverInit(void* comp, component_entry_t* data){
+bool ObserverInit(void* comp, component_entry_t* j){
+  component_observer_t *c = comp;
+
+  return ParseObserverComponent(j->data, c);
 
 }
 

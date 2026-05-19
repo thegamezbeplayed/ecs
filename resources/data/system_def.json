@@ -1,10 +1,13 @@
 {
-  "systems": ["Input", "Animations", "Sprites", "Particles",
+  "systems": ["Controller", "Animations", "Sprites", "Particles",
     "ParticleEmitters","Cameras", "Renderer", "Observe"],
     "Observe": {
-      "components": ["Observe"],
+      "components": ["Observer"],
       "states": [
         {"step": "GAME_LOADING", "fn": "ObserveInit"}
+      ],
+      "sets": [
+        {"step": "GAME_READY",   "fn": "ObserveReady"}
       ]
     },
     "Animations":{

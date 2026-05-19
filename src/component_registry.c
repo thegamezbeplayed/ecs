@@ -128,3 +128,6 @@ void ComponentsClear(world_t* w, Entity e) {
 
 }
 
+void ComponentUpdate(world_t* w, Entity e, comp_id_t id){
+
+}

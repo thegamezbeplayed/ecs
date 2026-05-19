@@ -13,7 +13,7 @@ const component_define_t CORE_COMPONENTS[NUM_COMP_CORE] = {
   {"Camera",    sizeof(camera_t)},
   {"Track",     sizeof(track_comp_t)},
   {"Type",      sizeof(EntityType)},
-  {"Observer",  sizeof(observer_t)},
+  {"Observer",  sizeof(component_observer_t)},
   {"Force",     sizeof(force_t)},
   //{"Name",      0}, //TODO
   {"State",     sizeof(state_comp_t)},

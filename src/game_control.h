@@ -79,8 +79,5 @@ struct input_s{
 };
 
 input_t* InitInput(void);
-
-KeyboardKey InputCheck(input_t* gi, Entity e);
-
-
+bool InputCheck(input_t* gi, Entity e);
 #endif

@@ -3,23 +3,19 @@
     "list":[
       {
         "name": "main_cam",
-        "count": 2,
         "list": ["Position", "Camera"]
       },
       {
         "name":     "layers",
-        "count":    1,
         "list":     ["Render"],
         "contains": ["LAYER_BACKGROUND", "LAYER_FLOOR", "LAYER_MAIN", "LAYER_VFX"]
       },
       {
         "name": "wiz",
-        "count": 4,
-        "list": ["Input", "Sprite", "Animation", "Position"]
+        "list": ["Observer", "Input", "Sprite", "Animation", "Position"]
       },
       {
         "name": "tile_floor",
-        "count": 2,
         "list": ["Sprite", "Position"]
       }
     ]

@@ -187,8 +187,12 @@ system_t* SystemCreate(world_t* w, system_define_t* def){
 
   for (int i = 0; i < def->num_req; i++){
     comp_id_t cid = ComponentGetID(def->components[i]);
-    if(cid != INVALID_COMPONENT)
-      SystemRequire(s, cid);
+    if(cid == INVALID_COMPONENT){
+      TraceLog(LOG_ERROR, "=== SYSTEM CREATE ===\n System %s invalid required Component %s",
+          def->name, def->components[i]);
+      exit;
+    }
+    SystemRequire(s, cid);
 
   }
 

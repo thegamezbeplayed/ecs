@@ -7,7 +7,7 @@
     "func":	"ObserverInit",
     "list":	[
       {
-        "name":	    "wiz-controller",
+        "name":	    "wiz",
         "type":	    1,
         "comp":	    "Input",
         "subjects": ["MOVE-LEFT", "MOVE-RIGHT", "MOVE-UP", "MOVE-DOWN"],

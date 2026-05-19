@@ -1,6 +1,5 @@
 #include "game_helpers.h"
 #include "game_strings.h"
-#include "game_control.h"
 #include "system_define.h"
 #include "scene.h"
 
@@ -149,44 +148,6 @@ bool ParseSpriteComponent(cJSON* j, sprite_t* out){
   out->sheet_id = sheet_id;
 
   return sheet_id > -1;
-}
-
-bool ParseInputComponent(cJSON* j, input_t* out){
-  if(!j)
-    return false;
-
-  char name[MAX_NAME_LEN];
-  Json_GetString(j, "name", name);
-
-  cJSON* actions_json = cJSON_GetObjectItem(j, "actions");
-  if(!cJSON_IsArray(actions_json))
-    return false;
-
-  cJSON* action_json;
-  cJSON_ArrayForEach(action_json, actions_json){
-    char aname[MAX_NAME_LEN];
-    Json_GetString(action_json, "name", aname);
-
-    cJSON* keys_json = cJSON_GetObjectItem(action_json, "keys");
-    if(!cJSON_IsArray(keys_json))
-      continue;
-
-    cJSON* key_json;
-    cJSON_ArrayForEach(key_json, keys_json){
-      int key = key_json->valueint;
-
-      RegisterMacro(str_concat(name, aname), key);
-    }
-  }
-
-}
-
-bool ParseRigidBodyComponent(cJSON* j, rigid_body_t* out){
-
-}
-
-bool ParseForceComponent(cJSON* j, force_t* out){
-
 }
 
 bool ParseAnimComponent(cJSON* j, anim_comp_t* out){

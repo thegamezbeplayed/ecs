@@ -3,10 +3,11 @@
 
 #include "observer_types.h"
 #include "game_common.h"
+#include "components.h"
 
 #define  MAX_SUBJECT_STORE  64
 #define MAX_LISTENERS       4 
-#define MAX_SUB_OBS         4 
+#define MAX_SUBJ_OBS        4 
 // Forward declarations
 
 typedef enum{
@@ -30,7 +31,10 @@ struct observer_s {
 };
 
 typedef struct{
+  char        name[MAX_NAME_LEN];
   ObserveType type;
+  int         num_subj;
+  comp_id_t   relation;
   char        subjects[MAX_SUBJ_OBS][MAX_NAME_LEN];
   comp_id_t   observers[MAX_LISTENERS];
 }component_observer_t;
@@ -42,6 +46,7 @@ struct subject_s {
 
 void InitSubject(subject_t* subject);
 void SubjectAddObserver(const char*, const char*, ObserverCB, void*) ;
+void SubjectAddObserverByComponent(const char*, uint32_t, comp_id_t, const char*, ObserverCB, void*);
 void SubjectRemoveObserver(subject_t*, ObserverCB, void*); // Optional
 void SubjectRunNotify(subject_t* s, void* data);
 void SubjectNotify(const char*, void* eventdata);

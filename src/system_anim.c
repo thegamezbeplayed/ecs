@@ -100,7 +100,7 @@ void AnimBehaviorHandler(world_t* w, Entity e, anim_comp_t* ac, anim_t* a){
 }
 
 void AnimRender(world_t* w, Entity e){
-anim_comp_t* ac = GET_COMPONENT(w, e, anim_comp_t, ANIM_ID);
+  anim_comp_t* ac = GET_COMPONENT(w, e, anim_comp_t, ANIM_ID);
   sprite_t* spr = GET_COMPONENT(w, e, sprite_t, SPR_ID);
   anim_player_t* ap = &ac->player;
   anim_t* a = &ac->sequences[ap->state][ap->dir];
