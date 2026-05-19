@@ -1,5 +1,5 @@
 #include "game_register.h"
-#include "game_systems.h"
+#include "system_define.h"
 
 static choice_pool_t* locations;
 

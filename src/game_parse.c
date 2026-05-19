@@ -1,6 +1,6 @@
 #include "game_helpers.h"
 #include "game_strings.h"
-#include "game_systems.h"
+#include "system_define.h"
 #include "scene.h"
 
 char* Json_GetString(cJSON* obj, const char* key, char* out)
@@ -265,6 +265,7 @@ bool ParseRenderComponent(cJSON* j, render_ctx_t* out){
   if(!j)
     return false;
   
+  Json_GetString(j, "name", out->name);
   out->layer = Json_GetInt(j, "layer", -1);
   return out->layer > -1;
 }

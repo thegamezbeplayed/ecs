@@ -122,19 +122,4 @@ static int str_to_int(const char* str, int* out) {
     *out = (int)val;
     return 1;
 }
-
-void StringBounds(Rectangle *b, char* buff);
-
-typedef struct{
-  const char   str[MAX_NAME_LEN];
-  int         weight;
-}announce_string_t;
-
-typedef struct{
-  int               count;
-  announce_string_t pool[10];
-  choice_pool_t     *picker;
-}announce_string_p;
-
-const char* StringGetAnnouncement(notification type);
 #endif

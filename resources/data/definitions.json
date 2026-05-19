@@ -1,6 +1,12 @@
 {
   "systems": ["Animations", "Sprites", "Particles", "ParticleEmitters",
-    "Cameras", "Renderer"],
+    "Cameras", "Renderer", "Observe"],
+    "Observe": {
+      "components": ["Observe"],
+      "states": [
+        {"step": "GAME_LOADING", "fn": "ObserveInit"}
+      ]
+    },
     "Animations":{
       "components": ["Animation", "Sprite"],
       "syncs": [
@@ -274,21 +280,31 @@
       "func": "RenderInit",
       "list": [
         {
-          "name":     "bg",
+          "name":     "LAYER_BACKGROUOND",
           "layer":    0
         },
         {
-          "name":     "floor",
+          "name":     "LAYER_FLOOR",
           "layer":    1
         },
         {
-          "name":     "main",
+          "name":     "LAYER_MAIN",
           "layer":    2
         },
         {
-          "name":     "vfx",
+          "name":     "LAYER_VFX",
           "layer":    3
         }
+      ]
+    },
+    "Observer": {
+      "func":	"ObserverInit",
+      "list":	[
+	{
+	  "name":	"observe-test",
+	  "type":	1,
+	  "comp":	"Position"
+	}
       ]
     },
     "Input": {
@@ -307,7 +323,7 @@
           "name":     "layers",
           "count":    1,
           "list":     ["Render"],
-          "contains": ["bg", "floor", "main", "vfx"]
+          "contains": ["LAYER_BACKGROUND", "LAYER_FLOOR", "LAYER_MAIN", "LAYER_VFX"]
         },
         {
           "name": "player",

@@ -1,5 +1,4 @@
 #include "game_define.h"
-#include "game_systems.h"
 #include "game_common.h"
 #include "component_define.h"
 

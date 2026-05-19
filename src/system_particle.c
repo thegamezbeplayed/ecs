@@ -1,4 +1,5 @@
-#include "game_systems.h"
+#include "system_define.h"
+#include "tool_lookup.h"
 
 static particle_layer_t PARTICLE_LAYERS[LAYER_DONE] = {0};
 
@@ -72,7 +73,6 @@ void ParticleOnRender(void* o_data, void* s, void* e_data) {
 void ParticleEmitterLoad(world_t* w, Entity e){
   particle_emitter_t* ec = GET_COMPONENT(w, e, particle_emitter_t, EMITTER_ID);
 
-  SubjectAddObserver(&renderer, ParticleOnRender, w);
 
   for( int i = 0; i < PARTICLE_EVENT_COUNT; i++){
     notification n = ParticleEvent_ToNotif(i);
@@ -113,8 +113,10 @@ void ParticleSystem(world_t* w, Entity e){
 }
 
 void ParticlesInit(world_t* w){
-  for(int i = 0; i < LAYER_DONE; i++)
+  for(int i = 0; i < LAYER_DONE; i++){
     EntiyBatchReserve(&w->manager, MAX_PARTICLES, PARTICLE_LAYERS[i].ents);
+    SubjectAddObserver(LookupLayer(i), "PARTICLE", ParticleOnRender, w);
+  }
 }
 
 void ParticleCleanup(world_t* w, Entity e){
