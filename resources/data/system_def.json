@@ -1,7 +1,7 @@
 {
   "systems": ["Controller", "Animations", "Sprites", "Particles",
     "ParticleEmitters","Cameras", "Renderer", "Observe",
-    "Force", "Physics"
+    "Forces", "Physics"
   ],
   "Observe": {
     "components": ["Observer"],

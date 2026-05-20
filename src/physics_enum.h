@@ -1,0 +1,39 @@
+#ifndef __PHYS_ENUM__
+#define __PHYS_ENUM__
+#include "game_enum.h"
+
+DEFINE_EVENT_SPACE(PhysEvent, EVENT_PHYS_BASE);
+typedef enum{
+  PHYS_EVENT_NONE,
+  PHYS_EVENT_ACCEL,
+  PHYS_EVENT_COLL,
+  PHYS_EVENT_FORCE_END,
+  PHYS_EVENT_SPAWN,
+  PHYS_EVENT_DESTROY,
+  PHYS_EVENT_HIT,
+  PHYS_EVENT_COUNT
+}PhysicsEventID;
+
+typedef enum {
+  FORCE_NONE,
+  FORCE_GRAVITY,
+  FORCE_STEERING,
+  FORCE_IMPULSE,
+  FORCE_AVOID,
+  FORCE_KINEMATIC,
+  FORCE_DONE
+}ForceType;
+
+typedef enum{
+  REACT_NONE,
+  REACT_BUMP,
+  REACT_BLOCK,
+}ReactType;
+
+typedef enum{
+  COLL_NONE,
+  COLL_FORCE,
+  COLL_HIT
+}CollisionBehavior;
+
+#endif

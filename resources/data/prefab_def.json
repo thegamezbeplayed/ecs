@@ -12,7 +12,8 @@
       },
       {
         "name": "wiz",
-        "list": ["Observer", "Input", "Sprite", "Animation", "Position"]
+        "list": ["Observer", "Input", "Sprite", "Animation",
+         "RigidBody", "Force", "Position"]
       },
       {
         "name": "tile_floor",
@@ -26,7 +27,6 @@
       "list":[
         {"name": "Force",
           "sublist": [
-            {"name": "wiz-steering", "type": "AppliesTo"},
             {"name": "wiz-bump",      "type": "AppliesTo"}
           ]
         },

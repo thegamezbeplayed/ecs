@@ -1,5 +1,12 @@
 #ifndef __TOOL_LOOK__
 #define __TOOL_LOOK__
+
+#include "physics_enum.h"
+
+ActionType StringToAction(const char* str);
+Vector2 StringToVector2(const char* str);
+ForceType StringToForce(const char* str);
+ShapeType StringToShape(char* str);
 static const char* RENDER_LAYER_LOOK[LAYER_DONE] = {
   "LAYER_BACKGROUND",
   "LAYER_FLOOR",

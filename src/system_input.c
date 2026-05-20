@@ -2,6 +2,7 @@
 #include "system_define.h"
 #include "game_control.h"
 #include "process_event.h"
+#include "tool_lookup.h"
 
 void OnInputEvent(event_t* ev, void* data){
 /*
@@ -29,7 +30,7 @@ void InputLoad(world_t* w, Entity e){
 
   for(int i = 0; i < MAX_MACROS; i++){
     action_key_t* a = &in->action_keys[i];
-
+    a->dir = StringToVector2(a->name);
     RegisterMacro(a);
   }
 }

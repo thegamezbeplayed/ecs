@@ -6,8 +6,7 @@
 #include "game_views.h"
 #include "game_stats.h"
 #include "game_behaviors.h"
-
-typedef struct input_s input_t;
+#include "game_control.h"
 
 bool InputInit(void* comp, component_entry_t* data);
 bool SpriteInit(void* comp, component_entry_t* data);

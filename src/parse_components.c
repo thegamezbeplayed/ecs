@@ -1,6 +1,7 @@
 #include "component_define.h"
 #include "game_control.h"
 #include "util_parse.h"
+#include "tool_lookup.h"
 
 bool ParseObserverComponent(cJSON* j, component_observer_t* out){
   if(!j)
@@ -64,6 +65,10 @@ bool ParseInputComponent(cJSON* j, input_t* out){
       continue;
 
     cJSON* aname = cJSON_GetObjectItem(action_json, "name");
+    
+    char t_name[MAX_NAME_LEN];
+    Json_GetString(action_json, "action", t_name);
+
     cJSON* key_json;
     cJSON_ArrayForEach(key_json, keys_json){
       int key = key_json->valueint;
@@ -71,6 +76,7 @@ bool ParseInputComponent(cJSON* j, input_t* out){
       action_key_t *a = GameCalloc("ParseInputComponent", 1, sizeof(action_key_t));
       a->key = key;
       strcpy(a->name, aname->valuestring);
+      a->type = StringToAction(t_name);
 
       out->action_keys[keys++] = *a; 
     }
@@ -80,11 +86,42 @@ bool ParseInputComponent(cJSON* j, input_t* out){
 }
 
 bool ParseRigidBodyComponent(cJSON* j, rigid_body_t* out){
+  if(!j)
+    return false;
 
+  int w = Json_GetInt(j, "width", 0);
+  int h = Json_GetInt(j, "height", 0);
+
+  Vector2 size = VEC_NEW(w,h);
+  RigidBodySetBounds(out, size);
+
+
+  char sname[MAX_NAME_LEN];
+  Json_GetString(j, "shape", sname);
+
+  out->bounds.shape = StringToShape(sname);
+
+  return out->bounds.shape > SHAPE_NONE;
 }
 
 bool ParseForceComponent(cJSON* j, force_t* out){
+  if(!j)
+    return false;
 
-  return true;
+
+  out->speed = Json_GetFloat(j, "speed", 0);
+  out->threshold = Json_GetFloat(j, "threshold", 0);
+  out->max_velocity = Json_GetFloat(j, "max", 0);
+  
+  float fric = Json_GetFloat(j, "frict", 0);
+ 
+  out->friction = VEC_NEW(fric, fric);
+
+  char tname[MAX_NAME_LEN];
+  Json_GetString(j, "type", tname);
+
+  out->type = StringToForce(tname);
+
+  return out->type > FORCE_NONE;
 }
 

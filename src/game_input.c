@@ -29,12 +29,11 @@ input_t* InitInput(void){
   input_t* in = GameCalloc("InitInput", 1, sizeof(input_t));
 
   in->turn = -1;
-  in->step =  CELL_UNSET;
 }
 
 bool InputCheck(input_t* gi, Entity e){
   if(IsKeyDown(KEY_SPACE))
-      DO_NOTHING();
+    DO_NOTHING();
 
   int key = GetKeyPressed();
 
@@ -46,6 +45,8 @@ bool InputCheck(input_t* gi, Entity e){
     gi->last_key = 0;
     return true;
   }
+  else if(IsKeyDown(gi->last_key))
+    return true;
 
   return false;
 }

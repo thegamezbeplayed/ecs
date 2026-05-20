@@ -9,9 +9,10 @@
       {
         "name":	    "wiz",
         "type":	    1,
+        "action":   "MOVE",
         "comp":	    "Input",
         "subjects": ["MOVE-LEFT", "MOVE-RIGHT", "MOVE-UP", "MOVE-DOWN"],
-        "listeners":["Animation"]
+        "listeners":["Animation", "Force"]
       }
     ]
   },
@@ -98,18 +99,18 @@
   "RigidBody":{
     "func": "RigidBodyInit",
     "list": [
-      {"name": "wiz",  "shape": "rect", "width": 10, "height": 12}
+      {"name": "wiz",  "shape": "RECT", "width": 10, "height": 12}
     ]
   },
   "Force": {
     "func": "ForceInit",
     "list": [
-      {"name": "wiz-steering",
-        "type": "STEERING", "event": "FORCE_EVENT_ACCEL",
+      {"name": "wiz",
+        "type": "STEERING", 
         "speed": 0.67, "max": 1.675, "threshold": 0.1, "frict": 0.65
       },
       {"name": "wiz-bump",
-        "type": "IMPULSE", "event": "PHYS_EVENT_COLL",
+        "type": "IMPULSE", 
         "speed": "0.5", "max": 1.15, "threshold": 0.1, "frict": 0.8
       }
     ]
