@@ -7,7 +7,7 @@
 #define NUM_SYS      16
 #define MAX_COMP_DEF 32
 #define MAX_PREF_DEF 8
-#define NUM_REL      4
+#define NUM_REL      6
 
 typedef struct tile_instance_t {
   char* name;
@@ -112,7 +112,9 @@ static const relation_str_t RELATION_LOOKUP[NUM_REL] = {
   {REL_AppliesTo,   "AppliesTo"},
   {REL_ChildOf,     "ChildOf"},
   {REL_Owner,       "Owner"},
-  {REL_Target,      "Target"}
+  {REL_Target,      "Target"},
+  {REL_Observes,    "Observes"},
+  {REL_SubjectOf,   "SubjectOf"}
 };
 
 static int FindComponentIndex(const char* name)

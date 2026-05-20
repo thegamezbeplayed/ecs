@@ -11,6 +11,13 @@ bool ObserverInit(void* comp, component_entry_t* j){
 
 }
 
+bool SubjectInit(void* comp, component_entry_t* j){
+  subject_component_t *c = comp;
+
+  return ParseSubjectComponent(j->data, c);
+
+}
+
 subject_t* SubjectCheckExists(const char* name, const char* from){
   hash_key_t hash = hash_str_64(name);
   if(!SUBJECTS.initialized){

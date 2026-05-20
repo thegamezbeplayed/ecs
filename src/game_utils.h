@@ -8,8 +8,9 @@
 #include "util_observe.h"
 
 #define MAX_BEHAVIOR_TREE 12
-#define MAX_EVENTS 512
-#define MAX_INTERACTIONS 4096
+#define MAX_EVENTS        512
+#define MAX_EVENT_SUBS    256
+#define MAX_INTERACTIONS  4096
 
 #define COMBO_KEY(a, b) ((a << 8) | b)
 #define CALL_FUNC(type, ptr, ...) ((type)(ptr))(__VA_ARGS__)

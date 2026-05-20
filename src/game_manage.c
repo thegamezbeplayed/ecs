@@ -9,8 +9,8 @@ event_bus_t* GameBus(void){
 }
 
 void InitGameEvents(){
-  GM.bus = InitEventBusEx(128, MAX_EVENTS);
-  GM.notifications = InitNotifications(64);
+  GM.bus = InitEventBusEx(MAX_EVENT_SUBS, MAX_EVENTS);
+  GM.notifications = InitNotifications(MAX_INTERACTIONS);
 }     
 
 void GameUnloadEvents(){

@@ -14,6 +14,7 @@ const component_define_t CORE_COMPONENTS[NUM_COMP_CORE] = {
   {"Track",     sizeof(tracking_t)},
   {"Type",      sizeof(EntityType)},
   {"Observer",  sizeof(component_observer_t)},
+  {"Subject",   sizeof(subject_component_t)},
   {"Force",     sizeof(force_t)},
   //{"Name",      0}, //TODO
   {"State",     sizeof(state_comp_t)},
@@ -35,6 +36,7 @@ const component_func_t COMPFUNC_LOOKUP[NUM_COMP_CORE] = {
   {"Input",       InputInit},
   {"Position",    PositionInit},
   {"Observer",    ObserverInit},
+  {"Subject",      SubjectInit},
   {"Follow",      FollowInit},
   {"Track",       TrackingInit},
   {"Particle",        ParticleInit},
@@ -44,6 +46,9 @@ const component_func_t COMPFUNC_LOOKUP[NUM_COMP_CORE] = {
 component_entry_t* GetGameComponentDefine(game_t* g, const char* comp, const char* name){
   for(int i = 0; i < MAX_COMP_DEF; i++){
     component_entry_t* entry = &g->comp_defs[i];
+    if(!entry)
+      DO_NOTHING();
+
     if(strcmp(comp, entry->comp) != 0)
       continue;
 

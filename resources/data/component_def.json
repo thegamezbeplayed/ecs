@@ -2,7 +2,7 @@
   "components": [
     "Sprite", "Animation", "Particle", "ParticleEmitter", "Force",
     "Render", "Position", "Input", "Camera", "Observer", "RigidBody",
-    "Follow", "Track"
+    "Follow", "Track", "Subject"
   ],
   "Observer": {
     "func":	"ObserverInit",
@@ -13,6 +13,22 @@
         "comp":	    "Input",
         "subjects": ["MOVE-STOP", "MOVE-LEFT", "MOVE-RIGHT", "MOVE-UP", "MOVE-DOWN"],
         "listeners":["Animation", "Force"]
+      },
+      {
+        "name":       "rb-observer",
+        "type":       1,
+        "comp":       "RigidBody",
+        "subjects":   ["PHYS-VEL"],
+        "listeners":  ["Position"]
+      }
+    ]
+  },
+  "Subject":  {
+    "func": "SubjectInit",
+    "list": [
+      {
+        "name": "PHYS-VEL",
+        "comp": "RigidBody"
       }
     ]
   },

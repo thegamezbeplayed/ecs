@@ -92,9 +92,7 @@ void PhysicsLoad(world_t* w, Entity e){
   rigid_body_t* rb = GET_COMPONENT(w, e, rigid_body_t, PHYS_ID);
   position_t*  p = GET_COMPONENT(w, e, position_t, POS_ID);
 
-  notification n = PosEvent_ToNotif(POS_EVENT_STEP);
-  SubscribeEntity(n, OnPositionEvent, p, e.id);
-  n = PhysEvent_ToNotif(PHYS_EVENT_SPAWN);
+  notification n = PhysEvent_ToNotif(PHYS_EVENT_SPAWN);
   SubscribeEntity(n, OnPhysEvent, rb, e.id);
 
   anim_comp_t* ac = GET_COMPONENT(w, e, anim_comp_t, ANIM_ID);
@@ -154,6 +152,7 @@ void PhysicsSystem(world_t* w, Entity e){
 
     notification n = PosEvent_ToNotif(POS_EVENT_STEP);
     GameEvent(n, b, e.id);
+    ComponentUpdate(w, e, PHYS_ID);
   }
   
   b->vel = VECTOR2_ZERO;

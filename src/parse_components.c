@@ -42,9 +42,23 @@ bool ParseObserverComponent(cJSON* j, component_observer_t* out){
   cJSON_ArrayForEach(l, listeners_json)
     strcpy(out->observers[l_num++], l->valuestring);
 
+  out->num_obs = l_num;
   return l_num > 0;
 }
 
+bool ParseSubjectComponent(cJSON* j, subject_component_t* out){
+  if(!j)
+    return false;
+
+  Json_GetString(j, "name", out->name);
+
+  char cname[MAX_NAME_LEN];
+  Json_GetString(j, "comp", cname);
+  out->comp = ComponentGetID(cname);
+
+  return out->comp != INVALID_COMPONENT;
+
+}
 
 bool ParseInputComponent(cJSON* j, input_t* out){
   if(!j)

@@ -23,6 +23,8 @@
 #define REL_ChildOf     2u          
 #define REL_Owner       3u         
 #define REL_Target      4u
+#define REL_Observes    5u
+#define REL_SubjectOf   6u
 
 typedef uint32_t RelationType;
 typedef struct {
@@ -108,6 +110,8 @@ comp_id_t ComponentRegister(world_t* w, const char*, size_t);
 void* ComponentAdd(world_t* w, Entity e, comp_id_t id);
 void* ComponentGet(world_t* w, Entity e, comp_id_t id);
 void ComponentUpdate(world_t* w, Entity e, comp_id_t id);
+void ComponentClearUpdate(world_t* w, Entity e, comp_id_t cid);
+bool ComponentCheck(world_t*, comp_id_t, Entity e);
 void ComponentSet(world_t* w, Entity e, comp_id_t id, void* set);
 void ComponentsClear(world_t* w, Entity e);
 static bool ComponentValid(world_t* w, comp_id_t cid){

@@ -2,7 +2,7 @@
 #define __GBM_COMP__
 #include "game_common.h"
 
-#define NUM_COMP_CORE   17
+#define NUM_COMP_CORE   18
 #define MAX             1024
 #define MAX_COMPONENTS  512
 #define MAX_PLAYERS     2
@@ -48,12 +48,13 @@ void ComponentRegisterCore(const char* name);
 typedef struct {
   comp_id_t   id;
   int         entities[MAX_ENTITIES];
-  uint64_t    last_update[MAX_ENTITIES];
+  bool        has_update[MAX_ENTITIES];
   int         sparse[MAX_ENTITIES];
   size_t      size;
 
   size_t            elem_size;   // size of component (Position, etc)
   void*             data;        // dense array of component data
 } component_pool_t;
+
 bool HasComponent(component_pool_t* pool, Entity e);
 #endif

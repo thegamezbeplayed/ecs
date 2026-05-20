@@ -28,8 +28,12 @@ void ObserveInit(world_t* w){
 void ObserveReady(world_t* w, Entity e){
   component_observer_t* c = GET_COMPONENT(w, e, component_observer_t, OBSERVE_ID);
 
+  Entity o = e;
+  if(EntityHasRelation(w, e, REL_Observes))
+    o = EntityGetRelationTarget(w, e, REL_Observes);
+
   for(int i = 0; i < c->num_subj; i++){
-    for (int j = 0; j < MAX_LISTENERS; j++){
+    for (int j = 0; j < c->num_obs; j++){
       comp_id_t cid = ComponentGetID(c->observers[j]);
       if(!ComponentValid(w, cid)){
         TraceLog(LOG_WARNING, "=== OBSERVER READY ===\n Invalid component %s",c->observers[j]);
@@ -41,8 +45,27 @@ void ObserveReady(world_t* w, Entity e){
         continue;
       }
 
-      SubjectAddObserver(c->subjects[i], c->name, cb, ComponentGet(w, e, cid));
+      SubjectAddObserver(c->subjects[i], c->name, cb, ComponentGet(w, o, cid));
 
     }
   }
+}
+
+void SubjectLoad(world_t* w, Entity e){
+  subject_component_t* sc = GET_COMPONENT(w, e, subject_component_t, SUBJECT_ID);
+
+  SubjectRegister(sc->name);
+}
+
+void SubjectSystem(world_t* w, Entity e){
+  subject_component_t* sc = GET_COMPONENT(w, e, subject_component_t, SUBJECT_ID);
+
+  Entity rel = EntityGetRelationTarget(w, e, REL_SubjectOf);
+
+  if(!ComponentCheck(w, sc->comp, rel))
+    return;
+
+  SubjectNotify(sc->name, ComponentGet(w, rel, sc->comp));
+
+  ComponentClearUpdate(w, rel, sc->comp);
 }

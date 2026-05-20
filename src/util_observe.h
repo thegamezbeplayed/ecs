@@ -36,8 +36,14 @@ typedef struct{
   int         num_subj;
   comp_id_t   relation;
   char        subjects[MAX_SUBJ_OBS][MAX_NAME_LEN];
+  int         num_obs;
   char        observers[MAX_LISTENERS][MAX_NAME_LEN];
 }component_observer_t;
+
+typedef struct{
+  char      name[MAX_NAME_LEN];
+  comp_id_t comp;
+}subject_component_t;
 
 struct subject_s {
   char        name[MAX_NAME_LEN];

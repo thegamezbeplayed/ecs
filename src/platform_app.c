@@ -129,8 +129,7 @@ int main(void)
 
   CloseAudioDevice();     // Close audio context
 
-  CloseWindow();          // Close window and OpenGL context
-                          //--------------------------------------------------------------------------------------
+  CloseWindow();
 
   return 0;
 }
