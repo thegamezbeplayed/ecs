@@ -95,6 +95,10 @@ bool ParseRigidBodyComponent(cJSON* j, rigid_body_t* out){
   Vector2 size = VEC_NEW(w,h);
   RigidBodySetBounds(out, size);
 
+  char ename[MAX_NAME_LEN];
+  Json_GetString(j, "event", ename);
+
+  out->on_coll = StringToPhysEvent(ename);
 
   char sname[MAX_NAME_LEN];
   Json_GetString(j, "shape", sname);
@@ -108,7 +112,6 @@ bool ParseForceComponent(cJSON* j, force_t* out){
   if(!j)
     return false;
 
-
   out->speed = Json_GetFloat(j, "speed", 0);
   out->threshold = Json_GetFloat(j, "threshold", 0);
   out->max_velocity = Json_GetFloat(j, "max", 0);
@@ -121,6 +124,17 @@ bool ParseForceComponent(cJSON* j, force_t* out){
   Json_GetString(j, "type", tname);
 
   out->type = StringToForce(tname);
+
+  char rname[MAX_NAME_LEN];
+  Json_GetString(j, "react", rname);
+
+  out->react = StringToReaction(rname);
+
+  char ename[MAX_NAME_LEN];
+  Json_GetString(j, "event", ename);
+
+  out->event = StringToPhysEvent(ename);
+
 
   return out->type > FORCE_NONE;
 }

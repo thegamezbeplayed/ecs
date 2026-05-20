@@ -154,8 +154,8 @@ typedef struct{
   interaction_t entries[MAX_INTERACTIONS];
   uint32_t      current_frame;
 }interaction_pool_t;
-void InteractionRegister(interaction_pool_t*, uint32_t, uint32_t, const char*,  float);
-bool InteractionCheck(interaction_pool_t*, uint32_t, uint32_t, const char*);
+void InteractionRegister(interaction_pool_t*, uint32_t, uint32_t, notification,  float);
+bool InteractionCheck(interaction_pool_t*, uint32_t, uint32_t, notification);
 void InteractionStep(interaction_pool_t*);
 
 //<===BEHAVIOR TREES

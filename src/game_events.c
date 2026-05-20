@@ -515,9 +515,8 @@ hash_key_t MakeInteractionKey(notification n, uint32_t source, uint32_t target){
 
 }
 
-void InteractionRegister(interaction_pool_t* p, uint32_t source, uint32_t target, const char* name,  float duration){
-  notification type = hash_str_64(name);
-  uint64_t key = MakeInteractionKey(type, source, target);
+void InteractionRegister(interaction_pool_t* p, uint32_t source, uint32_t target, notification n,  float duration){
+  uint64_t key = MakeInteractionKey(n, source, target);
   uint32_t hash = (uint32_t)(key ^ (key >> 32) ^ (key >> 16));
 
   int current_time = WorldGetTime();
@@ -529,7 +528,7 @@ void InteractionRegister(interaction_pool_t* p, uint32_t source, uint32_t target
     if (slot->key == 0 || slot->key == key)
     {
       slot->key = key;
-      slot->type = type;
+      slot->type = n;
       slot->expiration = current_time + duration;
       return;
     }
@@ -537,11 +536,9 @@ void InteractionRegister(interaction_pool_t* p, uint32_t source, uint32_t target
   // Table full → ignore (very rare with 4096 slots)
 }
 
-bool InteractionCheck(interaction_pool_t* p, uint32_t source, uint32_t target, const char* name)
+bool InteractionCheck(interaction_pool_t* p, uint32_t source, uint32_t target, notification n)
 {
-  notification type = hash_str_64(name);
-
-  uint64_t key = MakeInteractionKey(type, source, target);
+  uint64_t key = MakeInteractionKey(n, source, target);
   uint32_t hash = (uint32_t)(key ^ (key >> 32) ^ (key >> 16));  // good mixing
   int current_time = WorldGetTime();
 

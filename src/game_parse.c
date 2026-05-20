@@ -637,6 +637,8 @@ bool ParseSystems(cJSON* root, game_t* out){
           sys->steps[step] = callback;
       }
     }
+  
+    sys->iter = Json_GetBool(sys_item, "iter");
 
 
   }

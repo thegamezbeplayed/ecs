@@ -149,6 +149,7 @@ system_t* SystemCreate(world_t* w, system_define_t* def){
   memset(s, 0, sizeof(system_t));
   s->index = w->num_sys++;
 
+  s->needs_iter = def->iter;
   for (int i = 0; i < UPDATE_DONE; i++){
     if(!def->syncs[i])
       continue;

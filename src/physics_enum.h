@@ -29,11 +29,4 @@ typedef enum{
   REACT_BUMP,
   REACT_BLOCK,
 }ReactType;
-
-typedef enum{
-  COLL_NONE,
-  COLL_FORCE,
-  COLL_HIT
-}CollisionBehavior;
-
 #endif

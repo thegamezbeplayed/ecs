@@ -84,7 +84,8 @@
     ],
     "states": [
       {"step": "GAME_LOADING", "fn": "PhysicsRegister"}
-    ]
+    ],
+    "iter": true
   },
   "Forces": {
     "components": ["Force"],

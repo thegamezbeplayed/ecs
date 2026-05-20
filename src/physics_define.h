@@ -49,7 +49,7 @@ struct rigid_body_s{
   Vector2           vel;
   int               col_rate;
   bounds_t          bounds;
-  CollisionBehavior on_coll;
+  PhysicsEventID    on_coll;
   float             restitution;
   bool              is_static, is_grounded;
 };

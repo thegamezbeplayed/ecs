@@ -132,8 +132,8 @@
   "RigidBody":{
     "func": "RigidBodyInit",
     "list": [
-      {"name": "wiz",  "shape": "RECT", "width": 10, "height": 12},
-      {"name": "rat",  "shape": "RECT", "width": 10, "height": 8}
+      {"name": "wiz", "event": "COLL", "shape": "RECT", "width": 10, "height": 12},
+      {"name": "rat", "event": "COLL", "shape": "RECT", "width": 10, "height": 8}
     ]
   },
   "Force": {
@@ -144,7 +144,7 @@
         "speed": 0.67, "max": 1.337, "threshold": 0.334, "frict": 0.625
       },
       {"name": "wiz-bump",
-        "type": "IMPULSE", 
+        "type": "IMPULSE", "react": "BUMP", "event": "COLL",
         "speed": "0.5", "max": 1.15, "threshold": 0.1, "frict": 0.8
       },
       {"name": "rat",
@@ -152,8 +152,8 @@
         "speed": 0.99, "max": 1.875, "threshold": 0.425, "frict": 0.5
       },
       {"name": "rat-bump",
-        "type": "IMPULSE", 
-        "speed": "0.5", "max": 0.99, "threshold": 0.1, "frict": 0.8
+        "type": "IMPULSE",  "react": "BUMP", "event": "COLL",
+        "speed": "0.75", "max": 0.99, "threshold": 0.1, "frict": 0.8
       }
     ]
   },

@@ -76,6 +76,7 @@ typedef struct{
   SystemCB    syncs[UPDATE_DONE];
   SystemCB    sets[GAME_DONE];
   int         num_req;
+  bool        iter;
   const char* components[NUM_REL];
 }system_define_t;
 

@@ -70,7 +70,7 @@ void OnPhysEvent(event_t* ev, void* data){
 
       memcpy(p, InitPosition(pos), sizeof(position_t));
 
-      rb->on_coll = COLL_HIT;
+      rb->on_coll = PHYS_EVENT_HIT;
       EntityAddRelation(&world, b, REL_ChildOf, e);
       notification n = PhysEvent_ToNotif(PHYS_EVENT_DESTROY);
 
@@ -123,22 +123,8 @@ void PhysicsCollision(world_t* w, Entity e){
     if(e.id == other.id)
       continue;
 
-    char estr[MAX_NAME_LEN] = "RB_COLL";
-    notification n = PhysEvent_ToNotif(PHYS_EVENT_COLL);
-    uint32_t evid = e.id;
-    switch(body->on_coll){
-      case COLL_FORCE:
-        strcpy(estr, "RB_COLL");
-        n = PhysEvent_ToNotif(PHYS_EVENT_COLL);
-        break;
-      case COLL_HIT:
-        strcpy(estr, "RB_HIT");
-        //n = CombatEvent_ToNotif(COMB_EVENT_HIT);
-        evid = other.id;
-        break;
-    }
-
-    if(!GameCheckInteraction(e.id, other.id, estr))
+    notification n = PhysEvent_ToNotif(body->on_coll);
+    if(!GameCheckInteraction(e.id, other.id, n))
       continue;
 
     tar = GET_COMPONENT(w, other, rigid_body_t, PHYS_ID);
@@ -149,11 +135,11 @@ void PhysicsCollision(world_t* w, Entity e){
     if(!CheckCollision(body, tar, 0))
       continue;
 
-    GameEvent(n, &other, evid);
+    GameEvent(n, &other, e.id);
 
     int rate = imax(body->col_rate, tar->col_rate);
     
-    GameInteraction(e.id, other.id, estr, rate);
+    GameInteraction(e.id, other.id, n, rate);
     return;
   }
 
@@ -186,7 +172,6 @@ void PhysicsDebug(world_t* w, Entity e){
 
       break;
   }
-
 }
 
 void ForceLoad(world_t* w, Entity e){
@@ -207,6 +192,10 @@ void ForceLoad(world_t* w, Entity e){
 
 void ForceSystem(world_t* w, Entity e){
    force_t* f = GET_COMPONENT(w, e, force_t, FORCE_ID);
+
+   if(!f->is_active)
+     return;
+
    rigid_body_t* rb = GET_COMPONENT(w, e, rigid_body_t, PHYS_ID);
    if(!rb && !EntityHasRelation(w, e, REL_AppliesTo))
      return;

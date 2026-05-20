@@ -31,12 +31,22 @@
       "list":[
         {"name": "Force",
           "sublist": [
-            {"name": "wiz-bump",      "type": "AppliesTo"}
+            {"name": "wiz-bump","type": "AppliesTo"}
           ]
         },
         {"name": "ParticleEmitter",
           "sublist": [
             {"name": "wiz-dust", "type": "ChildOf", "components": ["Position"]}
+          ]
+        }
+      ]
+    },
+    {
+      "name": "rat",
+      "list":[
+        {"name": "Force",
+          "sublist": [
+            {"name": "rat-bump","type": "AppliesTo"}
           ]
         }
       ]
