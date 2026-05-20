@@ -1,7 +1,10 @@
 #include "process_event.h"
 #include "system_define.h"
+#include "game_control.h"
+#include "process_event.h"
 
 void OnInputEvent(event_t* ev, void* data){
+/*
   input_t* in   = ev->data;
   switch(EVENT_ID(ev->type)){
     case INPUT_EVENT_MOVE:
@@ -18,22 +21,17 @@ void OnInputEvent(event_t* ev, void* data){
 
       break;
   }
+  */
 }
 
 void InputLoad(world_t* w, Entity e){
   input_t* in = GET_COMPONENT(w, e, input_t, INPUT_ID);
-  position_t* p = GET_COMPONENT(w, e, position_t, POS_ID);
 
-  notification n = InputEvent_ToNotif(INPUT_EVENT_MOVE);
-  TargetSubscribe(n, OnInputEvent, p, e.id );
+  for(int i = 0; i < MAX_MACROS; i++){
+    action_key_t* a = &in->action_keys[i];
 
-  n = InputEvent_ToNotif(INPUT_EVENT_BINDING);
-  for(int i = 0; i < ACT_DONE; i++){
-    action_key_t akey = in->actions[i];
-    for(int j = 0; j < akey.num_keys; j++)
-      TargetSubscribe(n, OnInputEvent, akey.fn, akey.keys[j]);
+    RegisterMacro(a);
   }
-
 }
 
 void InputSystem(world_t* w, Entity e){
@@ -42,6 +40,18 @@ void InputSystem(world_t* w, Entity e){
   if(!InputCheck(in, e))
     return;
 
+  KeyboardKey k = in->last_key;
+  action_key_t* ak = InputGetAction(k);
 
+  if(!ak)
+    return;
+
+  SubjectNotify(ak->name, in);
+
+  ComponentUpdate(w, e, INPUT_ID);
+}
+
+void InputRegister(world_t* w){
+  InitMacroKeys(MAX_MACROS);//TODO USE A DEFINE
 }
 

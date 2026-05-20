@@ -1,6 +1,7 @@
 #include "process_event.h"
 #include "system_define.h"
 #include "tool_lookup.h"
+#include "process_event.h"
 
 static particle_layer_t PARTICLE_LAYERS[LAYER_DONE] = {0};
 

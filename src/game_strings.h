@@ -37,7 +37,7 @@ static char* SubString(char* base, char* delim, int at){
 
 static char* str_concat(const char* a, const char* b) {
     size_t len = strlen(a) + strlen(b) + 1; // +1 for null terminator
-    char* result = malloc(len);
+    char* result = GameMalloc("str_concat", len);
     if (!result) return NULL;
 
     strcpy(result, a);

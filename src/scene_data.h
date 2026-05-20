@@ -10,8 +10,8 @@
 // Scene Registry
 
 static ResourceRef RESOURCES[NUM_RES] = {
-  {RES_JSON, RES_ASEPRITE, RES_SPRITE, "resources/tile_sheet.json", "resources/tile_sheet.png", SHEET_TILE},
-  {RES_JSON, RES_ASEPRITE, RES_ANIM, "resources/player-sheet.json", "resources/player-sheet.png", SHEET_CHAR}
+  {RES_JSON, RES_ASEPRITE, RES_SPRITE, "resources/tile-sheet.json", "resources/tile-sheet.png", SHEET_TILE},
+  {RES_JSON, RES_ASEPRITE, RES_ANIM, "resources/wiz-sheet.json", "resources/wiz-sheet.png", SHEET_CHAR}
 };
 
 static const SceneHeader SCENE_HEADERS[NUM_SCENES] = {

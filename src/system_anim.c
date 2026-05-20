@@ -1,8 +1,9 @@
 #include "process_event.h"
 #include "system_define.h"
+#include "process_event.h"
+#include "tool_lookup.h"
 
 void AnimSet(anim_comp_t* ac, anim_t* a, AnimState s){
-
 }
 
 void AnimEvent(event_t* ev, void* data){
@@ -24,7 +25,15 @@ void AnimEvent(event_t* ev, void* data){
   AnimSet(ac, a, s);
 }
 
+void AnimSink(void* obs_data, void* sub, void* ev_data){
+  anim_comp_t* ac = obs_data;
+  input_t* in = ev_data;
+  TraceLog(LOG_INFO, "ANIM SINK SUCCESS!");
+
+}
+
 void AnimInputEvent(event_t* ev, void* data){
+/*
   anim_comp_t* ac = data;
   input_t*       in = ev->data;
 
@@ -59,7 +68,7 @@ void AnimInputEvent(event_t* ev, void* data){
     return;
 
   //if(AnimSetState(a, ANIM_START))
-
+*/
 }
 
 void AnimBehaviorHandler(world_t* w, Entity e, anim_comp_t* ac, anim_t* a){
@@ -97,6 +106,20 @@ void AnimBehaviorHandler(world_t* w, Entity e, anim_comp_t* ac, anim_t* a){
   }
 }
 
+void AnimRender(world_t* w, Entity e){
+  anim_comp_t* ac = GET_COMPONENT(w, e, anim_comp_t, ANIM_ID);
+  sprite_t* spr = GET_COMPONENT(w, e, sprite_t, SPR_ID);
+  anim_player_t* ap = &ac->player;
+  anim_t* a = &ac->sequences[ap->state][ap->dir];
+  position_t* pos = GET_COMPONENT(w, e, position_t, POS_ID);
+
+  int spr_index = a->frames[a->cur_index];
+  spr->index = spr_index;
+
+  DrawSprite(spr, pos->vpos);
+
+}
+
 void AnimReady(world_t* w, Entity e){
   anim_comp_t* ac = GET_COMPONENT(w, e, anim_comp_t, ANIM_ID);
   Entity rel = EntityGetRelationTarget(w, e, REL_Target);
@@ -111,8 +134,9 @@ void AnimReady(world_t* w, Entity e){
 }
 
 void AnimLoad(world_t* w, Entity e){
-  anim_comp_t* ac = GET_COMPONENT(w, e, anim_comp_t, ANIM_ID);
 
+  anim_comp_t* ac = GET_COMPONENT(w, e, anim_comp_t, ANIM_ID);
+/*
   input_t* in = GET_COMPONENT(w, e, input_t, INPUT_ID);
 
   if(!in)
@@ -126,6 +150,7 @@ void AnimLoad(world_t* w, Entity e){
 
   n = InputEvent_ToNotif(INPUT_EVENT_KEY_RELEASE);
   TargetSubscribe(n, AnimInputEvent, ac, e.id );
+*/
 }
 
 void AnimSystem(world_t* w, Entity e){
@@ -142,4 +167,8 @@ void AnimSystem(world_t* w, Entity e){
 
   ac->event = ev;
   AnimBehaviorHandler(w, e, ac, a);
+}
+
+void AnimRegister(world_t* w){
+  LookAddSink("Animation", AnimSink);
 }

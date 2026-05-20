@@ -192,7 +192,6 @@ void UnloadGameDefine(game_t* g){
       GameFree("UnloadGameDefine", (void*)p->components[j]);
     }
   }
-  GameFree("UnloadGameDefine", g->prefabs);
 
   // Relations
   for (int i = 0; i < g->relation_count; i++) {

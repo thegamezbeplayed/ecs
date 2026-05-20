@@ -107,9 +107,12 @@ void WorldInit(world_t* w);
 comp_id_t ComponentRegister(world_t* w, const char*, size_t);
 void* ComponentAdd(world_t* w, Entity e, comp_id_t id);
 void* ComponentGet(world_t* w, Entity e, comp_id_t id);
+void ComponentUpdate(world_t* w, Entity e, comp_id_t id);
 void ComponentSet(world_t* w, Entity e, comp_id_t id, void* set);
 void ComponentsClear(world_t* w, Entity e);
-
+static bool ComponentValid(world_t* w, comp_id_t cid){
+  return (cid != INVALID_COMPONENT && cid < w->next_component_id);
+}
 void RegisterSystemData(world_t* w);
 void RegisterEntityData(world_t* w);
 

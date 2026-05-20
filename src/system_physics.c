@@ -1,6 +1,13 @@
 #include "system_define.h"
 #include "game_physics.h"
 #include "process_event.h"
+#include "tool_lookup.h"
+
+void ForceSink(void* obs_data, void* sub, void* ev_data){
+  force_t* f = obs_data;
+  input_t* in = ev_data;
+  TraceLog(LOG_INFO, "FORCE SINK SUCCESS!");
+}
 
 void OnForceEvent(event_t* ev, void* data){
   force_t* f = data;
@@ -76,7 +83,8 @@ void OnPhysEvent(event_t* ev, void* data){
   }
 }
 
-void PhysicsInit(world_t* w){
+void PhysicsRegister(world_t* w){
+  LookAddSink("Force", ForceSink);
 }
 
 void PhysicsLoad(world_t* w, Entity e){

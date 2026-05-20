@@ -2,66 +2,27 @@
 #include "game_control.h"
 #include "component_define.h"
 
-input_t player_input;
+static macro_map_t MACRO_KEYS;
 
-BehaviorStatus InputActionMove(input_t* gi, KeyboardKey k){
-  Cell dir = CELL_UNSET;
-
-  switch(k){
-    case KEY_A:
-    case KEY_H:
-    case KEY_LEFT:
-      dir = CELL_LEFT;
-      gi->angle = 180;
-      break;
-    case KEY_D:
-    case KEY_L:
-    case KEY_RIGHT:
-      dir = CELL_RIGHT;
-      gi->angle = 0;
-      break;
-    case KEY_W:
-    case KEY_J:
-    case KEY_UP:
-      dir = CELL_UP;
-      gi->angle = 90;
-      break;
-    case KEY_S:
-    case KEY_K:
-    case KEY_DOWN:
-      gi->angle = 270;
-      dir = CELL_DOWN;
-      break;
-    default:
-      return BEHAVIOR_FAILURE;
-      break;
-  }
-
-  gi->step = dir;
-
-  gi->last_act = ACT_MOVE;
-  return BEHAVIOR_SUCCESS;
+void InitMacroKeys(int cap){
+  HashInit(&MACRO_KEYS, next_pow2_int(cap));
 }
 
-BehaviorStatus InputActionAttack(input_t* gi, KeyboardKey k){
+void RegisterMacro(action_key_t *a) {
+  hash_key_t hash = hash_64_from_int(a->key);
+  HashPut(&MACRO_KEYS, hash, a);
+  SubjectRegister(a->name);
+}
 
-  gi->last_act = ACT_ATTACK;
-  return BEHAVIOR_SUCCESS;
+action_key_t* InputGetAction(KeyboardKey key){
+  hash_key_t hash = hash_64_from_int(key);
+  return HashGet(&MACRO_KEYS, hash);
 }
 
 bool InputInit(void* comp, component_entry_t* j){
   input_t* in = comp;
 
-  in->turn = -1;
-  in->step =  CELL_UNSET;
-  in->actions[ACT_MOVE] = (action_key_t){
-    ACT_MOVE,12,{KEY_H, KEY_J, KEY_K, KEY_L, KEY_D,KEY_A,KEY_W,KEY_S,KEY_LEFT, KEY_RIGHT,KEY_UP,KEY_DOWN},InputActionMove, 0};
-
-  in->actions[ACT_ATTACK] = (action_key_t){
-    ACT_ATTACK,1,{KEY_TAB},InputActionAttack, 0};
-
-  return true;
-  //return ParseInputComponent(j->data, in);
+  return ParseInputComponent(j->data, in);
 }
 
 input_t* InitInput(void){
@@ -69,11 +30,6 @@ input_t* InitInput(void){
 
   in->turn = -1;
   in->step =  CELL_UNSET;
-  in->actions[ACT_MOVE] = (action_key_t){
-    ACT_MOVE,12,{KEY_H, KEY_J, KEY_K, KEY_L, KEY_D,KEY_A,KEY_W,KEY_S,KEY_LEFT, KEY_RIGHT,KEY_UP,KEY_DOWN},InputActionMove, 0};
-
-in->actions[ACT_ATTACK] = (action_key_t){
-    ACT_ATTACK,1,{KEY_TAB},InputActionAttack, 0};
 }
 
 bool InputCheck(input_t* gi, Entity e){
@@ -82,39 +38,14 @@ bool InputCheck(input_t* gi, Entity e){
 
   int key = GetKeyPressed();
 
-  notification n = 0;
   if(key > 0){
-    n = InputEvent_ToNotif(INPUT_EVENT_BINDING);
-    GameEvent(n, gi, key);
     gi->last_key = key;
-  }
-  else if(IsKeyDown(gi->last_key)){
-    n = InputEvent_ToNotif(INPUT_EVENT_BINDING);
-    GameEvent(n, gi, gi->last_key);
+    return true;
   }
   else if(IsKeyReleased(gi->last_key)){
-    n = InputEvent_ToNotif(INPUT_EVENT_KEY_RELEASE);
-    GameEvent(n, gi, e.id);
     gi->last_key = 0;
-    return false;
+    return true;
   }
-  else
-    return false;
 
-  notification an;
-  switch(gi->last_act){
-    case ACT_MOVE:
-      an = InputEvent_ToNotif(INPUT_EVENT_MOVE);
-      break;
-    case ACT_ATTACK:
-      an = InputEvent_ToNotif(INPUT_EVENT_ATTACK);
-      break;
-    default:
-      return false;
-      break;
-  }
-  
-  GameEvent(an, gi, e.id);
-
-  return true;
+  return false;
 }

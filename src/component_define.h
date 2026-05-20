@@ -2,11 +2,12 @@
 #define __COMP_DEF__
 
 #include "asset_vfx.h"
-#include "game_control.h"
 #include "game_physics.h"
 #include "game_views.h"
 #include "game_stats.h"
 #include "game_behaviors.h"
+
+typedef struct input_s input_t;
 
 bool InputInit(void* comp, component_entry_t* data);
 bool SpriteInit(void* comp, component_entry_t* data);
@@ -30,7 +31,7 @@ bool ParseInputComponent(cJSON* j, input_t* out);
 bool ParseCameraComponent(cJSON* j, camera_t* out);
 bool ParseParticleEmitterComponent(cJSON*, particle_emitter_t*);
 bool ParseRenderComponent(cJSON* j, render_ctx_t* out);
-bool ParseObserverComponent(cJSON* j, observer_t* out);
+bool ParseObserverComponent(cJSON* j, component_observer_t* out);
 
 typedef struct{
   anim_player_t   player;

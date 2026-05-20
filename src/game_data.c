@@ -1,5 +1,6 @@
 #include "component_define.h"
 #include "system_define.h"
+#include "game_control.h"
 #include "components.h"
 
 const component_define_t CORE_COMPONENTS[NUM_COMP_CORE] = {
@@ -12,7 +13,7 @@ const component_define_t CORE_COMPONENTS[NUM_COMP_CORE] = {
   {"Camera",    sizeof(camera_t)},
   {"Track",     sizeof(track_comp_t)},
   {"Type",      sizeof(EntityType)},
-  //{"Stat",      sizeof(stat_t)},
+  {"Observer",  sizeof(component_observer_t)},
   {"Force",     sizeof(force_t)},
   //{"Name",      0}, //TODO
   {"State",     sizeof(state_comp_t)},
@@ -33,12 +34,13 @@ const component_func_t COMPFUNC_LOOKUP[NUM_COMP_CORE] = {
   {"Camera",      CameraInit},
   {"Input",       InputInit},
   {"Position",    PositionInit},
+  {"Observer",    ObserverInit},
   {"Particle",        ParticleInit},
   {"ParticleEmitter", ParticleEmitterInit}
 };
 
 component_entry_t* GetGameComponentDefine(game_t* g, const char* comp, const char* name){
-  for(int i = 0; i < g->num_defs; i++){
+  for(int i = 0; i < MAX_COMP_DEF; i++){
     component_entry_t* entry = &g->comp_defs[i];
     if(strcmp(comp, entry->comp) != 0)
       continue;
