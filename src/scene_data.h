@@ -6,12 +6,13 @@
 #include "asset_resources.h"
 
 #define NUM_SCENES  1
-#define NUM_RES     2
+#define NUM_RES     3 
 // Scene Registry
 
 static ResourceRef RESOURCES[NUM_RES] = {
   {RES_JSON, RES_ASEPRITE, RES_SPRITE, "resources/tile-sheet.json", "resources/tile-sheet.png", SHEET_TILE},
-  {RES_JSON, RES_ASEPRITE, RES_ANIM, "resources/wiz-sheet.json", "resources/wiz-sheet.png", SHEET_CHAR}
+  {RES_JSON, RES_ASEPRITE, RES_ANIM, "resources/wiz-sheet.json", "resources/wiz-sheet.png", SHEET_CHAR},
+  {RES_JSON, RES_ASEPRITE, RES_ANIM, "resources/rat-sheet.json", "resources/rat-sheet.png", SHEET_MOB}
 };
 
 static const SceneHeader SCENE_HEADERS[NUM_SCENES] = {

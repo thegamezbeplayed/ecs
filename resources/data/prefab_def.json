@@ -16,6 +16,10 @@
          "RigidBody", "Force", "Position", "Follow"]
       },
       {
+        "name": "rat",
+        "list": ["Sprite", "Animation", "Position", "RigidBody", "Force"]
+      },
+      {
         "name": "tile_floor",
         "list": ["Sprite", "Position"]
       }

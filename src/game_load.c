@@ -60,11 +60,11 @@ void AsepriteToSprite(SheetID id, const ase_sprite_sheet_d* ase, int index, spri
 
 }
 
-void ResourceMapAsepriteAnims(sprite_sheet_d* s, ase_sprite_sheet_d* ase){
+void ResourceMapAsepriteAnims(SheetID id, sprite_sheet_d* s, ase_sprite_sheet_d* ase){
   for(int i = 0; i < ase->num_tags ; i++){
     anim_tag_t tag = ase->tags[i];
     for(int j = tag.index_start; j <= tag.index_end; j++){
-      AsepriteToAnim(SHEET_CHAR, ase, tag, j, &s->sprites[j]);
+      AsepriteToAnim(id, ase, tag, j, &s->sprites[j]);
       s->num_sprites++;
     }
   }
@@ -103,7 +103,7 @@ void ResourceLoadAseprite(cJSON* root, ResourceRef* ref){
 
   switch(ref->subtype){
     case RES_ANIM:
-      ResourceMapAsepriteAnims(s, parse);
+      ResourceMapAsepriteAnims(ref->sheet, s, parse);
       break;
     case RES_SPRITE:
       ResourceMapAseprites(ref->sheet, s, parse);
