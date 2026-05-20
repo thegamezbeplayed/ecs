@@ -1,5 +1,4 @@
 #include "system_define.h"
-#include "game_physics.h"
 #include "process_event.h"
 #include "tool_lookup.h"
 

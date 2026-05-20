@@ -3,7 +3,7 @@
     "list":[
       {
         "name": "main_cam",
-        "list": ["Position", "Camera"]
+        "list": ["Position", "Camera", "Track"]
       },
       {
         "name":     "layers",
@@ -13,7 +13,7 @@
       {
         "name": "wiz",
         "list": ["Observer", "Input", "Sprite", "Animation",
-         "RigidBody", "Force", "Position"]
+         "RigidBody", "Force", "Position", "Follow"]
       },
       {
         "name": "tile_floor",

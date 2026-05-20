@@ -3,7 +3,7 @@
 #include "game_define.h"
 #include "component_define.h"
 
-#define NUM_FUNCTIONS 43
+#define NUM_FUNCTIONS 44
 
 extern hash_map_t SYSTEM_SINK;
 typedef struct{
@@ -54,6 +54,7 @@ void RenderEnd(world_t* w, Entity e);
 
 void CameraLoad(world_t* w, Entity e);
 void CameraReady(world_t* w, Entity e);
+void CameraTarget(world_t* w, Entity e);
 void CameraSystem(world_t* w, Entity e);
 void CameraBegin(world_t* w, Entity e);
 void CameraEnd(world_t* w, Entity e);
@@ -138,6 +139,7 @@ static system_function_lookup_t FUNCTION_LOOKUP[NUM_FUNCTIONS] = {
     {"CameraEnd",           CameraEnd},
     {"CameraLoad",          CameraLoad},
     {"CameraReady",         CameraReady},
+    {"CameraTarget",        CameraTarget},
 
     {"ParticleEmitterLoad",   ParticleEmitterLoad},
     {"ParticleEmitterSystem", ParticleEmitterSystem},

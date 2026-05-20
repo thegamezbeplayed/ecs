@@ -2,6 +2,7 @@
 #define   __GAME_VIEW__
 
 #include "util_tools.h"
+#include "view_enum.h"
 
 #define MAX_CAMERA 4
 
@@ -13,19 +14,6 @@ camera_t* InitCamera(float zoom, float rot, Vector2 offset);
 static void CameraSetOffset(camera_t* c, Vector2 offset){
   c->offset = offset;
 }
-
-typedef enum{
-  CAM_NONE,
-  CAM_FOLLOW,
-  CAM_FOLLOW_SMOOTH,
-  CAM_DONE,
-}CameraTracking;
-
-typedef enum{
-  LERP_NONE,
-  LERP_LINEAR,
-  LERP_DONE
-}InterpoleMode;
 
 typedef struct{
   Rectangle       view, bounds, border;

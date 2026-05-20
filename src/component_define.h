@@ -2,25 +2,27 @@
 #define __COMP_DEF__
 
 #include "asset_vfx.h"
-#include "game_physics.h"
-#include "game_views.h"
+#include "physics_define.h"
+#include "view_define.h"
 #include "game_stats.h"
 #include "game_behaviors.h"
 #include "game_control.h"
 
-bool InputInit(void* comp, component_entry_t* data);
-bool SpriteInit(void* comp, component_entry_t* data);
-bool RenderContextInit(void* comp, component_entry_t* data);
-bool ForceInit(void* comp, component_entry_t* data);
-bool RigidBodyInit(void* comp, component_entry_t* data);
-bool AnimInit(void* comp, component_entry_t* data);
-bool CameraInit(void* comp, component_entry_t* data);
-bool PositionInit(void* comp, component_entry_t* data);
-bool CoordInit(void* comp, component_entry_t* data);
-bool ParticleInit(void* comp, component_entry_t* data);
-bool ParticleEmitterInit(void* comp, component_entry_t* data);
-bool ObserverInit(void* comp, component_entry_t* data);
-bool SubjectInit(void* comp, component_entry_t* data);
+bool InputInit(void* comp, component_entry_t* j);
+bool SpriteInit(void* comp, component_entry_t* j);
+bool RenderContextInit(void* comp, component_entry_t* j);
+bool ForceInit(void* comp, component_entry_t* j);
+bool RigidBodyInit(void* comp, component_entry_t* j);
+bool AnimInit(void* comp, component_entry_t* j);
+bool CameraInit(void* comp, component_entry_t* j);
+bool PositionInit(void* comp, component_entry_t* j);
+bool CoordInit(void* comp, component_entry_t* j);
+bool ParticleInit(void* comp, component_entry_t* j);
+bool ParticleEmitterInit(void* comp, component_entry_t* j);
+bool ObserverInit(void* comp, component_entry_t* j);
+bool SubjectInit(void* comp, component_entry_t* j);
+bool TrackingInit(void* comp, component_entry_t* j);
+
 
 bool ParseSpriteComponent(cJSON* j, sprite_t* out);
 bool ParseRigidBodyComponent(cJSON* j, rigid_body_t* out);
@@ -57,11 +59,13 @@ typedef struct{
 typedef struct{
   camera_ctx_t      ctx;
   uint32_t          target;
-}track_comp_t;
+}tracking_t;
+bool ParseTrackingComponent(cJSON* j, tracking_t* out);
 
 typedef struct{
   bool    assigned;
-}follow_comp_t;
+}follow_t;
+static bool FollowInit(void* comp, component_entry_t* data){ return true;}
 
 typedef struct{
 

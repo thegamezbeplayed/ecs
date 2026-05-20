@@ -76,7 +76,8 @@
     "components": ["RigidBody", "Position"],
     "syncs": [
       {"step": "UPDATE_POST",  "fn": "PhysicsSystem"},
-      {"step": "UPDATE_PRE" ,  "fn": "PhysicsCollision"}
+      {"step": "UPDATE_PRE" ,  "fn": "PhysicsCollision"},
+      {"step": "UPDATE_DRAW" ,  "fn": "PhysicsDebug"}
     ],
     "sets": [
       {"step": "GAME_READY",   "fn": "PhysicsLoad"}
@@ -117,15 +118,16 @@
     ]
   },
   "Cameras": {
-    "components": ["Camera"],
+    "components": ["Camera", "Track"],
     "syncs": [
       {"step": "UPDATE_POST",      "fn": "CameraSystem"},
       {"step": "UPDATE_DRAW_BEGIN","fn": "CameraBegin"},
       {"step": "UPDATE_DRAW_END",  "fn": "CameraEnd"}
     ],
     "sets": [
-      {"step": "GAME_LOADING",     "fn": "CameraLoad"},
-      {"step": "GAME_READY",       "fn": "CameraReady"}
+      {"step": "GAME_LOADING", "fn": "CameraLoad"},
+      {"step": "GAME_RUNNING", "fn": "CameraTarget"},
+      {"step": "GAME_READY",   "fn": "CameraReady"}
     ]
   },
   "Expiration": {

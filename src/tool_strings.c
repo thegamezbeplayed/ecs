@@ -1,5 +1,6 @@
 #include "game_math.h"
 #include "physics_enum.h"
+#include "view_enum.h"
 
 #include <string.h>
 
@@ -48,7 +49,14 @@ ShapeType StringToShape(const char* str){
 ActionType StringToAction(const char* str){
  if (strcmp(str, "MOVE") == 0) return ACT_MOVE;
  if (strcmp(str, "ATTACK") == 0) return ACT_ATTACK;
+ if (strcmp(str, "STOP") == 0) return ACT_STOP;
 
  return ACT_NONE;
 }
 
+CameraTracking StringToCameraMode(const char* str){
+  if (strcmp(str, "FOLLOW") == 0) return CAM_FOLLOW;
+  if (strcmp(str, "FOLLOW-SMOOTH") == 0) return CAM_FOLLOW_SMOOTH;
+
+  return CAM_NONE;
+}

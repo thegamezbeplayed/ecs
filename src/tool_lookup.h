@@ -3,6 +3,7 @@
 
 #include "physics_enum.h"
 
+CameraTracking StringToCameraMode(const char* str);
 ActionType StringToAction(const char* str);
 Vector2 StringToVector2(const char* str);
 ForceType StringToForce(const char* str);

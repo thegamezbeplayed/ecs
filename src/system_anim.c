@@ -36,9 +36,12 @@ void AnimSink(void* obs_data, void* sub, void* ev_data){
   switch(ak->type){
     case ACT_MOVE:
       s = ANIM_WALK;
-      dir = angle_snap_to_card(ak->dir)/90;
+      dir = abs(vec_to_deg(ak->dir)/90);
       break;
     case ACT_ATTACK:
+      break;
+    case ACT_STOP:
+      s = ANIM_IDLE;
       break;
     default:
       return;
@@ -46,12 +49,16 @@ void AnimSink(void* obs_data, void* sub, void* ev_data){
   }
 
   anim_player_t* ap = &ac->player;
+  AnimPlayerDirection(ap, dir);
+
   anim_t* a = &ac->sequences[ap->state][ap->dir];
+
+  if(s==ANIM_IDLE && ap->state == ANIM_WALK)
+    DO_NOTHING();
 
   if(!AnimPlayerState(ap, a, s))
     return;
-  
-  ap->dir = dir;
+ 
 }
 
 void AnimInputEvent(event_t* ev, void* data){

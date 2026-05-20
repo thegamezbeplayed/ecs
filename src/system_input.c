@@ -30,7 +30,9 @@ void InputLoad(world_t* w, Entity e){
 
   for(int i = 0; i < MAX_MACROS; i++){
     action_key_t* a = &in->action_keys[i];
-    a->dir = StringToVector2(a->name);
+    if(a->type == ACT_MOVE)
+      a->dir = StringToVector2(a->name);
+    
     RegisterMacro(a);
   }
 }
@@ -44,7 +46,7 @@ void InputSystem(world_t* w, Entity e){
   KeyboardKey k = in->last_key;
   action_key_t* ak = InputGetAction(k);
 
-  if(!ak)
+  if(!ak || ak->type == ACT_NONE)
     return;
 
   SubjectNotify(ak->name, in);

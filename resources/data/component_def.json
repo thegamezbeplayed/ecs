@@ -1,7 +1,8 @@
 {
   "components": [
     "Sprite", "Animation", "Particle", "ParticleEmitter", "Force",
-    "Render", "Position", "Input", "Camera", "Observer", "RigidBody"
+    "Render", "Position", "Input", "Camera", "Observer", "RigidBody",
+    "Follow", "Track"
   ],
   "Observer": {
     "func":	"ObserverInit",
@@ -9,9 +10,8 @@
       {
         "name":	    "wiz",
         "type":	    1,
-        "action":   "MOVE",
         "comp":	    "Input",
-        "subjects": ["MOVE-LEFT", "MOVE-RIGHT", "MOVE-UP", "MOVE-DOWN"],
+        "subjects": ["MOVE-STOP", "MOVE-LEFT", "MOVE-RIGHT", "MOVE-UP", "MOVE-DOWN"],
         "listeners":["Animation", "Force"]
       }
     ]
@@ -107,7 +107,7 @@
     "list": [
       {"name": "wiz",
         "type": "STEERING", 
-        "speed": 0.67, "max": 1.675, "threshold": 0.1, "frict": 0.65
+        "speed": 0.67, "max": 1.337, "threshold": 0.334, "frict": 0.625
       },
       {"name": "wiz-bump",
         "type": "IMPULSE", 
@@ -127,6 +127,12 @@
         "target_x": 160,
         "target_y": 60
       }
+    ]
+  },
+  "Follow": {
+    "func": "FollowInit",
+    "list": [
+      {"name": "wiz"}
     ]
   },
   "Position": {
@@ -178,6 +184,11 @@
         "name":     "wiz",
         "actions":  [
           {
+            "name":   "MOVE-STOP",
+            "action": "STOP",
+            "keys":   [0]
+          },
+          {
             "name":   "MOVE-RIGHT",
             "action": "MOVE",
             "dir":    0,
@@ -202,6 +213,15 @@
             "keys":   [83, 264, 74]
           }
         ]
+      }
+    ]
+  },
+  "Track": {
+    "func": "TrackingInit",
+    "list": [
+      {
+        "name":   "main_cam",
+        "mode":   "FOLLOW"
       }
     ]
   }

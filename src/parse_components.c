@@ -125,3 +125,14 @@ bool ParseForceComponent(cJSON* j, force_t* out){
   return out->type > FORCE_NONE;
 }
 
+bool ParseTrackingComponent(cJSON* j, tracking_t* out){
+  if(!j)
+    return false;
+
+  char m_name[MAX_NAME_LEN];
+  Json_GetString(j, "mode", m_name);
+
+  out->ctx = *InitCameraContext(StringToCameraMode(m_name));
+
+  return out->ctx.mode > 0;
+}
