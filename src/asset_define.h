@@ -155,6 +155,7 @@ struct anim_player_s{
 };
 
 bool AnimSetState(anim_t* a, AnimState s);
+bool AnimPlayerDirection(anim_player_t* player, int dir);
 bool AnimPlayerState(anim_player_t*, anim_t*, AnimState s);
 //SPRITE_T===>
 struct sprite_s{

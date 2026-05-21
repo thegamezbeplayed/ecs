@@ -29,11 +29,12 @@ void ObserveReady(world_t* w, Entity e){
   component_observer_t* c = GET_COMPONENT(w, e, component_observer_t, OBSERVE_ID);
 
   for(int i = 0; i < c->num_subj; i++){
-    for (int j = 0; i < MAX_LISTENERS; i++){
+    for (int j = 0; j < MAX_LISTENERS; j++){
       comp_id_t cid = ComponentGetID(c->observers[j]);
-      if(!ComponentValid(w, cid))
+      if(!ComponentValid(w, cid)){
+        TraceLog(LOG_WARNING, "=== OBSERVER READY ===\n Invalid component %s",c->observers[j]);
         continue;
-
+      }
       ObserverCB cb = LookupSystemSink(c->observers[j]);
       if(!cb){
         TraceLog(LOG_WARNING, "=== OBSERVER READY ===\n No Observer Callback %s",c->observers[j]);

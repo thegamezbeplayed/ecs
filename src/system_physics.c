@@ -1,12 +1,13 @@
 #include "system_define.h"
-#include "game_physics.h"
 #include "process_event.h"
 #include "tool_lookup.h"
 
 void ForceSink(void* obs_data, void* sub, void* ev_data){
   force_t* f = obs_data;
   input_t* in = ev_data;
-  TraceLog(LOG_INFO, "FORCE SINK SUCCESS!");
+
+  action_key_t* a = InputGetAction(in->last_key);
+  ForceSetDir(f, a->dir);
 }
 
 void OnForceEvent(event_t* ev, void* data){
@@ -206,13 +207,16 @@ void ForceLoad(world_t* w, Entity e){
 
 void ForceSystem(world_t* w, Entity e){
    force_t* f = GET_COMPONENT(w, e, force_t, FORCE_ID);
-
-   if(!EntityHasRelation(w, e, REL_AppliesTo))
+   rigid_body_t* rb = GET_COMPONENT(w, e, rigid_body_t, PHYS_ID);
+   if(!rb && !EntityHasRelation(w, e, REL_AppliesTo))
      return;
+   else if(!rb){
+     Entity rel = EntityGetRelationTarget(w, e, REL_AppliesTo);
+     rb = GET_COMPONENT(w, rel, rigid_body_t, PHYS_ID);
+   }
 
-   Entity rel = EntityGetRelationTarget(w, e, REL_AppliesTo);
-
-   rigid_body_t* rb = GET_COMPONENT(w, rel, rigid_body_t, PHYS_ID);
+   if(!rb)
+     return;
 
    f->is_active = ForceStep(f, f->is_active);
    ForceApply(rb, f);

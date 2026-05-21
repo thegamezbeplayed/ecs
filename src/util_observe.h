@@ -7,7 +7,7 @@
 
 #define  MAX_SUBJECT_STORE  64
 #define MAX_LISTENERS       4 
-#define MAX_SUBJ_OBS        4 
+#define MAX_SUBJ_OBS        8 
 // Forward declarations
 
 typedef enum{

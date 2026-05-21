@@ -11,13 +11,13 @@ const component_define_t CORE_COMPONENTS[NUM_COMP_CORE] = {
   {"Render",    sizeof(render_ctx_t)},
   {"Input",     sizeof(input_t)},
   {"Camera",    sizeof(camera_t)},
-  {"Track",     sizeof(track_comp_t)},
+  {"Track",     sizeof(tracking_t)},
   {"Type",      sizeof(EntityType)},
   {"Observer",  sizeof(component_observer_t)},
   {"Force",     sizeof(force_t)},
   //{"Name",      0}, //TODO
   {"State",     sizeof(state_comp_t)},
-  {"Follow",    sizeof(follow_comp_t)},
+  {"Follow",    sizeof(follow_t)},
   {"Level",     sizeof(level_t)},
   {"Expiry",    sizeof(lifetime_t)},
   {"Particle",        sizeof(particle_t)},
@@ -35,6 +35,8 @@ const component_func_t COMPFUNC_LOOKUP[NUM_COMP_CORE] = {
   {"Input",       InputInit},
   {"Position",    PositionInit},
   {"Observer",    ObserverInit},
+  {"Follow",      FollowInit},
+  {"Track",       TrackingInit},
   {"Particle",        ParticleInit},
   {"ParticleEmitter", ParticleEmitterInit}
 };

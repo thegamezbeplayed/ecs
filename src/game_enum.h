@@ -94,6 +94,7 @@ typedef enum{
   ACT_NONE,
   ACT_MOVE,
   ACT_ATTACK,
+  ACT_STOP,
   ACT_DONE
 }ActionType;
 

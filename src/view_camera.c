@@ -1,4 +1,4 @@
-#include "game_views.h"
+#include "view_define.h"
 #include "game_define.h"
 #include "component_define.h"
 
@@ -54,4 +54,10 @@ bool CameraInit(void* comp, component_entry_t* json){
   camera_t* cc = comp;
 
   return ParseCameraComponent(json->data, cc);
+}
+
+bool TrackingInit(void* comp, component_entry_t* j){
+  tracking_t* t = comp;
+
+  return ParseTrackingComponent(j->data, t);
 }

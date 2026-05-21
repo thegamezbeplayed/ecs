@@ -3,7 +3,7 @@
     "list":[
       {
         "name": "main_cam",
-        "list": ["Position", "Camera"]
+        "list": ["Position", "Camera", "Track"]
       },
       {
         "name":     "layers",
@@ -12,7 +12,8 @@
       },
       {
         "name": "wiz",
-        "list": ["Observer", "Input", "Sprite", "Animation", "Position"]
+        "list": ["Observer", "Input", "Sprite", "Animation",
+         "RigidBody", "Force", "Position", "Follow"]
       },
       {
         "name": "tile_floor",
@@ -26,7 +27,6 @@
       "list":[
         {"name": "Force",
           "sublist": [
-            {"name": "wiz-steering", "type": "AppliesTo"},
             {"name": "wiz-bump",      "type": "AppliesTo"}
           ]
         },

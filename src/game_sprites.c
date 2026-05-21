@@ -208,6 +208,14 @@ bool AnimSetState(anim_t* a, AnimState s){
   return a->state == s;
 }
 
+bool AnimPlayerDirection(anim_player_t* player, int dir){
+  if(dir < 0 || dir > 4)
+    return false;
+
+  player->dir = dir;
+  return true;
+}
+
 bool AnimPlayerState(anim_player_t* player, anim_t* cur, AnimState s){
   if(s == ANIM_NONE || player->state == s)
     return false;

@@ -1,7 +1,8 @@
 {
   "components": [
     "Sprite", "Animation", "Particle", "ParticleEmitter", "Force",
-    "Render", "Position", "Input", "Camera", "Observer", "RigidBody"
+    "Render", "Position", "Input", "Camera", "Observer", "RigidBody",
+    "Follow", "Track"
   ],
   "Observer": {
     "func":	"ObserverInit",
@@ -10,8 +11,8 @@
         "name":	    "wiz",
         "type":	    1,
         "comp":	    "Input",
-        "subjects": ["MOVE-LEFT", "MOVE-RIGHT", "MOVE-UP", "MOVE-DOWN"],
-        "listeners":["Animation"]
+        "subjects": ["MOVE-STOP", "MOVE-LEFT", "MOVE-RIGHT", "MOVE-UP", "MOVE-DOWN"],
+        "listeners":["Animation", "Force"]
       }
     ]
   },
@@ -98,18 +99,18 @@
   "RigidBody":{
     "func": "RigidBodyInit",
     "list": [
-      {"name": "wiz",  "shape": "rect", "width": 10, "height": 12}
+      {"name": "wiz",  "shape": "RECT", "width": 10, "height": 12}
     ]
   },
   "Force": {
     "func": "ForceInit",
     "list": [
-      {"name": "wiz-steering",
-        "type": "STEERING", "event": "FORCE_EVENT_ACCEL",
-        "speed": 0.67, "max": 1.675, "threshold": 0.1, "frict": 0.65
+      {"name": "wiz",
+        "type": "STEERING", 
+        "speed": 0.67, "max": 1.337, "threshold": 0.334, "frict": 0.625
       },
       {"name": "wiz-bump",
-        "type": "IMPULSE", "event": "PHYS_EVENT_COLL",
+        "type": "IMPULSE", 
         "speed": "0.5", "max": 1.15, "threshold": 0.1, "frict": 0.8
       }
     ]
@@ -126,6 +127,12 @@
         "target_x": 160,
         "target_y": 60
       }
+    ]
+  },
+  "Follow": {
+    "func": "FollowInit",
+    "list": [
+      {"name": "wiz"}
     ]
   },
   "Position": {
@@ -177,6 +184,11 @@
         "name":     "wiz",
         "actions":  [
           {
+            "name":   "MOVE-STOP",
+            "action": "STOP",
+            "keys":   [0]
+          },
+          {
             "name":   "MOVE-RIGHT",
             "action": "MOVE",
             "dir":    0,
@@ -201,6 +213,15 @@
             "keys":   [83, 264, 74]
           }
         ]
+      }
+    ]
+  },
+  "Track": {
+    "func": "TrackingInit",
+    "list": [
+      {
+        "name":   "main_cam",
+        "mode":   "FOLLOW"
       }
     ]
   }

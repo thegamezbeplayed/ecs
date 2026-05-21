@@ -1,4 +1,3 @@
-#include "game_physics.h"
 #include "component_define.h"
 
 force_t* ForceFromVec2(ForceType type, Vector2 vec){

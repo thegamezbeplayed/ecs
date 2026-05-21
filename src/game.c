@@ -13,10 +13,10 @@
 void InitGameplay(void){
   InitGameEvents();
   InitGameWorld();
+  GameLoad();
 }
 
 void ReadyGameplay(void){
-  GameLoad();
 }
 
 void RunGameplay(void){}

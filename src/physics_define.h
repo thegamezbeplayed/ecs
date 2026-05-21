@@ -3,43 +3,15 @@
 
 #include "game_utils.h"
 #include "game_define.h"
+#include "physics_enum.h"
 
 #define MAX_FORCES 64
 #define GRAVITY 0.65f
 #define MAX_VELOCITY  16
 #define TERMINAL_VELOCITY 7.0f
 
-DEFINE_EVENT_SPACE(PhysEvent, EVENT_PHYS_BASE)
-
 typedef struct rigid_body_s rigid_body_t;
 typedef struct force_s force_t;
-
-typedef enum{
-  PHYS_EVENT_NONE,
-  PHYS_EVENT_ACCEL,
-  PHYS_EVENT_COLL,
-  PHYS_EVENT_FORCE_END,
-  PHYS_EVENT_SPAWN,
-  PHYS_EVENT_DESTROY,
-  PHYS_EVENT_HIT,
-  PHYS_EVENT_COUNT
-}PhysicsEventID;
-
-typedef enum {
-  FORCE_NONE,
-  FORCE_GRAVITY,
-  FORCE_STEERING,
-  FORCE_IMPULSE,
-  FORCE_AVOID,
-  FORCE_KINEMATIC,
-  FORCE_DONE
-}ForceType;
-
-typedef enum{
-  REACT_NONE,
-  REACT_BUMP,
-  REACT_BLOCK,
-}ReactType;
 
 force_t* ForceReactBump(rigid_body_t* a, rigid_body_t* b, force_t*);
 force_t* ForceReactBlock(rigid_body_t* a, rigid_body_t* b, force_t*);
@@ -72,12 +44,6 @@ typedef struct bounds_s {
   float       radius;
   float       width,height;
 } bounds_t;
-
-typedef enum{
-  COLL_NONE,
-  COLL_FORCE,
-  COLL_HIT
-}CollisionBehavior;
 
 struct rigid_body_s{
   Vector2           vel;

@@ -32,8 +32,17 @@ static inline Vector2 Vector2FromXY(float x, float y){
   return result;
 }
 
-static float vec_to_deg(Vector2 v) {
+static float rad_to_deg(float radians)
+{
+    return radians * (180.0f / PI);
+}
+
+static float vec_to_rad(Vector2 v) {
   return atan2f(v.y, v.x);
+}
+
+static float vec_to_deg(Vector2 v) {
+  return rad_to_deg(atan2f(v.y, v.x));
 }
 
 static int angle_snap_to_card(Vector2 v) {

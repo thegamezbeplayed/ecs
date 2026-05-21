@@ -28,8 +28,37 @@ void AnimEvent(event_t* ev, void* data){
 void AnimSink(void* obs_data, void* sub, void* ev_data){
   anim_comp_t* ac = obs_data;
   input_t* in = ev_data;
-  TraceLog(LOG_INFO, "ANIM SINK SUCCESS!");
 
+  action_key_t* ak = InputGetAction(in->last_key);
+ 
+  int dir = -1; 
+  AnimState s = ANIM_NONE;
+  switch(ak->type){
+    case ACT_MOVE:
+      s = ANIM_WALK;
+      dir = abs(vec_to_deg(ak->dir)/90);
+      break;
+    case ACT_ATTACK:
+      break;
+    case ACT_STOP:
+      s = ANIM_IDLE;
+      break;
+    default:
+      return;
+      break;
+  }
+
+  anim_player_t* ap = &ac->player;
+  AnimPlayerDirection(ap, dir);
+
+  anim_t* a = &ac->sequences[ap->state][ap->dir];
+
+  if(s==ANIM_IDLE && ap->state == ANIM_WALK)
+    DO_NOTHING();
+
+  if(!AnimPlayerState(ap, a, s))
+    return;
+ 
 }
 
 void AnimInputEvent(event_t* ev, void* data){

@@ -16,7 +16,8 @@ typedef BehaviorStatus (*ActionKeyCallback)(input_t* gi, KeyboardKey k);
 struct action_key_s{
   char              name[MAX_NAME_LEN];
   KeyboardKey       key;
-  ActionKeyCallback fn;
+  ActionType        type;
+  Vector2           dir;
 };
 
 typedef hash_map_t macro_map_t;
@@ -28,7 +29,6 @@ struct input_s{
   KeyboardKey     last_key;
   int             turn, frames;
   int             angle;
-  Cell            step;
   ActionType      last_act;
   action_key_t    action_keys[MAX_MACROS];
 };
