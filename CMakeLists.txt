@@ -33,6 +33,7 @@ if (PLATFORM MATCHES "Web")
     -gsource-map
     --preload-file ${CMAKE_SOURCE_DIR}/resources@resources
     -sEXPORTED_RUNTIME_METHODS=['ccall','cwrap','HEAPF32','HEAP32','HEAP8','HEAPU8']
+    --shell-file ${CMAKE_SOURCE_DIR}/web_shell.html
   )
 
   add_compile_options(${EM_COMPILE_FLAGS})
