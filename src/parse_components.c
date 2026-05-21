@@ -109,6 +109,8 @@ bool ParseRigidBodyComponent(cJSON* j, rigid_body_t* out){
   Vector2 size = VEC_NEW(w,h);
   RigidBodySetBounds(out, size);
 
+  out->restitution = 1;
+  out->col_rate = Json_GetInt(j, "rate", 0);
   char ename[MAX_NAME_LEN];
   Json_GetString(j, "event", ename);
 
@@ -127,6 +129,11 @@ bool ParseForceComponent(cJSON* j, force_t* out){
     return false;
 
   out->speed = Json_GetFloat(j, "speed", 0);
+
+  char name[MAX_NAME_LEN];
+  Json_GetString(j, "name", name);
+  if(out->speed == 0)
+    TraceLog(LOG_WARNING, "=== PARSE FORCE ===\n Force %s speed is zero", name);
   out->threshold = Json_GetFloat(j, "threshold", 0);
   out->max_velocity = Json_GetFloat(j, "max", 0);
   

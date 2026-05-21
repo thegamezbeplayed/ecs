@@ -61,7 +61,7 @@ void OnPhysEvent(event_t* ev, void* data){
       rigid_body_t* rb = ComponentAdd(&world, b, PHYS_ID);
       position_t* p = ComponentAdd(&world, b, POS_ID);
 
-      Vector2 pos = Vector2Inc(body->bounds.pos, coll->posx, coll->posy);
+      Vector2 pos = Vector2Inc(body->bounds.pos, coll->x, coll->y);
 
       memcpy(rb, InitRigidBody(pos, coll->shape, coll->wid, coll->hei),
           sizeof(rigid_body_t));
@@ -102,6 +102,9 @@ void PhysicsLoad(world_t* w, Entity e){
 
   Vector2 size = VEC_NEW(ac->hitbox.wid, ac->hitbox.hei);
   RigidBodySetBounds(rb, size);
+
+  Vector2 offset = VEC_NEW(ac->hitbox.x, ac->hitbox.y);
+  RigidBodySetOffset(rb, size);
 }
 
 void PhysicsCollision(world_t* w, Entity e){
@@ -166,7 +169,7 @@ void PhysicsDebug(world_t* w, Entity e){
       DrawCircleLinesV(b->bounds.pos, b->bounds.radius, BLUE);
       break;
     case SHAPE_REC:
-      Rectangle rec = RECT(b->bounds.pos.x, b->bounds.pos.y, b->bounds.width, b->bounds.height);
+      Rectangle rec = RigidBodyGetBoundsRec(b);
       DrawRectangleLinesEx(rec, 1.5, BLUE);
 
       break;
@@ -195,12 +198,13 @@ void ForceSystem(world_t* w, Entity e){
    if(!f->is_active)
      return;
 
+   Entity be = e;
    rigid_body_t* rb = GET_COMPONENT(w, e, rigid_body_t, PHYS_ID);
    if(!rb && !EntityHasRelation(w, e, REL_AppliesTo))
      return;
    else if(!rb){
-     Entity rel = EntityGetRelationTarget(w, e, REL_AppliesTo);
-     rb = GET_COMPONENT(w, rel, rigid_body_t, PHYS_ID);
+     be = EntityGetRelationTarget(w, e, REL_AppliesTo);
+     rb = GET_COMPONENT(w, be, rigid_body_t, PHYS_ID);
    }
 
    if(!rb)
@@ -208,6 +212,8 @@ void ForceSystem(world_t* w, Entity e){
 
    f->is_active = ForceStep(f, f->is_active);
    ForceApply(rb, f);
+
+   ComponentUpdate(w, be, PHYS_ID);
 
 }
 

@@ -14,6 +14,7 @@ typedef enum{
   OBS_NONE,
   OBS_COMP,
   OBS_DEFINE,
+  OBS_ENT,
   OBS_ALL
 }ObserveType;
 
@@ -41,8 +42,10 @@ typedef struct{
 }component_observer_t;
 
 typedef struct{
-  char      name[MAX_NAME_LEN];
-  comp_id_t comp;
+  char        name[MAX_NAME_LEN];
+  ObserveType type;
+  comp_id_t   comp;
+  hash_key_t  key;
 }subject_component_t;
 
 struct subject_s {
@@ -50,6 +53,7 @@ struct subject_s {
   observer_t* observers;
 };
 
+subject_t* SubjectGetByKey(hash_key_t key);
 void InitSubject(subject_t* subject);
 void SubjectAddObserver(const char*, const char*, ObserverCB, void*) ;
 void SubjectAddObserverByComponent(const char*, uint32_t, comp_id_t, const char*, ObserverCB, void*);
@@ -58,6 +62,7 @@ void SubjectRunNotify(subject_t* s, void* data);
 void SubjectNotify(const char*, void* eventdata);
 void SubjectDestroy(subject_t* subject); // Cleanup
 
+hash_key_t SubjectComponent(const char* name, uint32_t, comp_id_t);
 typedef struct{
   hash_key_t  key;
   subject_t*  subject;

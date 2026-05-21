@@ -9,7 +9,7 @@
     "list":	[
       {
         "name":	    "wiz",
-        "type":	    1,
+        "type":	    3,
         "comp":	    "Input",
         "subjects": ["MOVE-STOP", "MOVE-LEFT", "MOVE-RIGHT", "MOVE-UP", "MOVE-DOWN"],
         "listeners":["Animation", "Force"]
@@ -35,10 +35,10 @@
   "Sprite":{
     "func": "SpriteInit",
     "list": [
-      {"name": "wiz", "layer": 2, "scale": 2.5,
+      {"name": "wiz", "layer": 2, "scale": 1,
         "sheet_id": "SHEET_CHAR", "sheet_index": 0
       },
-      {"name": "rat", "layer": 2, "scale": 2.5,
+      {"name": "rat", "layer": 2, "scale": 1,
         "sheet_id": "SHEET_MOB", "sheet_index": 0
       },
       {"name": "tile_wall", "layer": 1,
@@ -148,8 +148,8 @@
   "RigidBody":{
     "func": "RigidBodyInit",
     "list": [
-      {"name": "wiz", "event": "COLL", "shape": "RECT", "width": 10, "height": 12},
-      {"name": "rat", "event": "COLL", "shape": "RECT", "width": 10, "height": 8}
+      {"name": "wiz", "event": "COLL", "rate": 6, "shape": "RECT", "width": 10, "height": 12},
+      {"name": "rat", "event": "COLL", "rate": 8, "shape": "RECT", "width": 10, "height": 8}
     ]
   },
   "Force": {
@@ -161,7 +161,7 @@
       },
       {"name": "wiz-bump",
         "type": "IMPULSE", "react": "BUMP", "event": "COLL",
-        "speed": "0.5", "max": 1.15, "threshold": 0.1, "frict": 0.8
+        "speed": 0.69, "max": 3.125, "threshold": 0.05, "frict": 0.75
       },
       {"name": "rat",
         "type": "STEERING", 
@@ -169,7 +169,7 @@
       },
       {"name": "rat-bump",
         "type": "IMPULSE",  "react": "BUMP", "event": "COLL",
-        "speed": "0.75", "max": 0.99, "threshold": 0.1, "frict": 0.8
+        "speed": 0.67, "max": 2.75, "threshold": 0.05, "frict": 0.75
       }
     ]
   },
@@ -178,7 +178,7 @@
     "list": [
       {
         "name": "main_cam",
-        "zoom":     1.0,
+        "zoom":     3.0,
         "rotation": 0,
         "offset_x": 320,
         "offset_y": 120,
