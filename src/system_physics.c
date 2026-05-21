@@ -104,7 +104,7 @@ void PhysicsLoad(world_t* w, Entity e){
   RigidBodySetBounds(rb, size);
 
   Vector2 offset = VEC_NEW(ac->hitbox.x, ac->hitbox.y);
-  RigidBodySetOffset(rb, size);
+  RigidBodySetOffset(rb, offset);
 }
 
 void PhysicsCollision(world_t* w, Entity e){

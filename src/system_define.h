@@ -3,7 +3,7 @@
 #include "game_define.h"
 #include "component_define.h"
 
-#define NUM_FUNCTIONS 45
+#define NUM_FUNCTIONS 46
 
 extern hash_map_t SYSTEM_SINK;
 typedef struct{
@@ -67,9 +67,11 @@ typedef struct{
   int     count, cap;
   int     *ents;
 }sprite_layer_t;
+extern sprite_layer_t SPRITE_LAYERS[LAYER_DONE];
 
 void SpritesInit(world_t* w);
 void SpriteLoad(world_t* w, Entity e);
+void SpriteDrawPrep(world_t* w);
 
 typedef struct {
   Entity  ents[MAX_PARTICLES];
@@ -152,6 +154,8 @@ static system_function_lookup_t FUNCTION_LOOKUP[NUM_FUNCTIONS] = {
 
     {"SpritesInit",         SpritesInit},
     {"SpriteLoad",          SpriteLoad},
+    {"SpriteDrawPrep",          SpriteDrawPrep},
+
     {"ExpirationSystem",    ExpirationSystem}
 };
 

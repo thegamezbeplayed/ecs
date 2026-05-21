@@ -2,6 +2,7 @@
 #define __TOOL_LOOK__
 
 #include "physics_enum.h"
+#include "sprite_enum.h"
 
 PhysicsEventID StringToPhysEvent(const char* str);
 ReactType StringToReaction(const char* str);
@@ -9,6 +10,8 @@ CameraTracking StringToCameraMode(const char* str);
 ActionType StringToAction(const char* str);
 Vector2 StringToVector2(const char* str);
 ForceType StringToForce(const char* str);
+
+CollType StringToCollType(const char* str);
 ShapeType StringToShape(const char* str);
 static const char* RENDER_LAYER_LOOK[LAYER_DONE] = {
   "LAYER_BACKGROUND",

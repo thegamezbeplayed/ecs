@@ -83,8 +83,8 @@ void DrawSprite(sprite_t* spr, Vector2 pos){
   Rectangle src = s->bounds;
 
   Vector2 origin = (Vector2){
-    s->offset.x * spr->scale,//offset.x,
-      s->offset.y * spr->scale//offset.y
+    s->center.x * spr->scale,//center.x,
+      s->center.y * spr->scale//center.y
   };
 
   Vector2 position = Vector2Add(pos,s->center);
@@ -100,9 +100,6 @@ void DrawSprite(sprite_t* spr, Vector2 pos){
   DrawTexturePro(sheet,src,dst, origin, spr->rot, col);
 
   return;
-
-
-
 }
 
 void SpriteLoadSubTextures(sub_texture_t* data, SheetID id, int sheet_cap){

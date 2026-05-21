@@ -24,8 +24,7 @@
   "Animations":{
     "components": ["Animation", "Sprite"],
     "syncs": [
-      {"step": "UPDATE_FIXED",  "fn": "AnimSystem"},
-      {"step": "UPDATE_DRAW",  "fn": "AnimRender"}
+      {"step": "UPDATE_FIXED",  "fn": "AnimSystem"}
     ],
     "sets": [
       {"step": "GAME_LOADING",  "fn": "AnimLoad"},
@@ -42,6 +41,9 @@
     ],
     "states": [
       {"step": "GAME_RUNNING", "fn": "SpritesInit"}
+    ],
+    "steps": [
+      {"step": "UPDATE_DRAW_BEGIN", "fn": "SpriteDrawPrep"}
     ]
   },
   "Particles": {
@@ -88,8 +90,7 @@
     "components": ["RigidBody", "Position"],
     "syncs": [
       {"step": "UPDATE_POST",  "fn": "PhysicsSystem"},
-      {"step": "UPDATE_PRE" ,  "fn": "PhysicsCollision"},
-      {"step": "UPDATE_DRAW" ,  "fn": "PhysicsDebug"}
+      {"step": "UPDATE_PRE" ,  "fn": "PhysicsCollision"}
     ],
     "sets": [
       {"step": "GAME_READY",   "fn": "PhysicsLoad"}

@@ -382,7 +382,8 @@ bool LoadAsepriteSheet(cJSON* root, ase_sprite_sheet_d* sheet){
   // ====================== PARSE FRAMES ======================
   cJSON* frames_json = cJSON_GetObjectItem(root, "frames");
   sheet->num_frames = cJSON_GetArraySize(frames_json);
-
+ 
+  sheet->frame_meta = cJSON_Duplicate(frames_json, true); 
   for (int i = 0; i < sheet->num_frames && i < MAX_SPRITE_FRAMES; i++) {
     cJSON* f = cJSON_GetArrayItem(frames_json, i);
     anim_frame_t* frame = &sheet->frames[i];
@@ -411,6 +412,7 @@ bool LoadAsepriteSheet(cJSON* root, ase_sprite_sheet_d* sheet){
   cJSON* slices_json = cJSON_GetObjectItem(meta, "slices");
   sheet->num_slices = cJSON_GetArraySize(slices_json);
 
+  sheet->slice_meta = cJSON_Duplicate(slices_json, true); 
   for (int i = 0; i < sheet->num_slices && i < MAX_ANIM_FRAMES; i++) {
     cJSON* s = cJSON_GetArrayItem(slices_json, i);
     slice_d* slice = &sheet->slices[i];
@@ -634,7 +636,9 @@ bool ParseSystems(cJSON* root, game_t* out){
 
         UpdateType step = GetUpdateStep(step_json->valuestring);
         if (step < 0 || step >= UPDATE_DONE)
-          sys->steps[step] = callback;
+          continue;
+
+        sys->steps[step] = callback;
       }
     }
   

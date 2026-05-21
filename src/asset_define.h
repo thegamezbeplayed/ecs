@@ -5,13 +5,11 @@
 #include "game_resources.h"
 #include "game_utils.h"
 #include "game_types.h"
+#include "sprite_enum.h"
 
-#define MAX_LAYER_SPRITES  128 
+#define MAX_LAYER_SPRITES  256 
 #define FLOAT_TEXT_SIZE    54
 #define FLOAT_TEXT_SPACING 2
-
-#define EVENT_ANIM_BASE     0x5000
-#define EVENT_PARTICLE_BASE 0x6000
 
 typedef struct{
   Vector2     offset;
@@ -25,18 +23,6 @@ static void SpriteUnloadSplash(void){
 
 }
 
-DEFINE_EVENT_SPACE(AnimEvent, EVENT_ANIM_BASE);
-
-typedef enum{
-  ANIM_EVENT_NONE,
-  ANIM_EVENT_FRAME,
-  ANIM_EVENT_FRAME_START,
-  ANIM_EVENT_FRAME_END,
-  ANIM_EVENT_SEQ_END,
-  ANIM_EVENT_ATTACK,
-  ANIM_EVENT_COUNT
-}AnimEventID;
-
 typedef struct sprite_s sprite_t;
 typedef struct sprite_slice_s sprite_slice_t;
 
@@ -45,16 +31,6 @@ bool IsHitboxActive(const ase_sprite_sheet_d* sheet, int frame);
 Rectangle GetHurtbox(const ase_sprite_sheet_d* sheet, int frame);
 
 void InitResources();
-
-typedef enum{
-  LAYER_ROOT = -1,
-  LAYER_BG,
-  LAYER_FLOOR,
-  LAYER_MAIN,
-  LAYER_TOP,
-  LAYER_UI,
-  LAYER_DONE
-}RenderLayer;
 
 typedef struct{
   char        name[MAX_NAME_LEN];
@@ -100,23 +76,6 @@ void AnimCollisionHurt(sprite_slice_t*,collision_d*, position_t*);
 
 typedef struct anim_player_s anim_player_t;
 typedef struct anim_s anim_t;
-
-typedef enum{
-  ANIM_NONE,
-  ANIM_START,
-  ANIM_IDLE,
-  ANIM_WALK,
-  ANIM_ATTACK,
-  ANIM_HURT,
-  ANIM_DIE,
-  ANIM_DONE
-}AnimState;
-
-typedef enum{
-  ANIM_BLANK,
-  ANIM_SUSPEND,
-  ANIM_HURTBOX,
-}AnimBehavior;
 
 typedef struct{
   AnimState   state;
