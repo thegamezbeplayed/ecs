@@ -6,3 +6,4 @@
 cmake-build-debug
 build
 build_debug
+build_web
