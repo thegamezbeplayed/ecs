@@ -3,6 +3,8 @@
 #include "gbm_paths.h"
 #include "asset_define.h"
 #include "system_define.h"
+#include "util_parse.h"
+#include "tool_lookup.h"
 
 static ResourcePool RES_POOL;
 static cJSON* comp;
@@ -60,6 +62,36 @@ void AsepriteToSprite(SheetID id, const ase_sprite_sheet_d* ase, int index, spri
 
 }
 
+void ParseHitboxFromAseprite(cJSON* s, cJSON* k, collision_d* out, cJSON* f)
+{
+    cJSON* bounds = cJSON_GetObjectItem(k, "bounds");
+    if (!bounds) return;
+
+    char sname[MAX_NAME_LEN];
+
+    Json_GetString(s, "name", sname);    
+    out->type = StringToCollType(sname);
+
+    out->frame = Json_GetInt(k, "frame", -1);
+    out->shape = SHAPE_REC;
+    // Raw slice position (relative to trimmed frame)
+    float slice_x = cJSON_GetObjectItem(bounds, "x")->valuedouble;
+    float slice_y = cJSON_GetObjectItem(bounds, "y")->valuedouble;
+    float slice_w = cJSON_GetObjectItem(bounds, "w")->valuedouble;
+    float slice_h = cJSON_GetObjectItem(bounds, "h")->valuedouble;
+
+    // Get sprite trim offset
+    cJSON* srcSize = cJSON_GetObjectItem(f, "spriteSourceSize");
+    float trim_x = cJSON_GetObjectItem(srcSize, "x")->valuedouble;
+    float trim_y = cJSON_GetObjectItem(srcSize, "y")->valuedouble;
+
+    // Convert to sprite-local coordinates
+    out->x     = slice_x - trim_x;
+    out->y     = slice_y - trim_y;
+    out->wid   = slice_w;
+    out->hei   = slice_h;
+}
+
 void ResourceMapAsepriteAnims(SheetID id, sprite_sheet_d* s, ase_sprite_sheet_d* ase){
   for(int i = 0; i < ase->num_tags ; i++){
     anim_tag_t tag = ase->tags[i];
@@ -69,14 +101,23 @@ void ResourceMapAsepriteAnims(SheetID id, sprite_sheet_d* s, ase_sprite_sheet_d*
     }
   }
 
-  for (int i = 0; i < ase->num_slices; i++){
-    slice_d sdat = ase->slices[i];
-    for (int j = 0; j < sdat.num_keys; j++){
-      slice_key_t skdat = sdat.keys[j];
+  if(!ase->frame_meta || !ase->slice_meta)
+    return;
 
-      anim_frame_t* f = &ase->frames[skdat.frame];
-      s->coll[s->num_coll++] = *InitSpriteCollision(f, skdat.type,
-          SHAPE_REC, skdat.bounds);
+  cJSON* slice;
+  cJSON_ArrayForEach(slice, ase->slice_meta){
+    cJSON* keys = cJSON_GetObjectItem(slice, "keys");
+    cJSON* key;
+    cJSON_ArrayForEach(key, keys){
+      int fidx = Json_GetInt(key, "frame", -1);
+      if( fidx == -1)
+        continue;
+
+      cJSON* frame = cJSON_GetArrayItem(ase->frame_meta, fidx);
+      if(!frame)
+        continue;
+
+      ParseHitboxFromAseprite(slice, key, &s->coll[s->num_coll++], frame);
     }
   }
 }

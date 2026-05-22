@@ -1,0 +1,64 @@
+#ifndef __SPR_ENUM__
+#define __SPR_ENUM__
+#include "game_enum.h"
+
+#define EVENT_ANIM_BASE     0x5000
+#define EVENT_PARTICLE_BASE 0x6000
+
+DEFINE_EVENT_SPACE(AnimEvent, EVENT_ANIM_BASE);
+
+typedef enum{
+  ANIM_EVENT_NONE,
+  ANIM_EVENT_FRAME,
+  ANIM_EVENT_FRAME_START,
+  ANIM_EVENT_FRAME_END,
+  ANIM_EVENT_SEQ_END,
+  ANIM_EVENT_ATTACK,
+  ANIM_EVENT_COUNT
+}AnimEventID;
+
+typedef enum{
+  SHEET_UI,
+  SHEET_ICON,
+  SHEET_TILE,
+  SHEET_CHAR,
+  SHEET_MOB,
+  SHEET_OBJ,
+  SHEET_VFX,
+  SHEET_ALL
+}SheetID;
+
+typedef enum{
+  COL_NONE,
+  COL_HIT,
+  COL_HURT,
+}CollType;
+
+typedef enum{
+  LAYER_ROOT = -1,
+  LAYER_BG,
+  LAYER_FLOOR, 
+  LAYER_MAIN,
+  LAYER_TOP,
+  LAYER_UI,
+  LAYER_DONE
+}RenderLayer;
+
+typedef enum{
+  ANIM_NONE,
+  ANIM_START,
+  ANIM_IDLE,
+  ANIM_WALK,
+  ANIM_ATTACK,
+  ANIM_HURT,
+  ANIM_DIE,
+  ANIM_DONE
+}AnimState;
+
+typedef enum{
+  ANIM_BLANK,
+  ANIM_SUSPEND,
+  ANIM_HURTBOX,
+}AnimBehavior;
+
+#endif

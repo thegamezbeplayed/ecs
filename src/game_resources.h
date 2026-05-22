@@ -2,6 +2,7 @@
 #define __GAME_RES__
 #include "cJSON.h"
 #include "game_common.h"
+#include "sprite_enum.h"
 
 #define MAX_RESOURCES     4
 #define MAX_SPRITES       128
@@ -12,23 +13,6 @@
 
 cJSON* ParseRoot(const char* path);
 
-typedef enum{
-  SHEET_UI,
-  SHEET_ICON,
-  SHEET_TILE,
-  SHEET_CHAR,
-  SHEET_MOB,
-  SHEET_OBJ,
-  SHEET_VFX,
-  SHEET_ALL
-}SheetID;
-
-typedef enum{
-  COL_NONE,
-  COL_HIT,
-  COL_HURT,
-}CollType;
-  
 typedef struct{
   int       frame;
   CollType  type;
@@ -71,6 +55,9 @@ typedef struct{
   int          num_tags;
   slice_d      slices[MAX_ANIM_FRAMES];
   int          num_slices;
+
+  cJSON*       frame_meta;
+  cJSON*       slice_meta;
 }ase_sprite_sheet_d;
 bool LoadAsepriteSheet(cJSON*, ase_sprite_sheet_d*);
 

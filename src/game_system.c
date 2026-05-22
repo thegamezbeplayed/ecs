@@ -114,6 +114,7 @@ void OnSystemEvent(event_t* ev, void* data){
     case GAME_EVENT_SET:
       state = ev->eid;
       SystemSet(w, s, state);
+      break;
     case GAME_EVENT_STATE:
       state = ev->eid;
       SystemState(w, s, state);
