@@ -1,4 +1,5 @@
 #include "game_math.h"
+#include "game_strings.h"
 #include "physics_enum.h"
 #include "view_enum.h"
 #include "sprite_enum.h"
@@ -63,11 +64,13 @@ PhysicsEventID StringToPhysEvent(const char* str){
 }
 
 CollType StringToCollType(const char* str){
-  if(strcmp(str, "hitbox") == 0)      return COL_HIT;
-  if(strcmp(str, "hurtbox_0") == 0)   return COL_HURT;
-  if(strcmp(str, "hurtbox_90") == 0)  return COL_HURT;
-  if(strcmp(str, "hurtbox_180") == 0) return COL_HURT;
-  if(strcmp(str, "hurtbox_270") == 0) return COL_HURT;
+  char sub[16];
+  strcpy(sub, sub_string(str, "_", 0));
+  if(strcmp(sub, "hitbox") == 0)      return COL_HIT;
+  if(strcmp(sub, "hurtbox") == 0)   return COL_HURT;
+  if(strcmp(sub, "hurtbox") == 0)  return COL_HURT;
+  if(strcmp(sub, "hurtbox") == 0) return COL_HURT;
+  if(strcmp(sub, "hurtbox") == 0) return COL_HURT;
 
   return COL_NONE;
 }

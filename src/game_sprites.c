@@ -83,8 +83,8 @@ void DrawSprite(sprite_t* spr, Vector2 pos){
   Rectangle src = s->bounds;
 
   Vector2 origin = (Vector2){
-    s->center.x * spr->scale,//center.x,
-      s->center.y * spr->scale//center.y
+   0,// s->center.x * spr->scale,//center.x,
+    0//  s->center.y * spr->scale//center.y
   };
 
   Vector2 position = Vector2Add(pos,s->center);

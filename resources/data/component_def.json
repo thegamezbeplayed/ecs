@@ -41,6 +41,9 @@
       {"name": "rat", "layer": 2, "scale": 1,
         "sheet_id": "SHEET_MOB", "sheet_index": 0
       },
+      {"name": "orc", "layer": 2, "scale": 1,
+        "sheet_id": "SHEET_MOB", "sheet_index": 0
+      },
       {"name": "tile_wall", "layer": 1,
         "sheet_id": "SHEET_TILE", "sheet_index": 0
       },
@@ -109,8 +112,36 @@
             ]
           }
         ]
+      },
+      {"name": "orc", "sheet_id": "SHEET_MOB",
+        "states": [
+          {"state": "WALK", "interupt": true, "loop": false, "end": "SUSPEND",
+            "sequences": [
+              {"tag": "walk0",   "dir": 0},
+              {"tag": "walk90",  "dir": 1},
+              {"tag": "walk180", "dir": 2},
+              {"tag": "walk270", "dir": 3}
+            ]
+          },
+          {"state": "IDLE","interupt": true, "loop": true,
+            "sequences": [
+              {"tag": "idle0",   "dir": 0},
+              {"tag": "idle90",  "dir": 1},
+              {"tag": "idle180", "dir": 2},
+              {"tag": "idle270", "dir": 3}
+            ]
+          },
+          {"state": "ATTACK",
+            "end": "SUSPEND", "start": "HURTBOX",
+            "sequences": [
+              {"tag": "attack0",   "dir": 0},
+              {"tag": "attack90",  "dir": 1},
+              {"tag": "attack180", "dir": 2},
+              {"tag": "attack270", "dir": 3}
+            ]
+          }
+        ]
       }
-
     ]
   },
   "ParticleEmitter": {
@@ -149,7 +180,8 @@
     "func": "RigidBodyInit",
     "list": [
       {"name": "wiz", "event": "COLL", "rate": 6, "shape": "RECT", "width": 10, "height": 12},
-      {"name": "rat", "event": "COLL", "rate": 8, "shape": "RECT", "width": 10, "height": 8}
+      {"name": "rat", "event": "COLL", "rate": 8, "shape": "RECT", "width": 10, "height": 8},
+      {"name": "orc", "event": "COLL", "rate": 6, "shape": "RECT", "width": 10, "height": 8}
     ]
   },
   "Force": {
@@ -165,11 +197,19 @@
       },
       {"name": "rat",
         "type": "STEERING", 
-        "speed": 0.99, "max": 1.875, "threshold": 0.425, "frict": 0.5
+        "speed": 1.15, "max": 2.3, "threshold": 0.425, "frict": 0.5
       },
       {"name": "rat-bump",
         "type": "IMPULSE",  "react": "BUMP", "event": "COLL",
         "speed": 0.67, "max": 2.75, "threshold": 0.05, "frict": 0.75
+      },
+      {"name": "orc",
+        "type": "STEERING", 
+        "speed": 1.0, "max": 2.0, "threshold": 0.425, "frict": 0.65
+      },
+      {"name": "orc-bump",
+        "type": "IMPULSE",  "react": "BUMP", "event": "COLL",
+        "speed": 0.75, "max": 2.925, "threshold": 0.05, "frict": 0.75
       }
     ]
   },
@@ -209,6 +249,11 @@
       },
       {
         "name": "rat",
+        "posx": 200,
+        "posy": 300
+      },
+      {
+        "name": "orc",
         "posx": 200,
         "posy": 300
       },
