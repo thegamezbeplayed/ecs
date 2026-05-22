@@ -122,11 +122,12 @@ void AnimBehaviorHandler(world_t* w, Entity e, anim_comp_t* ac, anim_t* a){
       ac->player.state = ANIM_IDLE;
       break;
     case ANIM_HURTBOX:
-      if(!GameCheckInteraction(e.id, e.id, "ANIM_ATTACK"))
+      n = AnimEvent_ToNotif(ANIM_EVENT_ATTACK);
+      if(!GameCheckInteraction(e.id, e.id, n))
         return;
 
       int rate = a->duration;
-      GameInteraction(e.id, e.id, "ANIM_ATTACK", rate);
+      GameInteraction(e.id, e.id, n, rate);
 
       n = PhysEvent_ToNotif(PHYS_EVENT_SPAWN);
       ac->hurtboxes[a->hurtbox_index].duration = rate;

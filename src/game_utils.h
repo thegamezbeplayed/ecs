@@ -8,8 +8,9 @@
 #include "util_observe.h"
 
 #define MAX_BEHAVIOR_TREE 12
-#define MAX_EVENTS 512
-#define MAX_INTERACTIONS 4096
+#define MAX_EVENTS        512
+#define MAX_EVENT_SUBS    256
+#define MAX_INTERACTIONS  4096
 
 #define COMBO_KEY(a, b) ((a << 8) | b)
 #define CALL_FUNC(type, ptr, ...) ((type)(ptr))(__VA_ARGS__)
@@ -154,8 +155,8 @@ typedef struct{
   interaction_t entries[MAX_INTERACTIONS];
   uint32_t      current_frame;
 }interaction_pool_t;
-void InteractionRegister(interaction_pool_t*, uint32_t, uint32_t, const char*,  float);
-bool InteractionCheck(interaction_pool_t*, uint32_t, uint32_t, const char*);
+void InteractionRegister(interaction_pool_t*, uint32_t, uint32_t, notification,  float);
+bool InteractionCheck(interaction_pool_t*, uint32_t, uint32_t, notification);
 void InteractionStep(interaction_pool_t*);
 
 //<===BEHAVIOR TREES

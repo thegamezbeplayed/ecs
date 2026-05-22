@@ -18,11 +18,11 @@ void Subscribe(uint64_t, EventCallback cb, void* data);
 void ScheduleEvent(uint64_t, void* data, uint64_t uid, TimeFrame, int);
 void GameEvent(uint64_t, void*, uint64_t);
 void GameUnloadEvents();
-static bool GameCheckInteraction(uint32_t a, uint32_t b, char* type){
-//  return InteractionCheck(&GP.interactions, a, b, type);
+static bool GameCheckInteraction(uint32_t a, uint32_t b, notification n){
+  return InteractionCheck(&GM.interactions, a, b, n);
 }
 
-static void GameInteraction(uint32_t a, uint32_t b, const char* str,  float dur){
-//  InteractionRegister(&GP.interactions, a, b, str, dur);
+static void GameInteraction(uint32_t a, uint32_t b, notification n,  float dur){
+  InteractionRegister(&GM.interactions, a, b, n, dur);
 }
 #endif

@@ -11,6 +11,13 @@ bool ObserverInit(void* comp, component_entry_t* j){
 
 }
 
+bool SubjectInit(void* comp, component_entry_t* j){
+  subject_component_t *c = comp;
+
+  return ParseSubjectComponent(j->data, c);
+
+}
+
 subject_t* SubjectCheckExists(const char* name, const char* from){
   hash_key_t hash = hash_str_64(name);
   if(!SUBJECTS.initialized){
@@ -27,6 +34,16 @@ subject_t* SubjectCheckExists(const char* name, const char* from){
   return s;
 }
 
+
+subject_t* SubjectGetByKey(hash_key_t key){
+  subject_t* s = HashGet(&SUBJECTS.map, key);
+  if(!s){
+    TraceLog(LOG_WARNING, "=== SUBJECT BY KEY ===\n Subject not found");
+    return NULL;
+  }
+
+  return s;
+}
 
 subject_t* SubjectGetEntry(const char* name, const char* from){
   hash_key_t hash = hash_str_64(name);
@@ -69,18 +86,26 @@ void SubjectStore(const char* name, void* data){
   SUBJECTS.num_store++;
 }
 
-subject_t* SubjectComponent(const char* name, uint32_t eid, comp_id_t compid){
+hash_key_t SubjectMakeComponentKey(const char* name, uint32_t eid, comp_id_t cid){
   uint64_t name_hash = hash_64_combine(hash_str_32(name), eid);
-  hash_key_t key = hash_combine_64(name_hash, compid);
+  hash_key_t key = hash_combine_64(name_hash, cid);
+
+  return key;
+}
+
+hash_key_t SubjectComponent(const char* name, uint32_t eid, comp_id_t cid){
+  hash_key_t key = SubjectMakeComponentKey(name, eid, cid);
 
   subject_t* existing = HashGet(&SUBJECTS.map, key);
   if(existing)
-    return existing;
+    return key;
 
-   subject_t* s = GameCalloc("SubjectRegister", 1, sizeof(subject_t));
+  subject_t* s = GameCalloc("SubjectRegister", 1, sizeof(subject_t));
   strcpy(s->name, name);
 
   HashPut(&SUBJECTS.map, key, s);
+
+  return key;
 }
 
 subject_t* SubjectRegister(const char* name){
@@ -92,18 +117,17 @@ subject_t* SubjectRegister(const char* name){
   subject_t* s = GameCalloc("SubjectRegister", 1, sizeof(subject_t));
   strcpy(s->name, name);
   HashPut(&SUBJECTS.map, hash, s);
-
   return s;
 }
 
-void SubjectAddObserverByComponent(const char* name, uint32_t eid, comp_id_t compid, const char* oname, ObserverCB cb, void* data){
-  uint64_t name_hash = hash_64_combine(hash_str_32(name), eid);
-  hash_key_t key = hash_combine_64(name_hash, compid);
+void SubjectAddObserverByComponent(const char* name, uint32_t eid, comp_id_t cid, const char* oname, ObserverCB cb, void* data){
+  hash_key_t key = SubjectMakeComponentKey(name, eid, cid);
   subject_t* s = HashGet(&SUBJECTS.map, key);
 
   observer_t* obs = (observer_t*)GameMalloc("SubjectAddObserver", sizeof(observer_t));
-  if (!obs || !s) return; // Handle OOM in production
-
+  if (!obs || !s){
+    return; // Handle OOM in production
+  }
   strcpy(obs->name, oname);
   obs->callback = cb;
   obs->data = data;
@@ -145,6 +169,10 @@ void SubjectRemoveObserver(subject_t* s, ObserverCB cb, void* data){
 
 void SubjectRunNotify(subject_t* s, void* data){
   observer_t* current = s->observers;
+  /*
+  if(!current)
+    TraceLog(LOG_INFO, "=== SUBJECT NOTIFY ===\n No Observers for %s", s->name);
+*/
   while (current) {
     current->callback(current->data, s, data);
     current = current->next;

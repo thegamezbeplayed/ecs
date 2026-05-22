@@ -47,8 +47,8 @@ collision_d* InitSpriteCollision(anim_frame_t* f, CollType coll, ShapeType s, Re
   c->frame = f->index;
   c->type = coll;
   c->shape = s;
-  c->posx = r.x - f->source_rect.x;
-  c->posy = r.y - f->source_rect.y;
+  c->x -= r.x + f->source_rect.width;// - f->source_rect.x;
+  c->y -= r.y + f->source_rect.height ;// - f->source_rect.y;
   c->wid = r.width;
   c->hei = r.height;
 
@@ -83,8 +83,8 @@ void DrawSprite(sprite_t* spr, Vector2 pos){
   Rectangle src = s->bounds;
 
   Vector2 origin = (Vector2){
-    s->center.x * spr->scale,//offset.x,
-      s->center.y * spr->scale//offset.y
+    s->offset.x * spr->scale,//offset.x,
+      s->offset.y * spr->scale//offset.y
   };
 
   Vector2 position = Vector2Add(pos,s->center);

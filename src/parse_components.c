@@ -42,9 +42,23 @@ bool ParseObserverComponent(cJSON* j, component_observer_t* out){
   cJSON_ArrayForEach(l, listeners_json)
     strcpy(out->observers[l_num++], l->valuestring);
 
+  out->num_obs = l_num;
   return l_num > 0;
 }
 
+bool ParseSubjectComponent(cJSON* j, subject_component_t* out){
+  if(!j)
+    return false;
+
+  Json_GetString(j, "name", out->name);
+
+  char cname[MAX_NAME_LEN];
+  Json_GetString(j, "comp", cname);
+  out->comp = ComponentGetID(cname);
+
+  return out->comp != INVALID_COMPONENT;
+
+}
 
 bool ParseInputComponent(cJSON* j, input_t* out){
   if(!j)
@@ -95,6 +109,12 @@ bool ParseRigidBodyComponent(cJSON* j, rigid_body_t* out){
   Vector2 size = VEC_NEW(w,h);
   RigidBodySetBounds(out, size);
 
+  out->restitution = 1;
+  out->col_rate = Json_GetInt(j, "rate", 0);
+  char ename[MAX_NAME_LEN];
+  Json_GetString(j, "event", ename);
+
+  out->on_coll = StringToPhysEvent(ename);
 
   char sname[MAX_NAME_LEN];
   Json_GetString(j, "shape", sname);
@@ -108,8 +128,12 @@ bool ParseForceComponent(cJSON* j, force_t* out){
   if(!j)
     return false;
 
-
   out->speed = Json_GetFloat(j, "speed", 0);
+
+  char name[MAX_NAME_LEN];
+  Json_GetString(j, "name", name);
+  if(out->speed == 0)
+    TraceLog(LOG_WARNING, "=== PARSE FORCE ===\n Force %s speed is zero", name);
   out->threshold = Json_GetFloat(j, "threshold", 0);
   out->max_velocity = Json_GetFloat(j, "max", 0);
   
@@ -121,6 +145,17 @@ bool ParseForceComponent(cJSON* j, force_t* out){
   Json_GetString(j, "type", tname);
 
   out->type = StringToForce(tname);
+
+  char rname[MAX_NAME_LEN];
+  Json_GetString(j, "react", rname);
+
+  out->react = StringToReaction(rname);
+
+  char ename[MAX_NAME_LEN];
+  Json_GetString(j, "event", ename);
+
+  out->event = StringToPhysEvent(ename);
+
 
   return out->type > FORCE_NONE;
 }

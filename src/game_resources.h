@@ -33,7 +33,7 @@ typedef struct{
   int       frame;
   CollType  type;
   ShapeType shape;
-  int       duration, posx, posy, wid, hei;
+  int       duration, x, y, wid, hei;
 }collision_d;
 
 typedef struct{

@@ -24,6 +24,7 @@ void RunGameplay(void){}
 void PreUpdate(void){
   GameProcessStep();
   GameEvent(GameEvent_ToNotif(GAME_EVENT_STEP), &world , UPDATE_PRE);
+  GameEvent(GameEvent_ToNotif(GAME_EVENT_SYNC), &world , UPDATE_PRE);
 }
 
 void FixedUpdate(void){

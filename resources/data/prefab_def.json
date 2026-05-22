@@ -16,6 +16,10 @@
          "RigidBody", "Force", "Position", "Follow"]
       },
       {
+        "name": "rat",
+        "list": ["Sprite", "Animation", "Position", "RigidBody", "Force"]
+      },
+      {
         "name": "tile_floor",
         "list": ["Sprite", "Position"]
       }
@@ -27,7 +31,17 @@
       "list":[
         {"name": "Force",
           "sublist": [
-            {"name": "wiz-bump",      "type": "AppliesTo"}
+            {"name": "wiz-bump",    "type": "AppliesTo"}
+          ]
+        },
+        {"name": "Observer",
+          "sublist": [
+            {"name": "rb-observer", "type": "Observes"}
+          ]
+        },
+        {"name": "Subject",
+          "sublist": [
+            {"name": "PHYS-VEL",    "type": "SubjectOf"}
           ]
         },
         {"name": "ParticleEmitter",
@@ -36,6 +50,27 @@
           ]
         }
       ]
+    },
+    {
+      "name": "rat",
+      "list":[
+        {"name": "Force",
+          "sublist": [
+            {"name": "rat-bump",    "type": "AppliesTo"}
+          ]
+        },
+        {"name": "Observer",
+          "sublist": [
+            {"name": "rb-observer", "type": "Observes"}
+          ]
+        },
+        {"name": "Subject",
+          "sublist": [
+            {"name": "PHYS-VEL",    "type": "SubjectOf"}
+          ]
+        }
+      ]
     }
+
   ]
 }

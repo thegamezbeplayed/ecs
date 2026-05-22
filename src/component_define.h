@@ -33,6 +33,7 @@ bool ParseCameraComponent(cJSON* j, camera_t* out);
 bool ParseParticleEmitterComponent(cJSON*, particle_emitter_t*);
 bool ParseRenderComponent(cJSON* j, render_ctx_t* out);
 bool ParseObserverComponent(cJSON* j, component_observer_t* out);
+bool ParseSubjectComponent(cJSON* j, subject_component_t* out);
 
 typedef struct{
   anim_player_t   player;

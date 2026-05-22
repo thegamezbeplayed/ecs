@@ -61,7 +61,7 @@ void OnPhysEvent(event_t* ev, void* data){
       rigid_body_t* rb = ComponentAdd(&world, b, PHYS_ID);
       position_t* p = ComponentAdd(&world, b, POS_ID);
 
-      Vector2 pos = Vector2Inc(body->bounds.pos, coll->posx, coll->posy);
+      Vector2 pos = Vector2Inc(body->bounds.pos, coll->x, coll->y);
 
       memcpy(rb, InitRigidBody(pos, coll->shape, coll->wid, coll->hei),
           sizeof(rigid_body_t));
@@ -70,7 +70,7 @@ void OnPhysEvent(event_t* ev, void* data){
 
       memcpy(p, InitPosition(pos), sizeof(position_t));
 
-      rb->on_coll = COLL_HIT;
+      rb->on_coll = PHYS_EVENT_HIT;
       EntityAddRelation(&world, b, REL_ChildOf, e);
       notification n = PhysEvent_ToNotif(PHYS_EVENT_DESTROY);
 
@@ -92,9 +92,7 @@ void PhysicsLoad(world_t* w, Entity e){
   rigid_body_t* rb = GET_COMPONENT(w, e, rigid_body_t, PHYS_ID);
   position_t*  p = GET_COMPONENT(w, e, position_t, POS_ID);
 
-  notification n = PosEvent_ToNotif(POS_EVENT_STEP);
-  SubscribeEntity(n, OnPositionEvent, p, e.id);
-  n = PhysEvent_ToNotif(PHYS_EVENT_SPAWN);
+  notification n = PhysEvent_ToNotif(PHYS_EVENT_SPAWN);
   SubscribeEntity(n, OnPhysEvent, rb, e.id);
 
   anim_comp_t* ac = GET_COMPONENT(w, e, anim_comp_t, ANIM_ID);
@@ -104,6 +102,9 @@ void PhysicsLoad(world_t* w, Entity e){
 
   Vector2 size = VEC_NEW(ac->hitbox.wid, ac->hitbox.hei);
   RigidBodySetBounds(rb, size);
+
+  Vector2 offset = VEC_NEW(ac->hitbox.x, ac->hitbox.y);
+  RigidBodySetOffset(rb, size);
 }
 
 void PhysicsCollision(world_t* w, Entity e){
@@ -123,22 +124,8 @@ void PhysicsCollision(world_t* w, Entity e){
     if(e.id == other.id)
       continue;
 
-    char estr[MAX_NAME_LEN] = "RB_COLL";
-    notification n = PhysEvent_ToNotif(PHYS_EVENT_COLL);
-    uint32_t evid = e.id;
-    switch(body->on_coll){
-      case COLL_FORCE:
-        strcpy(estr, "RB_COLL");
-        n = PhysEvent_ToNotif(PHYS_EVENT_COLL);
-        break;
-      case COLL_HIT:
-        strcpy(estr, "RB_HIT");
-        //n = CombatEvent_ToNotif(COMB_EVENT_HIT);
-        evid = other.id;
-        break;
-    }
-
-    if(!GameCheckInteraction(e.id, other.id, estr))
+    notification n = PhysEvent_ToNotif(body->on_coll);
+    if(!GameCheckInteraction(e.id, other.id, n))
       continue;
 
     tar = GET_COMPONENT(w, other, rigid_body_t, PHYS_ID);
@@ -149,11 +136,11 @@ void PhysicsCollision(world_t* w, Entity e){
     if(!CheckCollision(body, tar, 0))
       continue;
 
-    GameEvent(n, &other, evid);
+    GameEvent(n, &other, e.id);
 
     int rate = imax(body->col_rate, tar->col_rate);
     
-    GameInteraction(e.id, other.id, estr, rate);
+    GameInteraction(e.id, other.id, n, rate);
     return;
   }
 
@@ -168,6 +155,7 @@ void PhysicsSystem(world_t* w, Entity e){
 
     notification n = PosEvent_ToNotif(POS_EVENT_STEP);
     GameEvent(n, b, e.id);
+    ComponentUpdate(w, e, PHYS_ID);
   }
   
   b->vel = VECTOR2_ZERO;
@@ -181,12 +169,11 @@ void PhysicsDebug(world_t* w, Entity e){
       DrawCircleLinesV(b->bounds.pos, b->bounds.radius, BLUE);
       break;
     case SHAPE_REC:
-      Rectangle rec = RECT(b->bounds.pos.x, b->bounds.pos.y, b->bounds.width, b->bounds.height);
+      Rectangle rec = RigidBodyGetBoundsRec(b);
       DrawRectangleLinesEx(rec, 1.5, BLUE);
 
       break;
   }
-
 }
 
 void ForceLoad(world_t* w, Entity e){
@@ -207,12 +194,17 @@ void ForceLoad(world_t* w, Entity e){
 
 void ForceSystem(world_t* w, Entity e){
    force_t* f = GET_COMPONENT(w, e, force_t, FORCE_ID);
+
+   if(!f->is_active)
+     return;
+
+   Entity be = e;
    rigid_body_t* rb = GET_COMPONENT(w, e, rigid_body_t, PHYS_ID);
    if(!rb && !EntityHasRelation(w, e, REL_AppliesTo))
      return;
    else if(!rb){
-     Entity rel = EntityGetRelationTarget(w, e, REL_AppliesTo);
-     rb = GET_COMPONENT(w, rel, rigid_body_t, PHYS_ID);
+     be = EntityGetRelationTarget(w, e, REL_AppliesTo);
+     rb = GET_COMPONENT(w, be, rigid_body_t, PHYS_ID);
    }
 
    if(!rb)
@@ -220,6 +212,8 @@ void ForceSystem(world_t* w, Entity e){
 
    f->is_active = ForceStep(f, f->is_active);
    ForceApply(rb, f);
+
+   ComponentUpdate(w, be, PHYS_ID);
 
 }
 

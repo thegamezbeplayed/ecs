@@ -897,11 +897,11 @@
    { "name": "Layer 1", "opacity": 255, "blendMode": "normal" }
   ],
   "slices": [
-   { "name": "hitbox", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 9, "y": 8, "w": 10, "h": 14 } }] },
-   { "name": "hurtbox_90", "color": "#0000ffff", "keys": [{ "frame": 83, "bounds": {"x": 9, "y": 0, "w": 14, "h": 14 } }] },
-   { "name": "hurtbox_270", "color": "#0000ffff", "keys": [{ "frame": 83, "bounds": {"x": 9, "y": 18, "w": 14, "h": 14 } }, { "frame": 95, "bounds": {"x": 9, "y": 20, "w": 14, "h": 12 } }] },
+   { "name": "hurtbox_0", "color": "#0000ffff", "keys": [{ "frame": 87, "bounds": {"x": 0, "y": 6, "w": 12, "h": 16 } }] },
    { "name": "hurtbox_180", "color": "#0000ffff", "keys": [{ "frame": 90, "bounds": {"x": 18, "y": 6, "w": 12, "h": 16 } }] },
-   { "name": "hurtbox_0", "color": "#0000ffff", "keys": [{ "frame": 87, "bounds": {"x": 0, "y": 6, "w": 12, "h": 16 } }] }
+   { "name": "hurtbox_270", "color": "#0000ffff", "keys": [{ "frame": 83, "bounds": {"x": 9, "y": 18, "w": 14, "h": 14 } }, { "frame": 95, "bounds": {"x": 9, "y": 20, "w": 14, "h": 12 } }] },
+   { "name": "hurtbox_90", "color": "#0000ffff", "keys": [{ "frame": 83, "bounds": {"x": 9, "y": 0, "w": 14, "h": 14 } }] },
+   { "name": "hitbox", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 9, "y": 8, "w": 10, "h": 14 } }] }
   ]
  }
 }

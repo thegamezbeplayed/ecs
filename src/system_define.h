@@ -3,7 +3,7 @@
 #include "game_define.h"
 #include "component_define.h"
 
-#define NUM_FUNCTIONS 44
+#define NUM_FUNCTIONS 45
 
 extern hash_map_t SYSTEM_SINK;
 typedef struct{
@@ -15,8 +15,8 @@ ObserverCB LookupSystemSink(const char* str);
 
 system_t* SystemCreate(world_t* w, system_define_t* def);
 
-void OnPositionEvent(event_t* ev, void* data);
 void PositionLoad(world_t* w, Entity e);
+void PositionRegister(world_t* w);
 
 void AnimLoad(world_t* w, Entity e);
 void AnimReady(world_t* w, Entity e);
@@ -25,7 +25,6 @@ void AnimSystem(world_t* w, Entity e);
 void AnimRegister(world_t* w);
 void AnimSink(void* obs_data, void* sub, void* ev_data);
 
-void OnInputEvent(event_t* ev, void* data);
 void InputLoad(world_t* w, Entity e);
 void InputSystem(world_t* w, Entity e);
 void InputRegister(world_t* w);
@@ -61,6 +60,8 @@ void CameraEnd(world_t* w, Entity e);
 
 void ObserveInit(world_t* w);
 void ObserveReady(world_t* w, Entity e);
+void SubjectLoad(world_t* w, Entity e);
+void SubjectSystem(world_t* w, Entity e);
 
 typedef struct{
   int     count, cap;
@@ -96,16 +97,15 @@ typedef struct{
 }system_function_lookup_t;
 
 static system_function_lookup_t FUNCTION_LOOKUP[NUM_FUNCTIONS] = {
-    {"OnPositionEvent",     OnPositionEvent},
+    {"PositionRegister",    PositionRegister},
     {"PositionLoad",        PositionLoad},
 
     {"AnimLoad",            AnimLoad},
-    {"AnimReady",            AnimReady},
-    {"AnimRender",            AnimRender},
+    {"AnimReady",           AnimReady},
+    {"AnimRender",          AnimRender},
     {"AnimSystem",          AnimSystem},
-    {"AnimRegister",          AnimRegister},
+    {"AnimRegister",        AnimRegister},
 
-    {"OnInputEvent",        OnInputEvent},
     {"InputLoad",           InputLoad},
     {"InputRegister",       InputRegister},
     {"InputSystem",         InputSystem},
@@ -115,7 +115,7 @@ static system_function_lookup_t FUNCTION_LOOKUP[NUM_FUNCTIONS] = {
     {"ForceSystem",         ForceSystem},
     {"ForceCleanup",        ForceCleanup},
 
-    {"PhysicsRegister",         PhysicsRegister},
+    {"PhysicsRegister",     PhysicsRegister},
     {"PhysicsLoad",         PhysicsLoad},
     {"PhysicsSystem",       PhysicsSystem},
     {"PhysicsCollision",    PhysicsCollision},
@@ -131,8 +131,11 @@ static system_function_lookup_t FUNCTION_LOOKUP[NUM_FUNCTIONS] = {
     {"RenderDraw",          RenderDraw},
     {"RenderEnd",           RenderEnd},
 
-    {"ObserveInit",          ObserveInit},
-    {"ObserveReady",          ObserveReady},
+    {"ObserveInit",         ObserveInit},
+    {"ObserveReady",        ObserveReady},
+    
+    {"SubjectLoad",         SubjectLoad},
+    {"SubjectSystem",       SubjectSystem},
 
     {"CameraSystem",        CameraSystem},
     {"CameraBegin",         CameraBegin},

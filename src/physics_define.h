@@ -49,7 +49,7 @@ struct rigid_body_s{
   Vector2           vel;
   int               col_rate;
   bounds_t          bounds;
-  CollisionBehavior on_coll;
+  PhysicsEventID    on_coll;
   float             restitution;
   bool              is_static, is_grounded;
 };
@@ -66,6 +66,14 @@ static void RigidBodySetBounds(rigid_body_t* b, Vector2 size){
   b->bounds.radius = Vector2Length(size)/2;
 }
 
+static void RigidBodySetOffset(rigid_body_t* b, Vector2 v){
+  b->bounds.offset = v;
+}
+
+static Rectangle RigidBodyGetBoundsRec(rigid_body_t* b){
+  Vector2 f = VEC_ADD(b->bounds.pos, b->bounds.offset);
+  return RECT(f.x, f.y, b->bounds.width, b->bounds.height);
+}
 
 bool CheckCollision(rigid_body_t *a, rigid_body_t *b, int len);
 

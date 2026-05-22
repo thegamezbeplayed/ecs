@@ -1,7 +1,7 @@
 {
   "systems": ["Controller", "Animations", "Sprites", "Particles",
-    "ParticleEmitters","Cameras", "Renderer", "Observe",
-    "Forces", "Physics"
+    "ParticleEmitters","Cameras", "Renderer", "Observe", "Subjects",
+    "Forces", "Physics", "Positions"
   ],
   "Observe": {
     "components": ["Observer"],
@@ -10,6 +10,15 @@
     ],
     "sets": [
       {"step": "GAME_READY",   "fn": "ObserveReady"}
+    ]
+  },
+  "Subjects": {
+    "components": ["Subject"],
+    "sets": [
+      {"step": "GAME_LOADING",  "fn": "SubjectLoad"}
+    ],
+    "syncs": [
+      {"step": "UPDATE_FIXED", "fn": "SubjectSystem"}
     ]
   },
   "Animations":{
@@ -70,6 +79,9 @@
     "components": ["Position"],
     "sets": [
       {"step": "GAME_READY",    "fn": "PositionLoad"}
+    ],
+    "states": [
+      {"step": "GAME_LOADING", "fn": "PositionRegister"}
     ]
   },
   "Physics": {
@@ -84,7 +96,8 @@
     ],
     "states": [
       {"step": "GAME_LOADING", "fn": "PhysicsRegister"}
-    ]
+    ],
+    "iter": true
   },
   "Forces": {
     "components": ["Force"],

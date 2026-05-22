@@ -46,9 +46,9 @@ bool CheckCollision(rigid_body_t *a, rigid_body_t *b, int len) {
           });
       break;
     case COMBO_KEY(SHAPE_REC,SHAPE_REC):
-      Rectangle recA = RecFromCoords(a->bounds.pos.x,a->bounds.pos.y,a->bounds.width,a->bounds.height);
+      Rectangle recA = RigidBodyGetBoundsRec(a);
 
-      Rectangle recB = RecFromCoords(b->bounds.pos.x,b->bounds.pos.y,b->bounds.width,b->bounds.height);
+      Rectangle recB = RigidBodyGetBoundsRec(b);
 
       col = CheckCollisionRecs(recA,recB);
       break;

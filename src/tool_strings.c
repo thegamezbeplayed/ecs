@@ -39,6 +39,28 @@ ForceType StringToForce(const char* str){
     return FORCE_NONE;
 }
 
+ReactType StringToReaction(const char* str){
+  if (str == NULL) return REACT_NONE;
+
+  if(strcmp(str, "BUMP") == 0) return REACT_BUMP;
+  if(strcmp(str, "BLOCK") == 0) return REACT_BLOCK;
+
+  return REACT_NONE;
+}
+
+PhysicsEventID StringToPhysEvent(const char* str){
+  if (str == NULL) return PHYS_EVENT_NONE;
+
+  if (strcmp(str, "ACCEL") == 0)      return PHYS_EVENT_ACCEL;
+  if (strcmp(str, "COLL") == 0)       return PHYS_EVENT_COLL;
+  if (strcmp(str, "FORCE_END") == 0)  return PHYS_EVENT_FORCE_END;
+  if (strcmp(str, "SPAWN") == 0)      return PHYS_EVENT_SPAWN;
+  if (strcmp(str, "DESTROY") == 0)    return PHYS_EVENT_DESTROY;
+  if (strcmp(str, "HIT") == 0)        return PHYS_EVENT_HIT;
+
+  return PHYS_EVENT_NONE;
+}
+
 ShapeType StringToShape(const char* str){
  if (strcmp(str, "RECT") == 0) return SHAPE_REC;
  if (strcmp(str, "CIRCLE") == 0) return SHAPE_CIRCLE;
