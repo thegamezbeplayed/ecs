@@ -382,8 +382,8 @@ bool LoadAsepriteSheet(cJSON* root, ase_sprite_sheet_d* sheet){
   // ====================== PARSE FRAMES ======================
   cJSON* frames_json = cJSON_GetObjectItem(root, "frames");
   sheet->num_frames = cJSON_GetArraySize(frames_json);
- 
-  sheet->frame_meta = cJSON_Duplicate(frames_json, true); 
+  sheet->frame_meta = cJSON_Duplicate(frames_json, true);
+  
   for (int i = 0; i < sheet->num_frames && i < MAX_SPRITE_FRAMES; i++) {
     cJSON* f = cJSON_GetArrayItem(frames_json, i);
     anim_frame_t* frame = &sheet->frames[i];
@@ -407,13 +407,12 @@ bool LoadAsepriteSheet(cJSON* root, ase_sprite_sheet_d* sheet){
     frame->source_rect.height = (float)cJSON_GetObjectItem(src, "h")->valuedouble;
 
   }
-
   // ====================== PARSE SLICES ======================
   cJSON* slices_json = cJSON_GetObjectItem(meta, "slices");
   sheet->num_slices = cJSON_GetArraySize(slices_json);
 
   sheet->slice_meta = cJSON_Duplicate(slices_json, true); 
-  for (int i = 0; i < sheet->num_slices && i < MAX_ANIM_FRAMES; i++) {
+  for (int i = 0; i < sheet->num_slices && i < MAX_ANIM_GROUPS; i++) {
     cJSON* s = cJSON_GetArrayItem(slices_json, i);
     slice_d* slice = &sheet->slices[i];
 
@@ -429,15 +428,7 @@ bool LoadAsepriteSheet(cJSON* root, ase_sprite_sheet_d* sheet){
       cJSON* key = cJSON_GetArrayItem(keys_json, k);
       cJSON* b = cJSON_GetObjectItem(key, "bounds");
 
-
-      CollType ct = COL_HURT;
-      if(name){
-        if(strcmp(name, "hitbox") == 0)
-          ct = COL_HIT;
-      }
-
       int k_frame = cJSON_GetObjectItem(key, "frame")->valueint;
-      slice->keys[k_count].type = ct;
       slice->keys[k_count].frame = k_frame;
       slice->keys[k_count].bounds.x      = (float)cJSON_GetObjectItem(b, "x")->valuedouble;
       slice->keys[k_count].bounds.y      = (float)cJSON_GetObjectItem(b, "y")->valuedouble;
@@ -448,7 +439,6 @@ bool LoadAsepriteSheet(cJSON* root, ase_sprite_sheet_d* sheet){
 
     slice->num_keys = k_count;
   }
-
   return true;
 }
 // Cleanup

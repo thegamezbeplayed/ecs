@@ -7,9 +7,10 @@
 #include "game_types.h"
 #include "sprite_enum.h"
 
-#define MAX_LAYER_SPRITES  256 
-#define FLOAT_TEXT_SIZE    54
-#define FLOAT_TEXT_SPACING 2
+#define MAX_TEXTURE_SPRITES 256 
+#define MAX_LAYER_SPRITES   256 
+#define FLOAT_TEXT_SIZE     54
+#define FLOAT_TEXT_SPACING  2
 
 typedef struct{
   Vector2     offset;
@@ -60,7 +61,7 @@ typedef struct{
 
 typedef struct{
   int         num_sprites;
-  sprite_d    sprites[128];
+  sprite_d    sprites[MAX_TEXTURE_SPRITES];
   int         num_coll;
   collision_d coll[MAX_SLICES];
   Texture2D   texture;

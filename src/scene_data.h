@@ -12,7 +12,7 @@
 static ResourceRef RESOURCES[NUM_RES] = {
   {RES_JSON, RES_ASEPRITE, RES_SPRITE, "resources/tile-sheet.json", "resources/tile-sheet.png", SHEET_TILE},
   {RES_JSON, RES_ASEPRITE, RES_ANIM, "resources/wiz-sheet.json", "resources/wiz-sheet.png", SHEET_CHAR},
-  {RES_JSON, RES_ASEPRITE, RES_ANIM, "resources/rat-sheet.json", "resources/rat-sheet.png", SHEET_MOB}
+  {RES_JSON, RES_ASEPRITE, RES_ANIM, "resources/mob-sheet.json", "resources/mob-sheet.png", SHEET_MOB}
 };
 
 static const SceneHeader SCENE_HEADERS[NUM_SCENES] = {
