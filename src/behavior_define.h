@@ -8,7 +8,8 @@
 static inline behavior_tree_node_t* Leaf##name(behavior_params_t *params) { \
     return BehaviorCreateLeaf(Behavior##name, params); \
 }
-#define MAX_BEHAVIOR_TREE 12
+#define MAX_BEHAVIOR_TREE   12
+#define MAX_BEHAVIOR_CHILD  5
 //<===BEHAVIOR TREES
 typedef uint64_t BehaviorID;
 
@@ -45,19 +46,14 @@ typedef struct behavior_tree_node_s{
   void*                 data;
 }behavior_tree_node_t;
 extern hash_map_t BEHAVIOR_TREE;
+void BehaviorTreeInit(int cap);
+
 behavior_tree_node_t* InitBehaviorTree(BehaviorID id);
 
 typedef struct{
   BehaviorID              id, current, failure;
   BehaviorStatus           last_run;
 }behavior_t;
-
-/*
-static behavior_tree_node_t* BehaviorGetEntityNode(behavior_t* b, BehaviorID id){
-  return HashGet(&b->map, id);
-} 
-*/
-behavior_t* InitBehavior(int cap, int count, ...);
 
 typedef struct{
   behavior_tree_node_t  **children;
@@ -72,13 +68,23 @@ typedef struct{
 }behavior_tree_selector_t;
 
 typedef BehaviorStatus (*BehaviorTreeLeafFunc)(behavior_params_t* params);
+typedef behavior_tree_node_t* (*BehaviorLeafInit)(behavior_params_t *);
+
+typedef struct{
+  char              name[MAX_NAME_LEN];
+  BehaviorLeafInit  fn;
+  BehaviorID        children[MAX_BEHAVIOR_CHILD];
+}behavior_define_t;
+
+extern hash_map_t BEHAVIOR_DEFS;
+void BehaviorDefInit(int cap);
+void RegisterBehaviorDef(behavior_define_t* b);
 
 typedef struct{
   BehaviorTreeLeafFunc  action;
   behavior_params_t*    params;
 }behavior_tree_leaf_t;
 
-void FreeBehaviorTree(behavior_tree_node_t* node);
 BehaviorStatus BehaviorTickSequence(behavior_tree_node_t *self, void *context);
 BehaviorStatus BehaviorTickSelector(behavior_tree_node_t *self, void *context);
 BehaviorStatus BehaviorTickConcurrent(behavior_tree_node_t *self, void *context);

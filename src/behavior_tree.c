@@ -1,7 +1,17 @@
 #include "behavior_define.h"
 
 hash_map_t BEHAVIOR_TREE;
+hash_map_t BEHAVIOR_DEFS;
 
+void RegisterBehaviorDef(behavior_define_t* b){
+  BehaviorID id = hash_str_64(b->name);
+
+  HashPut(&BEHAVIOR_DEFS, id, b);
+}
+
+void BehaviorDefInit(int cap){
+  HashInit(&BEHAVIOR_DEFS, next_pow2_int(cap));
+}
 
 void BehaviorTreeInit(int cap){
   HashInit(&BEHAVIOR_TREE, next_pow2_int(cap));
@@ -28,6 +38,7 @@ behavior_tree_node_t* InitBehaviorTree(BehaviorID id){
 }
 
 behavior_tree_node_t *BuildTreeNode(BehaviorID id,behavior_params_t* parent_params) {
+/*
   BehaviorData data = room_behaviors[id];
   if(data.param_overide || parent_params == NULL){
     parent_params = malloc(sizeof(behavior_params_t));
@@ -68,10 +79,123 @@ behavior_tree_node_t *BuildTreeNode(BehaviorID id,behavior_params_t* parent_para
   out->id = id;
 
   return out;
-
+*/
 }
 
+BehaviorStatus BehaviorTickLeaf(behavior_tree_node_t *self, void *context) {
 
-behavior_t* InitBehavior(int cap, int count, ...){
+  behavior_tree_leaf_t *leaf = (behavior_tree_leaf_t *)self->data;
+    if (!leaf || !leaf->action)
+      return BEHAVIOR_FAILURE;
+    
+    BehaviorStatus status = leaf->action(leaf->params);
 
+    return status;
 }
+
+BehaviorStatus BehaviorTickSequence(behavior_tree_node_t *self, void *context) {
+  behavior_tree_sequence_t *seq = (behavior_tree_sequence_t *)self->data;
+  while (seq->current < seq->num_children) {
+    BehaviorStatus status = seq->children[seq->current]->tick(seq->children[seq->current], context);
+    if (status == BEHAVIOR_RUNNING) return BEHAVIOR_RUNNING;
+    if (status == BEHAVIOR_FAILURE) {
+      seq->current = 0;
+      return BEHAVIOR_FAILURE;
+    }
+    seq->current++;
+  }
+
+  seq->current = 0;
+  return BEHAVIOR_SUCCESS;
+}
+
+BehaviorStatus BehaviorTickSelector(behavior_tree_node_t *self, void *context) {
+  behavior_tree_selector_t *sel = (behavior_tree_selector_t *)self->data;
+
+  while (sel->current < sel->num_children) {
+    BehaviorStatus status = sel->children[sel->current]->tick(sel->children[sel->current], context);
+    if (status == BEHAVIOR_RUNNING) return BEHAVIOR_RUNNING;
+    if (status == BEHAVIOR_SUCCESS) {
+      sel->current = 0;
+      return BEHAVIOR_SUCCESS;
+    }
+    sel->current++;
+  }
+
+  sel->current = 0;
+  return BEHAVIOR_FAILURE;
+}
+
+BehaviorStatus BehaviorTickConcurrent(behavior_tree_node_t *self, void *context) {
+  behavior_tree_selector_t *sel = (behavior_tree_selector_t *)self->data;
+
+  bool anyRunning = false;
+  bool anySuccess = false;
+  bool anyFailure = false;
+
+  for (int i = 0; i < sel->num_children; i++) {
+    BehaviorStatus status = sel->children[i]->tick(sel->children[i], context);
+    if (status == BEHAVIOR_RUNNING) anyRunning = true;
+    else if (status == BEHAVIOR_SUCCESS) anySuccess = true;
+    else if (status == BEHAVIOR_FAILURE) anyFailure = true;
+  }
+
+  // Rule set: "success if all succeed"
+  if (!anyRunning && !anyFailure) return BEHAVIOR_SUCCESS;
+  if (anyRunning) return BEHAVIOR_RUNNING;
+  return BEHAVIOR_FAILURE;
+}
+
+behavior_tree_node_t* BehaviorCreateLeaf(BehaviorTreeLeafFunc fn, behavior_params_t* params){
+  behavior_tree_leaf_t *data = GameCalloc("BehaviorCreateLeaf", 1, sizeof(behavior_tree_leaf_t));
+
+  data->action = fn;
+  data->params = params;
+
+  behavior_tree_node_t* node = GameCalloc("BehaviorCreateLeaf node", 1, sizeof(behavior_tree_node_t));
+  node->bt_type = BT_LEAF;
+  node->tick = BehaviorTickLeaf;
+  node->data = data;
+
+  return node;
+}
+
+behavior_tree_node_t* BehaviorCreateSequence(behavior_tree_node_t **children, int count) {
+    behavior_tree_sequence_t *data = GameCalloc("BehaviorCreateSequence", 1,sizeof(behavior_tree_sequence_t));
+    data->children = children;
+    data->num_children = count;
+    data->current = 0;
+
+    behavior_tree_node_t *node = GameCalloc("BehaviorCreateSequence node", 1, sizeof(behavior_tree_node_t));
+    node->bt_type = BT_SEQUENCE;
+    node->tick = BehaviorTickSequence;
+    node->data = data;
+    return node;
+}
+
+behavior_tree_node_t* BehaviorCreateSelector(behavior_tree_node_t **children, int count) {
+    behavior_tree_selector_t *data = GameCalloc("BehaviorCreateSelector", 1, sizeof(behavior_tree_selector_t));
+    data->children = children;
+    data->num_children = count;
+    data->current = 0;
+
+    behavior_tree_node_t *node = GameCalloc("BehaviorCreateSelector node", 1, sizeof(behavior_tree_node_t));
+    node->bt_type = BT_SELECTOR;
+    node->tick = BehaviorTickSelector;
+    node->data = data;
+    return node;
+}
+
+behavior_tree_node_t* BehaviorCreateConcurrent(behavior_tree_node_t **children, int count) {
+    behavior_tree_selector_t *data = GameCalloc("BehaviorCreateConcurrent", 1, sizeof(behavior_tree_selector_t));
+    data->children = children;
+    data->num_children = count;
+    data->current = 0;
+
+    behavior_tree_node_t *node = GameCalloc("BehaviorCreateConcurrent node", 1, sizeof(behavior_tree_node_t));
+    node->bt_type = BT_CONCURRENT;
+    node->tick = BehaviorTickConcurrent;
+    node->data = data;
+    return node;
+}
+

@@ -3,8 +3,20 @@
 #include "physics_enum.h"
 #include "view_enum.h"
 #include "sprite_enum.h"
+#include "vfx_enum.h"
+#include "process_enum.h"
+#include "system_define.h"
+#include "game_define.h"
 
 #include <string.h>
+
+BehaviorLeafInit StringToLeafFunc(const char* str){
+  if (strcmp(str, "AcquireDestination") == 0)     return LeafAcquireDestination;
+  if (strcmp(str, "MoveToDestination") == 0)      return LeafMoveToDestination;
+  if (strcmp(str, "ChangeStateDestination") == 0) return LeafChangeState;
+
+  return NULL;
+}
 
 Vector2 StringToVector2(const char* str){
     if (str == NULL) return VECTOR2_ZERO;
@@ -95,4 +107,109 @@ CameraTracking StringToCameraMode(const char* str){
   if (strcmp(str, "FOLLOW-SMOOTH") == 0) return CAM_FOLLOW_SMOOTH;
 
   return CAM_NONE;
+}
+
+AnimBehavior StringToAnimBehavior(char* str){
+ if (strcmp(str, "BLANK") == 0) return ANIM_BLANK;
+ if (strcmp(str, "SUSPEND") == 0) return ANIM_SUSPEND;
+ if (strcmp(str, "HURTBOX") == 0) return ANIM_HURTBOX;
+
+ return ANIM_BLANK;
+}
+
+AnimState StringToAnimState(char* str){
+ if (strcmp(str, "IDLE") == 0) return ANIM_IDLE;
+ if (strcmp(str, "WALK") == 0) return ANIM_WALK;
+ if (strcmp(str, "ATTACK") == 0) return ANIM_ATTACK;
+ if (strcmp(str, "DIE") == 0) return ANIM_DIE;
+ if (strcmp(str, "HURT") == 0) return ANIM_HURT;
+
+ return ANIM_NONE;
+}
+
+SheetID StringToSheetID(const char* str){
+  if (strcmp(str, "SHEET_CHAR") == 0) return SHEET_CHAR;
+  if (strcmp(str, "SHEET_PLAYER") == 0) return SHEET_CHAR;
+  if (strcmp(str, "SHEET_MOB") == 0)  return SHEET_MOB;
+  if (strcmp(str, "SHEET_TILE") == 0) return SHEET_TILE;
+  // ... add others
+  return SHEET_ALL;
+}
+
+ParticleEmitMode StringToEmitMode(const char* str){
+  if(strcmp(str, "CONTINUOUS") == 0) return PARTICLE_EMIT_CONTINUOUS;
+  if(strcmp(str, "BURST") == 0) return PARTICLE_EMIT_BURST;
+  if(strcmp(str, "EVENT") == 0) return PARTICLE_EMIT_EVENT;
+
+  return PARTICLE_EMIT_NONE;
+}
+
+ParticleDrawType StringToDrawType(const char* str){
+  if(strcmp(str, "SPRITE") == 0) return PARTICLE_SPRITE;
+  if(strcmp(str, "RECT") == 0) return PARTICLE_RECT;
+  if(strcmp(str, "CIRCLE") == 0) return PARTICLE_CIRCLE;
+  if(strcmp(str, "PIXEL") == 0) return PARTICLE_PIXEL;
+
+  return PARTICLE_NONE;
+}
+
+RelationType RelationTypeLookup(char* str){
+  for(int i = 0; i < NUM_REL; i++){
+    if (strcmp(str, RELATION_LOOKUP[i].name) == 0)
+      return RELATION_LOOKUP[i].type;
+  }
+}
+
+ComponentInitFn ComponentFuncLookup(const char* name){
+  if (!name) return NULL;
+
+  for (int i = 0; i < NUM_COMP_CORE; i++)   // your function registry
+  {
+    if (strcmp(COMPFUNC_LOOKUP[i].name, name) == 0)
+      return COMPFUNC_LOOKUP[i].func;   // cast if needed
+  }
+
+  TraceLog(LOG_WARNING,"=== COMPONENT FUNC LOOKUP ===\n function '%s' not registered!\n", name);
+  return NULL;
+
+}
+
+SystemFn SystemFunctionLookup(const char* name)
+{
+  if (!name) return NULL;
+
+  for (int i = 0; i < NUM_FUNCTIONS; i++)   // your function registry
+  {
+    if (strcmp(FUNCTION_LOOKUP[i].name, name) == 0)
+      return (SystemFn)FUNCTION_LOOKUP[i].func;   // cast if needed
+  }
+
+  TraceLog(LOG_WARNING,"=== SYSTEM LOOKUP ===\n system function '%s' not registered!\n", name);
+  return NULL;
+}
+
+GameState GetGameState(const char* name){
+  if(!name) return -1;
+
+  for(int i = 0; i < GAME_DONE; i++){
+    if (strcmp(GAMESTATE_LOOKUP[i].name, name) == 0)
+      return GAMESTATE_LOOKUP[i].state;
+  }
+
+  TraceLog(LOG_WARNING,"==== GAMESTATE LOOKUP ====\n %s not found!", name);
+
+  return -1;
+}
+
+UpdateType GetUpdateStep(const char* name){
+  if(!name) return -1;
+
+  for(int i = 0; i < UPDATE_DONE; i++){
+    if (strcmp(UPDATE_LOOKUP[i].name, name) == 0)
+      return UPDATE_LOOKUP[i].type;
+  }
+
+  TraceLog(LOG_WARNING,"==== UPDATE LOOKUP ====\n %s not found!", name);
+
+  return -1;
 }

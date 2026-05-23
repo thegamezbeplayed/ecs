@@ -3,7 +3,17 @@
 
 #include "physics_enum.h"
 #include "sprite_enum.h"
+#include "vfx_enum.h"
+#include "view_enum.h"
+#include "process_enum.h"
+#include "behavior_define.h"
 
+BehaviorLeafInit StringToLeafFunc(const char* str);
+AnimBehavior StringToAnimBehavior(const char* str);
+AnimState StringToAnimState(const char* str);
+ParticleEmitMode StringToEmitMode(const char* str);
+SheetID StringToSheetID(const char* str);
+ParticleDrawType StringToDrawType(const char* str);
 PhysicsEventID StringToPhysEvent(const char* str);
 ReactType StringToReaction(const char* str);
 CameraTracking StringToCameraMode(const char* str);
@@ -25,5 +35,11 @@ static const char* LookupLayer(int l){
   return RENDER_LAYER_LOOK[l];
 
 }
+
+UpdateType GetUpdateStep(const char* name);
+GameState GetGameState(const char* name);
+SystemFn SystemFunctionLookup(const char* name);
+ComponentInitFn ComponentFuncLookup(const char* name);
+RelationType RelationTypeLookup(char* str);
 #endif
 

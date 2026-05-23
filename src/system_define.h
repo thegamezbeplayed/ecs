@@ -85,7 +85,7 @@ void ParticleCleanup(world_t* w, Entity e);
 void ParticlesInit(world_t* w);
 
 void BehaviorSystem(world_t* w, Entity e);
-void BehaviorLoad(world_t* w, Entity e);
+void BehaviorLoad(world_t* w);
 void BehaviorRegister(world_t* w, Entity e);
 
 void CombatLoad(world_t* w, Entity e);
