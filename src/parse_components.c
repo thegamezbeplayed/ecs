@@ -171,3 +171,9 @@ bool ParseTrackingComponent(cJSON* j, tracking_t* out){
 
   return out->ctx.mode > 0;
 }
+
+bool ParseBehaviorComponent(cJSON* j, behavior_t* out){
+  if(!j)
+    return false;
+
+}

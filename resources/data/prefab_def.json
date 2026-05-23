@@ -17,11 +17,13 @@
       },
       {
         "name": "rat",
-        "list": ["Sprite", "Animation", "Position", "RigidBody", "Force"]
+        "list": ["Sprite", "Animation", "Position", "RigidBody", "Force",
+        "State"]
       },
       {
         "name": "orc",
-        "list": ["Sprite", "Animation", "Position", "RigidBody", "Force"]
+        "list": ["Sprite", "Animation", "Position", "RigidBody", "Force",
+        "State"]
       },
       {
         "name": "tile_floor",

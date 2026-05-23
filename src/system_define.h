@@ -3,7 +3,7 @@
 #include "game_define.h"
 #include "component_define.h"
 
-#define NUM_FUNCTIONS 46
+#define NUM_FUNCTIONS 49
 
 extern hash_map_t SYSTEM_SINK;
 typedef struct{
@@ -85,6 +85,8 @@ void ParticleCleanup(world_t* w, Entity e);
 void ParticlesInit(world_t* w);
 
 void BehaviorSystem(world_t* w, Entity e);
+void BehaviorLoad(world_t* w, Entity e);
+void BehaviorRegister(world_t* w, Entity e);
 
 void CombatLoad(world_t* w, Entity e);
 void CombatSystem(world_t* w, Entity e);
@@ -154,7 +156,11 @@ static system_function_lookup_t FUNCTION_LOOKUP[NUM_FUNCTIONS] = {
 
     {"SpritesInit",         SpritesInit},
     {"SpriteLoad",          SpriteLoad},
-    {"SpriteDrawPrep",          SpriteDrawPrep},
+    {"SpriteDrawPrep",      SpriteDrawPrep},
+
+    {"BehaviorSystem",      BehaviorSystem},
+    {"BehaviorLoad",        BehaviorLoad},
+    {"BehaviorRegister",    BehaviorRegister},
 
     {"ExpirationSystem",    ExpirationSystem}
 };

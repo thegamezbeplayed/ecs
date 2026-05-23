@@ -36,3 +36,4 @@ void PositionSetDest(position_t* p, Vector2 v){
   Vector2 dir = vec_dir_between(p->vpos, p->vdest);
   p->angle = angle_snap_to_card(dir);
 }
+

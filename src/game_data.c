@@ -17,7 +17,8 @@ const component_define_t CORE_COMPONENTS[NUM_COMP_CORE] = {
   {"Subject",   sizeof(subject_component_t)},
   {"Force",     sizeof(force_t)},
   //{"Name",      0}, //TODO
-  {"State",     sizeof(state_comp_t)},
+  {"State",     sizeof(state_t)},
+  {"Behavior",  sizeof(behavior_t)},
   {"Follow",    sizeof(follow_t)},
   {"Level",     sizeof(level_t)},
   {"Expiry",    sizeof(lifetime_t)},
@@ -39,6 +40,8 @@ const component_func_t COMPFUNC_LOOKUP[NUM_COMP_CORE] = {
   {"Subject",      SubjectInit},
   {"Follow",      FollowInit},
   {"Track",       TrackingInit},
+  {"State",       StateInit},
+  {"Behavior",       BehaviorInit},
   {"Particle",        ParticleInit},
   {"ParticleEmitter", ParticleEmitterInit}
 };

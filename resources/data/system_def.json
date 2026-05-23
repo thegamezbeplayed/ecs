@@ -1,7 +1,7 @@
 {
   "systems": ["Controller", "Animations", "Sprites", "Particles",
     "ParticleEmitters","Cameras", "Renderer", "Observe", "Subjects",
-    "Forces", "Physics", "Positions"
+    "Forces", "Physics", "Positions", "Behavior"
   ],
   "Observe": {
     "components": ["Observer"],
@@ -148,6 +148,18 @@
     "components": ["Expiry"],
     "syncs": [
       {"step": "UPDATE_FINAL",  "fn": "ExpirationSystem"}
+    ]
+  },
+  "Behavior": {
+    "components": ["State"],
+    "syncs": [
+      {"step": "UPDATE_POST",  "fn": "BehaviorSystem"}
+    ],
+    "sets": [
+      {"step": "GAME_READY",   "fn": "BehaviorLoad"}
+    ],
+    "states": [
+      {"step": "GAME_LOADING", "fn": "BehaviorRegister"}
     ]
   }
 }

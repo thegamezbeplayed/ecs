@@ -2,7 +2,7 @@
   "components": [
     "Sprite", "Animation", "Particle", "ParticleEmitter", "Force",
     "Render", "Position", "Input", "Camera", "Observer", "RigidBody",
-    "Follow", "Track", "Subject"
+    "Follow", "Track", "Subject", "State"
   ],
   "Observer": {
     "func":	"ObserverInit",
@@ -330,6 +330,23 @@
       {
         "name":   "main_cam",
         "mode":   "FOLLOW"
+      }
+    ]
+  },
+  "State": {
+    "func": "StateInit",
+    "list" : [
+      {"name": "rat"},
+      {"name": "orc"}
+    ]
+  },
+  "Behavior": {
+    "func": "BehaviorInit",
+    "list": [
+      {
+        "name":     "wander",
+        "state":    "IDLE",
+        "type":     "SEQUENCE"
       }
     ]
   }

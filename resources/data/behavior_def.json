@@ -1,0 +1,17 @@
+{
+  "roots": [
+    {
+      "name": "wander",
+      "children": ["acquire-dest", "move-dest"]
+    }
+  ],
+  "leafs": [
+    {
+      "name": "acquire-dest",
+      "fn":   "AcquireDestination"
+    },
+    {
+      "name": "move-dest",
+      "fn":   "MoveToDestination"
+    }
+  ]
