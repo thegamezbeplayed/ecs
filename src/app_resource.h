@@ -24,7 +24,6 @@ typedef struct {
     atomic_bool     finished;
     atomic_int      load_count;
 } LoadQueue;
-float GetLoadingProgress(void);
 
 extern LoadQueue loader;
 #endif

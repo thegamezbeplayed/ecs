@@ -33,6 +33,7 @@ if (PLATFORM MATCHES "Web")
     -gsource-map
     --preload-file ${CMAKE_SOURCE_DIR}/resources@resources
     -sEXPORTED_RUNTIME_METHODS=['ccall','cwrap','HEAPF32','HEAP32','HEAP8','HEAPU8']
+    --shell-file ${CMAKE_SOURCE_DIR}/web_shell.html
   )
 
   add_compile_options(${EM_COMPILE_FLAGS})
@@ -78,10 +79,11 @@ if (PLATFORM MATCHES "Desktop")
     TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/resources $<TARGET_FILE_DIR:${PROJECT_NAME}>/resources
   )
-target_include_directories(${PROJECT_NAME} PRIVATE
-    ${CMAKE_SOURCE_DIR}/includes
-    ${cJSON_SOURCE_DIR}
-)
 endif()
+
+target_include_directories(${PROJECT_NAME} PRIVATE
+        ${CMAKE_SOURCE_DIR}/includes
+        ${cJSON_SOURCE_DIR}
+)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE raylib cjson)

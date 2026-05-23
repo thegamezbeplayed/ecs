@@ -1,50 +1,30 @@
 #if defined(PLATFORM_WEB)
-#include <time.h>
-#include "app_resource.h"
-#include "screens.h"    // NOTE: Declares global (extern) variables and screens functions
-#include "game_ui.h"
-#include "asset_sfx.h"
-#include "game_process.h"
-#include "scene_loader.h"
 
-#include "rlgl.h"
+#include "app_core.h"
 #include <emscripten/emscripten.h>
 
-float screenWidth = 1280.0f;
-float screenHeight = 720.0f;
-LoadQueue loader = {0};
-
-void UpdateDrawFrame(void);
-int main(void){
-  srand((unsigned int)time(NULL));  // seed once using current time
-
-  InitScreenWindow(screenWidth,screenHeight, "raylib game template");
-  InitAudioDevice();      // Initialize audio device
-
-  SpriteLoadSplash("resources/splash.png", VEC_NEW(screenWidth,screenHeight));
-  InitAudio();
-  InitGameProcess();
-  SceneInit(&loader);
-
-  for(int i = 0; i < loader.count; i++){
-    LoadJob* job = &loader.jobs[i];
-
-    *job->dest = LoadTexture(job->path);  
-  }
-  SceneLoadResources();
-
-  InitResources();
-  InitUI();
-  emscripten_set_main_loop(UpdateDrawFrame, 0, 1);
-  CloseAudioDevice();     // Close audio context
-
-  CloseWindow();    
-
-  return 0;
+EMSCRIPTEN_KEEPALIVE
+void OnCanvasResize(int width, int height)
+{
+  AppOnResize(width, height);
 }
 
-void UpdateDrawFrame(void){
-  GameProcessSync(false);
+static void UpdateDrawFrame(void)
+{
+  AppFrame(false);
+}
+
+int main(void)
+{
+  AppInit((AppConfig){
+    .width = 1280,
+    .height = 720,
+    .fps = 60,
+    .title = "raylib game template",
+  });
+
+  emscripten_set_main_loop(UpdateDrawFrame, 0, 1);
+  return 0;
 }
 
 #endif

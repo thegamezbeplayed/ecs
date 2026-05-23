@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Your Game Title</title>
+    <style>
+        html, body { margin:0; padding:0; height:100%; background:#000; overflow:hidden; }
+        #canvas {
+            width:100%;
+            height:100%;
+            display:block;
+            image-rendering: pixelated; /* or crisp-edges for retro */
+        }
+    </style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<script>
+    var Module = {
+        canvas: document.getElementById('canvas'),
+        onRuntimeInitialized: function() {
+            // Auto-detect initial size after WASM loads
+            resizeCanvasToContainer();
+        }
+    };
+
+    function resizeCanvasToContainer() {
+        const canvas = Module.canvas;
+        const rect = canvas.getBoundingClientRect(); // or parent container if needed
+        const width = Math.floor(rect.width);
+        const height = Math.floor(rect.height);
+        // Call into C (keepalive function defined below)
+        if (Module._OnCanvasResize) {
+            Module._OnCanvasResize(width, height);
+        }
+        // Also sync Emscripten canvas pixel buffer
+        canvas.width = width;
+        canvas.height = height;
+    }
+
+    // Modern & efficient resize detection
+    const resizeObserver = new ResizeObserver(() => {
+        resizeCanvasToContainer();
+    });
+    resizeObserver.observe(Module.canvas);
+
+    // Fallback for older browsers / fullscreen changes
+    window.addEventListener('resize', resizeCanvasToContainer);
+</script>
+{{{ SCRIPT }}}  <!-- Emscripten injects your .js here -->
+</body>
+</html>
