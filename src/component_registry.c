@@ -1,10 +1,7 @@
 #include "game_define.h"
 
 comp_id_t INVALID_COMPONENT = -1;
-
 static hash_map_t COMP_REGISTER;
-
-static int CompCount = 0;
 
 void ComponentInit(int count)
 {

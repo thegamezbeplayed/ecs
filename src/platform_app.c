@@ -6,8 +6,8 @@
 int main(void)
 {
   AppInit((AppConfig){
-    .width = 1280,
-    .height = 720,
+    .width = 1920,
+    .height = 1080,
     .fps = 60,
     .title = "raylib game template",
   });

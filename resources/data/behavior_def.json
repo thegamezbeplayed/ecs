@@ -3,9 +3,18 @@
     {
       "name": "wander",
       "children": ["acquire-dest", "move-dest"]
+    },
+    {
+      "name": "spawn",
+      "state": "IDLE",
+      "children": ["change-state"]
     }
   ],
   "leafs": [
+    {
+      "name": "change-state",
+      "fn":   "ChangeState"
+    },
     {
       "name": "acquire-dest",
       "fn":   "AcquireDestination"

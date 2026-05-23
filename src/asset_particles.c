@@ -60,7 +60,7 @@ int ParticleEmit(world_t* w, Entity e){
   particle_emitter_t* ec = GET_COMPONENT(w, e, particle_emitter_t, EMITTER_ID);
   position_t* poc = GET_COMPONENT(w, e, position_t, POS_ID);
 
-  Vector2 pos = Vector2Add(poc->vpos, ec->offset);
+  Vector2 pos = Vector2Add(poc->pos, ec->offset);
   int count = rand_range_int(1, ec->max);
   int spawned = 0;
   for(int i = 0; i < count; i++){

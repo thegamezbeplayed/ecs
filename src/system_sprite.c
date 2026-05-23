@@ -11,7 +11,7 @@ int SpriteDepthSort(const void* a, const void* b)
     position_t* pa = GET_COMPONENT(&world, ea, position_t, POS_ID);
     position_t* pb = GET_COMPONENT(&world, eb, position_t, POS_ID);
     
-    return (int)(pa->vpos.y - pb->vpos.y);   // Higher Y drawn later
+    return (int)(pa->pos.y - pb->pos.y);   // Higher Y drawn later
 }
 
 void SpriteRender(world_t* w, RenderLayer l)
@@ -28,12 +28,12 @@ void SpriteRender(world_t* w, RenderLayer l)
     position_t* pos = GET_COMPONENT(w, e, position_t, POS_ID);
 
     if (s && pos)
-      DrawSprite(s, pos->vpos);
+      DrawSprite(s, pos->pos);
   }
 }
 
-void SpriteOnRender(void* o_data, void* s, void* e_data) {
-  render_ctx_t* r = e_data;
+void SpriteOnRender(void* o_data, void* s, payload_t* p) {
+  render_ctx_t* r = p->data;
   world_t* w = o_data;
 
   SpriteRender(w, r->layer);

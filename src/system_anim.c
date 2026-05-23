@@ -25,28 +25,39 @@ void AnimEvent(event_t* ev, void* data){
   AnimSet(ac, a, s);
 }
 
-void AnimSink(void* obs_data, void* sub, void* ev_data){
+void AnimSink(void* obs_data, void* sub, payload_t* pl){
   anim_comp_t* ac = obs_data;
-  input_t* in = ev_data;
-
-  action_key_t* ak = InputGetAction(in->last_key);
- 
+  
   int dir = -1; 
   AnimState s = ANIM_NONE;
-  switch(ak->type){
-    case ACT_MOVE:
-      s = ANIM_WALK;
-      dir = abs(vec_to_deg(ak->dir)/90);
-      break;
-    case ACT_ATTACK:
-      break;
-    case ACT_STOP:
-      s = ANIM_IDLE;
-      break;
-    default:
-      return;
-      break;
+
+  if(pl->type == INPUT_ID){
+    input_t* in = pl->data;
+
+    action_key_t* ak = InputGetAction(in->last_key);
+
+    switch(ak->type){
+      case ACT_MOVE:
+        s = ANIM_WALK;
+        dir = abs(vec_to_deg(ak->dir)/90);
+        break;
+      case ACT_ATTACK:
+        break;
+      case ACT_STOP:
+        s = ANIM_IDLE;
+        break;
+      default:
+        return;
+        break;
+    }
   }
+  else if(pl->type = POS_ID){
+    position_t* p = pl->data;
+    s = ANIM_WALK;
+    dir = abs(vec_to_deg(p->dir_step)/90);
+  }
+  else
+    return;
 
   anim_player_t* ap = &ac->player;
   AnimPlayerDirection(ap, dir);
@@ -146,7 +157,7 @@ void AnimRender(world_t* w, Entity e){
   int spr_index = a->frames[a->cur_index];
   spr->index = spr_index;
 
-  DrawSprite(spr, pos->vpos);
+  DrawSprite(spr, pos->pos);
 
 }
 

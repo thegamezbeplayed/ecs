@@ -82,7 +82,7 @@ Entity PrefabInstantiate(world_t* w, Entity prefab, Vector2 override_pos) {
     rigid_body_t* rb = GET_COMPONENT(w, instance, rigid_body_t, PHYS_ID);
     
     if (pos){
-      pos->vpos = override_pos;
+      pos->pos = override_pos;
       if(rb)
         RigidBodySetPos(rb, override_pos);
     }

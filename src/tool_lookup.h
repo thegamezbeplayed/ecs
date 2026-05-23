@@ -8,6 +8,7 @@
 #include "process_enum.h"
 #include "behavior_define.h"
 
+State StringToState(const char* str);
 BehaviorLeafInit StringToLeafFunc(const char* str);
 AnimBehavior StringToAnimBehavior(const char* str);
 AnimState StringToAnimState(const char* str);

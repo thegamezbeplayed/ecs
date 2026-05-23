@@ -10,10 +10,19 @@
 
 #include <string.h>
 
+State StringToState(const char* str){
+  if (strcmp(str, "IDLE") == 0)   return STATE_IDLE;
+  if (strcmp(str, "SPAWN") == 0)  return STATE_SPAWN;
+  if (strcmp(str, "AGGRO") == 0)  return STATE_AGGRO;
+  if (strcmp(str, "DIE") == 0)    return STATE_DIE;
+ 
+  return STATE_NONE;
+}
+
 BehaviorLeafInit StringToLeafFunc(const char* str){
-  if (strcmp(str, "AcquireDestination") == 0)     return LeafAcquireDestination;
-  if (strcmp(str, "MoveToDestination") == 0)      return LeafMoveToDestination;
-  if (strcmp(str, "ChangeStateDestination") == 0) return LeafChangeState;
+  if (strcmp(str, "AcquireDestination") == 0)  return LeafAcquireDestination;
+  if (strcmp(str, "MoveToDestination") == 0)   return LeafMoveToDestination;
+  if (strcmp(str, "ChangeState") == 0)         return LeafChangeState;
 
   return NULL;
 }

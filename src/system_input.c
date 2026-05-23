@@ -20,6 +20,7 @@ void InputSystem(world_t* w, Entity e){
 
   if(!InputCheck(in, e))
     return;
+  ComponentUpdate(w, e, INPUT_ID);
 
   KeyboardKey k = in->last_key;
   action_key_t* ak = InputGetAction(k);
@@ -29,7 +30,6 @@ void InputSystem(world_t* w, Entity e){
 
   SubjectNotify(ak->name, in);
 
-  ComponentUpdate(w, e, INPUT_ID);
 }
 
 void InputRegister(world_t* w){

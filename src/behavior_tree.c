@@ -2,11 +2,11 @@
 
 hash_map_t BEHAVIOR_TREE;
 hash_map_t BEHAVIOR_DEFS;
+BehaviorID INVALID_BEHAVIOR = 0;
 
 void RegisterBehaviorDef(behavior_define_t* b){
-  BehaviorID id = hash_str_64(b->name);
-
-  HashPut(&BEHAVIOR_DEFS, id, b);
+  b->id = hash_str_64(b->name);
+  HashPut(&BEHAVIOR_DEFS, b->id, b);
 }
 
 void BehaviorDefInit(int cap){
@@ -23,8 +23,21 @@ void BehaviorTreeAddNode(const char* name, behavior_tree_node_t* node){
   HashPut(&BEHAVIOR_TREE, node->id, node);
 }
 
+behavior_define_t* BehaviorGetDef(BehaviorID id){
+  return HashGet(&BEHAVIOR_DEFS, id);
+}
+
 behavior_tree_node_t* BehaviorGetNode(BehaviorID id){
   return HashGet(&BEHAVIOR_TREE, id);
+}
+
+BehaviorID BehaviorTreeGetID(const char* name){
+  BehaviorID id = hash_str_64(name);
+
+  if(BehaviorGetNode(id) != NULL)
+    return id;
+
+  return INVALID_BEHAVIOR;
 }
 
 behavior_tree_node_t* InitBehaviorTree(BehaviorID id){
@@ -37,58 +50,69 @@ behavior_tree_node_t* InitBehaviorTree(BehaviorID id){
   return NULL;
 }
 
-behavior_tree_node_t *BuildTreeNode(BehaviorID id,behavior_params_t* parent_params) {
-/*
-  BehaviorData data = room_behaviors[id];
-  if(data.param_overide || parent_params == NULL){
-    parent_params = malloc(sizeof(behavior_params_t));
+behavior_tree_node_t *BuildTreeNode(behavior_define_t* data, behavior_params_t* parent_params) {
+  if(data->param_overide || parent_params == NULL){
+    parent_params = GameMalloc("BuildTreeNode", sizeof(behavior_params_t));
     *parent_params =(behavior_params_t){
-      .owner = NULL,
-        .state = data.state,
-        .o_state = data.state,
-        .o_action = ACTION_NONE,
+        .state = data->state,
     };
   }
-
+  
   behavior_tree_node_t *out = NULL;
-  if(data.bt_type == BT_LEAF)
-    out = room_behaviors[id].func(parent_params);
+  if(data->type == BT_LEAF)
+    out = data->fn(parent_params);
   else{
-    behavior_tree_node_t **kids = GameCalloc("BuildTreeNode", 1,sizeof(*kids) * data.num_children);
-    for (int j = 0; j < data.num_children; ++j)
-      kids[j] = BuildTreeNode(data.children[j],parent_params);
-
-    switch(data.bt_type){
+    behavior_tree_node_t **kids = GameCalloc("BuildTreeNode", 1,sizeof(*kids) * data->num_children);
+    for (int j = 0; j < data->num_children; ++j){
+      behavior_define_t* child = BehaviorGetDef(data->children[j]);
+      kids[j] = BuildTreeNode(child, parent_params);
+    }
+    switch(data->type){
       case BT_SEQUENCE:
-        out = BehaviorCreateSequence(kids, data.num_children);
+        out = BehaviorCreateSequence(kids, data->num_children);
         break;
       case BT_SELECTOR:
-        out = BehaviorCreateSelector(kids, data.num_children);
+        out = BehaviorCreateSelector(kids, data->num_children);
         break;
       case BT_CONCURRENT:
-        out = BehaviorCreateConcurrent(kids, data.num_children);
+        out = BehaviorCreateConcurrent(kids, data->num_children);
         break;
       default:
-        TraceLog(LOG_WARNING,"Behavior Node Type %d NOT FOUND!",data.bt_type);
+        TraceLog(LOG_WARNING,"Behavior Node Type %d NOT FOUND!",data->type);
         return NULL;
         break;
     }
-
   }
 
-  out->id = id;
+  strcpy(out->name, data->name);
+  out->id = data->id;
 
   return out;
-*/
+}
+
+void BuildBehaviorRoots(void){
+  hash_iter_t iter;
+  HashStart(&BEHAVIOR_DEFS, &iter);
+
+  hash_slot_t* s;
+  while((s = HashNext(&iter))){
+    behavior_define_t* def = s->value;
+
+    if(!def->is_root)
+      continue;
+      
+    BehaviorTreeAddNode(def->name, BuildTreeNode(def, NULL));
+  }
 }
 
 BehaviorStatus BehaviorTickLeaf(behavior_tree_node_t *self, void *context) {
-
+  world_t* w = WorldGetContext();
   behavior_tree_leaf_t *leaf = (behavior_tree_leaf_t *)self->data;
     if (!leaf || !leaf->action)
       return BEHAVIOR_FAILURE;
-    
-    BehaviorStatus status = leaf->action(leaf->params);
+   
+    leaf->params->ent = context; 
+    BehaviorStatus status = leaf->action(w, leaf->params);
 
     return status;
 }

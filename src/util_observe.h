@@ -21,7 +21,13 @@ typedef enum{
 typedef struct subject_s subject_t;
 typedef struct observer_s observer_t;
 
-typedef void (*ObserverCB)(void* obs_data, void* sub, void* ev_data);
+typedef struct{
+  ObserveType type;
+  int         type_id;
+  void*       data;
+}payload_t;
+
+typedef void (*ObserverCB)(void* obs_data, void* sub, payload_t*);
 
 struct observer_s {
   char        name[MAX_NAME_LEN];  
@@ -58,7 +64,7 @@ void InitSubject(subject_t* subject);
 void SubjectAddObserver(const char*, const char*, ObserverCB, void*) ;
 void SubjectAddObserverByComponent(const char*, uint32_t, comp_id_t, const char*, ObserverCB, void*);
 void SubjectRemoveObserver(subject_t*, ObserverCB, void*); // Optional
-void SubjectRunNotify(subject_t* s, void* data);
+void SubjectRunNotify(subject_t* s, void* data, int);
 void SubjectNotify(const char*, void* eventdata);
 void SubjectDestroy(subject_t* subject); // Cleanup
 

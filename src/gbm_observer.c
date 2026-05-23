@@ -167,16 +167,18 @@ void SubjectRemoveObserver(subject_t* s, ObserverCB cb, void* data){
   }
 }
 
-void SubjectRunNotify(subject_t* s, void* data){
+void SubjectRunNotify(subject_t* s, void* data, int type_id){
   observer_t* current = s->observers;
-  /*
-  if(!current)
-    TraceLog(LOG_INFO, "=== SUBJECT NOTIFY ===\n No Observers for %s", s->name);
-*/
+ 
+  payload_t* p = GameCalloc("SubjectRunNotify", 1, sizeof(payload_t)); 
+  p->data = data;
+  p->type_id = type_id;
   while (current) {
-    current->callback(current->data, s, data);
+    p->type = current->type;
+    current->callback(current->data, s, p);
     current = current->next;
   }
+  GameFree("SubjectRunNotify", p);
 }
 
 void SubjectNotify(const char* name, void* data){
@@ -184,7 +186,7 @@ void SubjectNotify(const char* name, void* data){
   if(!s)
     return;
 
-  SubjectRunNotify(s, data);
+  SubjectRunNotify(s, data, -1);
 }
 
 void SubjectDestroy(subject_t* s){

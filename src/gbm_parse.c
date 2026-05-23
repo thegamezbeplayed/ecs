@@ -327,14 +327,13 @@ bool ParseComponents(cJSON* root, game_t* out){
   cJSON* comp_json = cJSON_GetObjectItem(root, "components");
   if(cJSON_IsArray(comp_json)){
     int idx = 0;
-    int comps_present = cJSON_GetArraySize(comp_json);
 
     cJSON* c;
     cJSON_ArrayForEach(c, comp_json){
       if (!cJSON_IsString(c))
         continue;
 
-      out->comps[out->num_comps++] = c->valuestring;
+      ComponentRegisterCore(c->valuestring);
 
       cJSON* comp_obj = cJSON_GetObjectItem(root, c->valuestring);
 

@@ -25,6 +25,7 @@
 #define REL_Target      4u
 #define REL_Observes    5u
 #define REL_SubjectOf   6u
+#define REL_BehaviorOf  7u
 
 typedef uint32_t RelationType;
 typedef struct {
@@ -96,7 +97,9 @@ struct world_s {
   entity_iter_t*    iter; 
 };
 extern world_t world;
-
+static world_t* WorldGetContext(void){
+  return &world;
+}
 static void EntityIterReset(entity_iter_t* it){
   it->index = -1;
 }

@@ -1,30 +1,5 @@
 #include "process_define.h"
 
-payload_t* InitPayload(int count, param_t params[count]){
-  payload_t* p = GameCalloc("InitPayload", 1, sizeof(payload_t));
-
-  p->params =  GameCalloc("InitPayload", 2, sizeof(param_t));
-
-  for(int i = 0; i < count; i++){
-    param_t* e = &p->params[p->count++];
-
-    *e = params[i];
-  }
-
-  return p;
-}
-
-payload_t* InitPayloadSingle(param_t param){
-  payload_t* p = GameCalloc("InitPayloadSingle", 1, sizeof(payload_t));
-
-  p->params = GameCalloc("InitPayload", 1, sizeof(payload_t));
-
-  param_t* e = &p->params[p->count++];
-  *e = param;
-
-  return p;
-}
-
 cooldown_t* InitCooldown(int dur, notification type){
   cooldown_t* cd = GameCalloc("InitCooldown", 1, sizeof(cooldown_t)); 
 

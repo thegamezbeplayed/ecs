@@ -16,6 +16,20 @@ bool StateInit(void* comp, component_entry_t* j){
   return true;
 }
 
-bool BehaviorCanChangeState(State, State){
+bool BehaviorSetState(state_t* bs, State s){
+  if(bs->state = s)
+    return false;
 
+  if (!BehaviorCanChangeState(bs->state, s))
+    return false;
+
+  bs->state = s;
+
+  return bs->state == s;
+}
+
+bool BehaviorCanChangeState(State cur, State s){
+  state_change_requirement_t check = CAN_CHANGE[s];
+
+  return check.can(s, cur);
 }

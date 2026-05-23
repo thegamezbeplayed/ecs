@@ -147,8 +147,9 @@ bool ParsePositionComponent(cJSON* j, position_t* out){
   float y = Json_GetFloat(j, "posy", 0.f);
 
   Vector2 pos = VEC_NEW(x,y);
-  out->last_vpos = out->vpos = pos;
+  out->last_pos = out->pos = pos;
 
+  out->dir_step = out->dest = VEC_UNSET;
   out->rad = 0;
   out->angle = 0;
   return true;
@@ -354,5 +355,14 @@ bool ParseTrackingComponent(cJSON* j, tracking_t* out){
 bool ParseBehaviorComponent(cJSON* j, behavior_t* out){
   if(!j)
     return false;
+
+  Json_GetString(j, "name", out->name);
+
+  char sname[MAX_NAME_LEN];
+  Json_GetString(j, "state", sname);
+
+  out->state = StringToState(sname);
+
+  return out->state > STATE_NONE;
 
 }
