@@ -3,7 +3,7 @@
 #include "game_define.h"
 #include "component_define.h"
 
-#define NUM_FUNCTIONS 46
+#define NUM_FUNCTIONS 50
 
 extern hash_map_t SYSTEM_SINK;
 typedef struct{
@@ -23,7 +23,7 @@ void AnimReady(world_t* w, Entity e);
 void AnimRender(world_t* w, Entity e);
 void AnimSystem(world_t* w, Entity e);
 void AnimRegister(world_t* w);
-void AnimSink(void* obs_data, void* sub, void* ev_data);
+void AnimSink(void* obs_data, void* sub, payload_t*);
 
 void InputLoad(world_t* w, Entity e);
 void InputSystem(world_t* w, Entity e);
@@ -32,7 +32,7 @@ void InputRegister(world_t* w);
 void OnForceEvent(event_t* ev, void* data);
 void ForceLoad(world_t* w, Entity e);
 void ForceSystem(world_t* w, Entity e);
-void ForceSink(void* obs_data, void* sub, void* ev_data);
+void ForceSink(void* obs_data, void* sub, payload_t*);
 
 void PhysicsRegister(world_t* w);
 void PhysicsLoad(world_t* w, Entity e);
@@ -85,6 +85,10 @@ void ParticleCleanup(world_t* w, Entity e);
 void ParticlesInit(world_t* w);
 
 void BehaviorSystem(world_t* w, Entity e);
+void BehaviorLoad(world_t* w);
+void BehaviorRegister(world_t* w, Entity e);
+
+void StateBegin(world_t* w, Entity e);
 
 void CombatLoad(world_t* w, Entity e);
 void CombatSystem(world_t* w, Entity e);
@@ -98,7 +102,7 @@ typedef struct{
   void*       func;
 }system_function_lookup_t;
 
-static system_function_lookup_t FUNCTION_LOOKUP[NUM_FUNCTIONS] = {
+static system_function_lookup_t FUNCTION_LOOKUP[] = {
     {"PositionRegister",    PositionRegister},
     {"PositionLoad",        PositionLoad},
 
@@ -154,8 +158,14 @@ static system_function_lookup_t FUNCTION_LOOKUP[NUM_FUNCTIONS] = {
 
     {"SpritesInit",         SpritesInit},
     {"SpriteLoad",          SpriteLoad},
-    {"SpriteDrawPrep",          SpriteDrawPrep},
+    {"SpriteDrawPrep",      SpriteDrawPrep},
 
+    {"BehaviorSystem",      BehaviorSystem},
+    {"BehaviorLoad",        BehaviorLoad},
+    {"BehaviorRegister",    BehaviorRegister},
+
+    {"StateBegin",         StateBegin},
+    
     {"ExpirationSystem",    ExpirationSystem}
 };
 

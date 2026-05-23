@@ -2,10 +2,10 @@
 #define __GBM_COMP__
 #include "game_common.h"
 
-#define NUM_COMP_CORE   18
 #define MAX             1024
 #define MAX_COMPONENTS  512
 #define MAX_PLAYERS     2
+#define NUM_COMP_CORE   18
 
 #define POS_ID       ComponentGetID("Position")
 #define PHYS_ID      ComponentGetID("RigidBody")
@@ -16,10 +16,8 @@
 #define CAM_ID       ComponentGetID("Camera")
 #define TRACK_ID     ComponentGetID("Track")
 #define TYPE_ID      ComponentGetID("Type")
-#define STAT_ID      ComponentGetID("Stat")
 #define FORCE_ID     ComponentGetID("Force")
 #define NAME_ID      ComponentGetID("Name")
-#define STATE_ID     ComponentGetID("State")
 #define FOLLOW_ID    ComponentGetID("Follow")
 #define LVL_ID       ComponentGetID("Level")
 #define EXPIR_ID     ComponentGetID("Expiry")
@@ -27,6 +25,8 @@
 #define EMITTER_ID   ComponentGetID("ParticleEmitter")
 #define OBSERVE_ID   ComponentGetID("Observer")
 #define SUBJECT_ID   ComponentGetID("Subject")
+#define STATE_ID     ComponentGetID("State")
+#define BEHAVE_ID    ComponentGetID("Behavior")
 
 typedef uint64_t comp_id_t;
 extern comp_id_t INVALID_COMPONENT;

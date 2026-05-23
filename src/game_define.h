@@ -5,7 +5,7 @@
 #include "game_register.h"
 
 #define NUM_SYS      16
-#define MAX_COMP_DEF 36
+#define MAX_COMP_DEF 48
 #define MAX_PREF_DEF 16
 #define NUM_REL      16
 
@@ -67,7 +67,7 @@ typedef struct{
   ComponentInitFn func;
 }component_func_t;
 ComponentInitFn ComponentFuncLookup(const char* name);
-extern const component_func_t COMPFUNC_LOOKUP[NUM_COMP_CORE];
+extern const component_func_t COMPFUNC_LOOKUP[];
 
 typedef struct{
   char*       name;
@@ -83,8 +83,6 @@ typedef struct{
 typedef struct{
   int                 num_sys;
   system_define_t     systems[NUM_SYS];
-  int                 num_comps;
-  const char*         comps[NUM_COMP_CORE];
   component_entry_t   comp_defs[MAX_COMP_DEF];
   int                 num_prefabs;
   prefab_entity_t     prefabs[MAX_PREF_DEF];
@@ -101,7 +99,7 @@ void GameInitPrefabs(world_t* w, game_t* g);
 void UnloadGameDefine(game_t* g);
 void GameSpawn(world_t* w, game_t* g);
 
-extern const component_define_t CORE_COMPONENTS[NUM_COMP_CORE];
+extern const component_define_t CORE_COMPONENTS[];
 
 typedef struct{
   RelationType    type;
@@ -114,7 +112,8 @@ static const relation_str_t RELATION_LOOKUP[NUM_REL] = {
   {REL_Owner,       "Owner"},
   {REL_Target,      "Target"},
   {REL_Observes,    "Observes"},
-  {REL_SubjectOf,   "SubjectOf"}
+  {REL_SubjectOf,   "SubjectOf"},
+  {REL_BehaviorOf,  "BehaviorOf"}
 };
 
 static int FindComponentIndex(const char* name)

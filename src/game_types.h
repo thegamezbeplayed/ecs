@@ -14,7 +14,7 @@ typedef enum{
 }PosEventID;
 
 typedef struct{
-  Vector2 vpos, vdest, last_vpos, dir, dir_step;
+  Vector2 pos, dest, last_pos, dir, dir_step;
   int     angle;
   float   rad;
 }position_t;
@@ -89,13 +89,6 @@ typedef struct{
   void*             data;
   size_t            size;
 }param_t;
-
-typedef struct{
-  int     count;
-  param_t *params;
-}payload_t;
-payload_t* InitPayload(int count, param_t[count]);
-payload_t* InitPayloadSingle(param_t);
 
 static param_t EMPTY_PARAM = {0,DATA_NONE};
 static param_t ParamCopyObj(DataType type, uint64_t uid, const void* src, size_t size){

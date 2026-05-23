@@ -2,12 +2,19 @@
 #include "process_event.h"
 #include "tool_lookup.h"
 
-void ForceSink(void* obs_data, void* sub, void* ev_data){
+void ForceSink(void* obs_data, void* sub, payload_t* pl){
   force_t* f = obs_data;
-  input_t* in = ev_data;
-
-  action_key_t* a = InputGetAction(in->last_key);
-  ForceSetDir(f, a->dir);
+  if(pl->type_id == INPUT_ID){
+      input_t* in = pl->data;
+      action_key_t* a = InputGetAction(in->last_key);
+      ForceSetDir(f, a->dir);
+      return;
+  }
+  if(pl->type_id == POS_ID){
+    position_t* p = pl->data;
+    ForceSetDir(f, p->dir_step);
+    return;
+  }
 }
 
 void OnForceEvent(event_t* ev, void* data){

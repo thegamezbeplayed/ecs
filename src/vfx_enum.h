@@ -1,0 +1,29 @@
+#ifndef __VFX_ENUM__
+#define __VFX_ENUM__
+#include "game_enum.h"
+
+DEFINE_EVENT_SPACE(ParticleEvent, EVENT_PARTICLE_BASE);
+
+typedef enum {
+  PARTICLE_EVENT_BURST,
+  PARTICLE_EVENT_START,
+  PARTICLE_EVENT_STOP,
+  PARTICLE_EVENT_COUNT
+} ParticleEventID;
+
+typedef enum {
+  PARTICLE_NONE,
+  PARTICLE_SPRITE,
+  PARTICLE_RECT,
+  PARTICLE_CIRCLE,
+  PARTICLE_PIXEL,
+} ParticleDrawType;
+
+typedef enum {
+  PARTICLE_EMIT_NONE,
+  PARTICLE_EMIT_CONTINUOUS,
+  PARTICLE_EMIT_BURST,
+  PARTICLE_EMIT_EVENT
+} ParticleEmitMode;
+
+#endif

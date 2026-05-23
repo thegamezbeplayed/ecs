@@ -5,42 +5,12 @@
 #include "game_types.h"
 #include "game_common.h"
 #include "game_utils.h"
-
-DEFINE_EVENT_SPACE(GameEvent, EVENT_GAME_BASE)
+#include "process_enum.h"
 
 extern Font font;
 static int fixedFPS = 60;
 
 typedef void (*UpdateFn)(void);
-
-typedef enum{
-  PROCESS_NONE,
-  PROCESS_LEVEL,
-  PROCESS_DONE
-}ProcessType;
-
-typedef enum{
-  UPDATE_FRAME,//update running at full fps
-  UPDATE_DRAW_BEGIN,
-  UPDATE_DRAW,
-  UPDATE_DRAW_END,
-  UPDATE_PRE,
-  UPDATE_FIXED,
-  UPDATE_POST,
-  UPDATE_FINAL,
-  UPDATE_DONE
-}UpdateType;
-
-typedef enum{
-  GAME_NONE,
-  GAME_LOADING,
-  GAME_READY,
-  GAME_RUNNING,
-  GAME_PAUSE,
-  GAME_FINISHED,
-  GAME_OVER,
-  GAME_DONE
-}GameState;
 
 bool GameSetScreen(GameScreen s);
 bool GameSetState(GameState state);

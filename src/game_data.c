@@ -3,7 +3,7 @@
 #include "game_control.h"
 #include "components.h"
 
-const component_define_t CORE_COMPONENTS[NUM_COMP_CORE] = {
+const component_define_t CORE_COMPONENTS[] = {
   {"Position",  sizeof(position_t)},
   {"RigidBody", sizeof(rigid_body_t)},
   {"Animation", sizeof(anim_comp_t)},
@@ -17,7 +17,8 @@ const component_define_t CORE_COMPONENTS[NUM_COMP_CORE] = {
   {"Subject",   sizeof(subject_component_t)},
   {"Force",     sizeof(force_t)},
   //{"Name",      0}, //TODO
-  {"State",     sizeof(state_comp_t)},
+  {"State",     sizeof(state_t)},
+  {"Behavior",  sizeof(behavior_t)},
   {"Follow",    sizeof(follow_t)},
   {"Level",     sizeof(level_t)},
   {"Expiry",    sizeof(lifetime_t)},
@@ -25,7 +26,7 @@ const component_define_t CORE_COMPONENTS[NUM_COMP_CORE] = {
   {"ParticleEmitter", sizeof(particle_emitter_t)}
 };
 
-const component_func_t COMPFUNC_LOOKUP[NUM_COMP_CORE] = {
+const component_func_t COMPFUNC_LOOKUP[] = {
   {"Animation",   AnimInit},
   {"Sprite",      SpriteInit},
   {"Render",      RenderContextInit},
@@ -39,6 +40,8 @@ const component_func_t COMPFUNC_LOOKUP[NUM_COMP_CORE] = {
   {"Subject",      SubjectInit},
   {"Follow",      FollowInit},
   {"Track",       TrackingInit},
+  {"State",       StateInit},
+  {"Behavior",       BehaviorInit},
   {"Particle",        ParticleInit},
   {"ParticleEmitter", ParticleEmitterInit}
 };
@@ -152,14 +155,11 @@ void GameInitPrefabs(world_t* w, game_t* g){
 }
 
 bool InitGameDefine(world_t* w){
- game_t* g = GameCalloc("InitGameDefine", 1, sizeof(game_t));
+  game_t* g = GameCalloc("InitGameDefine", 1, sizeof(game_t));
 
+  ComponentInit(NUM_COMP_CORE);
   if(!LoadGameDefine(g))
     return false;
-
-  ComponentInit(g->num_comps);
-  for(int i = 0; i < g->num_comps; i++)
-    ComponentRegisterCore(g->comps[i]);
 
   for(int i = 0; i < g->num_sys; i++)
     SystemCreate(&world, &g->systems[i]);

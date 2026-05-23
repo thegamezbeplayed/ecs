@@ -1,8 +1,8 @@
 #include "component_define.h"
 #include "system_define.h"
 
-void CameraOnWindowResize(void* o_data, void* s, void* e_data) {
-  window_resize_t* w = e_data;
+void CameraOnWindowResize(void* o_data, void* s, payload_t* p) {
+  window_resize_t* w = p->data;
   camera_t* c = o_data;
 
   Vector2 offset = VEC_SCALE(VEC_NEW(w->width, w->height), 0.5);
@@ -60,7 +60,7 @@ void CameraSystem(world_t* w, Entity e){
   if(!pos)
     return;
 
-  TRACK(t->ctx.tracking, c, pos->vpos);
+  TRACK(t->ctx.tracking, c, pos->pos);
 }
 
 void CameraBegin(world_t* w, Entity e){

@@ -1,17 +1,17 @@
 {
   "components": [
-    "Sprite", "Animation", "Particle", "ParticleEmitter", "Force",
-    "Render", "Position", "Input", "Camera", "Observer", "RigidBody",
-    "Follow", "Track", "Subject"
+    "Sprite", "Animation", "Force", "Render", "Position", 
+    "Input", "Camera", "Observer", "RigidBody",
+    "Follow", "Track", "Subject", "State", "Behavior"
   ],
   "Observer": {
     "func":	"ObserverInit",
     "list":	[
       {
-        "name":	    "wiz",
-        "type":	    3,
+        "name":	    "move-observer",
+        "type":	    1,
         "comp":	    "Input",
-        "subjects": ["MOVE-STOP", "MOVE-LEFT", "MOVE-RIGHT", "MOVE-UP", "MOVE-DOWN"],
+        "subjects": ["INPUT-MOVE"],
         "listeners":["Animation", "Force"]
       },
       {
@@ -20,6 +20,13 @@
         "comp":       "RigidBody",
         "subjects":   ["PHYS-VEL"],
         "listeners":  ["Position"]
+      },
+      {
+        "name":       "pos-observer",
+        "type":       1,
+        "comp":       "Position",
+        "subjects":   ["POS-STEP"],
+        "listeners":  ["Force", "Animation"]
       }
     ]
   },
@@ -27,8 +34,16 @@
     "func": "SubjectInit",
     "list": [
       {
+        "name": "INPUT-MOVE",
+        "comp": "Input"
+      },
+      {
         "name": "PHYS-VEL",
         "comp": "RigidBody"
+      },
+      {
+        "name": "POS-STEP",
+        "comp": "Position"
       }
     ]
   },
@@ -330,6 +345,26 @@
       {
         "name":   "main_cam",
         "mode":   "FOLLOW"
+      }
+    ]
+  },
+  "State": {
+    "func": "StateInit",
+    "list" : [
+      {"name": "rat"},
+      {"name": "orc"}
+    ]
+  },
+  "Behavior": {
+    "func": "BehaviorInit",
+    "list": [
+      {
+        "name":   "wander",
+        "state":  "IDLE"
+      },
+      {
+        "name":   "spawn",
+        "state":  "SPAWN"
       }
     ]
   }

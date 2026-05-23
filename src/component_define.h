@@ -5,7 +5,7 @@
 #include "physics_define.h"
 #include "view_define.h"
 #include "game_stats.h"
-#include "game_behaviors.h"
+#include "behavior_define.h"
 #include "game_control.h"
 
 bool InputInit(void* comp, component_entry_t* j);
@@ -22,9 +22,12 @@ bool ParticleEmitterInit(void* comp, component_entry_t* j);
 bool ObserverInit(void* comp, component_entry_t* j);
 bool SubjectInit(void* comp, component_entry_t* j);
 bool TrackingInit(void* comp, component_entry_t* j);
+bool StateInit(void* comp, component_entry_t* j);
+bool BehaviorInit(void* comp, component_entry_t* j);
 
 
 bool ParseSpriteComponent(cJSON* j, sprite_t* out);
+bool ParseBehaviorComponent(cJSON* j, behavior_t* out);
 bool ParseRigidBodyComponent(cJSON* j, rigid_body_t* out);
 bool ParseForceComponent(cJSON* j, force_t* out);
 bool ParsePositionComponent(cJSON* j, position_t* out);
@@ -67,14 +70,6 @@ typedef struct{
   bool    assigned;
 }follow_t;
 static bool FollowInit(void* comp, component_entry_t* data){ return true;}
-
-typedef struct{
-
-}ai_comp_t;
-
-typedef struct{
-  State   state, last;
-}state_comp_t;
 
 typedef struct{
   int   duration;

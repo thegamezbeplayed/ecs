@@ -12,16 +12,18 @@
       },
       {
         "name": "wiz",
-        "list": ["Observer", "Input", "Sprite", "Animation",
-         "RigidBody", "Force", "Position", "Follow"]
+        "list": ["Input", "Sprite", "Animation", "Position",
+         "RigidBody", "Force", "Follow"]
       },
       {
         "name": "rat",
-        "list": ["Sprite", "Animation", "Position", "RigidBody", "Force"]
+        "list": ["Sprite", "Animation", "Position", "RigidBody", "Force",
+        "State"]
       },
       {
         "name": "orc",
-        "list": ["Sprite", "Animation", "Position", "RigidBody", "Force"]
+        "list": ["Sprite", "Animation", "Position", "RigidBody", "Force",
+        "State"]
       },
       {
         "name": "tile_floor",
@@ -40,17 +42,14 @@
         },
         {"name": "Observer",
           "sublist": [
-            {"name": "rb-observer", "type": "Observes"}
+            {"name": "rb-observer", "type": "Observes"},
+            {"name": "move-observer", "type": "Observes"}
           ]
         },
         {"name": "Subject",
           "sublist": [
-            {"name": "PHYS-VEL",    "type": "SubjectOf"}
-          ]
-        },
-        {"name": "ParticleEmitter",
-          "sublist": [
-            {"name": "wiz-dust", "type": "ChildOf", "components": ["Position"]}
+            {"name": "PHYS-VEL",    "type": "SubjectOf"},
+            {"name": "INPUT-MOVE",  "type": "SubjectOf"}
           ]
         }
       ]
@@ -65,12 +64,20 @@
         },
         {"name": "Observer",
           "sublist": [
-            {"name": "rb-observer", "type": "Observes"}
+            {"name": "rb-observer", "type": "Observes"},
+            {"name": "pos-observer", "type": "Observes"}
           ]
         },
         {"name": "Subject",
           "sublist": [
-            {"name": "PHYS-VEL",    "type": "SubjectOf"}
+            {"name": "PHYS-VEL",    "type": "SubjectOf"},
+            {"name": "POS-STEP",    "type": "SubjectOf"}
+          ]
+        },
+        {"name": "Behavior",
+          "sublist": [
+            {"name": "spawn", "type": "BehaviorOf"},
+            {"name": "wander", "type": "BehaviorOf"}
           ]
         }
       ]
@@ -85,16 +92,23 @@
         },
         {"name": "Observer",
           "sublist": [
-            {"name": "rb-observer", "type": "Observes"}
+            {"name": "rb-observer", "type": "Observes"},
+            {"name": "pos-observer", "type": "Observes"}
           ]
         },
         {"name": "Subject",
           "sublist": [
-            {"name": "PHYS-VEL",    "type": "SubjectOf"}
+            {"name": "PHYS-VEL",    "type": "SubjectOf"},
+            {"name": "POS-STEP",    "type": "SubjectOf"}
+          ]
+        },
+        {"name": "Behavior",
+          "sublist": [
+            {"name": "spawn", "type": "BehaviorOf"},
+            {"name": "wander", "type": "BehaviorOf"}
           ]
         }
       ]
     }
-
   ]
 }

@@ -3,6 +3,186 @@
 #include "util_parse.h"
 #include "tool_lookup.h"
 
+bool ParseParticleEmitterComponent(cJSON* j, particle_emitter_t* out){
+  if(!j)
+    return false;
+
+  char mode_str[MAX_NAME_LEN];
+  Json_GetString(j, "mode", mode_str);
+  out->mode = StringToEmitMode(mode_str);
+
+  out->layer = Json_GetInt(j, "layer", -1);
+  out->active = Json_GetBool(j, "active");
+
+  out->max = Json_GetInt(j, "max_particles", -1);
+  out->rate = Json_GetInt(j, "rate", -1);
+  out->dur_max = Json_GetInt(j, "lifetime_max", -1);
+  out->dur_min = Json_GetInt(j, "lifetime_min", -1);
+
+  float offx = Json_GetFloat(j, "offset_x", 0);
+  float offy = Json_GetFloat(j, "offset_y", 0);
+  out->offset = VEC_NEW(offx, offy);
+
+  float velocity_minx = Json_GetFloat(j, "velocity_min_x", 0);
+  float velocity_miny = Json_GetFloat(j, "velocity_min_y", 0);
+  out->acceleration = out->velocity_min = VEC_NEW(velocity_minx, velocity_miny);
+
+  float velocity_maxx = Json_GetFloat(j, "velocity_max_x", 0);
+  float velocity_maxy = Json_GetFloat(j, "velocity_max_y", 0);
+  out->velocity_max = VEC_NEW(velocity_maxx, velocity_maxy);
+
+
+  float spawnx = Json_GetFloat(j, "spawn_radius_x", 0);
+  float spawny = Json_GetFloat(j, "spawn_radius_y", 0);
+  out->spawn_radius = VEC_NEW(spawnx, spawny);
+
+  out->scale_max = Json_GetFloat(j, "scale_max", 1);
+  out->scale_min = Json_GetFloat(j, "scale_min", 0);
+
+  out->scale_end = Json_GetFloat(j, "scale_end", 0);
+
+  out->drag = Json_GetFloat(j, "drag", 0);
+  out->wid = Json_GetFloat(j, "width", 0);
+  out->hei = Json_GetFloat(j, "height", 0);
+  char start_col_str[MAX_NAME_LEN];
+  Json_GetString(j, "start_color", start_col_str);
+  out->start_color = ColorFromHexString(start_col_str);
+
+  char end_col_str[MAX_NAME_LEN];
+  Json_GetString(j, "end_color", end_col_str);
+  out->end_color = ColorFromHexString(end_col_str);
+
+  char draw_str[MAX_NAME_LEN];
+  Json_GetString(j, "draw_type", draw_str);
+
+  out->draw_type = StringToDrawType(draw_str);
+  return out->layer > -1;
+}
+
+bool ParseSpriteComponent(cJSON* j, sprite_t* out){
+
+  char sheet[MAX_NAME_LEN];
+  Json_GetString(j, "sheet_id", sheet);
+  int sheet_id = StringToSheetID(sheet);
+  out->index = Json_GetInt(j, "sheet_index", -1);
+  out->layer = Json_GetInt(j, "layer", -1);
+  out->scale = Json_GetFloat(j, "scale", 1);
+  out->sheet_id = sheet_id;
+
+  return sheet_id > -1;
+}
+
+
+bool ParseAnimComponent(cJSON* j, anim_comp_t* out){
+  char sheet[MAX_NAME_LEN];
+  Json_GetString(j, "sheet_id", sheet);
+  int sheet_id = StringToSheetID(sheet);
+
+  cJSON* state_json = cJSON_GetObjectItem(j, "states");
+
+  char* name = GameCalloc("ParseAnimComponent", MAX_NAME_LEN, sizeof(char));
+
+  Json_GetString(j, "name", name);
+
+  out->player.sheet_id = sheet_id;
+  out->player.dir = 3;
+  out->player.state = ANIM_IDLE;
+  int sidx = 0;
+  cJSON* s;
+  cJSON_ArrayForEach(s, state_json){
+    char* state_str = GameCalloc("ParseAnimComponent", MAX_NAME_LEN, sizeof(char));
+    Json_GetString(s, "state", state_str);
+
+    bool loop = Json_GetBool(s, "loop");
+    bool interupt = Json_GetBool(s, "interupt");
+    char end_str[MAX_NAME_LEN];
+    Json_GetString(s, "end", end_str);
+    AnimBehavior on_end = StringToAnimBehavior(end_str);
+
+    char start_str[MAX_NAME_LEN];
+    Json_GetString(s, "start", start_str);
+    AnimBehavior on_start = StringToAnimBehavior(start_str);
+
+    AnimState state = StringToAnimState(state_str);
+    if(state == ANIM_NONE){
+      TraceLog(LOG_WARNING,"=== PARSE ANIM COMP ===\n unable to find state %s for prefab %s", state_str, name);
+    }
+    cJSON* seq_json = cJSON_GetObjectItem(s, "sequences");
+    cJSON* seq;
+    cJSON_ArrayForEach(seq, seq_json){
+      int dir = Json_GetInt(seq, "dir", -1);
+      if(dir < 0)
+        continue;
+
+      char tag[MAX_NAME_LEN];
+      Json_GetString(seq, "tag", tag);
+      out->sequences[state][dir] = *AnimRegisterState(sheet_id, name, tag);
+      out->sequences[state][dir].loop = loop;
+      out->sequences[state][dir].interupt = interupt;
+      out->sequences[state][dir].on_end = on_end;
+    }
+  }
+
+  sprite_sheet_d sh = SHEETS[sheet_id];
+  for(int i = 0; i < MAX_SLICES; i++){
+    collision_d cd = sh.coll[i];
+
+    switch(cd.type){
+      case COL_HIT:
+        out->hitbox = cd;
+        break;
+      default:
+        continue;
+        break;
+    }
+  }
+  return sheet_id > -1;
+}
+
+bool ParsePositionComponent(cJSON* j, position_t* out){
+  if(!j)
+    return false;
+
+  float x = Json_GetFloat(j, "posx", 0.f);
+  float y = Json_GetFloat(j, "posy", 0.f);
+
+  Vector2 pos = VEC_NEW(x,y);
+  out->last_pos = out->pos = pos;
+
+  out->dir_step = out->dest = VEC_UNSET;
+  out->rad = 0;
+  out->angle = 0;
+  return true;
+}
+
+bool ParseCameraComponent(cJSON* j, camera_t* out){
+  if(!j)
+    return false;
+
+  out->zoom = Json_GetFloat(j, "zoom", 1.f);
+  out->rotation = Json_GetFloat(j, "rotation", 0.f);
+
+  float offx = Json_GetFloat(j, "offset_x", 0.f);
+  float offy = Json_GetFloat(j, "offset_y", 0.f);
+
+  float tarx = Json_GetFloat(j, "target_x", 0.f);
+  float tary = Json_GetFloat(j, "target_y", 0.f);
+
+  out->offset = VEC_NEW(offx, offy);
+  out->target = VEC_NEW(tarx, tary);
+
+  return true;
+}
+bool ParseRenderComponent(cJSON* j, render_ctx_t* out){
+  if(!j)
+    return false;
+
+  Json_GetString(j, "name", out->name);
+  out->layer = Json_GetInt(j, "layer", -1);
+  return out->layer > -1;
+}
+
+
 bool ParseObserverComponent(cJSON* j, component_observer_t* out){
   if(!j)
     return false;
@@ -170,4 +350,19 @@ bool ParseTrackingComponent(cJSON* j, tracking_t* out){
   out->ctx = *InitCameraContext(StringToCameraMode(m_name));
 
   return out->ctx.mode > 0;
+}
+
+bool ParseBehaviorComponent(cJSON* j, behavior_t* out){
+  if(!j)
+    return false;
+
+  Json_GetString(j, "name", out->name);
+
+  char sname[MAX_NAME_LEN];
+  Json_GetString(j, "state", sname);
+
+  out->state = StringToState(sname);
+
+  return out->state > STATE_NONE;
+
 }

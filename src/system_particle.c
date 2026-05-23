@@ -34,13 +34,13 @@ void ParticleRender(world_t* w, RenderLayer l){
       case PARTICLE_SPRITE:
         break;
       case PARTICLE_RECT:
-        DrawRectangle(poc->vpos.x, poc->vpos.y, pac->wid, pac->hei, pac->color);
+        DrawRectangle(poc->pos.x, poc->pos.y, pac->wid, pac->hei, pac->color);
         break;
       case PARTICLE_CIRCLE:
-        DrawCircleV(poc->vpos, pac->radius, pac->color);
+        DrawCircleV(poc->pos, pac->radius, pac->color);
         break;
       case PARTICLE_PIXEL:
-        DrawPixelV(poc->vpos, pac->color);
+        DrawPixelV(poc->pos, pac->color);
         break;
     }
   }
@@ -64,8 +64,8 @@ void ParticleEmitEvent(event_t* ev, void* data){
   }
 }
 
-void ParticleOnRender(void* o_data, void* s, void* e_data) {
-  render_ctx_t* r = e_data;
+void ParticleOnRender(void* o_data, void* s, payload_t* p) {
+  render_ctx_t* r = p->data;
 
   world_t* w = o_data;
 
@@ -88,7 +88,7 @@ void ParticleEmitterLoad(world_t* w, Entity e){
   position_t* ep = GET_COMPONENT(w, e, position_t, POS_ID);
   position_t* rp = GET_COMPONENT(w, rel, position_t, POS_ID);
 
-  PositionSet(ep, rp->vpos);
+  PositionSet(ep, rp->pos);
 }
 
 void ParticleEmitterSystem(world_t* w, Entity e){
