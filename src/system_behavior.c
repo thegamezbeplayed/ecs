@@ -1,5 +1,6 @@
 #include "behavior_define.h"
 #include "system_define.h"
+#include "util_parse.h"
 
 void BehaviorRegister(world_t* w, Entity e){
 
@@ -13,4 +14,7 @@ void BehaviorSystem(world_t* w, Entity e){
 void BehaviorLoad(world_t* w){
   BehaviorTreeInit(MAX_BEHAVIOR_TREE);
   BehaviorDefInit(MAX_BEHAVIOR_TREE * MAX_BEHAVIOR_CHILD);
+
+  cJSON* root = ParseRoot("resources/data/behavior_def.json");
+  ParseBehaviorDefs(root);
 }

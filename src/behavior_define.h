@@ -73,6 +73,7 @@ typedef behavior_tree_node_t* (*BehaviorLeafInit)(behavior_params_t *);
 typedef struct{
   char              name[MAX_NAME_LEN];
   BehaviorLeafInit  fn;
+  int               num_children;
   BehaviorID        children[MAX_BEHAVIOR_CHILD];
 }behavior_define_t;
 

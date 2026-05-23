@@ -10,8 +10,6 @@
 #define MAX_ANIM_GROUPS   64
 #define MAX_ANIM_FRAMES   16
 
-cJSON* ParseRoot(const char* path);
-
 typedef struct{
   int       frame;
   CollType  type;

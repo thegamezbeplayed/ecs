@@ -156,10 +156,10 @@
       {"step": "UPDATE_POST",  "fn": "BehaviorSystem"}
     ],
     "sets": [
-      {"step": "GAME_READY",   "fn": "BehaviorLoad"}
+      {"step": "GAME_LOADING", "fn": "BehaviorRegister"}
     ],
     "states": [
-      {"step": "GAME_LOADING", "fn": "BehaviorRegister"}
+      {"step": "GAME_READY",   "fn": "BehaviorLoad"}
     ]
   }
 }

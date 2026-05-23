@@ -22,8 +22,18 @@ bool ParseBehaviorDefs(cJSON* j){
 
   cJSON* bn;
   cJSON_ArrayForEach(bn, roots){
-
     behavior_define_t* node = GameCalloc("ParseBehaviorDefs", 1, sizeof(behavior_define_t));
 
+    Json_GetString(leaf, "name", node->name);
+    
+    cJSON* kids = cJSON_GetObjectItem(bn, "children");
+
+    cJSON* kid;
+    cJSON_ArrayForEach(kid, kids){
+      char cname[MAX_NAME_LEN];
+      strcpy(cname, kid->valuestring);
+      node->children[node->num_children++] = hash_str_64(cname);
+      RegisterBehaviorDef(node);
+    };
   }
 }
