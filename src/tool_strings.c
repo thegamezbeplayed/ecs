@@ -15,9 +15,20 @@ State StringToState(const char* str){
   return STATE_NONE;
 }
 
+BehaviorTreeType StringToBehaviorType(const char* str){
+  if (strcmp(str, "LEAF") == 0)       return BT_LEAF;
+  if (strcmp(str, "SEQUENCE") == 0)   return BT_SEQUENCE;
+  if (strcmp(str, "SELECTOR") == 0)   return BT_SELECTOR;
+  if (strcmp(str, "CONCURRENT") == 0) return BT_CONCURRENT;
+  if (strcmp(str, "DECIDER") == 0)    return BT_DECIDER;
+ 
+  return BT_NONE;
+}
+
 BehaviorLeafInit StringToLeafFunc(const char* str){
   if (strcmp(str, "AcquireDestination") == 0)  return LeafAcquireDestination;
   if (strcmp(str, "MoveToDestination") == 0)   return LeafMoveToDestination;
+  if (strcmp(str, "MoveToTarget") == 0)        return LeafMoveToTarget;
   if (strcmp(str, "ChangeState") == 0)         return LeafChangeState;
   if (strcmp(str, "CheckAggro") == 0)          return LeafCheckAggro;
 

@@ -10,6 +10,7 @@ typedef enum{
 }State;
 
 typedef enum{
+  BT_NONE = -1,
   BT_LEAF,
   BT_SEQUENCE,
   BT_SELECTOR,

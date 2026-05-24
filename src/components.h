@@ -54,7 +54,7 @@ typedef struct {
   size_t      size;
   size_t      elem_size;   // size of component (Position, etc)
   void*       data;        // dense array of component data
-  bool        dirty;
+  bool        dirty, updated;
 } component_pool_t;
 
 bool HasComponent(component_pool_t* pool, Entity e);

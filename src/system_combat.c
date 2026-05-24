@@ -17,3 +17,13 @@ void CombatPrep(world_t* w){
 void TeamSystem(world_t* w, Entity e){
 
 }
+
+void TeamRegister(world_t* w, Entity e){
+  team_t* t = GET_COMPONENT(w, e , team_t, TEAM_ID);
+
+  TeamRegisterMember(t->name, e);
+}
+
+void TeamLoad(world_t* w){
+  TeamMapInit(8);
+}

@@ -93,6 +93,18 @@ void* ComponentGet(world_t* w, Entity e, comp_id_t id){
   return (char*)pool->data + (idx * pool->elem_size);
 }
 
+void* ComponentGetByID(world_t* w, uint32_t eid, comp_id_t id){
+  component_pool_t* pool = w->pools[id];
+
+  if(!pool || id >= w->next_component_id)
+    return NULL;
+
+  int idx = pool->sparse[eid];
+  if (idx == -1) return NULL;
+
+  return (char*)pool->data + (idx * pool->elem_size);
+}
+
 bool HasComponent(component_pool_t* pool, Entity e) {
     if (!pool) return false;
     if (!EntityValid(&world.manager, e)) return false;

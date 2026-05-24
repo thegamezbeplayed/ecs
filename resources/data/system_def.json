@@ -1,7 +1,8 @@
 {
   "systems": ["Controller", "Animations", "Sprites", 
     "Cameras", "Renderer", "Observe", "Subjects", "Combat",
-    "Forces", "Physics", "Positions", "Behavior", "State"
+    "Forces", "Physics", "Positions", "Behavior", "State",
+    "Team"
   ],
   "Observe": {
     "components": ["Observer"],
@@ -84,7 +85,11 @@
     ],
     "states": [
       {"step": "GAME_LOADING", "fn": "PositionRegister"}
-    ]
+    ],
+    "steps":  [
+      {"step": "UPDATE_START", "fn": "PositionPrep"}
+    ],
+    "iter": true
   },
   "Physics": {
     "components": ["RigidBody", "Position"],
@@ -172,10 +177,19 @@
     ]
   },
   "Combat": {
-    "components": ["Team"],
+    "components": ["Team", "Position"],
     "steps":  [
       {"step":  "UPDATE_START", "fn": "CombatPrep"}
     ],
     "iter": true
+  },
+  "Team": {
+    "components": ["Team"],
+    "states": [
+      {"step": "GAME_LOADING", "fn": "TeamLoad"}
+    ],
+    "sets": [
+      {"step": "GAME_READY",   "fn": "TeamRegister"}
+    ]
   }
 }

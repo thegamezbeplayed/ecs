@@ -76,8 +76,9 @@
         },
         {"name": "Behavior",
           "sublist": [
-            {"name": "spawn", "type": "BehaviorOf"},
-            {"name": "wander", "type": "BehaviorOf"}
+            {"name": "spawn",   "type": "BehaviorOf"},
+            {"name": "wander",  "type": "BehaviorOf"},
+            {"name": "aggro",   "type": "BehaviorOf"}
           ]
         },
         {"name":  "Stat",
@@ -109,8 +110,9 @@
         },
         {"name": "Behavior",
           "sublist": [
-            {"name": "spawn", "type": "BehaviorOf"},
-            {"name": "wander", "type": "BehaviorOf"}
+            {"name": "spawn",  "type": "BehaviorOf"},
+            {"name": "wander", "type": "BehaviorOf"},
+            {"name": "aggro",  "type": "BehaviorOf"}
           ]
        },
        {"name":  "Stat",

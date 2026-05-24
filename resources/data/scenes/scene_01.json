@@ -83,7 +83,7 @@
     {"name": "LAYER_MAIN",	"pos_x": 0, "pos_y": 0},
     {"name": "LAYER_VFX",	"pos_x": 0, "pos_y": 0},
     {"name": "wiz",   "pos_x": 400, "pos_y": 200},
-    {"name": "rat",   "pos_x": 380, "pos_y": 200},
+    {"name": "rat",   "pos_x": 580, "pos_y": 200},
     {"name": "rat",   "pos_x": 410, "pos_y": 300},
     {"name": "orc",   "pos_x": 210, "pos_y": 300}
   ],  

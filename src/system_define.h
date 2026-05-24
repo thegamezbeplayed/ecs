@@ -3,7 +3,7 @@
 #include "game_define.h"
 #include "component_define.h"
 
-#define NUM_FUNCTIONS 51
+#define NUM_FUNCTIONS 54
 
 extern hash_map_t SYSTEM_SINK;
 typedef struct{
@@ -16,6 +16,7 @@ ObserverCB LookupSystemSink(const char* str);
 system_t* SystemCreate(world_t* w, system_define_t* def);
 
 void PositionLoad(world_t* w, Entity e);
+void PositionPrep(world_t* w);
 void PositionRegister(world_t* w);
 
 void AnimLoad(world_t* w, Entity e);
@@ -32,6 +33,7 @@ void InputRegister(world_t* w);
 void OnForceEvent(event_t* ev, void* data);
 void ForceLoad(world_t* w, Entity e);
 void ForceSystem(world_t* w, Entity e);
+void ForceCleanup(world_t* w, Entity e);
 void ForceSink(void* obs_data, void* sub, payload_t*);
 
 void PhysicsRegister(world_t* w);
@@ -95,7 +97,8 @@ void CombatLoad(world_t* w, Entity e);
 void CombatPrep(world_t* w);
 void CombatSystem(world_t* w, Entity e);
 
-void ForceCleanup(world_t* w, Entity e);
+void TeamLoad(world_t* w);
+void TeamRegister(world_t* w, Entity e);
 
 void ExpirationSystem(world_t* w, Entity e);
 
@@ -107,6 +110,7 @@ typedef struct{
 static system_function_lookup_t FUNCTION_LOOKUP[] = {
     {"PositionRegister",    PositionRegister},
     {"PositionLoad",        PositionLoad},
+    {"PositionPrep",        PositionPrep},
 
     {"AnimLoad",            AnimLoad},
     {"AnimReady",           AnimReady},
@@ -170,6 +174,10 @@ static system_function_lookup_t FUNCTION_LOOKUP[] = {
     {"StateBegin",          StateBegin},
     
     {"CombatPrep",          CombatPrep},
+
+    {"TeamLoad",            TeamLoad},
+    {"TeamRegister",        TeamRegister},
+    
     {"ExpirationSystem",    ExpirationSystem}
 };
 

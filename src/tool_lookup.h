@@ -25,6 +25,7 @@ static const relation_str_t RELATION_LOOKUP[NUM_REL] = {
 };
 
 State StringToState(const char* str);
+BehaviorTreeType StringToBehaviorType(const char* str);
 BehaviorLeafInit StringToLeafFunc(const char* str);
 AnimBehavior StringToAnimBehavior(const char* str);
 AnimState StringToAnimState(const char* str);

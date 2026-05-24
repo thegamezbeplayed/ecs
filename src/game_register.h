@@ -28,6 +28,7 @@
 #define REL_SubjectOf   6u
 #define REL_BehaviorOf  7u
 #define REL_StatOf      8u
+#define REL_TargetOf    9u
 
 typedef uint32_t RelationType;
 typedef struct {
@@ -90,18 +91,18 @@ entity_iter_t* SystemGetIter(const char*);
 
 
 struct world_s {
-  EntityManager     manager;
+  EntityManager       manager;
 
-  component_pool_t* pools[MAX_COMPONENTS];
-  uint32_t          next_component_id;
+  component_pool_t*   pools[MAX_COMPONENTS];
+  uint32_t            next_component_id;
 
-  int               num_sys;
-  system_t*         systems;
-  hash_map_t        sys_map;
-  prefab_registry_t prefabs;
-
-  relation_t        relations[MAX_ENTITIES];
-  bool              has_relation[MAX_ENTITIES];  
+  int                 num_sys;
+  system_t*           systems;
+  hash_map_t          sys_map;
+  prefab_registry_t   prefabs;
+  spacial_hash_grid_t grid;
+  relation_t          relations[MAX_ENTITIES];
+  bool                has_relation[MAX_ENTITIES];  
 };
 extern world_t world;
 
@@ -125,6 +126,7 @@ void WorldInit(world_t* w);
 comp_id_t ComponentRegister(world_t* w, const char*, size_t);
 void* ComponentAdd(world_t* w, Entity e, comp_id_t id);
 void* ComponentGet(world_t* w, Entity e, comp_id_t id);
+void* ComponentGetByID(world_t* w, uint32_t eid, comp_id_t id);
 void ComponentUpdate(world_t* w, Entity e, comp_id_t id);
 void ComponentClearUpdate(world_t* w, Entity e, comp_id_t cid);
 bool ComponentCheck(world_t*, comp_id_t, Entity e);
