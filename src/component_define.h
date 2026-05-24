@@ -6,6 +6,7 @@
 #include "view_define.h"
 #include "game_stats.h"
 #include "behavior_define.h"
+#include "team_define.h"
 #include "game_control.h"
 
 bool InputInit(void* comp, component_entry_t* j);
@@ -79,10 +80,6 @@ static void LifetimeSet(lifetime_t* lf, int dur){
  lf->expiration = WorldGetTime() + dur;
 }
 
-typedef struct {
-  char      name[MAX_NAME_LEN];
-  uint64_t  id;
-}team_t;
 bool ParseTeamComponent(cJSON* j, team_t* out);
 
 static bool TeamInit(void* comp, component_entry_t* j){

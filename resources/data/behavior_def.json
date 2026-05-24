@@ -12,7 +12,7 @@
     {
       "name":     "aggro",
       "state":    "AGGRO",
-      "children": "check-aggro"]
+      "children": ["check-aggro"]
     }
   ],
   "leafs": [

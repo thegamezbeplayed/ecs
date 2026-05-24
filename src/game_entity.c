@@ -128,18 +128,27 @@ Entity QueryGetNext(world_t* w){
   return EntityGet(&w->manager, EQ.results[EQ.query_pos++]);
 }
 
+entity_iter_t* EntityIterInit(world_t* w, system_t* s){
+  entity_iter_t* it = GameCalloc("EntityIterInit", 1, sizeof(entity_iter_t));
+  it->terms = s->terms;
+  it->term_count = s->term_count;
 
-entity_iter_t EntityIterStart(world_t* w, system_t* s){
-  entity_iter_t it = {0};
-  it.terms = s->terms;
-  it.term_count = s->term_count;
-
-  it.base = ComponentQueryInner(w, s);
-  if (!it.base)
+  it->base = ComponentQueryInner(w, s);
+  if (!it->base)
     return it;
 
-  it.index = -1;   // will be incremented on first Next()
+  it->index = -1;   // will be incremented on first Next()
   return it;
+}
+
+bool EntityIterStart(world_t* w, entity_iter_t* it, system_t* s){
+  it->terms = s->terms;
+  it->term_count = s->term_count;
+
+  it->base = ComponentQueryInner(w, s);
+  it->index = -1;   // will be incremented on first Next()
+
+  return it->base != NULL;
 }
 
 bool EntityIterNext(entity_iter_t* it, world_t* w){

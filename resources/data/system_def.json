@@ -1,6 +1,6 @@
 {
   "systems": ["Controller", "Animations", "Sprites", 
-    "Cameras", "Renderer", "Observe", "Subjects",
+    "Cameras", "Renderer", "Observe", "Subjects", "Combat",
     "Forces", "Physics", "Positions", "Behavior", "State"
   ],
   "Observe": {
@@ -97,7 +97,11 @@
     ],
     "states": [
       {"step": "GAME_LOADING", "fn": "PhysicsRegister"}
-    ]
+    ],
+    "steps": [
+      {"step": "UPDATE_START", "fn": "PhysicsPrep"}
+    ],
+    "iter": true
   },
   "Forces": {
     "components": ["Force"],
@@ -166,5 +170,12 @@
     "sets": [
       {"step": "GAME_READY", "fn": "StateBegin"}
     ]
+  },
+  "Combat": {
+    "components": ["Team"],
+    "steps":  [
+      {"step":  "UPDATE_START", "fn": "CombatPrep"}
+    ],
+    "iter": true
   }
 }

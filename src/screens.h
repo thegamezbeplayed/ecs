@@ -73,6 +73,7 @@ void EndDraw(void);
 void UpdateDraw(void);
 void UnloadGameplay(void);
 int FinishGameplay(void);
+void StartUpdate(void);
 void PreUpdate(void);
 void FixedUpdate(void);
 void PostUpdate(void);

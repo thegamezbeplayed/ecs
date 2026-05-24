@@ -21,6 +21,11 @@ void ReadyGameplay(void){
 
 void RunGameplay(void){}
 
+void StartUpdate(void){
+  GameEvent(GameEvent_ToNotif(GAME_EVENT_SYNC), &world , UPDATE_START);
+  GameEvent(GameEvent_ToNotif(GAME_EVENT_STEP), &world , UPDATE_START);
+}
+
 void PreUpdate(void){
   GameProcessStep();
   GameEvent(GameEvent_ToNotif(GAME_EVENT_STEP), &world , UPDATE_PRE);

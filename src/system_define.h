@@ -3,7 +3,7 @@
 #include "game_define.h"
 #include "component_define.h"
 
-#define NUM_FUNCTIONS 50
+#define NUM_FUNCTIONS 51
 
 extern hash_map_t SYSTEM_SINK;
 typedef struct{
@@ -39,6 +39,7 @@ void PhysicsLoad(world_t* w, Entity e);
 void PhysicsSystem(world_t* w, Entity e);
 void PhysicsCollision(world_t* w, Entity e);
 void PhysicsDebug(world_t* w, Entity e);
+void PhysicsPrep(world_t* w);
 
 void LevelLoad(world_t* w, Entity e);
 void LevelReady(world_t* w, Entity e);
@@ -91,6 +92,7 @@ void BehaviorRegister(world_t* w, Entity e);
 void StateBegin(world_t* w, Entity e);
 
 void CombatLoad(world_t* w, Entity e);
+void CombatPrep(world_t* w);
 void CombatSystem(world_t* w, Entity e);
 
 void ForceCleanup(world_t* w, Entity e);
@@ -126,6 +128,7 @@ static system_function_lookup_t FUNCTION_LOOKUP[] = {
     {"PhysicsSystem",       PhysicsSystem},
     {"PhysicsCollision",    PhysicsCollision},
     {"PhysicsDebug",        PhysicsDebug},
+    {"PhysicsPrep",         PhysicsPrep},
 
     {"LevelLoad",           LevelLoad},
     {"LevelReady",          LevelReady},
@@ -164,8 +167,9 @@ static system_function_lookup_t FUNCTION_LOOKUP[] = {
     {"BehaviorLoad",        BehaviorLoad},
     {"BehaviorRegister",    BehaviorRegister},
 
-    {"StateBegin",         StateBegin},
+    {"StateBegin",          StateBegin},
     
+    {"CombatPrep",          CombatPrep},
     {"ExpirationSystem",    ExpirationSystem}
 };
 

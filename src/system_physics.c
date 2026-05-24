@@ -94,7 +94,22 @@ void OnPhysEvent(event_t* ev, void* data){
 void PhysicsRegister(world_t* w){
   LookAddSink("Force", ForceSink);
   system_t* pt = HashGet(&w->sys_map, hash_str_64("Physics"));
-  EntityIterStart(w, pt);
+  entity_iter_t* iter = SystemGetIter("Physics");
+
+  EntityIterStart(w, iter, pt);
+}
+
+void PhysicsPrep(world_t* w){
+  component_pool_t* bodies = w->pools[PHYS_ID];
+
+  if(!bodies->dirty)
+    return;
+  
+  system_t* pt = HashGet(&w->sys_map, hash_str_64("Physics"));
+  entity_iter_t* iter = SystemGetIter("Physics");
+  EntityIterStart(w, iter, pt);
+
+  bodies->dirty = false;
 }
 
 void PhysicsLoad(world_t* w, Entity e){

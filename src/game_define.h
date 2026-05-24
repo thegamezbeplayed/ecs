@@ -100,22 +100,6 @@ void UnloadGameDefine(game_t* g);
 void GameSpawn(world_t* w, game_t* g);
 
 extern const component_define_t CORE_COMPONENTS[];
-
-typedef struct{
-  RelationType    type;
-  const char      name[MAX_NAME_LEN];
-}relation_str_t;
-
-static const relation_str_t RELATION_LOOKUP[NUM_REL] = {
-  {REL_AppliesTo,   "AppliesTo"},
-  {REL_ChildOf,     "ChildOf"},
-  {REL_Owner,       "Owner"},
-  {REL_Target,      "Target"},
-  {REL_Observes,    "Observes"},
-  {REL_SubjectOf,   "SubjectOf"},
-  {REL_BehaviorOf,  "BehaviorOf"}
-};
-
 static int FindComponentIndex(const char* name)
 {
   for (int i = 0; i < NUM_COMP_CORE; i++) {
@@ -134,26 +118,5 @@ typedef struct{
   GameState   state;
   const char  name[MAX_NAME_LEN];
 }game_state_define_t;
-
-static const game_state_define_t GAMESTATE_LOOKUP[GAME_DONE] = {
-  {GAME_NONE,  ""},
-  {GAME_LOADING,  "GAME_LOADING"},
-  {GAME_READY,    "GAME_READY"},
-  {GAME_RUNNING,  "GAME_RUNNING"},
-  {GAME_PAUSE,    "GAME_PAUSE"},
-  {GAME_FINISHED, "GAME_FINISHED"},
-  {GAME_OVER,     "GAME_OVER"},
-};
-
-static const update_define_t UPDATE_LOOKUP[UPDATE_DONE] = {
-  {UPDATE_FRAME,      "UPDATE_FRAME"},
-  {UPDATE_DRAW_BEGIN, "UPDATE_DRAW_BEGIN"},
-  {UPDATE_DRAW,       "UPDATE_DRAW"},
-  {UPDATE_DRAW_END,   "UPDATE_DRAW_END"},
-  {UPDATE_PRE,        "UPDATE_PRE"},
-  {UPDATE_FIXED,      "UPDATE_FIXED"},
-  {UPDATE_POST,       "UPDATE_POST"},
-  {UPDATE_FINAL,      "UPDATE_FINAL"},
-};
 
 #endif

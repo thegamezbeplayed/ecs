@@ -8,11 +8,11 @@ void SystemIterInit(int cap){
   HashInit(&SYS_ITERS, next_pow2_int(cap));
 }
 
-uint64_t SystemRegisterIter(const char* str){
+uint64_t SystemRegisterIter(world_t* w, const char* str, system_t* s){
   hash_key_t key = hash_str_64(str);
   entity_iter_t* e = SystemGetIter(str);
   if(!e){
-    e = GameCalloc("SystemRegisterIter", 1, sizeof(entity_iter_t));
+    e = EntityIterInit(w, s);
     HashPut(&SYS_ITERS, key, e);
   }
 
@@ -173,11 +173,6 @@ system_t* SystemCreate(world_t* w, system_define_t* def){
   memset(s, 0, sizeof(system_t));
   s->index = w->num_sys++;
 
-  if(def->iter){
-     SystemRegisterIter(def->name);
-    if(def->num_req > 0)
-      SystemRegisterIter(def->components[0]);
-  }
   
   for (int i = 0; i < UPDATE_DONE; i++){
     if(!def->syncs[i])
@@ -224,6 +219,12 @@ system_t* SystemCreate(world_t* w, system_define_t* def){
     }
     SystemRequire(s, cid);
 
+  }
+  
+  if(def->iter){
+     SystemRegisterIter(w, def->name, s);
+    if(def->num_req > 0)
+      SystemRegisterIter(w, def->components[0], s);
   }
   WorldMapSystem(w, def->name, s);
   return s;

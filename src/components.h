@@ -52,9 +52,9 @@ typedef struct {
   bool        has_update[MAX_ENTITIES];
   int         sparse[MAX_ENTITIES];
   size_t      size;
-
-  size_t            elem_size;   // size of component (Position, etc)
-  void*             data;        // dense array of component data
+  size_t      elem_size;   // size of component (Position, etc)
+  void*       data;        // dense array of component data
+  bool        dirty;
 } component_pool_t;
 
 bool HasComponent(component_pool_t* pool, Entity e);

@@ -83,7 +83,7 @@ typedef struct{
   const comp_id_t*    terms;
   bool                dirty;
 }entity_iter_t;
-
+entity_iter_t* EntityIterInit(world_t* w, system_t* s);
 extern hash_map_t SYS_ITERS;
 void SystemIterInit(int cap);
 entity_iter_t* SystemGetIter(const char*);
@@ -116,7 +116,7 @@ static world_t* WorldGetContext(void){
 static void EntityIterReset(entity_iter_t* it){
   it->index = -1;
 }
-entity_iter_t EntityIterStart(world_t*, system_t*);
+bool EntityIterStart(world_t* w, entity_iter_t* it, system_t* s);
 bool EntityIterNext(entity_iter_t*, world_t*);
 
 component_pool_t* ComponentQueryInner(world_t* w, system_t* s);

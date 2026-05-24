@@ -73,7 +73,7 @@ void* ComponentAdd(world_t* w, Entity e, comp_id_t id){
 
   pool->entities[idx] = e.id;
   pool->sparse[e.id] = idx;
-
+  pool->dirty = true;
   void* ptr = (char*)pool->data + (idx * pool->elem_size);
 
   memset(ptr, 0, pool->elem_size);
@@ -113,6 +113,8 @@ void ComponentRemove(world_t* w, Entity e, comp_id_t id){
     return;
 
   pool->sparse[e.id] = -1;
+
+  pool->dirty = true;
 }
 
 void ComponentsClear(world_t* w, Entity e) {
