@@ -326,6 +326,9 @@ bool ParseForceComponent(cJSON* j, force_t* out){
 
   out->type = StringToForce(tname);
 
+  if(out->type == FORCE_IMPULSE)
+    out->kill_on_end = true;
+
   char rname[MAX_NAME_LEN];
   Json_GetString(j, "react", rname);
 

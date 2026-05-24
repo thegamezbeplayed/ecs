@@ -18,18 +18,20 @@ void InputLoad(world_t* w, Entity e){
 void InputSystem(world_t* w, Entity e){
   input_t* in = GET_COMPONENT(w, e, input_t, INPUT_ID);
 
-  if(!InputCheck(in, e))
+  if(!InputCheck(in, e)){
+    ComponentClearUpdate(w, e, INPUT_ID);
     return;
-  ComponentUpdate(w, e, INPUT_ID);
+  }
 
   KeyboardKey k = in->last_key;
   action_key_t* ak = InputGetAction(k);
-
-  if(!ak || ak->type == ACT_NONE)
+  if(!ak || ak->type == ACT_NONE){ 
+    ComponentClearUpdate(w, e, INPUT_ID);
     return;
+  }
 
+  ComponentUpdate(w, e, INPUT_ID);
   SubjectNotify(ak->name, in);
-
 }
 
 void InputRegister(world_t* w){

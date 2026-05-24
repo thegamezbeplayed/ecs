@@ -93,7 +93,7 @@ void OnPhysEvent(event_t* ev, void* data){
 
 void PhysicsRegister(world_t* w){
   LookAddSink("Force", ForceSink);
-}
+
 
 void PhysicsLoad(world_t* w, Entity e){
   rigid_body_t* rb = GET_COMPONENT(w, e, rigid_body_t, PHYS_ID);
@@ -218,10 +218,11 @@ void ForceSystem(world_t* w, Entity e){
      return;
 
    f->is_active = ForceStep(f, f->is_active);
+   if(!f->is_active)
+     return;
+
    ForceApply(rb, f);
-
    ComponentUpdate(w, be, PHYS_ID);
-
 }
 
 void ForceCleanup(world_t* w, Entity e){

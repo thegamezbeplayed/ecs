@@ -31,22 +31,29 @@ input_t* InitInput(void){
   in->turn = -1;
 }
 
+bool InputSetKey(input_t* gi, KeyboardKey k){
+  action_key_t* ak = InputGetAction(k);
+
+  if(ak)
+    gi->last_key = k;
+  else
+    gi->last_key = KEY_NULL;
+
+  return gi->last_key > KEY_NULL;
+}
+
 bool InputCheck(input_t* gi, Entity e){
   if(IsKeyDown(KEY_SPACE))
     DO_NOTHING();
 
   int key = GetKeyPressed();
 
-  if(key > 0){
-    gi->last_key = key;
-    return true;
-  }
-  else if(IsKeyReleased(gi->last_key)){
-    gi->last_key = 0;
-    return true;
-  }
+  if(key > 0)
+    return InputSetKey(gi, key);
+  else if(IsKeyReleased(gi->last_key))
+    return InputSetKey(gi, key);
   else if(IsKeyDown(gi->last_key))
-    return true;
-
+    return InputSetKey(gi, gi->last_key);
+ 
   return false;
 }
