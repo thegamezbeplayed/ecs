@@ -65,6 +65,9 @@ bool EntityReady(EntityManager* em, Entity e) {
 }
 
 bool EntityValid(EntityManager* em, Entity e) {
+  if(e.id == INVALID_ENTITY.id)
+    return false;
+
   return em->generation[e.id] == e.generation;
 }
 

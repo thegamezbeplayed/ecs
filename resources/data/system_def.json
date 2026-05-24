@@ -90,15 +90,14 @@
     "components": ["RigidBody", "Position"],
     "syncs": [
       {"step": "UPDATE_POST",  "fn": "PhysicsSystem"},
-      {"step": "UPDATE_PRE" ,  "fn": "PhysicsCollision"}
+      {"step": "UPDATE_PRE" ,  "fn": "PhysicsCollision", "iter": 1}
     ],
     "sets": [
       {"step": "GAME_READY",   "fn": "PhysicsLoad"}
     ],
     "states": [
       {"step": "GAME_LOADING", "fn": "PhysicsRegister"}
-    ],
-    "iter": true
+    ]
   },
   "Forces": {
     "components": ["Force"],

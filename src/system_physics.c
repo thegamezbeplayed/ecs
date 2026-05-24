@@ -93,6 +93,8 @@ void OnPhysEvent(event_t* ev, void* data){
 
 void PhysicsRegister(world_t* w){
   LookAddSink("Force", ForceSink);
+  system_t* pt = HashGet(&w->sys_map, hash_str_64("Physics"));
+  EntityIterStart(w, pt);
 }
 
 void PhysicsLoad(world_t* w, Entity e){
@@ -117,10 +119,10 @@ void PhysicsLoad(world_t* w, Entity e){
 void PhysicsCollision(world_t* w, Entity e){
   rigid_body_t* body = GET_COMPONENT(w, e, rigid_body_t, PHYS_ID);
   rigid_body_t* tar = NULL;
+  entity_iter_t* iter = SystemGetIter("Physics");
+  while(EntityIterNext(iter, w)){
 
-  while(EntityIterNext(w->iter, w)){
-
-    Entity other = w->iter->current;
+    Entity other = iter->current;
 
     if(EntityGetRelationTarget(w, e, REL_ChildOf).id == other.id)
       continue;
@@ -151,7 +153,7 @@ void PhysicsCollision(world_t* w, Entity e){
     return;
   }
 
-  EntityIterReset(w->iter);
+  EntityIterReset(iter);
 }
 
 void PhysicsSystem(world_t* w, Entity e){

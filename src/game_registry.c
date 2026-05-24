@@ -24,7 +24,9 @@ void WorldInit(world_t* w) {
   w->systems = GameCalloc("WorldInit", NUM_SYS, sizeof(system_t));
 
   HashInit(&SYSTEM_SINK, next_pow2_int(NUM_SYS));
-  w->iter = GameCalloc("WorldInit", 1, sizeof(entity_iter_t));
+
+  HashInit(&w->sys_map, next_pow2_int(NUM_SYS));
+  SystemIterInit(NUM_SYS+NUM_COMP_CORE);
 }
 
 void PrefabRegistryInit(world_t* w) {

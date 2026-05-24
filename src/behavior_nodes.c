@@ -12,8 +12,10 @@ BehaviorStatus BehaviorMoveToDestination(world_t* w, behavior_params_t *params){
   if(vec_compare(p->dest, VEC_UNSET))
     return BEHAVIOR_FAILURE;
 
-  if(VEC_DIST(p->pos, p->dest) < 12)
+  if(VEC_DIST(p->pos, p->dest) < 12){
+    p->dest = VEC_UNSET;
     return BEHAVIOR_SUCCESS;
+  }
 
   p->dir_step = vec_dir_between(p->pos, p->dest);
   ComponentUpdate(w, e, POS_ID);
@@ -42,6 +44,13 @@ BehaviorStatus BehaviorCheckAggro(world_t* w, behavior_params_t *params){
   Entity e = *params->ent;
   if(!EntityValid(&w->manager, e))
     return BEHAVIOR_FAILURE;
+
+  if(EntityHasRelation(w, e, REL_Target)){
+    Entity rel = EntityGetRelationTarget(w, e, REL_Target);
+    if(EntityValid(&w->manager, rel))
+      return BEHAVIOR_SUCCESS;
+  }
+
 
 }
 

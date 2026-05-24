@@ -8,6 +8,11 @@
       "name": "spawn",
       "state": "IDLE",
       "children": ["change-state"]
+    },
+    {
+      "name":     "aggro",
+      "state":    "AGGRO",
+      "children": "check-aggro"]
     }
   ],
   "leafs": [
@@ -22,6 +27,10 @@
     {
       "name": "move-dest",
       "fn":   "MoveToDestination"
+    },
+    {
+      "name": "check-aggro",
+      "fn":   "CheckAggro"
     }
   ]
 }

@@ -3,6 +3,7 @@
 
 #include "components.h"
 #include "process_define.h"
+#include "game_common.h"
 
 #define MAX_TERMS 8
 #define MAX_PREFABS 128
@@ -26,6 +27,7 @@
 #define REL_Observes    5u
 #define REL_SubjectOf   6u
 #define REL_BehaviorOf  7u
+#define REL_StatOf      8u
 
 typedef uint32_t RelationType;
 typedef struct {
@@ -53,7 +55,6 @@ typedef struct {
   SystemFn  step[UPDATE_DONE];
   SystemCB  set[GAME_DONE];
   SystemCB  tick[UPDATE_DONE];
-  bool      needs_iter;
 } system_t;
 
 system_t* SystemRegister(world_t* w, SystemCB*, SystemCB*, SystemFn);
@@ -80,7 +81,13 @@ typedef struct{
   int                 index, term_count;
   Entity              current;
   const comp_id_t*    terms;
+  bool                dirty;
 }entity_iter_t;
+
+extern hash_map_t SYS_ITERS;
+void SystemIterInit(int cap);
+entity_iter_t* SystemGetIter(const char*);
+
 
 struct world_s {
   EntityManager     manager;
@@ -90,13 +97,19 @@ struct world_s {
 
   int               num_sys;
   system_t*         systems;
+  hash_map_t        sys_map;
   prefab_registry_t prefabs;
 
   relation_t        relations[MAX_ENTITIES];
   bool              has_relation[MAX_ENTITIES];  
-  entity_iter_t*    iter; 
 };
 extern world_t world;
+
+static void WorldMapSystem(world_t* w, const char* str, system_t* s){
+  hash_key_t key = hash_str_64(str);
+  HashPut(&w->sys_map, key, s);
+}
+
 static world_t* WorldGetContext(void){
   return &world;
 }
