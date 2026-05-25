@@ -5,9 +5,9 @@
 #include "game_register.h"
 
 #define NUM_SYS      16
-#define MAX_COMP_DEF 48
-#define MAX_PREF_DEF 16
-#define NUM_REL      16
+#define MAX_COMP_DEF 128
+#define MAX_PREF_DEF 64
+#define NUM_REL      24
 
 typedef struct tile_instance_t {
   char* name;

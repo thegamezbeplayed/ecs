@@ -65,13 +65,15 @@
         {"name": "Observer",
           "sublist": [
             {"name": "rb-observer", "type": "Observes"},
-            {"name": "pos-observer", "type": "Observes"}
+            {"name": "pos-observer", "type": "Observes"},
+            {"name": "state-observer", "type": "Observes"}
           ]
         },
         {"name": "Subject",
           "sublist": [
             {"name": "PHYS-VEL",    "type": "SubjectOf"},
-            {"name": "POS-STEP",    "type": "SubjectOf"}
+            {"name": "POS-STEP",    "type": "SubjectOf"},
+            {"name": "STATE-CHANGE",    "type": "SubjectOf"}
           ]
         },
         {"name": "Behavior",

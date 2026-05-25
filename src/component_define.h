@@ -4,7 +4,7 @@
 #include "asset_vfx.h"
 #include "physics_define.h"
 #include "view_define.h"
-#include "game_stats.h"
+#include "stat_define.h"
 #include "behavior_define.h"
 #include "team_define.h"
 #include "game_control.h"
@@ -25,6 +25,7 @@ bool SubjectInit(void* comp, component_entry_t* j);
 bool TrackingInit(void* comp, component_entry_t* j);
 bool StateInit(void* comp, component_entry_t* j);
 bool BehaviorInit(void* comp, component_entry_t* j);
+bool StatInit(void* comp, component_entry_t* j);
 
 bool ParseSpriteComponent(cJSON* j, sprite_t* out);
 bool ParseBehaviorComponent(cJSON* j, behavior_t* out);
@@ -37,6 +38,7 @@ bool ParseParticleEmitterComponent(cJSON*, particle_emitter_t*);
 bool ParseRenderComponent(cJSON* j, render_ctx_t* out);
 bool ParseObserverComponent(cJSON* j, component_observer_t* out);
 bool ParseSubjectComponent(cJSON* j, subject_component_t* out);
+bool ParseStatComponent(cJSON* j, stat_t* out);
 
 typedef struct{
   anim_player_t   player;

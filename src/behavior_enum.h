@@ -5,6 +5,7 @@ typedef enum{
   STATE_SPAWN,//Should only be set after NONE
   STATE_IDLE, //should be able to move freely between these ==>
   STATE_AGGRO,
+  STATE_ATTACK,
   STATE_DIE,//<===== In MOST cases. Should not be able to go down from DIE
   STATE_END,//sentinel entity state should never be this or greater
 }State;

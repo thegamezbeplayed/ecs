@@ -13,16 +13,30 @@
     },
     {
       "name":  "aggro",
-      "type":  "SEQUENCE",
+      "type":  "SELECTOR",
       "state": "AGGRO",
-      "children": ["check-aggro", "move-target"]
+      "children": ["SeekEnemy","change-state"]
+    },
+    {
+      "name": "attack",
+      "type": "SEQUENCE",
+      "state":"ATTACK",
+      "children": ["AttackEnemy"]
     }
   ],
   "branches": [
     {"name": "FindEnemy", "type": "SEQUENCE", "override": true, "state": "AGGRO", 
-      "children":["check-aggro", "change-state"]},
+      "children":["check-aggro", "change-state"]
+    },
+    {"name": "SeekEnemy", "type": "SEQUENCE", "override": true, "state": "ATTACK", 
+      "children":["check-aggro", "move-target", "change-state"]
+    },
+    {"name": "AttackEnemy", "type": "SEQUENCE", "override": true, "state": "AGGRO", 
+      "children":["start-attack", "change-state"]
+    },
     {"name": "FindDest", "type": "SEQUENCE",  
-      "children":["acquire-dest", "move-dest"]}
+      "children":["acquire-dest", "move-dest"]
+    }
   ],
   "leafs": [
     {
@@ -44,6 +58,10 @@
     {
       "name": "check-aggro",
       "fn":   "CheckAggro"
+    },
+    {
+      "name": "start-attack",
+      "fn":   "Attack"
     }
   ]
 }

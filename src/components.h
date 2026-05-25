@@ -5,7 +5,7 @@
 #define MAX             1024
 #define MAX_COMPONENTS  512
 #define MAX_PLAYERS     2
-#define NUM_COMP_CORE   19
+#define NUM_COMP_CORE   20
 
 #define POS_ID       ComponentGetID("Position")
 #define PHYS_ID      ComponentGetID("RigidBody")

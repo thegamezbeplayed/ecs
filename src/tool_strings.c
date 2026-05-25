@@ -10,6 +10,7 @@ State StringToState(const char* str){
   if (strcmp(str, "IDLE") == 0)   return STATE_IDLE;
   if (strcmp(str, "SPAWN") == 0)  return STATE_SPAWN;
   if (strcmp(str, "AGGRO") == 0)  return STATE_AGGRO;
+  if (strcmp(str, "ATTACK") == 0) return STATE_ATTACK;
   if (strcmp(str, "DIE") == 0)    return STATE_DIE;
  
   return STATE_NONE;
@@ -31,6 +32,7 @@ BehaviorLeafInit StringToLeafFunc(const char* str){
   if (strcmp(str, "MoveToTarget") == 0)        return LeafMoveToTarget;
   if (strcmp(str, "ChangeState") == 0)         return LeafChangeState;
   if (strcmp(str, "CheckAggro") == 0)          return LeafCheckAggro;
+  if (strcmp(str, "Attack") == 0)              return LeafAttack;
 
   return NULL;
 }

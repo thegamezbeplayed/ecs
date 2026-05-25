@@ -22,6 +22,7 @@ const component_define_t CORE_COMPONENTS[] = {
   {"Follow",    sizeof(follow_t)},
   {"Level",     sizeof(level_t)},
   {"Team",      sizeof(team_t)},
+  {"Stat",      sizeof(stat_t)},
   {"Expiry",    sizeof(lifetime_t)},
   {"Particle",        sizeof(particle_t)},
   {"ParticleEmitter", sizeof(particle_emitter_t)}
@@ -42,6 +43,7 @@ const component_func_t COMPFUNC_LOOKUP[] = {
   {"Follow",      FollowInit},
   {"Track",       TrackingInit},
   {"State",       StateInit},
+  {"Stat",        StatInit},
   {"Behavior",    BehaviorInit},
   {"Team",        TeamInit},
   {"Particle",        ParticleInit},

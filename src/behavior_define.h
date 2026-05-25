@@ -26,6 +26,8 @@ static state_change_requirement_t CAN_CHANGE[STATE_END+1] = {
   {STATE_NONE, NEVER, STATE_END},
   {STATE_SPAWN, LESS_THAN, STATE_SPAWN},
   {STATE_IDLE, LESS_THAN, STATE_DIE},
+  {STATE_AGGRO, LESS_THAN, STATE_DIE},
+  {STATE_ATTACK, LESS_THAN, STATE_DIE},
   {STATE_DIE, LESS_THAN, STATE_DIE},
   {STATE_END, EQUAL_TO, STATE_DIE},
 };
@@ -111,6 +113,8 @@ static inline behavior_tree_node_t* LeafChangeState(behavior_params_t *params)  
 BehaviorStatus BehaviorCheckAggro(world_t*, behavior_params_t *params);
 static inline behavior_tree_node_t* LeafCheckAggro(behavior_params_t *params)  { return BehaviorCreateLeaf(BehaviorCheckAggro,params); }
 
+BehaviorStatus BehaviorAttack(world_t*, behavior_params_t *params);
+static inline behavior_tree_node_t* LeafAttack(behavior_params_t *params)  { return BehaviorCreateLeaf(BehaviorAttack,params); }
 
 BehaviorStatus BehaviorAcquireDestination(world_t*, behavior_params_t *params);
 static inline behavior_tree_node_t* LeafAcquireDestination(behavior_params_t *params)  { return BehaviorCreateLeaf(BehaviorAcquireDestination,params); }

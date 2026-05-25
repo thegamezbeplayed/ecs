@@ -56,6 +56,17 @@ void AnimSink(void* obs_data, void* sub, payload_t* pl){
     s = ANIM_WALK;
     dir = abs(vec_to_deg(p->dir_step)/90);
   }
+  else if(pl->type = STATE_ID){
+    state_t* st = pl->data;
+    switch(st->state){
+      case STATE_ATTACK:
+        s = ANIM_ATTACK;
+        break;
+      case STATE_DIE:
+        s = ANIM_DIE;
+        break;
+    }
+  }
   else
     return;
 

@@ -64,7 +64,7 @@ BehaviorStatus BehaviorAcquireDestination(world_t* w, behavior_params_t *params)
 
   Cell dir = random_direction();
 
-  p->dest = cell_to_vec(dir, rand_range_float(8, 64));
+  p->dest = VEC_ADD(p->pos, cell_to_vec(dir, rand_range_float(32, 96)));
   return BEHAVIOR_SUCCESS;
 }
 
@@ -112,6 +112,12 @@ BehaviorStatus BehaviorCheckAggro(world_t* w, behavior_params_t *params){
   return BEHAVIOR_FAILURE;
 }
 
+//might not be needed
+BehaviorStatus BehaviorAttack(world_t*, behavior_params_t *params){
+ 
+  return BEHAVIOR_SUCCESS;
+}
+
 BehaviorStatus BehaviorChangeState(world_t* w, behavior_params_t *params){
   Entity e = *params->ent;
   if(!EntityValid(&w->manager, e))
@@ -121,8 +127,9 @@ BehaviorStatus BehaviorChangeState(world_t* w, behavior_params_t *params){
   if(!s)
     return BEHAVIOR_FAILURE;
 
-  if(BehaviorSetState(s, params->state))
+  if(BehaviorSetState(s, params->state)){
     return BEHAVIOR_SUCCESS;
-
+    ComponentUpdate(w, e, STATE_ID);
+  }
   return BEHAVIOR_FAILURE;
 }

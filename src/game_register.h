@@ -18,8 +18,8 @@
 #define REGISTER_COMPONENT(world, Type) \
   ComponentRegister(world, sizeof(Type))
 
-#define MAX_RELATIONS_PER_ENTITY 4 
-#define MAX_RELATIONS   8
+#define MAX_RELATIONS_PER_ENTITY 8 
+#define MAX_RELATIONS   16
 #define REL_AppliesTo   1u
 #define REL_ChildOf     2u          
 #define REL_Owner       3u         
