@@ -13,17 +13,17 @@
       {
         "name": "wiz",
         "list": ["Input", "Sprite", "Animation", "Position",
-         "RigidBody", "Force", "Follow"]
+         "RigidBody", "Force", "Follow", "Team", "Stat"]
       },
       {
         "name": "rat",
         "list": ["Sprite", "Animation", "Position", "RigidBody", "Force",
-        "State"]
+        "Stat", "State", "Team"]
       },
       {
         "name": "orc",
         "list": ["Sprite", "Animation", "Position", "RigidBody", "Force",
-        "State"]
+        "State", "Team", "Stat"]
       },
       {
         "name": "tile_floor",
@@ -76,8 +76,14 @@
         },
         {"name": "Behavior",
           "sublist": [
-            {"name": "spawn", "type": "BehaviorOf"},
-            {"name": "wander", "type": "BehaviorOf"}
+            {"name": "spawn",   "type": "BehaviorOf"},
+            {"name": "wander",  "type": "BehaviorOf"},
+            {"name": "aggro",   "type": "BehaviorOf"}
+          ]
+        },
+        {"name":  "Stat",
+          "sublist":  [
+            {"name": "rat-aggro", "type": "StatOf"}
           ]
         }
       ]
@@ -104,8 +110,14 @@
         },
         {"name": "Behavior",
           "sublist": [
-            {"name": "spawn", "type": "BehaviorOf"},
-            {"name": "wander", "type": "BehaviorOf"}
+            {"name": "spawn",  "type": "BehaviorOf"},
+            {"name": "wander", "type": "BehaviorOf"},
+            {"name": "aggro",  "type": "BehaviorOf"}
+          ]
+       },
+       {"name":  "Stat",
+          "sublist":  [
+            {"name": "orc-aggro", "type": "StatOf"}
           ]
         }
       ]

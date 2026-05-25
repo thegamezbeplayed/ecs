@@ -5,7 +5,7 @@
 #define MAX             1024
 #define MAX_COMPONENTS  512
 #define MAX_PLAYERS     2
-#define NUM_COMP_CORE   18
+#define NUM_COMP_CORE   19
 
 #define POS_ID       ComponentGetID("Position")
 #define PHYS_ID      ComponentGetID("RigidBody")
@@ -27,6 +27,7 @@
 #define SUBJECT_ID   ComponentGetID("Subject")
 #define STATE_ID     ComponentGetID("State")
 #define BEHAVE_ID    ComponentGetID("Behavior")
+#define TEAM_ID      ComponentGetID("Team")
 
 typedef uint64_t comp_id_t;
 extern comp_id_t INVALID_COMPONENT;
@@ -51,9 +52,9 @@ typedef struct {
   bool        has_update[MAX_ENTITIES];
   int         sparse[MAX_ENTITIES];
   size_t      size;
-
-  size_t            elem_size;   // size of component (Position, etc)
-  void*             data;        // dense array of component data
+  size_t      elem_size;   // size of component (Position, etc)
+  void*       data;        // dense array of component data
+  bool        dirty, updated;
 } component_pool_t;
 
 bool HasComponent(component_pool_t* pool, Entity e);

@@ -1,8 +1,9 @@
 {
   "components": [
     "Sprite", "Animation", "Force", "Render", "Position", 
-    "Input", "Camera", "Observer", "RigidBody",
-    "Follow", "Track", "Subject", "State", "Behavior"
+    "Input", "Camera", "Observer", "RigidBody", "Team",
+    "Follow", "Track", "Subject", "State", "Behavior",
+    "Stat"
   ],
   "Observer": {
     "func":	"ObserverInit",
@@ -365,7 +366,31 @@
       {
         "name":   "spawn",
         "state":  "SPAWN"
+      },
+      {
+        "name":   "aggro",
+        "state":  "AGGRO"
       }
+    ]
+  },
+  "Team": {
+    "func": "TeamInit",
+    "list": [
+      {"name": "wiz", "team": "TEAM-VENTURE"},
+      {"name": "orc", "team": "LEGION-OF-DOOM"},
+      {"name": "rat", "team": "WILD-RATS"}
+    ]
+  },
+  "Stat": {
+    "func": "StatInit",
+    "list": [
+      {"name": "wiz", "type": "HEALTH", "amount": 500},
+      {"name": "orc", "type": "HEALTH", "amount": 2500},
+      {"name": "rat", "type": "HEALTH", "amount": 100},
+      {"name": "rat-aggro",
+        "type": "RANGE", "amount": 64},
+      {"name": "orc-aggro",
+        "type": "RANGE", "amount": 80}
     ]
   }
 }

@@ -364,5 +364,25 @@ bool ParseBehaviorComponent(cJSON* j, behavior_t* out){
   out->state = StringToState(sname);
 
   return out->state > STATE_NONE;
+}
 
+bool ParseTeamComponent(cJSON* j, team_t* out){
+  if(!j)
+    return false;
+
+  Json_GetString(j, "team", out->name);
+  out->id = hash_str_64(out->name);
+
+  return out->id > 0;
+}
+
+bool ParseStatComponent(cJSON* j, stat_t* out){
+  if(!j)
+    return false;
+
+  Json_GetString(j, "type", out->name);
+  out->id = hash_str_64(out->name);
+  out->current = out->max = Json_GetInt(j, "amount", 0);
+
+  return out->current > 0;
 }

@@ -6,6 +6,7 @@
 #include "view_define.h"
 #include "game_stats.h"
 #include "behavior_define.h"
+#include "team_define.h"
 #include "game_control.h"
 
 bool InputInit(void* comp, component_entry_t* j);
@@ -24,7 +25,6 @@ bool SubjectInit(void* comp, component_entry_t* j);
 bool TrackingInit(void* comp, component_entry_t* j);
 bool StateInit(void* comp, component_entry_t* j);
 bool BehaviorInit(void* comp, component_entry_t* j);
-
 
 bool ParseSpriteComponent(cJSON* j, sprite_t* out);
 bool ParseBehaviorComponent(cJSON* j, behavior_t* out);
@@ -78,5 +78,13 @@ typedef struct{
 
 static void LifetimeSet(lifetime_t* lf, int dur){
  lf->expiration = WorldGetTime() + dur;
+}
+
+bool ParseTeamComponent(cJSON* j, team_t* out);
+
+static bool TeamInit(void* comp, component_entry_t* j){
+  team_t* t = comp;
+
+  return ParseTeamComponent(j->data, t);
 }
 #endif

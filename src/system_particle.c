@@ -3,7 +3,7 @@
 #include "tool_lookup.h"
 #include "process_event.h"
 
-static particle_layer_t PARTICLE_LAYERS[LAYER_DONE] = {0};
+static particle_layer_t PARTICLE_LAYERS[LAYER_UI] = {0};
 
 Entity ParticlePoolGetAvailable(RenderLayer l){
   for(int i = 0; i < MAX_PARTICLES; i++){
@@ -114,7 +114,7 @@ void ParticleSystem(world_t* w, Entity e){
 }
 
 void ParticlesInit(world_t* w){
-  for(int i = 0; i < LAYER_DONE; i++){
+  for(int i = 0; i < LAYER_UI; i++){
     EntiyBatchReserve(&w->manager, MAX_PARTICLES, PARTICLE_LAYERS[i].ents);
     SubjectAddObserver(LookupLayer(i), "PARTICLE", ParticleOnRender, w);
   }

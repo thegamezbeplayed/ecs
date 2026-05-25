@@ -2,13 +2,27 @@
   "roots": [
     {
       "name": "wander",
-      "children": ["acquire-dest", "move-dest"]
+      "type": "SELECTOR",
+      "children": ["FindEnemy", "FindDest"]
     },
     {
       "name": "spawn",
+      "type": "SEQUENCE",
       "state": "IDLE",
       "children": ["change-state"]
+    },
+    {
+      "name":  "aggro",
+      "type":  "SEQUENCE",
+      "state": "AGGRO",
+      "children": ["check-aggro", "move-target"]
     }
+  ],
+  "branches": [
+    {"name": "FindEnemy", "type": "SEQUENCE", "override": true, "state": "AGGRO", 
+      "children":["check-aggro", "change-state"]},
+    {"name": "FindDest", "type": "SEQUENCE",  
+      "children":["acquire-dest", "move-dest"]}
   ],
   "leafs": [
     {
@@ -22,6 +36,14 @@
     {
       "name": "move-dest",
       "fn":   "MoveToDestination"
+    },
+    {
+      "name": "move-target",
+      "fn":   "MoveToTarget"
+    },
+    {
+      "name": "check-aggro",
+      "fn":   "CheckAggro"
     }
   ]
 }

@@ -2,6 +2,28 @@
 #include "game_enum.h"
 #include "process_event.h"
 
+hash_map_t SYS_ITERS;
+
+void SystemIterInit(int cap){
+  HashInit(&SYS_ITERS, next_pow2_int(cap));
+}
+
+uint64_t SystemRegisterIter(world_t* w, const char* str, system_t* s){
+  hash_key_t key = hash_str_64(str);
+  entity_iter_t* e = SystemGetIter(str);
+  if(!e){
+    e = EntityIterInit(w, s);
+    HashPut(&SYS_ITERS, key, e);
+  }
+
+  return key;
+}
+
+entity_iter_t* SystemGetIter(const char* str){
+  hash_key_t key = hash_str_64(str);
+  return HashGet(&SYS_ITERS, key);
+}
+
 component_pool_t* ComponentQueryInner(world_t* w, system_t* s) {
   component_pool_t* best = NULL;
 
@@ -41,9 +63,10 @@ void SystemTick(world_t* w, system_t* s, UpdateType u){
   component_pool_t* base = ComponentQueryInner(w, s);
   if (!base) return;
 
-  if(s->needs_iter)
+  /*
+  if(s->fn_iter[u])
     *w->iter = EntityIterStart(w, s);
-
+*/
   for (int i = 0; i < base->size; i++) {
     Entity e = { base->entities[i], w->manager.generation[base->entities[i]] };
 
@@ -150,7 +173,7 @@ system_t* SystemCreate(world_t* w, system_define_t* def){
   memset(s, 0, sizeof(system_t));
   s->index = w->num_sys++;
 
-  s->needs_iter = def->iter;
+  
   for (int i = 0; i < UPDATE_DONE; i++){
     if(!def->syncs[i])
       continue;
@@ -197,6 +220,12 @@ system_t* SystemCreate(world_t* w, system_define_t* def){
     SystemRequire(s, cid);
 
   }
-
+  
+  if(def->iter){
+     SystemRegisterIter(w, def->name, s);
+    if(def->num_req > 0)
+      SystemRegisterIter(w, def->components[0], s);
+  }
+  WorldMapSystem(w, def->name, s);
   return s;
 }

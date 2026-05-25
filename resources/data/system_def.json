@@ -1,7 +1,8 @@
 {
   "systems": ["Controller", "Animations", "Sprites", 
-    "Cameras", "Renderer", "Observe", "Subjects",
-    "Forces", "Physics", "Positions", "Behavior", "State"
+    "Cameras", "Renderer", "Observe", "Subjects", "Combat",
+    "Forces", "Physics", "Positions", "Behavior", "State",
+    "Team"
   ],
   "Observe": {
     "components": ["Observer"],
@@ -84,19 +85,26 @@
     ],
     "states": [
       {"step": "GAME_LOADING", "fn": "PositionRegister"}
-    ]
+    ],
+    "steps":  [
+      {"step": "UPDATE_START", "fn": "PositionPrep"}
+    ],
+    "iter": true
   },
   "Physics": {
     "components": ["RigidBody", "Position"],
     "syncs": [
       {"step": "UPDATE_POST",  "fn": "PhysicsSystem"},
-      {"step": "UPDATE_PRE" ,  "fn": "PhysicsCollision"}
+      {"step": "UPDATE_PRE" ,  "fn": "PhysicsCollision", "iter": 1}
     ],
     "sets": [
       {"step": "GAME_READY",   "fn": "PhysicsLoad"}
     ],
     "states": [
       {"step": "GAME_LOADING", "fn": "PhysicsRegister"}
+    ],
+    "steps": [
+      {"step": "UPDATE_START", "fn": "PhysicsPrep"}
     ],
     "iter": true
   },
@@ -166,6 +174,22 @@
     "components": ["State"],
     "sets": [
       {"step": "GAME_READY", "fn": "StateBegin"}
+    ]
+  },
+  "Combat": {
+    "components": ["Team", "Position"],
+    "steps":  [
+      {"step":  "UPDATE_START", "fn": "CombatPrep"}
+    ],
+    "iter": true
+  },
+  "Team": {
+    "components": ["Team"],
+    "states": [
+      {"step": "GAME_LOADING", "fn": "TeamLoad"}
+    ],
+    "sets": [
+      {"step": "GAME_READY",   "fn": "TeamRegister"}
     ]
   }
 }

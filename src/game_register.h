@@ -3,6 +3,7 @@
 
 #include "components.h"
 #include "process_define.h"
+#include "game_common.h"
 
 #define MAX_TERMS 8
 #define MAX_PREFABS 128
@@ -26,6 +27,8 @@
 #define REL_Observes    5u
 #define REL_SubjectOf   6u
 #define REL_BehaviorOf  7u
+#define REL_StatOf      8u
+#define REL_TargetOf    9u
 
 typedef uint32_t RelationType;
 typedef struct {
@@ -53,7 +56,6 @@ typedef struct {
   SystemFn  step[UPDATE_DONE];
   SystemCB  set[GAME_DONE];
   SystemCB  tick[UPDATE_DONE];
-  bool      needs_iter;
 } system_t;
 
 system_t* SystemRegister(world_t* w, SystemCB*, SystemCB*, SystemFn);
@@ -80,30 +82,42 @@ typedef struct{
   int                 index, term_count;
   Entity              current;
   const comp_id_t*    terms;
+  bool                dirty;
 }entity_iter_t;
+entity_iter_t* EntityIterInit(world_t* w, system_t* s);
+extern hash_map_t SYS_ITERS;
+void SystemIterInit(int cap);
+entity_iter_t* SystemGetIter(const char*);
+
 
 struct world_s {
-  EntityManager     manager;
+  EntityManager       manager;
 
-  component_pool_t* pools[MAX_COMPONENTS];
-  uint32_t          next_component_id;
+  component_pool_t*   pools[MAX_COMPONENTS];
+  uint32_t            next_component_id;
 
-  int               num_sys;
-  system_t*         systems;
-  prefab_registry_t prefabs;
-
-  relation_t        relations[MAX_ENTITIES];
-  bool              has_relation[MAX_ENTITIES];  
-  entity_iter_t*    iter; 
+  int                 num_sys;
+  system_t*           systems;
+  hash_map_t          sys_map;
+  prefab_registry_t   prefabs;
+  spacial_hash_grid_t grid;
+  relation_t          relations[MAX_ENTITIES];
+  bool                has_relation[MAX_ENTITIES];  
 };
 extern world_t world;
+
+static void WorldMapSystem(world_t* w, const char* str, system_t* s){
+  hash_key_t key = hash_str_64(str);
+  HashPut(&w->sys_map, key, s);
+}
+
 static world_t* WorldGetContext(void){
   return &world;
 }
 static void EntityIterReset(entity_iter_t* it){
   it->index = -1;
 }
-entity_iter_t EntityIterStart(world_t*, system_t*);
+bool EntityIterStart(world_t* w, entity_iter_t* it, system_t* s);
 bool EntityIterNext(entity_iter_t*, world_t*);
 
 component_pool_t* ComponentQueryInner(world_t* w, system_t* s);
@@ -112,6 +126,7 @@ void WorldInit(world_t* w);
 comp_id_t ComponentRegister(world_t* w, const char*, size_t);
 void* ComponentAdd(world_t* w, Entity e, comp_id_t id);
 void* ComponentGet(world_t* w, Entity e, comp_id_t id);
+void* ComponentGetByID(world_t* w, uint32_t eid, comp_id_t id);
 void ComponentUpdate(world_t* w, Entity e, comp_id_t id);
 void ComponentClearUpdate(world_t* w, Entity e, comp_id_t cid);
 bool ComponentCheck(world_t*, comp_id_t, Entity e);

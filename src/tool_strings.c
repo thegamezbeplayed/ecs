@@ -1,10 +1,6 @@
+#include "tool_lookup.h"
 #include "game_math.h"
 #include "game_strings.h"
-#include "physics_enum.h"
-#include "view_enum.h"
-#include "sprite_enum.h"
-#include "vfx_enum.h"
-#include "process_enum.h"
 #include "system_define.h"
 #include "game_define.h"
 
@@ -19,10 +15,22 @@ State StringToState(const char* str){
   return STATE_NONE;
 }
 
+BehaviorTreeType StringToBehaviorType(const char* str){
+  if (strcmp(str, "LEAF") == 0)       return BT_LEAF;
+  if (strcmp(str, "SEQUENCE") == 0)   return BT_SEQUENCE;
+  if (strcmp(str, "SELECTOR") == 0)   return BT_SELECTOR;
+  if (strcmp(str, "CONCURRENT") == 0) return BT_CONCURRENT;
+  if (strcmp(str, "DECIDER") == 0)    return BT_DECIDER;
+ 
+  return BT_NONE;
+}
+
 BehaviorLeafInit StringToLeafFunc(const char* str){
   if (strcmp(str, "AcquireDestination") == 0)  return LeafAcquireDestination;
   if (strcmp(str, "MoveToDestination") == 0)   return LeafMoveToDestination;
+  if (strcmp(str, "MoveToTarget") == 0)        return LeafMoveToTarget;
   if (strcmp(str, "ChangeState") == 0)         return LeafChangeState;
+  if (strcmp(str, "CheckAggro") == 0)          return LeafCheckAggro;
 
   return NULL;
 }
@@ -118,7 +126,7 @@ CameraTracking StringToCameraMode(const char* str){
   return CAM_NONE;
 }
 
-AnimBehavior StringToAnimBehavior(char* str){
+AnimBehavior StringToAnimBehavior(const char* str){
  if (strcmp(str, "BLANK") == 0) return ANIM_BLANK;
  if (strcmp(str, "SUSPEND") == 0) return ANIM_SUSPEND;
  if (strcmp(str, "HURTBOX") == 0) return ANIM_HURTBOX;
@@ -126,7 +134,7 @@ AnimBehavior StringToAnimBehavior(char* str){
  return ANIM_BLANK;
 }
 
-AnimState StringToAnimState(char* str){
+AnimState StringToAnimState(const char* str){
  if (strcmp(str, "IDLE") == 0) return ANIM_IDLE;
  if (strcmp(str, "WALK") == 0) return ANIM_WALK;
  if (strcmp(str, "ATTACK") == 0) return ANIM_ATTACK;
@@ -162,7 +170,7 @@ ParticleDrawType StringToDrawType(const char* str){
   return PARTICLE_NONE;
 }
 
-RelationType RelationTypeLookup(char* str){
+RelationType RelationTypeLookup(const char* str){
   for(int i = 0; i < NUM_REL; i++){
     if (strcmp(str, RELATION_LOOKUP[i].name) == 0)
       return RELATION_LOOKUP[i].type;

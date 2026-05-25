@@ -4,6 +4,7 @@
 #include "observer_types.h"
 #include "game_common.h"
 #include "components.h"
+#include "util_hash.h"
 
 #define  MAX_SUBJECT_STORE  64
 #define MAX_LISTENERS       4 

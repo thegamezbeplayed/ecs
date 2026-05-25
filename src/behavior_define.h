@@ -80,7 +80,7 @@ typedef struct{
   BehaviorID          id;
   BehaviorTreeType    type;
   BehaviorLeafInit    fn;
-  behavior_params_t*  param_overide;
+  bool                param_overide;
   State               state;
   bool                is_root;
   int                 num_children;
@@ -117,6 +117,9 @@ static inline behavior_tree_node_t* LeafAcquireDestination(behavior_params_t *pa
 
 BehaviorStatus BehaviorMoveToDestination(world_t*, behavior_params_t *params);
 static inline behavior_tree_node_t* LeafMoveToDestination(behavior_params_t *params)  { return BehaviorCreateLeaf(BehaviorMoveToDestination,params); }
+
+BehaviorStatus BehaviorMoveToTarget(world_t*, behavior_params_t *params);
+static inline behavior_tree_node_t* LeafMoveToTarget(behavior_params_t *params)  { return BehaviorCreateLeaf(BehaviorMoveToTarget,params); }
 
 
 #endif
