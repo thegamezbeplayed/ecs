@@ -2,8 +2,30 @@
   "components": [
     "Sprite", "Animation", "Force", "Render", "Position", 
     "Input", "Camera", "Observer", "RigidBody",
-    "Follow", "Track", "Subject", "State", "Behavior"
+    "Follow", "Track", "Subject", "State", "Behavior",
+    "Layout", "Type", "UIState", "Text", "Texture"
   ],
+  "Layout": {
+
+  },
+  "Type": {
+
+  },
+  "UIState": {
+  
+  },
+  "Text": {
+
+  },
+  "Texture":  {
+    "func": "TextureInit",
+    "list": [
+      {
+        "name": "button",
+        "sheet_id": "SHEET_UI", "index": 0, "type": "NPATCH"
+      }
+    ]
+  },
   "Observer": {
     "func":	"ObserverInit",
     "list":	[

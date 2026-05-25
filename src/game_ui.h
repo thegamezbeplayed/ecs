@@ -5,6 +5,7 @@
 #include "raylib.h"
 #include "asset_define.h"
 #include "game_utils.h"
+#include "ui_enum.h"
 
 #define MAX_LINE_ITEMS 12
 #define MAX_LINE_VAL 4
@@ -65,117 +66,6 @@
 #define LIST_RIGHT_HAND_PAD 8
 
 typedef struct element_value_s element_value_t;
-
-typedef enum{
-  MENU_INACTIVE,
-  MENU_LOAD,
-  MENU_READY,
-  MENU_CLOSED,
-  MENU_ACTIVE,
-  MENU_OPENED,
-  MENU_FOCUSED,
-  MENU_CLOSE,
-  MENU_END
-}MenuState;
-
-typedef enum{
-  ELEMENT_NONE,
-  ELEMENT_LOAD,
-  ELEMENT_HIDDEN,
-  ELEMENT_IDLE,
-  ELEMENT_SHOW,
-  ELEMENT_FOCUSED,
-  ELEMENT_ACTIVATE,
-  ELEMENT_TOGGLE,
-  ELEMENT_ACTIVATED,
-  ELEMENT_DONE
-}ElementState;
-
-typedef enum{
-  UI_MASK,
-  UI_BUTTON,
-  UI_LABEL,
-  UI_HEADER,
-  UI_STATUSBAR,
-  UI_PROGRESSBAR,
-  UI_PANEL,
-  UI_GROUP,
-  UI_CONTAINER,
-  UI_TAB_PANEL,
-  UI_BOX,
-  UI_ICON,
-  UI_LINE,
-  UI_TEXT,
-  UI_ANIMATEXT,
-  UI_TITLE,
-  UI_GAME,
-  UI_TOOL_TIP,
-  UI_CHAR_SPR,
-  UI_BLANK
-}ElementType;
-
-typedef enum{
-  UI_TEXTURE_NONE,
-  UI_TEXTURE_9SLICE
-}UITexture;
-
-typedef enum{
-  LAYOUT_FREE,
-  LAYOUT_VERTICAL,
-  LAYOUT_HORIZONTAL,
-  LAYOUT_STACK,
-  LAYOUT_GRID,
-}UILayout;
-
-typedef enum{
-  ALIGN_NONE = 0,
-  ALIGN_CENTER  = 0x01,
-  ALIGN_LEFT    = 0x02,
-  ALIGN_RIGHT   = 0x04,
-  ALIGN_TOP     = 0x10,
-  ALIGN_MID     = 0x20,
-  ALIGN_BOT     = 0x40,
-  ALIGN_UNIFORM = 0x200,
-  ALIGN_OVER    = 0x100,
-}UIAlignment;
-
-typedef enum{
-  UI_PADDING,
-  UI_PADDING_TOP,
-  UI_PADDING_BOT,
-  UI_PADDING_LEFT,
-  UI_PADDING_RIGHT,
-  UI_MARGIN,
-  UI_MARGIN_TOP,
-  UI_MARGIN_BOT,
-  UI_MARGIN_LEFT,
-  UI_MARGIN_RIGHT,
-  UI_POSITIONING
-}UIPosition;
-
-typedef enum{
-  MENU_NONE,
-  MENU_MAIN,
-  MENU_OPTIONS,
-  MENU_PAUSE,
-  MENU_RECAP,
-  MENU_HUD,
-  MENU_PLAY_AREA,
-  MENU_EXIT,
-  MENU_DEBUG,
-  MENU_DONE
-}MenuId;
-
-typedef enum{
-  FETCH_NONE,
-  FETCH_UPDATE,
-  FETCH_EVENT,
-  FETCH_TURN,
-  FETCH_ONCE,
-  FETCH_ACTIVE,
-  FETCH_DONE,
-}FetchRate;
-
 
 typedef struct{
   int               num_val, r_len, r_wid, r_hei, padd_r, padd_l, des_len;

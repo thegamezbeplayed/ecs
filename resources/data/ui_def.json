@@ -1,0 +1,21 @@
+{
+  "elements":  [
+    {
+      "name":       "title", "prefab": "menu", "screen": 1,
+      "children":   ["pane-title", "button-play"]
+    },
+    {
+      "name": "button-play", "prefab": "button", "text": "Play"
+    }
+  ],
+  "prefabs":  [
+    {
+      "name": "menu",
+      "components": ["Layout", "UIType", "UIState"]
+    },
+    {
+      "name": "button",
+      "components": ["Layout", "Type", "UIState", "Text", "Texture", "Interact"]
+    }:
+  ]
+}

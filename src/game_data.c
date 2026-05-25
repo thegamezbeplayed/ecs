@@ -1,5 +1,6 @@
 #include "component_define.h"
 #include "system_define.h"
+#include "ui_define.h"
 #include "game_control.h"
 #include "components.h"
 
@@ -12,7 +13,6 @@ const component_define_t CORE_COMPONENTS[] = {
   {"Input",     sizeof(input_t)},
   {"Camera",    sizeof(camera_t)},
   {"Track",     sizeof(tracking_t)},
-  {"Type",      sizeof(EntityType)},
   {"Observer",  sizeof(component_observer_t)},
   {"Subject",   sizeof(subject_component_t)},
   {"Force",     sizeof(force_t)},
@@ -23,7 +23,13 @@ const component_define_t CORE_COMPONENTS[] = {
   {"Level",     sizeof(level_t)},
   {"Expiry",    sizeof(lifetime_t)},
   {"Particle",        sizeof(particle_t)},
-  {"ParticleEmitter", sizeof(particle_emitter_t)}
+  {"ParticleEmitter", sizeof(particle_emitter_t)},
+  {"UIState",   sizeof(element_state)},
+  {"Type",      sizeof(ElementType)},
+  {"Texture",   sizeof(texture_t)},
+  {"Text",      sizeof(text_t)},
+  {"Layout",    sizeof(layout_t)},
+  {"Interact",  sizeof(interact_t)}
 };
 
 const component_func_t COMPFUNC_LOOKUP[] = {
@@ -43,7 +49,12 @@ const component_func_t COMPFUNC_LOOKUP[] = {
   {"State",       StateInit},
   {"Behavior",       BehaviorInit},
   {"Particle",        ParticleInit},
-  {"ParticleEmitter", ParticleEmitterInit}
+  {"ParticleEmitter", ParticleEmitterInit},
+  {"UIState",      ElementInitState},
+  {"Type",         ElementSetType},
+  {"Texture",      TextureInit},
+  {"Text",         TextInit},
+  {"Layout",       LayoutInit}
 };
 
 component_entry_t* GetGameComponentDefine(game_t* g, const char* comp, const char* name){
