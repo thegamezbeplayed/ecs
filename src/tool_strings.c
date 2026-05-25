@@ -81,6 +81,20 @@ ReactType StringToReaction(const char* str){
   return REACT_NONE;
 }
 
+AnimEventID StringToAnimEvent(const char* str){
+  if (str == NULL) return ANIM_EVENT_NONE;
+
+  if (strcmp(str, "STATE") == 0)        return ANIM_EVENT_STATE;
+  if (strcmp(str, "FRAME") == 0)        return ANIM_EVENT_FRAME;
+  if (strcmp(str, "SUSPEND") == 0)      return ANIM_EVENT_SUSPEND;
+  if (strcmp(str, "ATTACK") == 0)       return ANIM_EVENT_ATTACK;
+  if (strcmp(str, "ATTACK_END") == 0)   return ANIM_EVENT_ATTACK_END;
+  if (strcmp(str, "ANIM_END") == 0)     return ANIM_EVENT_SEQ_END;
+  if (strcmp(str, "KILL") == 0)         return ANIM_EVENT_KILL;
+
+  return ANIM_EVENT_NONE;
+}
+
 PhysicsEventID StringToPhysEvent(const char* str){
   if (str == NULL) return PHYS_EVENT_NONE;
 
@@ -126,14 +140,6 @@ CameraTracking StringToCameraMode(const char* str){
   if (strcmp(str, "FOLLOW-SMOOTH") == 0) return CAM_FOLLOW_SMOOTH;
 
   return CAM_NONE;
-}
-
-AnimBehavior StringToAnimBehavior(const char* str){
- if (strcmp(str, "BLANK") == 0) return ANIM_BLANK;
- if (strcmp(str, "SUSPEND") == 0) return ANIM_SUSPEND;
- if (strcmp(str, "HURTBOX") == 0) return ANIM_HURTBOX;
-
- return ANIM_BLANK;
 }
 
 AnimState StringToAnimState(const char* str){
@@ -232,3 +238,42 @@ UpdateType GetUpdateStep(const char* name){
 
   return -1;
 }
+
+AnimPhase AnimPhaseLookup(const char* str){
+  if (!str) return -1;
+
+  for(int i = 0; i < ANIM_STOP; i++){
+    if (strcmp(PHASE_LOOKUP[i].name, str) == 0)
+      return PHASE_LOOKUP[i].id;
+  }
+
+  return -1;
+
+}
+
+notification NotificationFromEventID(const char* str, int id){
+  char sub[16];
+  strcpy(sub, sub_string(str, "-", 0));
+  if(strcmp(sub, "ANIM") == 0)      return AnimEvent_ToNotif(id);
+  if(strcmp(sub, "INPUT") == 0)     return InputEvent_ToNotif(id);
+  if(strcmp(sub, "POS") == 0)       return PosEvent_ToNotif(id);
+  if(strcmp(sub, "BEHAVIOR") == 0)  return BehaviorEvent_ToNotif(id);
+  if(strcmp(sub, "PHYS") == 0)      return PhysEvent_ToNotif(id);
+
+  return INVALID_NOTIF;
+}
+
+notification EventIDLookup(const char* str){
+  for (size_t i = 0; i < EVENT_LOOKUP_COUNT; ++i)
+  {
+    const event_look_t* e = &EVENT_LOOKUP[i];
+    if(strcmp(e->name, str) != 0)
+      continue;
+
+    return NotificationFromEventID(str, e->id);
+  }
+
+  return -1;
+}
+
+

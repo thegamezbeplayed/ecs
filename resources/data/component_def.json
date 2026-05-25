@@ -3,7 +3,7 @@
     "Sprite", "Animation", "Force", "Render", "Position", 
     "Input", "Camera", "Observer", "RigidBody", "Team",
     "Follow", "Track", "Subject", "State", "Behavior",
-    "Stat"
+    "Stat", "Debug"
   ],
   "Observer": {
     "func":	"ObserverInit",
@@ -33,8 +33,15 @@
         "name":       "state-observer",
         "type":       1,
         "comp":       "State",
-        "subjects":   ["STATE-CHANGE"],
+        "subjects":   ["BEHAVIOR-STATE"],
         "listeners":  ["Animation"]
+      },
+      {
+        "name":       "anim-observer",
+        "type":       1,
+        "comp":       "Animation",
+        "subjects":   ["ANIM-END"],
+        "listeners":  ["State"]
       }
     ]
   },
@@ -42,20 +49,24 @@
     "func": "SubjectInit",
     "list": [
       {
-        "name": "INPUT-MOVE",
-        "comp": "Input"
+        "name":   "INPUT-MOVE",
+        "comp":   "Input"
       },
       {
         "name": "PHYS-VEL",
         "comp": "RigidBody"
       },
       {
-        "name": "POS-STEP",
-        "comp": "Position"
+        "name":   "POS-STEP",
+        "comp":   "Position"
       },
       {
-        "name": "STATE-CHANGE",
+        "name": "BEHAVIOR-STATE",
         "comp": "State"
+      },
+      {
+        "name":   "ANIM-END",
+        "comp":   "Animation"
       }
     ]
   },
@@ -84,7 +95,10 @@
     "list": [
       {"name": "wiz", "sheet_id": "SHEET_CHAR",
         "states": [
-          {"state": "WALK", "interupt": true, "loop": false, "end": "SUSPEND",
+          {"state": "WALK", "interupt": true, "loop": false,
+            "events":[
+              {"phase":  "DONE", "event": "SUSPEND"}
+            ],
             "sequences": [
               {"tag": "walk0",   "dir": 0},
               {"tag": "walk90",  "dir": 1},
@@ -101,7 +115,10 @@
             ]
           },
           {"state": "ATTACK",
-            "end": "SUSPEND", "start": "HURTBOX",
+            "events":[
+              {"phase":  "DONE", "event": "SUSPEND"},
+              {"phase":  "STEP", "event": "ATTACK"}
+            ],
             "sequences": [
               {"tag": "attack0",   "dir": 0},
               {"tag": "attack90",  "dir": 1},
@@ -113,7 +130,10 @@
       },
       {"name": "rat", "sheet_id": "SHEET_MOB",
         "states": [
-          {"state": "WALK", "interupt": true, "loop": false, "end": "SUSPEND",
+          {"state": "WALK", "interupt": true, "loop": false,
+            "events":[
+              {"phase":  "DONE", "event": "SUSPEND"}
+            ],
             "sequences": [
               {"tag": "walk0",   "dir": 0},
               {"tag": "walk90",  "dir": 1},
@@ -130,7 +150,10 @@
             ]
           },
           {"state": "ATTACK",
-            "end": "SUSPEND", "start": "HURTBOX",
+            "events":[
+              {"phase":  "DONE", "event": "SUSPEND"},
+              {"phase":  "STEP", "event": "ATTACK"}
+            ],
             "sequences": [
               {"tag": "attack0",   "dir": 0},
               {"tag": "attack90",  "dir": 1},
@@ -142,7 +165,10 @@
       },
       {"name": "orc", "sheet_id": "SHEET_MOB",
         "states": [
-          {"state": "WALK", "interupt": true, "loop": false, "end": "SUSPEND",
+          {"state": "WALK", "interupt": true, "loop": false,
+            "events":[
+              {"phase":  "DONE", "event": "SUSPEND"}
+            ],
             "sequences": [
               {"tag": "walk0",   "dir": 0},
               {"tag": "walk90",  "dir": 1},
@@ -159,7 +185,10 @@
             ]
           },
           {"state": "ATTACK",
-            "end": "SUSPEND", "start": "HURTBOX",
+             "events":[
+              {"phase":  "DONE", "event": "SUSPEND"},
+              {"phase":  "STEP", "event": "ATTACK"}
+            ],
             "sequences": [
               {"tag": "attack0",   "dir": 0},
               {"tag": "attack90",  "dir": 1},
@@ -406,6 +435,12 @@
         "type": "RANGE", "amount": 64},
       {"name": "orc-aggro",
         "type": "RANGE", "amount": 80}
+    ]
+  },
+  "Debug": {
+    "func": "DebugInit",
+    "list": [
+      {"name": "debug-state", "comp": "State"}
     ]
   }
 }

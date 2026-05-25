@@ -4,7 +4,7 @@
 
 #include "game_register.h"
 
-#define NUM_SYS      16
+#define NUM_SYS      18
 #define MAX_COMP_DEF 128
 #define MAX_PREF_DEF 64
 #define NUM_REL      24

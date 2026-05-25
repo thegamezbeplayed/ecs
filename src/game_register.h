@@ -29,6 +29,7 @@
 #define REL_BehaviorOf  7u
 #define REL_StatOf      8u
 #define REL_TargetOf    9u
+#define REL_Debugs      69u
 
 typedef uint32_t RelationType;
 typedef struct {

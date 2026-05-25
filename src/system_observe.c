@@ -16,7 +16,7 @@ void ObserveInit(world_t* w){
     subject_store_t* store = s->value;
 
     TraceLog(LOG_INFO, "=== OBSERVE INIT ===\n NOTIFY %s", store->subject->name);
-    SubjectRunNotify(store->subject, store->data, -1);
+    SubjectRunNotify(store->subject, store->data, -1, INVALID_NOTIF);
 
     HashPut(&SUBJECTS.map, store->key, store->subject);
   }
@@ -71,7 +71,7 @@ void SubjectSystem(world_t* w, Entity e){
     return;
 
   subject_t* s = SubjectGetByKey(sc->key);
-  SubjectRunNotify(s, ComponentGet(w, rel, sc->comp), sc->comp);
+  SubjectRunNotify(s, ComponentGet(w, rel, sc->comp), sc->comp, sc->event);
 
   ComponentClearUpdate(w, rel, sc->comp);
 }

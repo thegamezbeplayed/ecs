@@ -1,7 +1,7 @@
 #include "behavior_define.h"
 #include "system_define.h"
 #include "util_parse.h"
-
+#include "system_events.h"
 
 void BehaviorRegister(world_t* w, Entity e){
   behavior_t* b = GET_COMPONENT(w, e, behavior_t, BEHAVE_ID);
@@ -45,8 +45,32 @@ void BehaviorLoad(world_t* w){
   HashFree(&BEHAVIOR_DEFS);
 }
 
+void StateSink(void* obs_data, void* sub, payload_t* pl){
+  state_t* st = obs_data;
+
+  switch(EVENT_ID(pl->event)){
+    case ANIM_EVENT_SEQ_END:
+    case ANIM_EVENT_SUSPEND:
+      if(pl->type_id != ANIM_ID){
+        TraceLog(LOG_WARNING, "=== STATE SINK BAD DATA\n Expected ANIM ID %i but payload is type %i",
+            ANIM_ID, pl->type_id);
+        return;
+      }
+      StateHandleAnim(st, pl->data);
+      break;
+    default:
+      TraceLog(LOG_INFO, "=== STATE SINK ===\n Some Other Event recieved");
+      break;
+  }
+}
+
 void StateBegin(world_t* w, Entity e){
   state_t* s = GET_COMPONENT(w, e, state_t, STATE_ID);
 
   BehaviorSetState(s, STATE_SPAWN);
+}
+
+void StateRegister(world_t* w){
+  LookAddSink("State", StateSink);
+
 }

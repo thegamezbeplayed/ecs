@@ -125,5 +125,4 @@ static inline behavior_tree_node_t* LeafMoveToDestination(behavior_params_t *par
 BehaviorStatus BehaviorMoveToTarget(world_t*, behavior_params_t *params);
 static inline behavior_tree_node_t* LeafMoveToTarget(behavior_params_t *params)  { return BehaviorCreateLeaf(BehaviorMoveToTarget,params); }
 
-
 #endif

@@ -25,7 +25,8 @@ const component_define_t CORE_COMPONENTS[] = {
   {"Stat",      sizeof(stat_t)},
   {"Expiry",    sizeof(lifetime_t)},
   {"Particle",        sizeof(particle_t)},
-  {"ParticleEmitter", sizeof(particle_emitter_t)}
+  {"ParticleEmitter", sizeof(particle_emitter_t)},
+  {"Debug",        sizeof(debug_t)},
 };
 
 const component_func_t COMPFUNC_LOOKUP[] = {
@@ -47,7 +48,8 @@ const component_func_t COMPFUNC_LOOKUP[] = {
   {"Behavior",    BehaviorInit},
   {"Team",        TeamInit},
   {"Particle",        ParticleInit},
-  {"ParticleEmitter", ParticleEmitterInit}
+  {"ParticleEmitter", ParticleEmitterInit},
+  {"Debug",        DebugInit},
 };
 
 component_entry_t* GetGameComponentDefine(game_t* g, const char* comp, const char* name){

@@ -5,11 +5,12 @@
 #define MAX             1024
 #define MAX_COMPONENTS  512
 #define MAX_PLAYERS     2
-#define NUM_COMP_CORE   20
+#define NUM_COMP_CORE   23
 
 #define POS_ID       ComponentGetID("Position")
 #define PHYS_ID      ComponentGetID("RigidBody")
 #define ANIM_ID      ComponentGetID("Animation")
+#define PLAYER_ID    ComponentGetID("AnimPlayer")
 #define SPR_ID       ComponentGetID("Sprite")
 #define RENDER_ID    ComponentGetID("Render")
 #define INPUT_ID     ComponentGetID("Input")
@@ -28,6 +29,7 @@
 #define STATE_ID     ComponentGetID("State")
 #define BEHAVE_ID    ComponentGetID("Behavior")
 #define TEAM_ID      ComponentGetID("Team")
+#define DEBUG_ID     ComponentGetID("Debug")
 
 typedef uint64_t comp_id_t;
 extern comp_id_t INVALID_COMPONENT;

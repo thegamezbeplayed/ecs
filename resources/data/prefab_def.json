@@ -35,7 +35,7 @@
     {
       "name": "wiz",
       "list":[
-        {"name": "Force",
+       {"name": "Force",
           "sublist": [
             {"name": "wiz-bump",    "type": "AppliesTo"}
           ]
@@ -57,7 +57,7 @@
     {
       "name": "rat",
       "list":[
-        {"name": "Force",
+       {"name": "Force",
           "sublist": [
             {"name": "rat-bump",    "type": "AppliesTo"}
           ]
@@ -66,26 +66,34 @@
           "sublist": [
             {"name": "rb-observer", "type": "Observes"},
             {"name": "pos-observer", "type": "Observes"},
-            {"name": "state-observer", "type": "Observes"}
+            {"name": "state-observer", "type": "Observes"},
+            {"name": "anim-observer", "type": "Observes"}
           ]
         },
         {"name": "Subject",
           "sublist": [
-            {"name": "PHYS-VEL",    "type": "SubjectOf"},
-            {"name": "POS-STEP",    "type": "SubjectOf"},
-            {"name": "STATE-CHANGE",    "type": "SubjectOf"}
+            {"name": "PHYS-VEL",      "type": "SubjectOf"},
+            {"name": "POS-STEP",      "type": "SubjectOf"},
+            {"name": "ANIM-END",      "type": "SubjectOf"},
+            {"name": "BEHAVIOR-STATE","type": "SubjectOf"}
           ]
         },
         {"name": "Behavior",
           "sublist": [
             {"name": "spawn",   "type": "BehaviorOf"},
             {"name": "wander",  "type": "BehaviorOf"},
-            {"name": "aggro",   "type": "BehaviorOf"}
+            {"name": "aggro",   "type": "BehaviorOf"},
+            {"name": "attack",   "type": "BehaviorOf"}
           ]
         },
         {"name":  "Stat",
           "sublist":  [
             {"name": "rat-aggro", "type": "StatOf"}
+          ]
+        },
+        {"name": "Debug",
+          "sublist":  [
+            {"name": "debug-state", "type": "Debugs"}
           ]
         }
       ]
@@ -93,7 +101,7 @@
     {
       "name": "orc",
       "list":[
-        {"name": "Force",
+       {"name": "Force",
           "sublist": [
             {"name": "orc-bump",    "type": "AppliesTo"}
           ]
@@ -101,25 +109,35 @@
         {"name": "Observer",
           "sublist": [
             {"name": "rb-observer", "type": "Observes"},
-            {"name": "pos-observer", "type": "Observes"}
+            {"name": "pos-observer", "type": "Observes"},
+            {"name": "state-observer", "type": "Observes"},
+            {"name": "anim-observer", "type": "Observes"}
           ]
         },
         {"name": "Subject",
           "sublist": [
-            {"name": "PHYS-VEL",    "type": "SubjectOf"},
-            {"name": "POS-STEP",    "type": "SubjectOf"}
+            {"name": "PHYS-VEL",      "type": "SubjectOf"},
+            {"name": "POS-STEP",      "type": "SubjectOf"},
+            {"name": "BEHAVIOR-STATE","type": "SubjectOf"},
+            {"name": "ANIM-END",      "type": "SubjectOf"}
           ]
         },
         {"name": "Behavior",
           "sublist": [
             {"name": "spawn",  "type": "BehaviorOf"},
             {"name": "wander", "type": "BehaviorOf"},
-            {"name": "aggro",  "type": "BehaviorOf"}
+            {"name": "aggro",  "type": "BehaviorOf"},
+            {"name": "attack",   "type": "BehaviorOf"}
           ]
        },
        {"name":  "Stat",
           "sublist":  [
             {"name": "orc-aggro", "type": "StatOf"}
+          ]
+        },
+        {"name": "Debug",
+          "sublist":  [
+            {"name": "debug-state", "type": "Debugs"}
           ]
         }
       ]

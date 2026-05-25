@@ -32,7 +32,7 @@
       "children":["check-aggro", "move-target", "change-state"]
     },
     {"name": "AttackEnemy", "type": "SEQUENCE", "override": true, "state": "AGGRO", 
-      "children":["start-attack", "change-state"]
+      "children":["start-attack"]
     },
     {"name": "FindDest", "type": "SEQUENCE",  
       "children":["acquire-dest", "move-dest"]

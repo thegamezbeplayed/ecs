@@ -95,7 +95,7 @@ BehaviorStatus BehaviorCheckAggro(world_t* w, behavior_params_t *params){
     float dx = list.items[i].pos.x - p->pos.x;
     float dy = list.items[i].pos.y - p->pos.y;
 
-    if (dx*dx + dy*dy < 32 * 32.0f)
+    if (dx*dx + dy*dy < 64 * 64.0f)
     {
       tar = EntityGet(&w->manager, id);
       TraceLog(LOG_INFO, "Found target! Entity %u -> %u", e.id, id);
@@ -115,7 +115,7 @@ BehaviorStatus BehaviorCheckAggro(world_t* w, behavior_params_t *params){
 //might not be needed
 BehaviorStatus BehaviorAttack(world_t*, behavior_params_t *params){
  
-  return BEHAVIOR_SUCCESS;
+  return BEHAVIOR_RUNNING;
 }
 
 BehaviorStatus BehaviorChangeState(world_t* w, behavior_params_t *params){
@@ -128,8 +128,8 @@ BehaviorStatus BehaviorChangeState(world_t* w, behavior_params_t *params){
     return BEHAVIOR_FAILURE;
 
   if(BehaviorSetState(s, params->state)){
-    return BEHAVIOR_SUCCESS;
     ComponentUpdate(w, e, STATE_ID);
+    return BEHAVIOR_SUCCESS;
   }
   return BEHAVIOR_FAILURE;
 }

@@ -2,8 +2,14 @@
   "systems": ["Controller", "Animations", "Sprites", 
     "Cameras", "Renderer", "Observe", "Subjects", "Combat",
     "Forces", "Physics", "Positions", "Behavior", "State",
-    "Team"
+    "Team", "Debug"
   ],
+  "Debug":  {
+    "components": ["Debug"],
+    "syncs": [
+       {"step": "UPDATE_DRAW", "fn": "DebugSystem"}
+    ]
+  },
   "Observe": {
     "components": ["Observer"],
     "states": [
@@ -174,6 +180,9 @@
     "components": ["State"],
     "sets": [
       {"step": "GAME_READY", "fn": "StateBegin"}
+    ],
+    "states": [
+      {"step": "GAME_LOADING", "fn": "StateRegister"}
     ]
   },
   "Combat": {

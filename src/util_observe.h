@@ -23,9 +23,10 @@ typedef struct subject_s subject_t;
 typedef struct observer_s observer_t;
 
 typedef struct{
-  ObserveType type;
-  int         type_id;
-  void*       data;
+  ObserveType   type;
+  notification  event;
+  int           type_id;
+  void*         data;
 }payload_t;
 
 typedef void (*ObserverCB)(void* obs_data, void* sub, payload_t*);
@@ -34,25 +35,26 @@ struct observer_s {
   char        name[MAX_NAME_LEN];  
   ObserveType type;
   ObserverCB  callback;
-  void* data;           // User data passed to callback (e.g., component pointer)
+  void*       data;           // User data passed to callback (e.g., component pointer)
   observer_t* next;
 };
 
 typedef struct{
-  char        name[MAX_NAME_LEN];
-  ObserveType type;
-  int         num_subj;
-  comp_id_t   relation;
-  char        subjects[MAX_SUBJ_OBS][MAX_NAME_LEN];
-  int         num_obs;
-  char        observers[MAX_LISTENERS][MAX_NAME_LEN];
+  char          name[MAX_NAME_LEN];
+  ObserveType   type;
+  int           num_subj;
+  comp_id_t     relation;
+  char          subjects[MAX_SUBJ_OBS][MAX_NAME_LEN];
+  int           num_obs;
+  char          observers[MAX_LISTENERS][MAX_NAME_LEN];
 }component_observer_t;
 
 typedef struct{
-  char        name[MAX_NAME_LEN];
-  ObserveType type;
-  comp_id_t   comp;
-  hash_key_t  key;
+  char          name[MAX_NAME_LEN];
+  ObserveType   type;
+  notification  event;
+  comp_id_t     comp;
+  hash_key_t    key;
 }subject_component_t;
 
 struct subject_s {
@@ -65,7 +67,7 @@ void InitSubject(subject_t* subject);
 void SubjectAddObserver(const char*, const char*, ObserverCB, void*) ;
 void SubjectAddObserverByComponent(const char*, uint32_t, comp_id_t, const char*, ObserverCB, void*);
 void SubjectRemoveObserver(subject_t*, ObserverCB, void*); // Optional
-void SubjectRunNotify(subject_t* s, void* data, int);
+void SubjectRunNotify(subject_t* s, void* data, int, notification);
 void SubjectNotify(const char*, void* eventdata);
 void SubjectDestroy(subject_t* subject); // Cleanup
 

@@ -25,7 +25,7 @@ bool BehaviorSetState(state_t* bs, State s){
 
   bs->state = s;
 
-  return bs->state == s;
+  return true;
 }
 
 bool BehaviorCanChangeState(State cur, State s){
