@@ -43,12 +43,14 @@
         {"name": "Observer",
           "sublist": [
             {"name": "rb-observer", "type": "Observes"},
+            {"name": "col-observer", "type": "Observes"},
             {"name": "move-observer", "type": "Observes"}
           ]
         },
         {"name": "Subject",
           "sublist": [
             {"name": "PHYS-VEL",    "type": "SubjectOf"},
+            {"name": "PHYS-HIT",      "type": "SubjectOf"},
             {"name": "INPUT-MOVE",  "type": "SubjectOf"}
           ]
         }
@@ -65,6 +67,7 @@
         {"name": "Observer",
           "sublist": [
             {"name": "rb-observer", "type": "Observes"},
+            {"name": "col-observer", "type": "Observes"},
             {"name": "pos-observer", "type": "Observes"},
             {"name": "state-observer", "type": "Observes"},
             {"name": "anim-observer", "type": "Observes"}
@@ -73,6 +76,7 @@
         {"name": "Subject",
           "sublist": [
             {"name": "PHYS-VEL",      "type": "SubjectOf"},
+            {"name": "PHYS-HIT",      "type": "SubjectOf"},
             {"name": "POS-STEP",      "type": "SubjectOf"},
             {"name": "ANIM-END",      "type": "SubjectOf"},
             {"name": "BEHAVIOR-STATE","type": "SubjectOf"}
@@ -111,12 +115,14 @@
             {"name": "rb-observer", "type": "Observes"},
             {"name": "pos-observer", "type": "Observes"},
             {"name": "state-observer", "type": "Observes"},
+            {"name": "col-observer", "type": "Observes"},
             {"name": "anim-observer", "type": "Observes"}
           ]
         },
         {"name": "Subject",
           "sublist": [
             {"name": "PHYS-VEL",      "type": "SubjectOf"},
+            {"name": "PHYS-HIT",      "type": "SubjectOf"},
             {"name": "POS-STEP",      "type": "SubjectOf"},
             {"name": "BEHAVIOR-STATE","type": "SubjectOf"},
             {"name": "ANIM-END",      "type": "SubjectOf"}

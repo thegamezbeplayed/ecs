@@ -46,10 +46,15 @@ void ObserveReady(world_t* w, Entity e){
         continue;
       }
 
-      if(c->type == OBS_COMP)
-        SubjectAddObserverByComponent(c->subjects[i], o.id, s_cid, c->name, cb,  ComponentGet(w, o, l_cid));
-      else
-        SubjectAddObserver(c->subjects[i], c->name, cb, ComponentGet(w, o, l_cid));
+      switch(c->type){
+        case OBS_COMP:
+        case OBS_ENT:
+          SubjectAddObserverByComponent(c->subjects[i], o.id, s_cid, c->name, cb,  ComponentGet(w, o, l_cid));
+          break;
+        case OBS_DEFINE:
+          SubjectAddObserver(c->subjects[i], c->name, cb, ComponentGet(w, o, l_cid));
+          break;
+      }
     }
   }
 }
@@ -68,10 +73,22 @@ void SubjectSystem(world_t* w, Entity e){
   Entity rel = EntityGetRelationTarget(w, e, REL_SubjectOf);
 
   if(!ComponentCheck(w, sc->comp, rel))
-    return;
+    return;  
 
   subject_t* s = SubjectGetByKey(sc->key);
   SubjectRunNotify(s, ComponentGet(w, rel, sc->comp), sc->comp, sc->event);
 
+  sc->ran = true;
+}
+
+void SubjectCleanup(world_t* w, Entity e){
+  subject_component_t* sc = GET_COMPONENT(w, e, subject_component_t, SUBJECT_ID);
+
+  if(!sc->ran)
+    return;
+
+  sc->ran = false;
+
+  Entity rel = EntityGetRelationTarget(w, e, REL_SubjectOf);
   ComponentClearUpdate(w, rel, sc->comp);
 }

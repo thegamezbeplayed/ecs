@@ -7,7 +7,6 @@
 
 #define MAX_TERMS 8
 #define MAX_PREFABS 128
-#define MAX_COMP_DATA 8
 
 #define ADD_COMPONENT(world, e, Type, ID) \
   (Type*)ComponentAdd(world, e, ID)
@@ -19,7 +18,7 @@
   ComponentRegister(world, sizeof(Type))
 
 #define MAX_RELATIONS_PER_ENTITY 8 
-#define MAX_RELATIONS   16
+#define MAX_RELATIONS   32
 #define REL_AppliesTo   1u
 #define REL_ChildOf     2u          
 #define REL_Owner       3u         

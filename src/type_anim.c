@@ -53,8 +53,11 @@ bool AnimPlayerState(anim_comp_t* ac, AnimState s, int dir){
   if(dir > -1)
     player->dir = dir;
 
-  if(AnimStart(ac, &ac->sequences[s][player->dir]) == ANIM_START){
+  anim_t* next = &ac->sequences[s][player->dir];
+  if(AnimStart(ac, next) == ANIM_START){
     player->state = s;
+
+    player->hurt = ac->hurtboxes[next->hurtbox_index];
     return true;
   }
   
@@ -78,9 +81,10 @@ anim_t* AnimRegisterState(SheetID id, const char* name, char* group){
     found[count++] = SHEETS[id].sprites[i];
   } 
 
-  if(count == 0)
+  if(count == 0){
+    TraceLog(LOG_WARNING,"=== ANIM REGISTER STATE ===\n Unable to find Tag %s or Group%s", name, group);
     return NULL;
-
+  }
   anim_t* a = GameCalloc("AnimRegisterState", 1, sizeof(anim_t));
 
   for(int i = 0; i < count; i++){
@@ -89,6 +93,7 @@ anim_t* AnimRegisterState(SheetID id, const char* name, char* group){
     if(found[i].duration > 0)
       a->duration = found[i].duration;
   }
+
   strcpy(a->name, group);
   return a;
 }

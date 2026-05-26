@@ -133,14 +133,14 @@ bool ParseAnimComponent(cJSON* j, anim_comp_t* out){
 
         char ename[MAX_NAME_LEN];
         Json_GetString(on, "event", ename);
-        AnimEventID event = StringToAnimEvent(ename);
 
-        out->sequences[state][dir].on_phase[p] = event;
+        out->sequences[state][dir].on_phase[p] = StringToAnimEvent(ename);
       }
     }
   }
 
   sprite_sheet_d sh = SHEETS[sheet_id];
+  int num_hurt = 0;
   for(int i = 0; i < MAX_SLICES; i++){
     collision_d cd = sh.coll[i];
 
@@ -148,6 +148,8 @@ bool ParseAnimComponent(cJSON* j, anim_comp_t* out){
       case COL_HIT:
         out->hitbox = cd;
         break;
+      case COL_HURT:
+        out->hurtboxes[num_hurt++] = cd;
       default:
         continue;
         break;
@@ -254,6 +256,7 @@ bool ParseSubjectComponent(cJSON* j, subject_component_t* out){
   Json_GetString(j, "comp", cname);
   out->comp = ComponentGetID(cname);
 
+  out->type = Json_GetInt(j, "type", 0);
   out->event = EventIDLookup(out->name);
   return out->comp != INVALID_COMPONENT;
 

@@ -1,4 +1,16 @@
 #include "system_define.h"
+#include "system_events.h"
+
+void CombatSink(void* obs_data, void* sub, payload_t* pl){
+  switch(EVENT_ID(pl->event)){
+    case PHYS_EVENT_HIT:
+      Entity* tar = obs_data;
+      Entity* agg = pl->data;
+      CombatHandlePhys(tar, agg);
+      break;
+
+  }
+}
 
 void CombatPrep(world_t* w){
   component_pool_t* teams = w->pools[TEAM_ID];
@@ -11,6 +23,11 @@ void CombatPrep(world_t* w){
   EntityIterStart(w, iter, c);
 
   teams->dirty = false;
+
+}
+
+void CombatRegister(world_t* w){
+  LookAddSink("Stat", CombatSink);
 
 }
 

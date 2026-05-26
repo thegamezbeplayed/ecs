@@ -95,6 +95,9 @@ static const event_look_t EVENT_LOOKUP[] = {
   {BEHAVIOR_EVENT_STATE,  "BEHAVIOR-STATE"},
   {INPUT_EVENT_MOVE,      "INPUT-MOVE"},
   {PHYS_EVENT_VEL,        "PHYS-VEL"},
+  {PHYS_EVENT_COLL,       "PHYS-COL"},
+  {PHYS_EVENT_HIT,        "PHYS-HIT"},
+  {PHYS_EVENT_VEL,        "PHYS-VEL"},
   {POS_EVENT_STEP,        "POS-STEP"},
 };
 

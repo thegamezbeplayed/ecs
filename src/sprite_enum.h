@@ -55,6 +55,7 @@ typedef enum{
   ANIM_ATTACK,
   ANIM_HURT,
   ANIM_DIE,
+  ANIM_END
 }AnimState;
 
 typedef enum{

@@ -25,7 +25,8 @@
       {"step": "GAME_LOADING",  "fn": "SubjectLoad"}
     ],
     "syncs": [
-      {"step": "UPDATE_FIXED", "fn": "SubjectSystem"}
+      {"step": "UPDATE_POST", "fn": "SubjectSystem"},
+      {"step": "UPDATE_FINAL",  "fn": "SubjectCleanup"}
     ]
   },
   "Animations":{
@@ -101,6 +102,7 @@
     "components": ["RigidBody", "Position"],
     "syncs": [
       {"step": "UPDATE_POST",  "fn": "PhysicsSystem"},
+      {"step": "UPDATE_DRAW",  "fn": "PhysicsDebug"},
       {"step": "UPDATE_PRE" ,  "fn": "PhysicsCollision", "iter": 1}
     ],
     "sets": [
@@ -189,6 +191,9 @@
     "components": ["Team", "Position"],
     "steps":  [
       {"step":  "UPDATE_START", "fn": "CombatPrep"}
+    ],
+    "states": [
+      {"step": "GAME_LOADING", "fn": "CombatRegister"}
     ],
     "iter": true
   },

@@ -113,9 +113,6 @@ CollType StringToCollType(const char* str){
   strcpy(sub, sub_string(str, "_", 0));
   if(strcmp(sub, "hitbox") == 0)      return COL_HIT;
   if(strcmp(sub, "hurtbox") == 0)   return COL_HURT;
-  if(strcmp(sub, "hurtbox") == 0)  return COL_HURT;
-  if(strcmp(sub, "hurtbox") == 0) return COL_HURT;
-  if(strcmp(sub, "hurtbox") == 0) return COL_HURT;
 
   return COL_NONE;
 }
@@ -143,11 +140,11 @@ CameraTracking StringToCameraMode(const char* str){
 }
 
 AnimState StringToAnimState(const char* str){
- if (strcmp(str, "IDLE") == 0) return ANIM_IDLE;
- if (strcmp(str, "WALK") == 0) return ANIM_WALK;
+ if (strcmp(str, "IDLE") == 0)   return ANIM_IDLE;
+ if (strcmp(str, "WALK") == 0)   return ANIM_WALK;
  if (strcmp(str, "ATTACK") == 0) return ANIM_ATTACK;
- if (strcmp(str, "DIE") == 0) return ANIM_DIE;
- if (strcmp(str, "HURT") == 0) return ANIM_HURT;
+ if (strcmp(str, "DIE") == 0)    return ANIM_DIE;
+ if (strcmp(str, "HURT") == 0)   return ANIM_HURT;
 
  return ANIM_NONE;
 }

@@ -22,6 +22,29 @@ rigid_body_t* InitRigidBody(Vector2 pos, ShapeType shape, float wid, float hei){
   return b;
 }
 
+rigid_body_t* RigidBodyFromCollisionData(world_t* w, Entity e, collision_d* coll){
+  rigid_body_t* body = ComponentGet(w, e, PHYS_ID);
+  Entity b = EntityCreate(&world.manager);
+
+  rigid_body_t* rb = ComponentAdd(w, b, PHYS_ID);
+  position_t* p = ComponentAdd(w, b, POS_ID);
+
+  Vector2 pos = Vector2Inc(body->bounds.pos, coll->x, coll->y);
+
+  memcpy(rb, InitRigidBody(pos, coll->shape, coll->wid, coll->hei),
+      sizeof(rigid_body_t));
+
+  rb->is_static = true;
+
+  memcpy(p, InitPosition(pos), sizeof(position_t));
+
+  rb->on_coll = PHYS_EVENT_HIT;
+  EntityAddRelation(w, b, REL_ChildOf, e);
+
+  lifetime_t* lf = ComponentAdd(w, b, EXPIR_ID);
+
+  LifetimeSet(lf, coll->duration);
+}
 
 bool CheckCollision(rigid_body_t *a, rigid_body_t *b, int len) {
   bool col = false;

@@ -4,24 +4,6 @@
 #include "tool_lookup.h"
 #include "system_events.h"
 
-void AnimEvent(event_t* ev, void* data){
-  anim_comp_t* ac = data;
-
-  anim_player_t* ap = &ac->player;
-  anim_t* a = &ac->sequences[ap->state][ap->dir];
-
-  AnimState s = ANIM_NONE;
-  switch(EVENT_ID(ev->type)){
-    case COMB_EVENT_HIT:
-      s = ANIM_HURT;
-      break;
-    default:
-      return;
-      break;
-  }
-
-}
-
 void AnimSink(void* obs_data, void* sub, payload_t* pl){
   anim_comp_t* ac = obs_data;
 
@@ -54,28 +36,6 @@ void AnimSink(void* obs_data, void* sub, payload_t* pl){
   }
 }
 
-void AnimBehaviorHandler(world_t* w, Entity e, anim_comp_t* ac, anim_t* a){
-  /*
-  switch(bev){
-    case ANIM_SUSPEND:
-      ac->player.state = ANIM_IDLE;
-      break;
-    case ANIM_HURTBOX:
-      n = AnimEvent_ToNotif(ANIM_EVENT_ATTACK);
-      if(!GameCheckInteraction(e.id, e.id, n))
-        return;
-
-      int rate = a->duration;
-      GameInteraction(e.id, e.id, n, rate);
-
-      n = PhysEvent_ToNotif(PHYS_EVENT_SPAWN);
-      ac->hurtboxes[a->hurtbox_index].duration = rate;
-      GameEvent(n, &ac->hurtboxes[a->hurtbox_index], e.id);
-      break;
-  }
-  */
-}
-
 void AnimRender(world_t* w, Entity e){
   anim_comp_t* ac = GET_COMPONENT(w, e, anim_comp_t, ANIM_ID);
   sprite_t* spr = GET_COMPONENT(w, e, sprite_t, SPR_ID);
@@ -104,23 +64,6 @@ void AnimReady(world_t* w, Entity e){
 }
 
 void AnimLoad(world_t* w, Entity e){
-
-  anim_comp_t* ac = GET_COMPONENT(w, e, anim_comp_t, ANIM_ID);
-/*
-  input_t* in = GET_COMPONENT(w, e, input_t, INPUT_ID);
-
-  if(!in)
-    return;
-
-  notification n = InputEvent_ToNotif(INPUT_EVENT_MOVE);
-  TargetSubscribe(n, AnimInputEvent, ac, e.id );
-
-  n = InputEvent_ToNotif(INPUT_EVENT_ATTACK);
-  TargetSubscribe(n, AnimInputEvent, ac, e.id );
-
-  n = InputEvent_ToNotif(INPUT_EVENT_KEY_RELEASE);
-  TargetSubscribe(n, AnimInputEvent, ac, e.id );
-*/
 }
 
 void AnimSystem(world_t* w, Entity e){

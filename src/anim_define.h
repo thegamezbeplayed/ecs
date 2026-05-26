@@ -23,7 +23,7 @@ struct anim_player_s{
   SheetID         sheet_id;
   AnimState       state;
   int             dir;
-  collision_d     col_data;
+  collision_d     hit, hurt;
 };
 
 typedef struct{
@@ -32,7 +32,7 @@ typedef struct{
   int             num_hurt;
   collision_d     hitbox;
   collision_d     hurtboxes[MAX_SLICES];
-  anim_t          sequences[ANIM_DONE][MAX_DIRECTIONS];
+  anim_t          sequences[ANIM_END][MAX_DIRECTIONS];
 }anim_comp_t;
 
 AnimPhase AnimStart(anim_comp_t*, anim_t*);

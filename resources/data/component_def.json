@@ -3,7 +3,7 @@
     "Sprite", "Animation", "Force", "Render", "Position", 
     "Input", "Camera", "Observer", "RigidBody", "Team",
     "Follow", "Track", "Subject", "State", "Behavior",
-    "Stat", "Debug"
+    "Stat", "Debug", "Expiry"
   ],
   "Observer": {
     "func":	"ObserverInit",
@@ -21,6 +21,13 @@
         "comp":       "RigidBody",
         "subjects":   ["PHYS-VEL"],
         "listeners":  ["Position"]
+      },
+      {
+        "name":       "col-observer",
+        "type":       3,
+        "comp":       "RigidBody",
+        "subjects":   ["PHYS-HIT"],
+        "listeners":  ["Stat"]
       },
       {
         "name":       "pos-observer",
@@ -50,22 +57,32 @@
     "list": [
       {
         "name":   "INPUT-MOVE",
+        "type":   1,
         "comp":   "Input"
       },
       {
         "name": "PHYS-VEL",
+        "type": 1,
+        "comp": "RigidBody"
+      },
+      {
+        "name": "PHYS-HIT",
+        "type": 3,
         "comp": "RigidBody"
       },
       {
         "name":   "POS-STEP",
+        "type":   1,
         "comp":   "Position"
       },
       {
         "name": "BEHAVIOR-STATE",
+        "type": 1,
         "comp": "State"
       },
       {
         "name":   "ANIM-END",
+        "type":   1,
         "comp":   "Animation"
       }
     ]
@@ -185,7 +202,7 @@
             ]
           },
           {"state": "ATTACK",
-             "events":[
+            "events":[
               {"phase":  "DONE", "event": "SUSPEND"},
               {"phase":  "STEP", "event": "ATTACK"}
             ],
@@ -442,5 +459,6 @@
     "list": [
       {"name": "debug-state", "comp": "State"}
     ]
-  }
+  },
+  "Expiry":{}
 }

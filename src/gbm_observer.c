@@ -93,6 +93,7 @@ hash_key_t SubjectMakeComponentKey(const char* name, uint32_t eid, comp_id_t cid
   return key;
 }
 
+
 hash_key_t SubjectComponent(const char* name, uint32_t eid, comp_id_t cid){
   hash_key_t key = SubjectMakeComponentKey(name, eid, cid);
 
@@ -179,6 +180,7 @@ void SubjectRunNotify(subject_t* s, void* data, int type_id, notification n){
     current->callback(current->data, s, p);
     current = current->next;
   }
+
   GameFree("SubjectRunNotify", p);
 }
 

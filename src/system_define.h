@@ -67,6 +67,7 @@ void ObserveInit(world_t* w);
 void ObserveReady(world_t* w, Entity e);
 void SubjectLoad(world_t* w, Entity e);
 void SubjectSystem(world_t* w, Entity e);
+void SubjectCleanup(world_t* w, Entity e);
 
 typedef struct{
   int     count, cap;
@@ -97,6 +98,7 @@ void StateBegin(world_t* w, Entity e);
 void StateRegister(world_t* w);
 
 void CombatLoad(world_t* w, Entity e);
+void CombatRegister(world_t* w);
 void CombatPrep(world_t* w);
 void CombatSystem(world_t* w, Entity e);
 
@@ -153,6 +155,7 @@ static system_function_lookup_t FUNCTION_LOOKUP[] = {
 
   {"SubjectLoad",         SubjectLoad},
   {"SubjectSystem",       SubjectSystem},
+  {"SubjectCleanup",       SubjectCleanup},
 
   {"CameraSystem",        CameraSystem},
   {"CameraBegin",         CameraBegin},
@@ -179,6 +182,7 @@ static system_function_lookup_t FUNCTION_LOOKUP[] = {
   {"StateRegister",        StateRegister},
 
   {"CombatPrep",          CombatPrep},
+  {"CombatRegister",      CombatRegister},
 
   {"TeamLoad",            TeamLoad},
   {"TeamRegister",        TeamRegister},

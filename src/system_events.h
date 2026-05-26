@@ -3,8 +3,9 @@
 #include "game_control.h"
 #include "anim_define.h"
 #include "behavior_define.h"
+#include "physics_define.h"
 
-
+void CombatHandlePhys(Entity *e, Entity *other);
 void StateHandleAnim(state_t* st, anim_comp_t* ac);
 
 void AnimHandleInput(anim_comp_t*, input_t*);

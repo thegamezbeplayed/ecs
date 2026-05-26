@@ -224,7 +224,7 @@ bool ParseSystems(cJSON* root, game_t* out){
       cJSON* c;
       cJSON_ArrayForEach(c, comps_json)
       {
-        if (!cJSON_IsString(c) || cidx >= NUM_REL)
+        if (!cJSON_IsString(c))
           continue;
 
         sys->components[cidx] = GameCalloc("ParseSystems", MAX_NAME_LEN, sizeof(char));

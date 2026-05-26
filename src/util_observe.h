@@ -55,6 +55,7 @@ typedef struct{
   notification  event;
   comp_id_t     comp;
   hash_key_t    key;
+  bool          ran;
 }subject_component_t;
 
 struct subject_s {

@@ -8,6 +8,9 @@ void AnimHandleEvent(world_t* w, Entity e, anim_comp_t* a, AnimEventID event){
     case ANIM_EVENT_SUSPEND:
       a->player.state = ANIM_IDLE;
       break;
+    case ANIM_EVENT_ATTACK:
+      RigidBodyFromCollisionData(w, e, &a->player.hurt); 
+      break;
   }
 
   ComponentUpdate(w, e, ANIM_ID);
