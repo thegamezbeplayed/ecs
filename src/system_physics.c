@@ -1,6 +1,7 @@
 #include "system_define.h"
 #include "process_event.h"
 #include "tool_lookup.h"
+#include "system_events.h"
 
 void PhysicsSink(void* obs_data, void* sub, payload_t* pl){
   rigid_body_t* rb = obs_data;
@@ -125,11 +126,8 @@ void PhysicsCollision(world_t* w, Entity e){
 
     if(!CheckCollision(body, tar, 0))
       continue;
-
-    if(tar->on_coll == PHYS_EVENT_HIT)
-      DO_NOTHING();
-
-    ComponentUpdate(w, e, PHYS_ID);
+    
+    PhysHandleEvent(w, e, other, body->on_coll);
     int rate = imax(body->col_rate, tar->col_rate);
     
     GameInteraction(e.id, other.id, n, rate);
@@ -147,7 +145,7 @@ void PhysicsSystem(world_t* w, Entity e){
 
     notification n = PosEvent_ToNotif(POS_EVENT_STEP);
     GameEvent(n, b, e.id);
-    ComponentUpdate(w, e, PHYS_ID);
+    ComponentUpdate(w, e, PHYS_ID, n);
   }
   
   b->vel = VECTOR2_ZERO;
@@ -208,8 +206,7 @@ void ForceSystem(world_t* w, Entity e){
    f->is_active = ForceStep(f, f->is_active);
    ForceApply(rb, f);
 
-   ComponentUpdate(w, be, PHYS_ID);
-
+   ComponentUpdate(w, be, PHYS_ID, PhysEvent_ToNotif(PHYS_EVENT_VEL));
 }
 
 void ForceCleanup(world_t* w, Entity e){

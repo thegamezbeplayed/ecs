@@ -13,7 +13,7 @@ void AnimHandleEvent(world_t* w, Entity e, anim_comp_t* a, AnimEventID event){
       break;
   }
 
-  ComponentUpdate(w, e, ANIM_ID);
+  ComponentUpdate(w, e, ANIM_ID, AnimEvent_ToNotif(event));
 }
 
 void AnimHandleInput(anim_comp_t *ac, input_t* in){

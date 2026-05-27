@@ -23,13 +23,6 @@
         "listeners":  ["Position"]
       },
       {
-        "name":       "col-observer",
-        "type":       3,
-        "comp":       "RigidBody",
-        "subjects":   ["PHYS-HIT"],
-        "listeners":  ["Stat"]
-      },
-      {
         "name":       "pos-observer",
         "type":       1,
         "comp":       "Position",
@@ -63,11 +56,6 @@
       {
         "name": "PHYS-VEL",
         "type": 1,
-        "comp": "RigidBody"
-      },
-      {
-        "name": "PHYS-HIT",
-        "type": 3,
         "comp": "RigidBody"
       },
       {

@@ -127,9 +127,9 @@ comp_id_t ComponentRegister(world_t* w, const char*, size_t);
 void* ComponentAdd(world_t* w, Entity e, comp_id_t id);
 void* ComponentGet(world_t* w, Entity e, comp_id_t id);
 void* ComponentGetByID(world_t* w, uint32_t eid, comp_id_t id);
-void ComponentUpdate(world_t* w, Entity e, comp_id_t id);
+void ComponentUpdate(world_t* w, Entity e, comp_id_t id, notification);
 void ComponentClearUpdate(world_t* w, Entity e, comp_id_t cid);
-bool ComponentCheck(world_t*, comp_id_t, Entity e);
+bool ComponentCheck(world_t*, comp_id_t, Entity e, notification);
 void ComponentSet(world_t* w, Entity e, comp_id_t id, void* set);
 void ComponentsClear(world_t* w, Entity e);
 static bool ComponentValid(world_t* w, comp_id_t cid){

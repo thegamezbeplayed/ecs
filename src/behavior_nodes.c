@@ -24,7 +24,7 @@ BehaviorStatus BehaviorMoveToTarget(world_t* w, behavior_params_t *params){
     return BEHAVIOR_SUCCESS;
 
   p->dir_step = vec_dir_between(p->pos, tp->pos);
-  ComponentUpdate(w, e, POS_ID);
+  ComponentUpdate(w, e, POS_ID, PosEvent_ToNotif(POS_EVENT_STEP));
   return BEHAVIOR_RUNNING;
 }
 
@@ -46,7 +46,7 @@ BehaviorStatus BehaviorMoveToDestination(world_t* w, behavior_params_t *params){
   }
 
   p->dir_step = vec_dir_between(p->pos, p->dest);
-  ComponentUpdate(w, e, POS_ID);
+  ComponentUpdate(w, e, POS_ID, PosEvent_ToNotif(POS_EVENT_STEP));
   return BEHAVIOR_RUNNING;
 }
 
@@ -128,7 +128,7 @@ BehaviorStatus BehaviorChangeState(world_t* w, behavior_params_t *params){
     return BEHAVIOR_FAILURE;
 
   if(BehaviorSetState(s, params->state)){
-    ComponentUpdate(w, e, STATE_ID);
+    ComponentUpdate(w, e, STATE_ID, BehaviorEvent_ToNotif(BEHAVIOR_EVENT_STATE));
     return BEHAVIOR_SUCCESS;
   }
   return BEHAVIOR_FAILURE;

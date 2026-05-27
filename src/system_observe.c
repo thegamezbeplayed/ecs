@@ -28,9 +28,11 @@ void ObserveInit(world_t* w){
 void ObserveReady(world_t* w, Entity e){
   component_observer_t* c = GET_COMPONENT(w, e, component_observer_t, OBSERVE_ID);
 
-  Entity o = e;
+  Entity *o = GameCalloc("ObserveReady", 1, sizeof(Entity));
   if(EntityHasRelation(w, e, REL_Observes))
-    o = EntityGetRelationTarget(w, e, REL_Observes);
+    *o = EntityGetRelationTarget(w, e, REL_Observes);
+  else
+    *o = e;
 
   comp_id_t s_cid = c->relation;
   for(int i = 0; i < c->num_subj; i++){
@@ -48,11 +50,13 @@ void ObserveReady(world_t* w, Entity e){
 
       switch(c->type){
         case OBS_COMP:
+          SubjectAddObserverByComponent(c->subjects[i], o->id, s_cid, c->name, cb,  ComponentGet(w, *o, l_cid));
+          break;
         case OBS_ENT:
-          SubjectAddObserverByComponent(c->subjects[i], o.id, s_cid, c->name, cb,  ComponentGet(w, o, l_cid));
+          SubjectAddObserverByComponent(c->subjects[i], o->id, s_cid, c->name, cb,  o);
           break;
         case OBS_DEFINE:
-          SubjectAddObserver(c->subjects[i], c->name, cb, ComponentGet(w, o, l_cid));
+          SubjectAddObserver(c->subjects[i], c->name, cb, ComponentGet(w, *o, l_cid));
           break;
       }
     }
@@ -72,11 +76,18 @@ void SubjectSystem(world_t* w, Entity e){
 
   Entity rel = EntityGetRelationTarget(w, e, REL_SubjectOf);
 
-  if(!ComponentCheck(w, sc->comp, rel))
+  if(!ComponentCheck(w, sc->comp, rel, sc->event))
     return;  
 
   subject_t* s = SubjectGetByKey(sc->key);
-  SubjectRunNotify(s, ComponentGet(w, rel, sc->comp), sc->comp, sc->event);
+  switch(sc->type){
+    case OBS_COMP:
+      SubjectRunNotify(s, ComponentGet(w, rel, sc->comp), sc->comp, sc->event);
+      break;
+    case OBS_ENT:
+      SubjectRunNotify(s, &rel, rel.id, sc->event);
+      break;
+  }
 
   sc->ran = true;
 }

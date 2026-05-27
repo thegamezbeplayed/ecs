@@ -4,8 +4,8 @@
 void CombatSink(void* obs_data, void* sub, payload_t* pl){
   switch(EVENT_ID(pl->event)){
     case PHYS_EVENT_HIT:
-      Entity* tar = obs_data;
-      Entity* agg = pl->data;
+      Entity *tar = obs_data;;
+      Entity *agg = pl->data;
       CombatHandlePhys(tar, agg);
       break;
 

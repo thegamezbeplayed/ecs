@@ -51,7 +51,7 @@ void ComponentRegisterCore(const char* name);
 typedef struct {
   comp_id_t   id;
   int         entities[MAX_ENTITIES];
-  bool        has_update[MAX_ENTITIES];
+  uint64_t    updates[MAX_ENTITIES];
   int         sparse[MAX_ENTITIES];
   size_t      size;
   size_t      elem_size;   // size of component (Position, etc)
