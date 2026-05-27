@@ -3,8 +3,16 @@
     "Sprite", "Animation", "Force", "Render", "Position", 
     "Input", "Camera", "Observer", "RigidBody", "Team",
     "Follow", "Track", "Subject", "State", "Behavior",
-    "Stat", "Debug", "Expiry"
+    "Stat", "Debug", "Expiry", "Subscribe", "Name"
   ],
+  "Name": {
+    "func": "NameInit",
+    "list": [
+      {"name": "wiz", "display": "Rattagast"},
+      {"name": "rat", "display": "Rat"},
+      {"name": "orc", "display": "Orc"}
+    ]
+  },
   "Observer": {
     "func":	"ObserverInit",
     "list":	[
@@ -72,6 +80,17 @@
         "name":   "ANIM-END",
         "type":   1,
         "comp":   "Animation"
+      }
+    ]
+  },
+  "Subscribe": {
+    "func": "SubscriptionInit",
+    "list": [
+      {
+        "name":     "on-hit",
+        "event":    "PHYS-HIT",
+        "type":     3,
+        "listener": "Combat"
       }
     ]
   },
@@ -433,9 +452,11 @@
   "Stat": {
     "func": "StatInit",
     "list": [
-      {"name": "wiz", "type": "HEALTH", "amount": 500},
-      {"name": "orc", "type": "HEALTH", "amount": 2500},
-      {"name": "rat", "type": "HEALTH", "amount": 100},
+      {"name": "wiz",     "type": "HEALTH", "amount": 500},
+      {"name": "orc",     "type": "HEALTH", "amount": 2500},
+      {"name": "rat",     "type": "HEALTH", "amount": 100},
+      {"name": "rat-dmg", "type": "DAMAGE", "min": 1, "max": 5},
+      {"name": "orc-dmg", "type": "DAMAGE", "min": 50, "max": 101},
       {"name": "rat-aggro",
         "type": "RANGE", "amount": 64},
       {"name": "orc-aggro",

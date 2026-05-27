@@ -60,6 +60,13 @@ typedef enum{
 }EntityType;
 
 typedef enum{
+  OBJ_NONE,
+  OBJ_ENT,
+  OBJ_COMP,
+  OBJ_REL,
+}ObjectType;
+
+typedef enum{
   PARAM_NONE,
   PARAM_TURN,
   PARAM_SCORE,

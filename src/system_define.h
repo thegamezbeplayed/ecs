@@ -6,16 +6,18 @@
 #define NUM_FUNCTIONS   (sizeof(FUNCTION_LOOKUP) / sizeof(FUNCTION_LOOKUP[0]))
 
 extern hash_map_t SYSTEM_SINK;
-typedef struct{
-  const char* name;
-  ObserverCB  fn;
-}system_sink_l;
+extern hash_map_t SYSTEM_HANDLE;
+
 void LookAddSink(const char* str, ObserverCB fn);
 ObserverCB LookupSystemSink(const char* str);
+
+void LookAddHandler(const char* str, EventCallback fn);
+EventCallback LookupSystemHandler(const char* str);
 
 system_t* SystemCreate(world_t* w, system_define_t* def);
 
 void DebugSystem(world_t* w, Entity e);
+void SubscriptionSystem(world_t* w, Entity e);
 
 void PositionLoad(world_t* w, Entity e);
 void PositionPrep(world_t* w);
@@ -187,6 +189,8 @@ static system_function_lookup_t FUNCTION_LOOKUP[] = {
   {"TeamLoad",            TeamLoad},
   {"TeamRegister",        TeamRegister},
 
+  {"SubscriptionSystem",  SubscriptionSystem},
+  
   {"ExpirationSystem",    ExpirationSystem}
 };
 

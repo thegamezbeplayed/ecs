@@ -23,6 +23,7 @@ static const relation_str_t RELATION_LOOKUP[NUM_REL] = {
   {REL_Observes,    "Observes"},
   {REL_SubjectOf,   "SubjectOf"},
   {REL_BehaviorOf,  "BehaviorOf"},
+  {REL_EventOf,     "EventOf"},
   {REL_Debugs,      "Debugs"}
 };
 

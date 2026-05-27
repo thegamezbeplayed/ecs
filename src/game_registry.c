@@ -4,6 +4,7 @@
 #include "tool_lookup.h"
 
 hash_map_t SYSTEM_SINK;
+hash_map_t SYSTEM_HANDLE;
 
 void WorldInit(world_t* w) {
   // Zero everything first
@@ -24,6 +25,7 @@ void WorldInit(world_t* w) {
   w->systems = GameCalloc("WorldInit", NUM_SYS, sizeof(system_t));
 
   HashInit(&SYSTEM_SINK, next_pow2_int(NUM_SYS));
+  HashInit(&SYSTEM_HANDLE, next_pow2_int(NUM_SYS));
 
   HashInit(&w->sys_map, next_pow2_int(NUM_SYS));
   SystemIterInit(NUM_SYS+NUM_COMP_CORE);

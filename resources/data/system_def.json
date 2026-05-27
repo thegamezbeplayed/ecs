@@ -2,12 +2,18 @@
   "systems": ["Controller", "Animations", "Sprites", 
     "Cameras", "Renderer", "Observe", "Subjects", "Combat",
     "Forces", "Physics", "Positions", "Behavior", "State",
-    "Team", "Debug"
+    "Team", "Event", "Debug"
   ],
   "Debug":  {
     "components": ["Debug"],
     "syncs": [
        {"step": "UPDATE_DRAW", "fn": "DebugSystem"}
+    ]
+  },
+  "Event":  {
+    "components": ["Subscribe"],
+    "sets": [
+      {"step": "GAME_READY", "fn": "SubscriptionSystem"}
     ]
   },
   "Observe": {

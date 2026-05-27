@@ -2,14 +2,13 @@
 #include "system_events.h"
 
 void CombatSink(void* obs_data, void* sub, payload_t* pl){
-  switch(EVENT_ID(pl->event)){
-    case PHYS_EVENT_HIT:
-      Entity *tar = obs_data;;
-      Entity *agg = pl->data;
-      CombatHandlePhys(tar, agg);
-      break;
+}
 
-  }
+void CombatOnEvent( event_t *event, void* user_data){
+  Entity e = EntityGet(&world.manager, event->eid);
+  Entity *other = event->data;
+
+  CombatHandleEvent(event->type, other, e);
 }
 
 void CombatPrep(world_t* w){
@@ -28,7 +27,7 @@ void CombatPrep(world_t* w){
 
 void CombatRegister(world_t* w){
   LookAddSink("Stat", CombatSink);
-
+  LookAddHandler("Combat", CombatOnEvent);
 }
 
 void TeamSystem(world_t* w, Entity e){

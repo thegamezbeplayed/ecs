@@ -5,7 +5,7 @@
 #define MAX             1024
 #define MAX_COMPONENTS  512
 #define MAX_PLAYERS     2
-#define NUM_COMP_CORE   23
+#define NUM_COMP_CORE   24
 
 #define POS_ID       ComponentGetID("Position")
 #define PHYS_ID      ComponentGetID("RigidBody")
@@ -27,8 +27,10 @@
 #define OBSERVE_ID   ComponentGetID("Observer")
 #define SUBJECT_ID   ComponentGetID("Subject")
 #define STATE_ID     ComponentGetID("State")
+#define STAT_ID      ComponentGetID("Stat")
 #define BEHAVE_ID    ComponentGetID("Behavior")
 #define TEAM_ID      ComponentGetID("Team")
+#define SUBSCRIBE_ID ComponentGetID("Subscribe")
 #define DEBUG_ID     ComponentGetID("Debug")
 
 typedef uint64_t comp_id_t;

@@ -15,8 +15,9 @@ const component_define_t CORE_COMPONENTS[] = {
   {"Type",      sizeof(EntityType)},
   {"Observer",  sizeof(component_observer_t)},
   {"Subject",   sizeof(subject_component_t)},
+  {"Subscribe", sizeof(subscription_t)},
   {"Force",     sizeof(force_t)},
-  //{"Name",      0}, //TODO
+  {"Name",      sizeof(name_t)},
   {"State",     sizeof(state_t)},
   {"Behavior",  sizeof(behavior_t)},
   {"Follow",    sizeof(follow_t)},
@@ -40,7 +41,8 @@ const component_func_t COMPFUNC_LOOKUP[] = {
   {"Input",       InputInit},
   {"Position",    PositionInit},
   {"Observer",    ObserverInit},
-  {"Subject",      SubjectInit},
+  {"Subject",     SubjectInit},
+  {"Subscribe",   SubscribeInit},
   {"Follow",      FollowInit},
   {"Track",       TrackingInit},
   {"State",       StateInit},
@@ -49,6 +51,7 @@ const component_func_t COMPFUNC_LOOKUP[] = {
   {"Team",        TeamInit},
   {"Particle",        ParticleInit},
   {"ParticleEmitter", ParticleEmitterInit},
+  {"Name",        NameInit},
   {"Debug",        DebugInit},
 };
 

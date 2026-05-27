@@ -3,6 +3,16 @@
 #include "util_parse.h"
 #include "tool_lookup.h"
 
+bool ParseNameComponent(cJSON* j, name_t* out){
+  if(!j)
+    return false;
+
+  Json_GetString(j, "display", out->display);
+  Json_GetString(j, "name", out->entity);
+
+  return true;
+}
+
 bool ParseDebugComponent(cJSON* j, debug_t* out){
   if(!j)
     return false;
@@ -403,7 +413,22 @@ bool ParseStatComponent(cJSON* j, stat_t* out){
 
   Json_GetString(j, "type", out->name);
   out->id = hash_str_64(out->name);
-  out->current = out->max = Json_GetInt(j, "amount", 0);
+  out->current = Json_GetInt(j, "amount", 0);
+  out->max = Json_GetInt(j, "max", out->current);
+  out->min = Json_GetInt(j, "min", out->current);
 
-  return out->current > 0;
+  return out->current > 0 || out->max > 0;
+}
+
+bool ParseSubscribeComponent(cJSON* j, subscription_t* out){
+  if(!j)
+    return false;
+
+  char ename[MAX_NAME_LEN];
+  Json_GetString(j, "event", ename);
+  out->event = EventIDLookup(ename);
+  out->type = Json_GetInt(j, "type", 0);
+
+  Json_GetString(j, "listener", out->listener);
+  return out->type > 0;
 }

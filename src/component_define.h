@@ -27,7 +27,9 @@ bool TrackingInit(void* comp, component_entry_t* j);
 bool StateInit(void* comp, component_entry_t* j);
 bool BehaviorInit(void* comp, component_entry_t* j);
 bool StatInit(void* comp, component_entry_t* j);
+bool SubscribeInit(void* comp, component_entry_t* j);
 
+bool ParseSubscribeComponent(cJSON* j, subscription_t* out);
 bool ParseSpriteComponent(cJSON* j, sprite_t* out);
 bool ParseBehaviorComponent(cJSON* j, behavior_t* out);
 bool ParseRigidBodyComponent(cJSON* j, rigid_body_t* out);
@@ -43,6 +45,18 @@ bool ParseStatComponent(cJSON* j, stat_t* out);
 bool ParseAnimComponent(cJSON* j, anim_comp_t* out);
 
 typedef struct{
+  char   entity[MAX_NAME_LEN];
+  char   display[MAX_NAME_LEN];
+}name_t;
+
+bool ParseNameComponent(cJSON* j, name_t* out);
+static bool NameInit(void* comp, component_entry_t* j){
+  name_t* n = comp;
+
+  return ParseNameComponent(j->data, n);
+}
+
+typedef struct{
   char        name[MAX_NAME_LEN];
   char        str[MAX_NAME_LEN];
   comp_id_t   cid;
@@ -54,10 +68,6 @@ static bool DebugInit(void* comp, component_entry_t* j){
 
   return ParseDebugComponent(j->data, d);
 }
-
-typedef struct{
-  char  name[MAX_NAME_LEN];
-}name_t;
 
 typedef struct{
   int       wid, hei;

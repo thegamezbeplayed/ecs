@@ -83,7 +83,7 @@ BehaviorStatus BehaviorCheckAggro(world_t* w, behavior_params_t *params){
   team_t* t = ComponentGet(w, e, TEAM_ID);
   Entity tar = INVALID_ENTITY;
 
-  neighbor_list_t list = SpatialHashGridGetNeighbors(&w->grid, p->pos, 80.0f, e.id);
+  neighbor_list_t list = SpatialHashGridGetNeighbors(&w->grid, p->pos, 160.0f, e.id);
   for (int i = 0; i < list.count; i++) {
     uint32_t id = list.items[i].id;
     team_t* other = ComponentGetByID(w, id, TEAM_ID);

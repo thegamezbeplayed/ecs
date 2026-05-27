@@ -1,11 +1,8 @@
 #ifndef __SYS_EVENT__
 #define __SYS_EVENT__
-#include "game_control.h"
-#include "anim_define.h"
-#include "behavior_define.h"
-#include "physics_define.h"
+#include "component_define.h"
 
-void CombatHandlePhys(Entity*, Entity*);
+void CombatHandleEvent(notification n, Entity *tar, Entity agg);
 void StateHandleAnim(state_t* st, anim_comp_t* ac);
 
 void AnimHandleInput(anim_comp_t*, input_t*);
