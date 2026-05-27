@@ -5,11 +5,12 @@
 #define MAX             1024
 #define MAX_COMPONENTS  512
 #define MAX_PLAYERS     2
-#define NUM_COMP_CORE   19
+#define NUM_COMP_CORE   24
 
 #define POS_ID       ComponentGetID("Position")
 #define PHYS_ID      ComponentGetID("RigidBody")
 #define ANIM_ID      ComponentGetID("Animation")
+#define PLAYER_ID    ComponentGetID("AnimPlayer")
 #define SPR_ID       ComponentGetID("Sprite")
 #define RENDER_ID    ComponentGetID("Render")
 #define INPUT_ID     ComponentGetID("Input")
@@ -26,8 +27,11 @@
 #define OBSERVE_ID   ComponentGetID("Observer")
 #define SUBJECT_ID   ComponentGetID("Subject")
 #define STATE_ID     ComponentGetID("State")
+#define STAT_ID      ComponentGetID("Stat")
 #define BEHAVE_ID    ComponentGetID("Behavior")
 #define TEAM_ID      ComponentGetID("Team")
+#define SUBSCRIBE_ID ComponentGetID("Subscribe")
+#define DEBUG_ID     ComponentGetID("Debug")
 
 typedef uint64_t comp_id_t;
 extern comp_id_t INVALID_COMPONENT;
@@ -49,7 +53,7 @@ void ComponentRegisterCore(const char* name);
 typedef struct {
   comp_id_t   id;
   int         entities[MAX_ENTITIES];
-  bool        has_update[MAX_ENTITIES];
+  uint64_t    updates[MAX_ENTITIES];
   int         sparse[MAX_ENTITIES];
   size_t      size;
   size_t      elem_size;   // size of component (Position, etc)

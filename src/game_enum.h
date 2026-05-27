@@ -18,6 +18,8 @@
 
 typedef uint64_t notification;
 
+static notification INVALID_NOTIF = 0;
+
 static inline uint32_t EventBase(uint64_t n) {
     return n & EVENT_BASE_MASK;
 }
@@ -56,6 +58,13 @@ typedef enum{
   ENT_TILE,
   ENT_DONE
 }EntityType;
+
+typedef enum{
+  OBJ_NONE,
+  OBJ_ENT,
+  OBJ_COMP,
+  OBJ_REL,
+}ObjectType;
 
 typedef enum{
   PARAM_NONE,

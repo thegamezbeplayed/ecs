@@ -24,7 +24,7 @@ BehaviorStatus BehaviorMoveToTarget(world_t* w, behavior_params_t *params){
     return BEHAVIOR_SUCCESS;
 
   p->dir_step = vec_dir_between(p->pos, tp->pos);
-  ComponentUpdate(w, e, POS_ID);
+  ComponentUpdate(w, e, POS_ID, PosEvent_ToNotif(POS_EVENT_STEP));
   return BEHAVIOR_RUNNING;
 }
 
@@ -46,7 +46,7 @@ BehaviorStatus BehaviorMoveToDestination(world_t* w, behavior_params_t *params){
   }
 
   p->dir_step = vec_dir_between(p->pos, p->dest);
-  ComponentUpdate(w, e, POS_ID);
+  ComponentUpdate(w, e, POS_ID, PosEvent_ToNotif(POS_EVENT_STEP));
   return BEHAVIOR_RUNNING;
 }
 
@@ -64,7 +64,7 @@ BehaviorStatus BehaviorAcquireDestination(world_t* w, behavior_params_t *params)
 
   Cell dir = random_direction();
 
-  p->dest = cell_to_vec(dir, rand_range_float(8, 64));
+  p->dest = VEC_ADD(p->pos, cell_to_vec(dir, rand_range_float(32, 96)));
   return BEHAVIOR_SUCCESS;
 }
 
@@ -83,7 +83,7 @@ BehaviorStatus BehaviorCheckAggro(world_t* w, behavior_params_t *params){
   team_t* t = ComponentGet(w, e, TEAM_ID);
   Entity tar = INVALID_ENTITY;
 
-  neighbor_list_t list = SpatialHashGridGetNeighbors(&w->grid, p->pos, 80.0f, e.id);
+  neighbor_list_t list = SpatialHashGridGetNeighbors(&w->grid, p->pos, 160.0f, e.id);
   for (int i = 0; i < list.count; i++) {
     uint32_t id = list.items[i].id;
     team_t* other = ComponentGetByID(w, id, TEAM_ID);
@@ -95,7 +95,7 @@ BehaviorStatus BehaviorCheckAggro(world_t* w, behavior_params_t *params){
     float dx = list.items[i].pos.x - p->pos.x;
     float dy = list.items[i].pos.y - p->pos.y;
 
-    if (dx*dx + dy*dy < 32 * 32.0f)
+    if (dx*dx + dy*dy < 64 * 64.0f)
     {
       tar = EntityGet(&w->manager, id);
       TraceLog(LOG_INFO, "Found target! Entity %u -> %u", e.id, id);
@@ -112,6 +112,12 @@ BehaviorStatus BehaviorCheckAggro(world_t* w, behavior_params_t *params){
   return BEHAVIOR_FAILURE;
 }
 
+//might not be needed
+BehaviorStatus BehaviorAttack(world_t*, behavior_params_t *params){
+ 
+  return BEHAVIOR_RUNNING;
+}
+
 BehaviorStatus BehaviorChangeState(world_t* w, behavior_params_t *params){
   Entity e = *params->ent;
   if(!EntityValid(&w->manager, e))
@@ -121,8 +127,9 @@ BehaviorStatus BehaviorChangeState(world_t* w, behavior_params_t *params){
   if(!s)
     return BEHAVIOR_FAILURE;
 
-  if(BehaviorSetState(s, params->state))
+  if(BehaviorSetState(s, params->state)){
+    ComponentUpdate(w, e, STATE_ID, BehaviorEvent_ToNotif(BEHAVIOR_EVENT_STATE));
     return BEHAVIOR_SUCCESS;
-
+  }
   return BEHAVIOR_FAILURE;
 }

@@ -3,6 +3,26 @@
 #include "util_parse.h"
 #include "tool_lookup.h"
 
+bool ParseNameComponent(cJSON* j, name_t* out){
+  if(!j)
+    return false;
+
+  Json_GetString(j, "display", out->display);
+  Json_GetString(j, "name", out->entity);
+
+  return true;
+}
+
+bool ParseDebugComponent(cJSON* j, debug_t* out){
+  if(!j)
+    return false;
+
+  Json_GetString(j, "comp", out->name);
+  out->cid = ComponentGetID(out->name);
+
+  return out->cid != INVALID_COMPONENT;
+}
+
 bool ParseParticleEmitterComponent(cJSON* j, particle_emitter_t* out){
   if(!j)
     return false;
@@ -95,14 +115,6 @@ bool ParseAnimComponent(cJSON* j, anim_comp_t* out){
 
     bool loop = Json_GetBool(s, "loop");
     bool interupt = Json_GetBool(s, "interupt");
-    char end_str[MAX_NAME_LEN];
-    Json_GetString(s, "end", end_str);
-    AnimBehavior on_end = StringToAnimBehavior(end_str);
-
-    char start_str[MAX_NAME_LEN];
-    Json_GetString(s, "start", start_str);
-    AnimBehavior on_start = StringToAnimBehavior(start_str);
-
     AnimState state = StringToAnimState(state_str);
     if(state == ANIM_NONE){
       TraceLog(LOG_WARNING,"=== PARSE ANIM COMP ===\n unable to find state %s for prefab %s", state_str, name);
@@ -119,11 +131,26 @@ bool ParseAnimComponent(cJSON* j, anim_comp_t* out){
       out->sequences[state][dir] = *AnimRegisterState(sheet_id, name, tag);
       out->sequences[state][dir].loop = loop;
       out->sequences[state][dir].interupt = interupt;
-      out->sequences[state][dir].on_end = on_end;
+      cJSON* ev_json = cJSON_GetObjectItem(s, "events");
+      if(!cJSON_IsArray(ev_json))
+        continue;
+
+      cJSON* on;
+      cJSON_ArrayForEach(on, ev_json){
+        char pname[MAX_NAME_LEN];
+        Json_GetString(on, "phase", pname);
+        AnimPhase p = AnimPhaseLookup(pname);
+
+        char ename[MAX_NAME_LEN];
+        Json_GetString(on, "event", ename);
+
+        out->sequences[state][dir].on_phase[p] = StringToAnimEvent(ename);
+      }
     }
   }
 
   sprite_sheet_d sh = SHEETS[sheet_id];
+  int num_hurt = 0;
   for(int i = 0; i < MAX_SLICES; i++){
     collision_d cd = sh.coll[i];
 
@@ -131,6 +158,8 @@ bool ParseAnimComponent(cJSON* j, anim_comp_t* out){
       case COL_HIT:
         out->hitbox = cd;
         break;
+      case COL_HURT:
+        out->hurtboxes[num_hurt++] = cd;
       default:
         continue;
         break;
@@ -223,6 +252,7 @@ bool ParseObserverComponent(cJSON* j, component_observer_t* out){
     strcpy(out->observers[l_num++], l->valuestring);
 
   out->num_obs = l_num;
+  
   return l_num > 0;
 }
 
@@ -236,6 +266,8 @@ bool ParseSubjectComponent(cJSON* j, subject_component_t* out){
   Json_GetString(j, "comp", cname);
   out->comp = ComponentGetID(cname);
 
+  out->type = Json_GetInt(j, "type", 0);
+  out->event = EventIDLookup(out->name);
   return out->comp != INVALID_COMPONENT;
 
 }
@@ -336,7 +368,6 @@ bool ParseForceComponent(cJSON* j, force_t* out){
 
   out->event = StringToPhysEvent(ename);
 
-
   return out->type > FORCE_NONE;
 }
 
@@ -382,7 +413,22 @@ bool ParseStatComponent(cJSON* j, stat_t* out){
 
   Json_GetString(j, "type", out->name);
   out->id = hash_str_64(out->name);
-  out->current = out->max = Json_GetInt(j, "amount", 0);
+  out->current = Json_GetInt(j, "amount", 0);
+  out->max = Json_GetInt(j, "max", out->current);
+  out->min = Json_GetInt(j, "min", out->current);
 
-  return out->current > 0;
+  return out->current > 0 || out->max > 0;
+}
+
+bool ParseSubscribeComponent(cJSON* j, subscription_t* out){
+  if(!j)
+    return false;
+
+  char ename[MAX_NAME_LEN];
+  Json_GetString(j, "event", ename);
+  out->event = EventIDLookup(ename);
+  out->type = Json_GetInt(j, "type", 0);
+
+  Json_GetString(j, "listener", out->listener);
+  return out->type > 0;
 }

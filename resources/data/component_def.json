@@ -3,8 +3,16 @@
     "Sprite", "Animation", "Force", "Render", "Position", 
     "Input", "Camera", "Observer", "RigidBody", "Team",
     "Follow", "Track", "Subject", "State", "Behavior",
-    "Stat"
+    "Stat", "Debug", "Expiry", "Subscribe", "Name"
   ],
+  "Name": {
+    "func": "NameInit",
+    "list": [
+      {"name": "wiz", "display": "Rattagast"},
+      {"name": "rat", "display": "Rat"},
+      {"name": "orc", "display": "Orc"}
+    ]
+  },
   "Observer": {
     "func":	"ObserverInit",
     "list":	[
@@ -28,6 +36,20 @@
         "comp":       "Position",
         "subjects":   ["POS-STEP"],
         "listeners":  ["Force", "Animation"]
+      },
+      {
+        "name":       "state-observer",
+        "type":       1,
+        "comp":       "State",
+        "subjects":   ["BEHAVIOR-STATE"],
+        "listeners":  ["Animation"]
+      },
+      {
+        "name":       "anim-observer",
+        "type":       1,
+        "comp":       "Animation",
+        "subjects":   ["ANIM-END"],
+        "listeners":  ["State"]
       }
     ]
   },
@@ -35,16 +57,40 @@
     "func": "SubjectInit",
     "list": [
       {
-        "name": "INPUT-MOVE",
-        "comp": "Input"
+        "name":   "INPUT-MOVE",
+        "type":   1,
+        "comp":   "Input"
       },
       {
         "name": "PHYS-VEL",
+        "type": 1,
         "comp": "RigidBody"
       },
       {
-        "name": "POS-STEP",
-        "comp": "Position"
+        "name":   "POS-STEP",
+        "type":   1,
+        "comp":   "Position"
+      },
+      {
+        "name": "BEHAVIOR-STATE",
+        "type": 1,
+        "comp": "State"
+      },
+      {
+        "name":   "ANIM-END",
+        "type":   1,
+        "comp":   "Animation"
+      }
+    ]
+  },
+  "Subscribe": {
+    "func": "SubscriptionInit",
+    "list": [
+      {
+        "name":     "on-hit",
+        "event":    "PHYS-HIT",
+        "type":     3,
+        "listener": "Combat"
       }
     ]
   },
@@ -73,7 +119,10 @@
     "list": [
       {"name": "wiz", "sheet_id": "SHEET_CHAR",
         "states": [
-          {"state": "WALK", "interupt": true, "loop": false, "end": "SUSPEND",
+          {"state": "WALK", "interupt": true, "loop": false,
+            "events":[
+              {"phase":  "DONE", "event": "SUSPEND"}
+            ],
             "sequences": [
               {"tag": "walk0",   "dir": 0},
               {"tag": "walk90",  "dir": 1},
@@ -90,7 +139,10 @@
             ]
           },
           {"state": "ATTACK",
-            "end": "SUSPEND", "start": "HURTBOX",
+            "events":[
+              {"phase":  "DONE", "event": "SUSPEND"},
+              {"phase":  "STEP", "event": "ATTACK"}
+            ],
             "sequences": [
               {"tag": "attack0",   "dir": 0},
               {"tag": "attack90",  "dir": 1},
@@ -102,7 +154,10 @@
       },
       {"name": "rat", "sheet_id": "SHEET_MOB",
         "states": [
-          {"state": "WALK", "interupt": true, "loop": false, "end": "SUSPEND",
+          {"state": "WALK", "interupt": true, "loop": false,
+            "events":[
+              {"phase":  "DONE", "event": "SUSPEND"}
+            ],
             "sequences": [
               {"tag": "walk0",   "dir": 0},
               {"tag": "walk90",  "dir": 1},
@@ -119,7 +174,10 @@
             ]
           },
           {"state": "ATTACK",
-            "end": "SUSPEND", "start": "HURTBOX",
+            "events":[
+              {"phase":  "DONE", "event": "SUSPEND"},
+              {"phase":  "STEP", "event": "ATTACK"}
+            ],
             "sequences": [
               {"tag": "attack0",   "dir": 0},
               {"tag": "attack90",  "dir": 1},
@@ -131,7 +189,10 @@
       },
       {"name": "orc", "sheet_id": "SHEET_MOB",
         "states": [
-          {"state": "WALK", "interupt": true, "loop": false, "end": "SUSPEND",
+          {"state": "WALK", "interupt": true, "loop": false,
+            "events":[
+              {"phase":  "DONE", "event": "SUSPEND"}
+            ],
             "sequences": [
               {"tag": "walk0",   "dir": 0},
               {"tag": "walk90",  "dir": 1},
@@ -148,7 +209,10 @@
             ]
           },
           {"state": "ATTACK",
-            "end": "SUSPEND", "start": "HURTBOX",
+            "events":[
+              {"phase":  "DONE", "event": "SUSPEND"},
+              {"phase":  "STEP", "event": "ATTACK"}
+            ],
             "sequences": [
               {"tag": "attack0",   "dir": 0},
               {"tag": "attack90",  "dir": 1},
@@ -213,7 +277,7 @@
       },
       {"name": "rat",
         "type": "STEERING", 
-        "speed": 1.15, "max": 2.3, "threshold": 0.425, "frict": 0.5
+        "speed": 1.15, "max": 1.67, "threshold": 0.425, "frict": 0.5
       },
       {"name": "rat-bump",
         "type": "IMPULSE",  "react": "BUMP", "event": "COLL",
@@ -221,7 +285,7 @@
       },
       {"name": "orc",
         "type": "STEERING", 
-        "speed": 1.0, "max": 2.0, "threshold": 0.425, "frict": 0.65
+        "speed": 0.8, "max": 1.42, "threshold": 0.425, "frict": 0.65
       },
       {"name": "orc-bump",
         "type": "IMPULSE",  "react": "BUMP", "event": "COLL",
@@ -370,6 +434,10 @@
       {
         "name":   "aggro",
         "state":  "AGGRO"
+      },
+      {
+        "name":   "attack",
+        "state":  "ATTACK"
       }
     ]
   },
@@ -384,13 +452,22 @@
   "Stat": {
     "func": "StatInit",
     "list": [
-      {"name": "wiz", "type": "HEALTH", "amount": 500},
-      {"name": "orc", "type": "HEALTH", "amount": 2500},
-      {"name": "rat", "type": "HEALTH", "amount": 100},
+      {"name": "wiz",     "type": "HEALTH", "amount": 500},
+      {"name": "orc",     "type": "HEALTH", "amount": 2500},
+      {"name": "rat",     "type": "HEALTH", "amount": 100},
+      {"name": "rat-dmg", "type": "DAMAGE", "min": 1, "max": 5},
+      {"name": "orc-dmg", "type": "DAMAGE", "min": 50, "max": 101},
       {"name": "rat-aggro",
         "type": "RANGE", "amount": 64},
       {"name": "orc-aggro",
         "type": "RANGE", "amount": 80}
     ]
-  }
+  },
+  "Debug": {
+    "func": "DebugInit",
+    "list": [
+      {"name": "debug-state", "comp": "State"}
+    ]
+  },
+  "Expiry":{}
 }

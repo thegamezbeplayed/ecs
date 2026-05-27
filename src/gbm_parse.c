@@ -66,7 +66,7 @@ bool LoadAsepriteSheet(cJSON* root, ase_sprite_sheet_d* sheet){
   cJSON* frames_json = cJSON_GetObjectItem(root, "frames");
   sheet->num_frames = cJSON_GetArraySize(frames_json);
   sheet->frame_meta = cJSON_Duplicate(frames_json, true);
-  
+
   for (int i = 0; i < sheet->num_frames && i < MAX_SPRITE_FRAMES; i++) {
     cJSON* f = cJSON_GetArrayItem(frames_json, i);
     anim_frame_t* frame = &sheet->frames[i];
@@ -198,14 +198,18 @@ bool ParseSystems(cJSON* root, game_t* out){
     printf("WARNING: Too many systems (%d > %d). Truncating.\n", out->num_sys, NUM_SYS);
     out->num_sys = NUM_SYS;
   }
+  int scount = cJSON_GetArraySize(systems_json);
 
   int sys_idx = 0;
   cJSON* sys_name;
   cJSON_ArrayForEach(sys_name, systems_json)
   {
     cJSON* sys_item = cJSON_GetObjectItem(root, sys_name->valuestring);
-    if (sys_idx >= NUM_SYS) break;
+    if (sys_idx >= NUM_SYS){
+      TraceLog(LOG_WARNING, "=== PARSE SYSTEMS ===\n MAX SYSTEMS %i exceed- have %i", NUM_SYS, scount);
 
+      break;
+    }
     system_define_t* sys = &out->systems[sys_idx++];
 
     // --- Name ---
@@ -220,16 +224,16 @@ bool ParseSystems(cJSON* root, game_t* out){
       cJSON* c;
       cJSON_ArrayForEach(c, comps_json)
       {
-        if (!cJSON_IsString(c) || cidx >= NUM_REL)
+        if (!cJSON_IsString(c))
           continue;
 
-          sys->components[cidx] = GameCalloc("ParseSystems", MAX_NAME_LEN, sizeof(char));
-          sys->components[cidx++] = c->valuestring;
+        sys->components[cidx] = GameCalloc("ParseSystems", MAX_NAME_LEN, sizeof(char));
+        sys->components[cidx++] = c->valuestring;
       }
       sys->num_req = cidx;
     }
 
-    
+
     cJSON* state_json = cJSON_GetObjectItem(sys_item, "states");
     if (cJSON_IsArray(state_json)){
       cJSON* state;
@@ -248,7 +252,7 @@ bool ParseSystems(cJSON* root, game_t* out){
 
       }
     } 
-    
+
     cJSON* sync_json = cJSON_GetObjectItem(sys_item, "syncs");
     if (cJSON_IsArray(sync_json))
     {
@@ -268,7 +272,7 @@ bool ParseSystems(cJSON* root, game_t* out){
         if (step < 0 || step >= UPDATE_DONE)
           continue;
 
-          sys->syncs[step] = callback;
+        sys->syncs[step] = callback;
       }
     }
     cJSON* set_json = cJSON_GetObjectItem(sys_item, "sets");
@@ -314,7 +318,7 @@ bool ParseSystems(cJSON* root, game_t* out){
         sys->steps[step] = callback;
       }
     }
-  
+
     sys->iter = Json_GetBool(sys_item, "iter");
 
 
@@ -330,6 +334,10 @@ bool ParseComponents(cJSON* root, game_t* out){
 
     cJSON* c;
     cJSON_ArrayForEach(c, comp_json){
+      if (idx >= MAX_COMP_DEF){
+        TraceLog(LOG_WARNING, "=== PARSE COMPONENTS ===\n MAX COMP DEF %i exceed", MAX_COMP_DEF);
+        break;
+      }
       if (!cJSON_IsString(c))
         continue;
 
@@ -341,6 +349,7 @@ bool ParseComponents(cJSON* root, game_t* out){
         TraceLog(LOG_WARNING, "==== PARSE COMPONENTS ===\n %s missing definition!", c->valuestring);
         continue;
       }
+
 
       cJSON* list  = cJSON_GetObjectItem(comp_obj, "list");
 
@@ -373,6 +382,9 @@ bool ParseComponents(cJSON* root, game_t* out){
         }
       }
     }
+
+    if (idx >= MAX_COMP_DEF)
+      TraceLog(LOG_WARNING, "=== PARSE COMPONENTS ===\n MAX COMP DEF %i exceed - have %i", MAX_COMP_DEF, idx);
     return true;
   }
 
@@ -410,10 +422,16 @@ bool ParsePrefabs(cJSON* root, game_t* out){
   }
 
 
+  int pcount = cJSON_GetArraySize(list_json);
+
   int i = 0;
   cJSON* item;
   cJSON_ArrayForEach(item, list_json)
   {
+    if(i > MAX_PREF_DEF){
+      TraceLog(LOG_WARNING, "=== PARSE PREFABS ===\n MAX PREFABS %i exceed- have %i", MAX_PREF_DEF, pcount);
+      break;
+    }
     prefab_entity_t* p;// = &out->prefabs[i++];
 
     cJSON* contains_json = cJSON_GetObjectItem(item, "contains");
@@ -465,22 +483,28 @@ bool ParseRelations(cJSON* root, game_t* out){
       cJSON* comp_rel;
       cJSON_ArrayForEach(comp_rel, list)
       {
-        if (comp_rel_idx >= MAX_RELATIONS) break;
-
+        if (comp_rel_idx >= MAX_RELATIONS){
+          TraceLog(LOG_WARNING, "=== PARSE RELATIONS ===\n MAX RELATIONS %i exceed- have %i", MAX_RELATIONS, er->count);
+          break;
+        }
         component_relation_t* cr = &er->comps[comp_rel_idx++];
         cr->comp = GameCalloc("ParseRelations", MAX_NAME_LEN, sizeof(char));
 
         Json_GetString(comp_rel, "name", cr->comp);
         cJSON* sublist = cJSON_GetObjectItem(comp_rel, "sublist");
 
+
         if (cJSON_IsArray(sublist))
         {
+          int subcount = cJSON_GetArraySize(sublist);
           int pair_idx = 0;
           cJSON* pair;
           cJSON_ArrayForEach(pair, sublist)
           {
-            if (pair_idx >= MAX_RELATIONS_PER_ENTITY) break;
-
+            if (pair_idx >= MAX_RELATIONS_PER_ENTITY){
+              TraceLog(LOG_WARNING, "=== PARSE RELATIONS ===\n MAX RELATIONS PER ENTITY %i exceed- have %i", MAX_RELATIONS_PER_ENTITY, subcount);
+              break;
+            }
             cr->pairs[pair_idx].name = GameCalloc("ParseRelations", MAX_NAME_LEN, sizeof(char));
 
             Json_GetString(pair, "name", cr->pairs[pair_idx].name);
@@ -488,15 +512,15 @@ bool ParseRelations(cJSON* root, game_t* out){
 
             if (cJSON_IsString(ptype))
               cr->pairs[pair_idx].type = RelationTypeLookup(ptype->valuestring);
-            
+
             cJSON* relcomp_json = cJSON_GetObjectItem(pair, "components");
-            
+
             int relidx = 0;
             cJSON* relcomp;
             cJSON_ArrayForEach(relcomp, relcomp_json){
               cr->pairs[pair_idx].components[relidx] = GameCalloc("ParseRelations", MAX_NAME_LEN, sizeof(char));
 
-            strcpy(cr->pairs[pair_idx].components[relidx++], relcomp->valuestring);
+              strcpy(cr->pairs[pair_idx].components[relidx++], relcomp->valuestring);
             }
             cr->pairs[pair_idx].num_comp = relidx;
             pair_idx++;

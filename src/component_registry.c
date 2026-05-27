@@ -139,20 +139,20 @@ void ComponentsClear(world_t* w, Entity e) {
 
 }
 
-bool ComponentCheck(world_t* w, comp_id_t cid, Entity e){
+bool ComponentCheck(world_t* w, comp_id_t cid, Entity e, notification n){
   component_pool_t* p = w->pools[cid];
   if(!p || cid >= w->next_component_id)
     return false;
 
-  return p->has_update[e.id];
+  return (p->updates[e.id] & n) == n;
 }
 
-void ComponentUpdate(world_t* w, Entity e, comp_id_t cid){
+void ComponentUpdate(world_t* w, Entity e, comp_id_t cid, notification n){
   component_pool_t* p = w->pools[cid];
   if(!p || cid >= w->next_component_id)
     return;
 
-  p->has_update[e.id] = true;
+  p->updates[e.id] |= n;
 }
 
 void ComponentClearUpdate(world_t* w, Entity e, comp_id_t cid){
@@ -160,5 +160,5 @@ void ComponentClearUpdate(world_t* w, Entity e, comp_id_t cid){
   if(!p || cid >= w->next_component_id)
     return;
 
-  p->has_update[e.id] = false;
+  p->updates[e.id] = 0;
 }

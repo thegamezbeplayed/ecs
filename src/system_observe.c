@@ -16,7 +16,7 @@ void ObserveInit(world_t* w){
     subject_store_t* store = s->value;
 
     TraceLog(LOG_INFO, "=== OBSERVE INIT ===\n NOTIFY %s", store->subject->name);
-    SubjectRunNotify(store->subject, store->data, -1);
+    SubjectRunNotify(store->subject, store->data, -1, INVALID_NOTIF);
 
     HashPut(&SUBJECTS.map, store->key, store->subject);
   }
@@ -28,9 +28,11 @@ void ObserveInit(world_t* w){
 void ObserveReady(world_t* w, Entity e){
   component_observer_t* c = GET_COMPONENT(w, e, component_observer_t, OBSERVE_ID);
 
-  Entity o = e;
+  Entity *o = GameCalloc("ObserveReady", 1, sizeof(Entity));
   if(EntityHasRelation(w, e, REL_Observes))
-    o = EntityGetRelationTarget(w, e, REL_Observes);
+    *o = EntityGetRelationTarget(w, e, REL_Observes);
+  else
+    *o = e;
 
   comp_id_t s_cid = c->relation;
   for(int i = 0; i < c->num_subj; i++){
@@ -46,10 +48,17 @@ void ObserveReady(world_t* w, Entity e){
         continue;
       }
 
-      if(c->type == OBS_COMP)
-        SubjectAddObserverByComponent(c->subjects[i], o.id, s_cid, c->name, cb,  ComponentGet(w, o, l_cid));
-      else
-        SubjectAddObserver(c->subjects[i], c->name, cb, ComponentGet(w, o, l_cid));
+      switch(c->type){
+        case OBS_COMP:
+          SubjectAddObserverByComponent(c->subjects[i], o->id, s_cid, c->name, cb,  ComponentGet(w, *o, l_cid));
+          break;
+        case OBS_ENT:
+          SubjectAddObserverByComponent(c->subjects[i], o->id, s_cid, c->name, cb,  o);
+          break;
+        case OBS_DEFINE:
+          SubjectAddObserver(c->subjects[i], c->name, cb, ComponentGet(w, *o, l_cid));
+          break;
+      }
     }
   }
 }
@@ -67,11 +76,30 @@ void SubjectSystem(world_t* w, Entity e){
 
   Entity rel = EntityGetRelationTarget(w, e, REL_SubjectOf);
 
-  if(!ComponentCheck(w, sc->comp, rel))
-    return;
+  if(!ComponentCheck(w, sc->comp, rel, sc->event))
+    return;  
 
   subject_t* s = SubjectGetByKey(sc->key);
-  SubjectRunNotify(s, ComponentGet(w, rel, sc->comp), sc->comp);
+  switch(sc->type){
+    case OBS_COMP:
+      SubjectRunNotify(s, ComponentGet(w, rel, sc->comp), sc->comp, sc->event);
+      break;
+    case OBS_ENT:
+      SubjectRunNotify(s, &rel, rel.id, sc->event);
+      break;
+  }
 
+  sc->ran = true;
+}
+
+void SubjectCleanup(world_t* w, Entity e){
+  subject_component_t* sc = GET_COMPONENT(w, e, subject_component_t, SUBJECT_ID);
+
+  if(!sc->ran)
+    return;
+
+  sc->ran = false;
+
+  Entity rel = EntityGetRelationTarget(w, e, REL_SubjectOf);
   ComponentClearUpdate(w, rel, sc->comp);
 }

@@ -71,53 +71,6 @@ extern sprite_sheet_d SHEETS[SHEET_ALL];
 sprite_sheet_d LoadSpriteSheet(SheetID, const char*, const char* );
 
 
-typedef void (*AnimCollisionCB)(sprite_slice_t*, collision_d*, position_t*);
-
-void AnimCollisionHurt(sprite_slice_t*,collision_d*, position_t*);
-
-typedef struct anim_player_s anim_player_t;
-typedef struct anim_s anim_t;
-
-typedef struct{
-  AnimState   state;
-  char         name[MAX_NAME_LEN];
-  int          dir;
-  bool         loop;
-  AnimBehavior end, start;
-}anim_seq_d;
-
-typedef struct{
-  const char    name[MAX_NAME_LEN];
-  SheetID       sheet;
-  anim_seq_d    sequences[ANIM_DONE][MAX_ANIM_GROUPS];
-}anim_d;
-bool LoadSceneAnimData(const char*, const char*,  anim_d*);
-
-struct anim_s{
-  char              name[MAX_NAME_LEN];
-  int               count, cur_index;
-  int               frames[MAX_ANIM_FRAMES];
-  int               duration, elapsed;
-  float             speed;
-  bool              loop, interupt;
-  int               hurtbox_index;
-  AnimState         state;
-  AnimBehavior      on_frame_start[MAX_ANIM_FRAMES];
-  AnimBehavior      on_end, on_start;
-};
-
-AnimEventID AnimPlay(anim_t*);
-anim_t* AnimRegisterState(SheetID, const char* tag, char* group);
-struct anim_player_s{
-  SheetID         sheet_id;
-  AnimState       state;
-  int             dir;
-  collision_d     col_data;
-};
-
-bool AnimSetState(anim_t* a, AnimState s);
-bool AnimPlayerDirection(anim_player_t* player, int dir);
-bool AnimPlayerState(anim_player_t*, anim_t*, AnimState s);
 //SPRITE_T===>
 struct sprite_s{
   int         sheet_id, index;

@@ -55,6 +55,7 @@ struct rigid_body_s{
 };
 
 rigid_body_t* InitRigidBody(Vector2 pos, ShapeType, float, float);
+rigid_body_t* RigidBodyFromCollisionData(world_t*, Entity, collision_d*);
 static void RigidBodySetPos(rigid_body_t* b, Vector2 pos){
   b->bounds.pos = pos;
 }

@@ -3,17 +3,21 @@
 #include "game_define.h"
 #include "component_define.h"
 
-#define NUM_FUNCTIONS 54
+#define NUM_FUNCTIONS   (sizeof(FUNCTION_LOOKUP) / sizeof(FUNCTION_LOOKUP[0]))
 
 extern hash_map_t SYSTEM_SINK;
-typedef struct{
-  const char* name;
-  ObserverCB  fn;
-}system_sink_l;
+extern hash_map_t SYSTEM_HANDLE;
+
 void LookAddSink(const char* str, ObserverCB fn);
 ObserverCB LookupSystemSink(const char* str);
 
+void LookAddHandler(const char* str, EventCallback fn);
+EventCallback LookupSystemHandler(const char* str);
+
 system_t* SystemCreate(world_t* w, system_define_t* def);
+
+void DebugSystem(world_t* w, Entity e);
+void SubscriptionSystem(world_t* w, Entity e);
 
 void PositionLoad(world_t* w, Entity e);
 void PositionPrep(world_t* w);
@@ -65,6 +69,7 @@ void ObserveInit(world_t* w);
 void ObserveReady(world_t* w, Entity e);
 void SubjectLoad(world_t* w, Entity e);
 void SubjectSystem(world_t* w, Entity e);
+void SubjectCleanup(world_t* w, Entity e);
 
 typedef struct{
   int     count, cap;
@@ -92,8 +97,10 @@ void BehaviorLoad(world_t* w);
 void BehaviorRegister(world_t* w, Entity e);
 
 void StateBegin(world_t* w, Entity e);
+void StateRegister(world_t* w);
 
 void CombatLoad(world_t* w, Entity e);
+void CombatRegister(world_t* w);
 void CombatPrep(world_t* w);
 void CombatSystem(world_t* w, Entity e);
 
@@ -108,77 +115,83 @@ typedef struct{
 }system_function_lookup_t;
 
 static system_function_lookup_t FUNCTION_LOOKUP[] = {
-    {"PositionRegister",    PositionRegister},
-    {"PositionLoad",        PositionLoad},
-    {"PositionPrep",        PositionPrep},
+  {"DebugSystem",          DebugSystem},
+  {"PositionRegister",    PositionRegister},
+  {"PositionLoad",        PositionLoad},
+  {"PositionPrep",        PositionPrep},
 
-    {"AnimLoad",            AnimLoad},
-    {"AnimReady",           AnimReady},
-    {"AnimRender",          AnimRender},
-    {"AnimSystem",          AnimSystem},
-    {"AnimRegister",        AnimRegister},
+  {"AnimLoad",            AnimLoad},
+  {"AnimReady",           AnimReady},
+  {"AnimRender",          AnimRender},
+  {"AnimSystem",          AnimSystem},
+  {"AnimRegister",        AnimRegister},
 
-    {"InputLoad",           InputLoad},
-    {"InputRegister",       InputRegister},
-    {"InputSystem",         InputSystem},
+  {"InputLoad",           InputLoad},
+  {"InputRegister",       InputRegister},
+  {"InputSystem",         InputSystem},
 
-    {"OnForceEvent",        OnForceEvent},
-    {"ForceLoad",           ForceLoad},
-    {"ForceSystem",         ForceSystem},
-    {"ForceCleanup",        ForceCleanup},
+  {"OnForceEvent",        OnForceEvent},
+  {"ForceLoad",           ForceLoad},
+  {"ForceSystem",         ForceSystem},
+  {"ForceCleanup",        ForceCleanup},
 
-    {"PhysicsRegister",     PhysicsRegister},
-    {"PhysicsLoad",         PhysicsLoad},
-    {"PhysicsSystem",       PhysicsSystem},
-    {"PhysicsCollision",    PhysicsCollision},
-    {"PhysicsDebug",        PhysicsDebug},
-    {"PhysicsPrep",         PhysicsPrep},
+  {"PhysicsRegister",     PhysicsRegister},
+  {"PhysicsLoad",         PhysicsLoad},
+  {"PhysicsSystem",       PhysicsSystem},
+  {"PhysicsCollision",    PhysicsCollision},
+  {"PhysicsDebug",        PhysicsDebug},
+  {"PhysicsPrep",         PhysicsPrep},
 
-    {"LevelLoad",           LevelLoad},
-    {"LevelReady",          LevelReady},
-    {"LevelSystem",         LevelSystem},
+  {"LevelLoad",           LevelLoad},
+  {"LevelReady",          LevelReady},
+  {"LevelSystem",         LevelSystem},
 
-    {"RenderInit",          RenderInit},
-    {"RenderLoad",          RenderLoad},
-    {"RenderBegin",         RenderBegin},
-    {"RenderDraw",          RenderDraw},
-    {"RenderEnd",           RenderEnd},
+  {"RenderInit",          RenderInit},
+  {"RenderLoad",          RenderLoad},
+  {"RenderBegin",         RenderBegin},
+  {"RenderDraw",          RenderDraw},
+  {"RenderEnd",           RenderEnd},
 
-    {"ObserveInit",         ObserveInit},
-    {"ObserveReady",        ObserveReady},
-    
-    {"SubjectLoad",         SubjectLoad},
-    {"SubjectSystem",       SubjectSystem},
+  {"ObserveInit",         ObserveInit},
+  {"ObserveReady",        ObserveReady},
 
-    {"CameraSystem",        CameraSystem},
-    {"CameraBegin",         CameraBegin},
-    {"CameraEnd",           CameraEnd},
-    {"CameraLoad",          CameraLoad},
-    {"CameraReady",         CameraReady},
-    {"CameraTarget",        CameraTarget},
+  {"SubjectLoad",         SubjectLoad},
+  {"SubjectSystem",       SubjectSystem},
+  {"SubjectCleanup",       SubjectCleanup},
 
-    {"ParticleEmitterLoad",   ParticleEmitterLoad},
-    {"ParticleEmitterSystem", ParticleEmitterSystem},
-    {"ParticleSystem",        ParticleSystem},
-    {"ParticleCleanup",       ParticleCleanup},
-    {"ParticlesInit",         ParticlesInit},
+  {"CameraSystem",        CameraSystem},
+  {"CameraBegin",         CameraBegin},
+  {"CameraEnd",           CameraEnd},
+  {"CameraLoad",          CameraLoad},
+  {"CameraReady",         CameraReady},
+  {"CameraTarget",        CameraTarget},
 
-    {"SpritesInit",         SpritesInit},
-    {"SpriteLoad",          SpriteLoad},
-    {"SpriteDrawPrep",      SpriteDrawPrep},
+  {"ParticleEmitterLoad",   ParticleEmitterLoad},
+  {"ParticleEmitterSystem", ParticleEmitterSystem},
+  {"ParticleSystem",        ParticleSystem},
+  {"ParticleCleanup",       ParticleCleanup},
+  {"ParticlesInit",         ParticlesInit},
 
-    {"BehaviorSystem",      BehaviorSystem},
-    {"BehaviorLoad",        BehaviorLoad},
-    {"BehaviorRegister",    BehaviorRegister},
+  {"SpritesInit",         SpritesInit},
+  {"SpriteLoad",          SpriteLoad},
+  {"SpriteDrawPrep",      SpriteDrawPrep},
 
-    {"StateBegin",          StateBegin},
-    
-    {"CombatPrep",          CombatPrep},
+  {"BehaviorSystem",      BehaviorSystem},
+  {"BehaviorLoad",        BehaviorLoad},
+  {"BehaviorRegister",    BehaviorRegister},
 
-    {"TeamLoad",            TeamLoad},
-    {"TeamRegister",        TeamRegister},
-    
-    {"ExpirationSystem",    ExpirationSystem}
+  {"StateBegin",          StateBegin},
+  {"StateRegister",        StateRegister},
+
+  {"CombatPrep",          CombatPrep},
+  {"CombatRegister",      CombatRegister},
+
+  {"TeamLoad",            TeamLoad},
+  {"TeamRegister",        TeamRegister},
+
+  {"SubscriptionSystem",  SubscriptionSystem},
+  
+  {"ExpirationSystem",    ExpirationSystem}
 };
 
 #endif

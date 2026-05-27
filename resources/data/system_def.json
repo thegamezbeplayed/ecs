@@ -2,8 +2,20 @@
   "systems": ["Controller", "Animations", "Sprites", 
     "Cameras", "Renderer", "Observe", "Subjects", "Combat",
     "Forces", "Physics", "Positions", "Behavior", "State",
-    "Team"
+    "Team", "Event", "Debug"
   ],
+  "Debug":  {
+    "components": ["Debug"],
+    "syncs": [
+       {"step": "UPDATE_DRAW", "fn": "DebugSystem"}
+    ]
+  },
+  "Event":  {
+    "components": ["Subscribe"],
+    "sets": [
+      {"step": "GAME_READY", "fn": "SubscriptionSystem"}
+    ]
+  },
   "Observe": {
     "components": ["Observer"],
     "states": [
@@ -19,7 +31,8 @@
       {"step": "GAME_LOADING",  "fn": "SubjectLoad"}
     ],
     "syncs": [
-      {"step": "UPDATE_FIXED", "fn": "SubjectSystem"}
+      {"step": "UPDATE_POST", "fn": "SubjectSystem"},
+      {"step": "UPDATE_FINAL",  "fn": "SubjectCleanup"}
     ]
   },
   "Animations":{
@@ -95,6 +108,7 @@
     "components": ["RigidBody", "Position"],
     "syncs": [
       {"step": "UPDATE_POST",  "fn": "PhysicsSystem"},
+      {"step": "UPDATE_DRAW",  "fn": "PhysicsDebug"},
       {"step": "UPDATE_PRE" ,  "fn": "PhysicsCollision", "iter": 1}
     ],
     "sets": [
@@ -174,12 +188,18 @@
     "components": ["State"],
     "sets": [
       {"step": "GAME_READY", "fn": "StateBegin"}
+    ],
+    "states": [
+      {"step": "GAME_LOADING", "fn": "StateRegister"}
     ]
   },
   "Combat": {
     "components": ["Team", "Position"],
     "steps":  [
       {"step":  "UPDATE_START", "fn": "CombatPrep"}
+    ],
+    "states": [
+      {"step": "GAME_LOADING", "fn": "CombatRegister"}
     ],
     "iter": true
   },

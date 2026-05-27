@@ -7,7 +7,6 @@
 
 #define MAX_TERMS 8
 #define MAX_PREFABS 128
-#define MAX_COMP_DATA 8
 
 #define ADD_COMPONENT(world, e, Type, ID) \
   (Type*)ComponentAdd(world, e, ID)
@@ -18,8 +17,8 @@
 #define REGISTER_COMPONENT(world, Type) \
   ComponentRegister(world, sizeof(Type))
 
-#define MAX_RELATIONS_PER_ENTITY 4 
-#define MAX_RELATIONS   8
+#define MAX_RELATIONS_PER_ENTITY 8 
+#define MAX_RELATIONS   32
 #define REL_AppliesTo   1u
 #define REL_ChildOf     2u          
 #define REL_Owner       3u         
@@ -29,6 +28,8 @@
 #define REL_BehaviorOf  7u
 #define REL_StatOf      8u
 #define REL_TargetOf    9u
+#define REL_EventOf     10u
+#define REL_Debugs      69u
 
 typedef uint32_t RelationType;
 typedef struct {
@@ -127,9 +128,9 @@ comp_id_t ComponentRegister(world_t* w, const char*, size_t);
 void* ComponentAdd(world_t* w, Entity e, comp_id_t id);
 void* ComponentGet(world_t* w, Entity e, comp_id_t id);
 void* ComponentGetByID(world_t* w, uint32_t eid, comp_id_t id);
-void ComponentUpdate(world_t* w, Entity e, comp_id_t id);
+void ComponentUpdate(world_t* w, Entity e, comp_id_t id, notification);
 void ComponentClearUpdate(world_t* w, Entity e, comp_id_t cid);
-bool ComponentCheck(world_t*, comp_id_t, Entity e);
+bool ComponentCheck(world_t*, comp_id_t, Entity e, notification);
 void ComponentSet(world_t* w, Entity e, comp_id_t id, void* set);
 void ComponentsClear(world_t* w, Entity e);
 static bool ComponentValid(world_t* w, comp_id_t cid){

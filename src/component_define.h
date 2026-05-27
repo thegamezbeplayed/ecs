@@ -4,7 +4,8 @@
 #include "asset_vfx.h"
 #include "physics_define.h"
 #include "view_define.h"
-#include "game_stats.h"
+#include "stat_define.h"
+#include "anim_define.h"
 #include "behavior_define.h"
 #include "team_define.h"
 #include "game_control.h"
@@ -25,7 +26,10 @@ bool SubjectInit(void* comp, component_entry_t* j);
 bool TrackingInit(void* comp, component_entry_t* j);
 bool StateInit(void* comp, component_entry_t* j);
 bool BehaviorInit(void* comp, component_entry_t* j);
+bool StatInit(void* comp, component_entry_t* j);
+bool SubscribeInit(void* comp, component_entry_t* j);
 
+bool ParseSubscribeComponent(cJSON* j, subscription_t* out);
 bool ParseSpriteComponent(cJSON* j, sprite_t* out);
 bool ParseBehaviorComponent(cJSON* j, behavior_t* out);
 bool ParseRigidBodyComponent(cJSON* j, rigid_body_t* out);
@@ -37,20 +41,33 @@ bool ParseParticleEmitterComponent(cJSON*, particle_emitter_t*);
 bool ParseRenderComponent(cJSON* j, render_ctx_t* out);
 bool ParseObserverComponent(cJSON* j, component_observer_t* out);
 bool ParseSubjectComponent(cJSON* j, subject_component_t* out);
-
-typedef struct{
-  anim_player_t   player;
-  AnimEventID     event;
-  int             num_hurt;
-  collision_d     hitbox;
-  collision_d     hurtboxes[MAX_SLICES];
-  anim_t          sequences[ANIM_DONE][MAX_DIRECTIONS];
-}anim_comp_t;
+bool ParseStatComponent(cJSON* j, stat_t* out);
 bool ParseAnimComponent(cJSON* j, anim_comp_t* out);
 
 typedef struct{
-  char  name[MAX_NAME_LEN];
+  char   entity[MAX_NAME_LEN];
+  char   display[MAX_NAME_LEN];
 }name_t;
+
+bool ParseNameComponent(cJSON* j, name_t* out);
+static bool NameInit(void* comp, component_entry_t* j){
+  name_t* n = comp;
+
+  return ParseNameComponent(j->data, n);
+}
+
+typedef struct{
+  char        name[MAX_NAME_LEN];
+  char        str[MAX_NAME_LEN];
+  comp_id_t   cid;
+}debug_t;
+bool ParseDebugComponent(cJSON* j, debug_t* out);
+
+static bool DebugInit(void* comp, component_entry_t* j){
+  debug_t* d = comp;
+
+  return ParseDebugComponent(j->data, d);
+}
 
 typedef struct{
   int       wid, hei;

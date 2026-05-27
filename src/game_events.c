@@ -1,4 +1,11 @@
 #include "process_define.h"
+#include "game_define.h"
+#include "component_define.h"
+
+bool SubscribeInit(void* comp, component_entry_t* j){
+  subscription_t* s = comp;
+  return ParseSubscribeComponent(j->data, s);
+}
 
 cooldown_t* InitCooldown(int dur, notification type){
   cooldown_t* cd = GameCalloc("InitCooldown", 1, sizeof(cooldown_t)); 

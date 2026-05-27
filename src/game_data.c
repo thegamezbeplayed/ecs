@@ -15,16 +15,19 @@ const component_define_t CORE_COMPONENTS[] = {
   {"Type",      sizeof(EntityType)},
   {"Observer",  sizeof(component_observer_t)},
   {"Subject",   sizeof(subject_component_t)},
+  {"Subscribe", sizeof(subscription_t)},
   {"Force",     sizeof(force_t)},
-  //{"Name",      0}, //TODO
+  {"Name",      sizeof(name_t)},
   {"State",     sizeof(state_t)},
   {"Behavior",  sizeof(behavior_t)},
   {"Follow",    sizeof(follow_t)},
   {"Level",     sizeof(level_t)},
   {"Team",      sizeof(team_t)},
+  {"Stat",      sizeof(stat_t)},
   {"Expiry",    sizeof(lifetime_t)},
   {"Particle",        sizeof(particle_t)},
-  {"ParticleEmitter", sizeof(particle_emitter_t)}
+  {"ParticleEmitter", sizeof(particle_emitter_t)},
+  {"Debug",        sizeof(debug_t)},
 };
 
 const component_func_t COMPFUNC_LOOKUP[] = {
@@ -38,14 +41,18 @@ const component_func_t COMPFUNC_LOOKUP[] = {
   {"Input",       InputInit},
   {"Position",    PositionInit},
   {"Observer",    ObserverInit},
-  {"Subject",      SubjectInit},
+  {"Subject",     SubjectInit},
+  {"Subscribe",   SubscribeInit},
   {"Follow",      FollowInit},
   {"Track",       TrackingInit},
   {"State",       StateInit},
+  {"Stat",        StatInit},
   {"Behavior",    BehaviorInit},
   {"Team",        TeamInit},
   {"Particle",        ParticleInit},
-  {"ParticleEmitter", ParticleEmitterInit}
+  {"ParticleEmitter", ParticleEmitterInit},
+  {"Name",        NameInit},
+  {"Debug",        DebugInit},
 };
 
 component_entry_t* GetGameComponentDefine(game_t* g, const char* comp, const char* name){

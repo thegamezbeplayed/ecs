@@ -2,148 +2,37 @@
 #include "system_define.h"
 #include "process_event.h"
 #include "tool_lookup.h"
-
-void AnimSet(anim_comp_t* ac, anim_t* a, AnimState s){
-}
-
-void AnimEvent(event_t* ev, void* data){
-  anim_comp_t* ac = data;
-
-  anim_player_t* ap = &ac->player;
-  anim_t* a = &ac->sequences[ap->state][ap->dir];
-
-  AnimState s = ANIM_NONE;
-  switch(EVENT_ID(ev->type)){
-    case COMB_EVENT_HIT:
-      s = ANIM_HURT;
-      break;
-    default:
-      return;
-      break;
-  }
-
-  AnimSet(ac, a, s);
-}
+#include "system_events.h"
 
 void AnimSink(void* obs_data, void* sub, payload_t* pl){
   anim_comp_t* ac = obs_data;
-  
-  int dir = -1; 
-  AnimState s = ANIM_NONE;
 
-  if(pl->type == INPUT_ID){
-    input_t* in = pl->data;
-
-    action_key_t* ak = InputGetAction(in->last_key);
-
-    switch(ak->type){
-      case ACT_MOVE:
-        s = ANIM_WALK;
-        dir = abs(vec_to_deg(ak->dir)/90);
-        break;
-      case ACT_ATTACK:
-        break;
-      case ACT_STOP:
-        s = ANIM_IDLE;
-        break;
-      default:
+  switch(EVENT_ID(pl->event)){
+    case POS_EVENT_STEP:
+      if(pl->type_id != POS_ID){
+        TraceLog(LOG_WARNING, "=== ANIM SINK BAD DATA\n Expected Pos ID %i but payload is type %i",
+            POS_ID, pl->type_id);
         return;
-        break;
-    }
-  }
-  else if(pl->type = POS_ID){
-    position_t* p = pl->data;
-    s = ANIM_WALK;
-    dir = abs(vec_to_deg(p->dir_step)/90);
-  }
-  else
-    return;
-
-  anim_player_t* ap = &ac->player;
-  AnimPlayerDirection(ap, dir);
-
-  anim_t* a = &ac->sequences[ap->state][ap->dir];
-
-  if(s==ANIM_IDLE && ap->state == ANIM_WALK)
-    DO_NOTHING();
-
-  if(!AnimPlayerState(ap, a, s))
-    return;
- 
-}
-
-void AnimInputEvent(event_t* ev, void* data){
-/*
-  anim_comp_t* ac = data;
-  input_t*       in = ev->data;
-
-  int state_dir = in->angle/90;
-
-  anim_player_t* ap = &ac->player;
-  anim_t* a = &ac->sequences[ap->state][ap->dir];
-
-  AnimState s = ANIM_NONE;
-  switch(EVENT_ID(ev->type)){
+      }
+      AnimHandlePos(ac, pl->data);
+      break;
+    case BEHAVIOR_EVENT_STATE:
+      if(pl->type_id != STATE_ID){
+        TraceLog(LOG_WARNING, "=== ANIM SINK BAD DATA\n Expected Behavior ID %i but payload is type %i",
+            STATE_ID, pl->type_id);
+        return;
+      }
+      AnimHandleState(ac, pl->data);
+      break;
     case INPUT_EVENT_MOVE:
-      s = ANIM_WALK;
-      break;
-    case INPUT_EVENT_KEY_RELEASE:
-      s = ANIM_IDLE;
-      break;
-    case INPUT_EVENT_ATTACK:
-      s = ANIM_ATTACK;
-      break;
-    default:
-      TraceLog(LOG_WARNING, "==== ANIM INPUT UNKOWN EVENT ====\n %i", EVENT_ID(ev->type));
-      break;
-
-  }
-
-  if(!AnimPlayerState(ap, a, s))
-    return;
-
-  ap->dir = state_dir;
-
-  if(!a)
-    return;
-
-  //if(AnimSetState(a, ANIM_START))
-*/
-}
-
-void AnimBehaviorHandler(world_t* w, Entity e, anim_comp_t* ac, anim_t* a){
-  notification n;
-  AnimBehavior bev = ANIM_BLANK;
-  switch(ac->event){
-    case ANIM_EVENT_FRAME_END:
-      break;
-    case ANIM_EVENT_SEQ_END:
-      bev = a->on_end;
-      break;
-    case ANIM_EVENT_FRAME_START:
-      bev = a->on_frame_start[a->cur_index];
-      break;
-    default:
-      return;
-      break;
-  }
-
-  switch(bev){
-    case ANIM_SUSPEND:
-      ac->player.state = ANIM_IDLE;
-      break;
-    case ANIM_HURTBOX:
-      n = AnimEvent_ToNotif(ANIM_EVENT_ATTACK);
-      if(!GameCheckInteraction(e.id, e.id, n))
+      if(pl->type_id != INPUT_ID){
+        TraceLog(LOG_WARNING, "=== ANIM SINK BAD DATA\n Expected Input ID %i but payload is type %i",
+            INPUT_ID, pl->type_id);
         return;
-
-      int rate = a->duration;
-      GameInteraction(e.id, e.id, n, rate);
-
-      n = PhysEvent_ToNotif(PHYS_EVENT_SPAWN);
-      ac->hurtboxes[a->hurtbox_index].duration = rate;
-      GameEvent(n, &ac->hurtboxes[a->hurtbox_index], e.id);
+      }
+      AnimHandleInput(ac, pl->data);
       break;
+
   }
 }
 
@@ -175,23 +64,6 @@ void AnimReady(world_t* w, Entity e){
 }
 
 void AnimLoad(world_t* w, Entity e){
-
-  anim_comp_t* ac = GET_COMPONENT(w, e, anim_comp_t, ANIM_ID);
-/*
-  input_t* in = GET_COMPONENT(w, e, input_t, INPUT_ID);
-
-  if(!in)
-    return;
-
-  notification n = InputEvent_ToNotif(INPUT_EVENT_MOVE);
-  TargetSubscribe(n, AnimInputEvent, ac, e.id );
-
-  n = InputEvent_ToNotif(INPUT_EVENT_ATTACK);
-  TargetSubscribe(n, AnimInputEvent, ac, e.id );
-
-  n = InputEvent_ToNotif(INPUT_EVENT_KEY_RELEASE);
-  TargetSubscribe(n, AnimInputEvent, ac, e.id );
-*/
 }
 
 void AnimSystem(world_t* w, Entity e){
@@ -204,10 +76,13 @@ void AnimSystem(world_t* w, Entity e){
 
   spr->index = spr_index;
 
-  AnimEventID ev = AnimPlay(a);
+  AnimPhase p = AnimPlay(a);
 
-  ac->event = ev;
-  AnimBehaviorHandler(w, e, ac, a);
+  if(p > ANIM_DONE)
+    return;
+
+  AnimEventID ev = a->on_phase[p];
+  AnimHandleEvent(w, e, ac, ev);
 }
 
 void AnimRegister(world_t* w){

@@ -1,6 +1,11 @@
 #include "system_define.h"
 #include "process_event.h"
 #include "tool_lookup.h"
+#include "system_events.h"
+
+void PhysicsSink(void* obs_data, void* sub, payload_t* pl){
+  rigid_body_t* rb = obs_data;
+}
 
 void ForceSink(void* obs_data, void* sub, payload_t* pl){
   force_t* f = obs_data;
@@ -55,44 +60,9 @@ void OnForceEvent(event_t* ev, void* data){
   }
 }
 
-void OnPhysEvent(event_t* ev, void* data){
-  rigid_body_t* body = data;
-  Entity e = EntityGet(&world.manager, ev->eid);
-
-  switch(EVENT_ID(ev->type)){
-    case PHYS_EVENT_SPAWN:
-      collision_d* coll = ev->data;
-
-      Entity b = EntityCreate(&world.manager);
-
-      rigid_body_t* rb = ComponentAdd(&world, b, PHYS_ID);
-      position_t* p = ComponentAdd(&world, b, POS_ID);
-
-      Vector2 pos = Vector2Inc(body->bounds.pos, coll->x, coll->y);
-
-      memcpy(rb, InitRigidBody(pos, coll->shape, coll->wid, coll->hei),
-          sizeof(rigid_body_t));
-
-      rb->is_static = true;
-
-      memcpy(p, InitPosition(pos), sizeof(position_t));
-
-      rb->on_coll = PHYS_EVENT_HIT;
-      EntityAddRelation(&world, b, REL_ChildOf, e);
-      notification n = PhysEvent_ToNotif(PHYS_EVENT_DESTROY);
-
-      lifetime_t* lf = ComponentAdd(&world, b, EXPIR_ID);
-
-      LifetimeSet(lf, coll->duration);
-      break;
-    case COMB_EVENT_HIT:
-      
-      break;
-  }
-}
-
 void PhysicsRegister(world_t* w){
   LookAddSink("Force", ForceSink);
+  LookAddSink("RigidBody", PhysicsSink);
   system_t* pt = HashGet(&w->sys_map, hash_str_64("Physics"));
   entity_iter_t* iter = SystemGetIter("Physics");
 
@@ -115,9 +85,6 @@ void PhysicsPrep(world_t* w){
 void PhysicsLoad(world_t* w, Entity e){
   rigid_body_t* rb = GET_COMPONENT(w, e, rigid_body_t, PHYS_ID);
   position_t*  p = GET_COMPONENT(w, e, position_t, POS_ID);
-
-  notification n = PhysEvent_ToNotif(PHYS_EVENT_SPAWN);
-  SubscribeEntity(n, OnPhysEvent, rb, e.id);
 
   anim_comp_t* ac = GET_COMPONENT(w, e, anim_comp_t, ANIM_ID);
 
@@ -159,9 +126,8 @@ void PhysicsCollision(world_t* w, Entity e){
 
     if(!CheckCollision(body, tar, 0))
       continue;
-
-    GameEvent(n, &other, e.id);
-
+    
+    PhysHandleEvent(w, e, other, body->on_coll);
     int rate = imax(body->col_rate, tar->col_rate);
     
     GameInteraction(e.id, other.id, n, rate);
@@ -179,7 +145,7 @@ void PhysicsSystem(world_t* w, Entity e){
 
     notification n = PosEvent_ToNotif(POS_EVENT_STEP);
     GameEvent(n, b, e.id);
-    ComponentUpdate(w, e, PHYS_ID);
+    ComponentUpdate(w, e, PHYS_ID, n);
   }
   
   b->vel = VECTOR2_ZERO;
@@ -188,13 +154,16 @@ void PhysicsSystem(world_t* w, Entity e){
 void PhysicsDebug(world_t* w, Entity e){
  rigid_body_t* b = GET_COMPONENT(w, e, rigid_body_t, PHYS_ID);
 
-  switch(b->bounds.shape){
+ Color col = BLUE;
+ if(b->on_coll == PHYS_EVENT_HIT)
+   col = RED;
+ switch(b->bounds.shape){
     case SHAPE_CIRCLE:
-      DrawCircleLinesV(b->bounds.pos, b->bounds.radius, BLUE);
+      DrawCircleLinesV(b->bounds.pos, b->bounds.radius, col);
       break;
     case SHAPE_REC:
       Rectangle rec = RigidBodyGetBoundsRec(b);
-      DrawRectangleLinesEx(rec, 1.5, BLUE);
+      DrawRectangleLinesEx(rec, 1.5,  col);
 
       break;
   }
@@ -237,8 +206,7 @@ void ForceSystem(world_t* w, Entity e){
    f->is_active = ForceStep(f, f->is_active);
    ForceApply(rb, f);
 
-   ComponentUpdate(w, be, PHYS_ID);
-
+   ComponentUpdate(w, be, PHYS_ID, PhysEvent_ToNotif(PHYS_EVENT_VEL));
 }
 
 void ForceCleanup(world_t* w, Entity e){

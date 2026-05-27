@@ -41,6 +41,13 @@ notification_pool_t* InitNotifications(int cap);
 notification_t* RegisterNotification(notification_pool_t*, char*);
 //====EVENTS===>
 
+typedef struct{
+  notification  event;
+  uint32_t      target_id;
+  ObjectType    type;
+  char          listener[MAX_NAME_LEN];
+}subscription_t;
+
 typedef enum{
   TF_NONE,
   TF_TURN,

@@ -25,11 +25,11 @@ bool BehaviorSetState(state_t* bs, State s){
 
   bs->state = s;
 
-  return bs->state == s;
+  return true;
 }
 
 bool BehaviorCanChangeState(State cur, State s){
   state_change_requirement_t check = CAN_CHANGE[s];
 
-  return check.can(cur, s);
+  return check.can(cur, check.required);
 }

@@ -29,6 +29,9 @@ component_pool_t* ComponentQueryInner(world_t* w, system_t* s) {
 
   for (int i = 0; i < s->term_count; i++) {
     comp_id_t id = s->terms[i];
+    if(id >= w->next_component_id)
+      return NULL;
+
     component_pool_t* p = w->pools[id];
 
     if (!p) return NULL;
@@ -63,10 +66,6 @@ void SystemTick(world_t* w, system_t* s, UpdateType u){
   component_pool_t* base = ComponentQueryInner(w, s);
   if (!base) return;
 
-  /*
-  if(s->fn_iter[u])
-    *w->iter = EntityIterStart(w, s);
-*/
   for (int i = 0; i < base->size; i++) {
     Entity e = { base->entities[i], w->manager.generation[base->entities[i]] };
 

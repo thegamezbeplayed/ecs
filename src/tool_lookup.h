@@ -1,6 +1,5 @@
 #ifndef __TOOL_LOOK__
 #define __TOOL_LOOK__
-
 #include "physics_enum.h"
 #include "sprite_enum.h"
 #include "vfx_enum.h"
@@ -8,6 +7,8 @@
 #include "process_enum.h"
 #include "behavior_define.h"
 #include "game_define.h"
+
+#define EVENT_LOOKUP_COUNT   (sizeof(EVENT_LOOKUP) / sizeof(EVENT_LOOKUP[0]))
 
 typedef struct{
   RelationType    type;
@@ -21,18 +22,20 @@ static const relation_str_t RELATION_LOOKUP[NUM_REL] = {
   {REL_Target,      "Target"},
   {REL_Observes,    "Observes"},
   {REL_SubjectOf,   "SubjectOf"},
-  {REL_BehaviorOf,  "BehaviorOf"}
+  {REL_BehaviorOf,  "BehaviorOf"},
+  {REL_EventOf,     "EventOf"},
+  {REL_Debugs,      "Debugs"}
 };
 
 State StringToState(const char* str);
 BehaviorTreeType StringToBehaviorType(const char* str);
 BehaviorLeafInit StringToLeafFunc(const char* str);
-AnimBehavior StringToAnimBehavior(const char* str);
 AnimState StringToAnimState(const char* str);
 ParticleEmitMode StringToEmitMode(const char* str);
 SheetID StringToSheetID(const char* str);
 ParticleDrawType StringToDrawType(const char* str);
 PhysicsEventID StringToPhysEvent(const char* str);
+AnimEventID StringToAnimEvent(const char* str);
 ReactType StringToReaction(const char* str);
 CameraTracking StringToCameraMode(const char* str);
 ActionType StringToAction(const char* str);
@@ -81,5 +84,52 @@ GameState GetGameState(const char* name);
 SystemFn SystemFunctionLookup(const char* name);
 ComponentInitFn ComponentFuncLookup(const char* name);
 RelationType RelationTypeLookup(const char* str);
+
+typedef struct{
+  int         id;
+  const char  name[MAX_NAME_LEN];
+}event_look_t;
+
+static const event_look_t EVENT_LOOKUP[] = {
+  {ANIM_EVENT_STATE,      "ANIM-STATE"},
+  {ANIM_EVENT_SEQ_END,    "ANIM-END"},
+  {BEHAVIOR_EVENT_STATE,  "BEHAVIOR-STATE"},
+  {INPUT_EVENT_MOVE,      "INPUT-MOVE"},
+  {PHYS_EVENT_VEL,        "PHYS-VEL"},
+  {PHYS_EVENT_COLL,       "PHYS-COL"},
+  {PHYS_EVENT_HIT,        "PHYS-HIT"},
+  {PHYS_EVENT_VEL,        "PHYS-VEL"},
+  {POS_EVENT_STEP,        "POS-STEP"},
+};
+
+notification EventIDLookup(const char* str);
+
+typedef struct{
+  State       state;
+  const char  str[MAX_NAME_LEN];
+}state_look_t;
+
+static const state_look_t STATE_LOOKUP[STATE_END] = {
+  {STATE_NONE,    "NONE"},
+  {STATE_SPAWN,   "SPAWN"},
+  {STATE_IDLE,    "IDLE"},
+  {STATE_AGGRO,   "AGGRO"},
+  {STATE_ATTACK,  "ATTACK"},
+  {STATE_DIE,     "DIE"},
+};
+
+typedef struct{
+  AnimPhase   id;
+  const char  name[MAX_NAME_LEN];
+}phase_look_t;
+
+static const phase_look_t PHASE_LOOKUP[ANIM_STOP] = {
+  {ANIM_START,    "START"},
+  {ANIM_STEP,     "STEP"},
+  {ANIM_DONE,     "DONE"},
+  {ANIM_RUNNING,  "RUNNING"},
+};
+
+AnimPhase AnimPhaseLookup(const char* str);
 #endif
 
