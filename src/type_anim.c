@@ -25,6 +25,8 @@ AnimPhase AnimPlay(anim_t* a){
   if(a->elapsed >= a->duration){
     p = ANIM_STEP;
     a->cur_index++;
+    if(a->hurtbox_index > -1 && a->cur_index == a->hurtbox_index)
+      p = ANIM_ACTION;
     a->elapsed = 0;
   }
   else{

@@ -22,7 +22,7 @@ static bool GameCheckInteraction(uint32_t a, uint32_t b, notification n){
   return InteractionCheck(&GM.interactions, a, b, n);
 }
 
-static void GameInteraction(uint32_t a, uint32_t b, notification n,  float dur){
+static void GameInteraction(uint32_t a, uint32_t b, notification n,  int dur){
   InteractionRegister(&GM.interactions, a, b, n, dur);
 }
 #endif

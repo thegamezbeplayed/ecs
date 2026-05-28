@@ -85,6 +85,8 @@
     {"name": "wiz",   "pos_x": 400, "pos_y": 200},
     {"name": "rat",   "pos_x": 580, "pos_y": 200},
     {"name": "rat",   "pos_x": 410, "pos_y": 300},
+    {"name": "rat",   "pos_x": 410, "pos_y": 300},
+    {"name": "orc",   "pos_x": 210, "pos_y": 300},
     {"name": "orc",   "pos_x": 210, "pos_y": 300}
   ],  
   "metadata": {

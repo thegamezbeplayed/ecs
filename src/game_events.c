@@ -497,9 +497,19 @@ hash_key_t MakeInteractionKey(notification n, uint32_t source, uint32_t target){
 
 }
 
-void InteractionRegister(interaction_pool_t* p, uint32_t source, uint32_t target, notification n,  float duration){
+static inline uint32_t InteractionHash(uint64_t key)
+{
+    key ^= key >> 33;
+    key *= 0xff51afd7ed558ccdULL;   // good 64->64 mix
+    key ^= key >> 33;
+    key *= 0xc4ceb9fe1a85ec53ULL;
+    key ^= key >> 33;
+    return (uint32_t)key;
+}
+
+void InteractionRegister(interaction_pool_t* p, uint32_t source, uint32_t target, notification n,  int duration){
   uint64_t key = MakeInteractionKey(n, source, target);
-  uint32_t hash = (uint32_t)(key ^ (key >> 32) ^ (key >> 16));
+  uint32_t hash = InteractionHash(key);
 
   int current_time = WorldGetTime();
   for (int i = 0; i < 12; ++i)
@@ -521,7 +531,7 @@ void InteractionRegister(interaction_pool_t* p, uint32_t source, uint32_t target
 bool InteractionCheck(interaction_pool_t* p, uint32_t source, uint32_t target, notification n)
 {
   uint64_t key = MakeInteractionKey(n, source, target);
-  uint32_t hash = (uint32_t)(key ^ (key >> 32) ^ (key >> 16));  // good mixing
+  uint32_t hash = InteractionHash(key);
   int current_time = WorldGetTime();
 
   for (int i = 0; i < 12; ++i)   // limited linear probing

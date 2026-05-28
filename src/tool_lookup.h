@@ -127,6 +127,7 @@ static const phase_look_t PHASE_LOOKUP[ANIM_STOP] = {
   {ANIM_START,    "START"},
   {ANIM_STEP,     "STEP"},
   {ANIM_DONE,     "DONE"},
+  {ANIM_ACTION,   "ACTION"},
   {ANIM_RUNNING,  "RUNNING"},
 };
 

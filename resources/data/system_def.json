@@ -2,7 +2,7 @@
   "systems": ["Controller", "Animations", "Sprites", 
     "Cameras", "Renderer", "Observe", "Subjects", "Combat",
     "Forces", "Physics", "Positions", "Behavior", "State",
-    "Team", "Event", "Debug"
+    "Team", "Event", "Expiration", "Debug"
   ],
   "Debug":  {
     "components": ["Debug"],
