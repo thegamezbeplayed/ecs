@@ -154,6 +154,7 @@ SheetID StringToSheetID(const char* str){
   if (strcmp(str, "SHEET_PLAYER") == 0) return SHEET_CHAR;
   if (strcmp(str, "SHEET_MOB") == 0)  return SHEET_MOB;
   if (strcmp(str, "SHEET_TILE") == 0) return SHEET_TILE;
+  if (strcmp(str, "SHEET_AUTOTILE") == 0) return SHEET_AUTOTILE;
   // ... add others
   return SHEET_ALL;
 }
@@ -265,5 +266,3 @@ notification EventIDLookup(const char* str){
 
   return -1;
 }
-
-
