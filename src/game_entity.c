@@ -1,4 +1,4 @@
-#include "game_register.h"
+#include "world_define.h"
 
 uint32_t PLAYER;
 

@@ -2,7 +2,7 @@
 #define __GAME_DEF__
 #include "cJSON.h"
 
-#include "game_register.h"
+#include "world_define.h"
 
 #define NUM_SYS      18
 #define MAX_COMP_DEF 128
@@ -33,8 +33,7 @@ typedef struct{
 }prefab_entity_t;
 
 typedef struct{
-  char*         name;
-  RelationType  type;
+  char*         name, *type;
   int           num_comp;
   char*         components[MAX_COMPONENTS];
 }relation_pair_t;

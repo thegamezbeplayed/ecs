@@ -1,5 +1,6 @@
 #ifndef __UTIL_HASH__
 #define __UTIL_HASH__
+#include "xxhash.h" 
 #include "util_tools.h"
 
 #define HKEY_CELL(c) (hash_key_t){hash_combine_64(\
@@ -179,6 +180,16 @@ static uint32_t hash_str_32(const char *str) {
   int c;
   while ((c = *str++))
     hash = ((hash << 5) + hash) + (uint32_t)c; // hash * 33 + c
+  return hash;
+}
+
+static uint32_t hash_string_fnv(const char* str){
+  uint32_t hash = 0x811C9DC5u;
+  while(*str){
+    hash ^= (uint8_t)*str++;
+    hash *= 0x01000193u;
+  }
+
   return hash;
 }
 

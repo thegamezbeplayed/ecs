@@ -27,6 +27,8 @@ void WorldInit(world_t* w) {
   HashInit(&SYSTEM_SINK, next_pow2_int(NUM_SYS));
   HashInit(&SYSTEM_HANDLE, next_pow2_int(NUM_SYS));
 
+  HashInit(&w->relation_to_bit, MAX_RELATIONS);
+  InitRelationMap(MAX_ENTITIES * MAX_RELATIONS_PER_ENTITY);
   HashInit(&w->sys_map, next_pow2_int(NUM_SYS));
   SystemIterInit(NUM_SYS+NUM_COMP_CORE);
 }
@@ -113,45 +115,8 @@ Entity PrefabSpawn(world_t* w, const char* name, Vector2 world_pos){
     Entity r = PrefabInstantiate(w, rp->entity, VEC_UNSET);
 
     EntityAddRelation(w, r, rel->type, spawn);
-    EntityAddRelation(w, spawn, REL_Target, r);
+    EntityAddRelation(w, spawn, "RelationOf", r);
   }
 
   return spawn;
 }
-
-relation_t* EntityAddRelation(world_t* w, Entity e, RelationType type, Entity target){
-  if (!EntityValid(&w->manager, target)) 
-    return NULL;
-
-  w->relations[e.id] = (relation_t){ .target = target, .type = type };
-  w->has_relation[e.id] = true;
-
-  return &w->relations[e.id];
-}
-
-void EntityRemoveRelation(world_t* w, Entity e){
-  if (e.id >= MAX_ENTITIES) return;
-  w->has_relation[e.id] = false;
-}
-
-relation_t* EntityGetRelation(world_t* w, Entity e){
-  if (!EntityValid(&w->manager, e))
-    return NULL;
-
-  if (!w->has_relation[e.id])
-    return NULL;
-
-  // Currently only one relation per entity
-  return &w->relations[e.id];
-}
-
-Entity EntityGetRelationTarget(world_t* w, Entity e, RelationType rel){
-  if (!EntityValid(&w->manager, e) || !w->has_relation[e.id] || w->relations[e.id].type != rel)
-    return INVALID_ENTITY;
-  return w->relations[e.id].target;
-}
-
-bool EntityHasRelation(world_t* w, Entity e, RelationType rel){
-    return EntityGetRelationTarget(w, e, rel).id != INVALID_ENTITY.id;
-}
-

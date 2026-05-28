@@ -175,13 +175,6 @@ ParticleDrawType StringToDrawType(const char* str){
   return PARTICLE_NONE;
 }
 
-RelationType RelationTypeLookup(const char* str){
-  for(int i = 0; i < NUM_REL; i++){
-    if (strcmp(str, RELATION_LOOKUP[i].name) == 0)
-      return RELATION_LOOKUP[i].type;
-  }
-}
-
 ComponentInitFn ComponentFuncLookup(const char* name){
   if (!name) return NULL;
 

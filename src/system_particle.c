@@ -80,7 +80,7 @@ void ParticleEmitterLoad(world_t* w, Entity e){
     TargetSubscribe(n, ParticleEmitEvent, w, e.id);
   }
 
-  Entity rel = EntityGetRelationTarget(w, e, REL_ChildOf);
+  Entity rel = EntityGetRelationTarget(w, e, "EmitterOf");
 
   if(rel.id == INVALID_ENTITY.id)
     return;

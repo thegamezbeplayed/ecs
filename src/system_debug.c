@@ -4,7 +4,10 @@
 void DebugSystem(world_t* w, Entity e){
   debug_t* d = ComponentGet(w, e, DEBUG_ID);
 
-  Entity rel = EntityGetRelationTarget(w, e, REL_Debugs);
+  if(!EntityHasRelation(w, e, "DebuggerOf"))
+    return;
+
+  Entity rel = EntityGetRelationTarget(w, e, "DebuggerOf");
 
   position_t* p = ComponentGet(w, rel, POS_ID);
 

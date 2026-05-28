@@ -12,10 +12,10 @@ BehaviorStatus BehaviorMoveToTarget(world_t* w, behavior_params_t *params){
   if(!p)
     return BEHAVIOR_FAILURE;
 
-  if(!EntityHasRelation(w, e, REL_TargetOf))
+  if(!EntityHasRelation(w, e, "AggroTarget"))
     return BEHAVIOR_FAILURE;
 
-  Entity rel = EntityGetRelationTarget(w, e, REL_TargetOf);
+  Entity rel = EntityGetRelationTarget(w, e, "AggroTarget");
   if(!EntityValid(&w->manager, rel))
     return BEHAVIOR_FAILURE;
 
@@ -73,8 +73,8 @@ BehaviorStatus BehaviorCheckAggro(world_t* w, behavior_params_t *params){
   if(!EntityValid(&w->manager, e))
     return BEHAVIOR_FAILURE;
 
-  if(EntityHasRelation(w, e, REL_TargetOf)){
-    Entity rel = EntityGetRelationTarget(w, e, REL_TargetOf);
+  if(EntityHasRelation(w, e, "AggroTarget")){
+    Entity rel = EntityGetRelationTarget(w, e, "AggroTarget");
     if(EntityValid(&w->manager, rel))
       return BEHAVIOR_SUCCESS;
   }
@@ -104,7 +104,7 @@ BehaviorStatus BehaviorCheckAggro(world_t* w, behavior_params_t *params){
   }
 
   if(EntityValid(&w->manager, tar)){
-    relation_t* r = EntityAddRelation(w, e, REL_TargetOf, tar);
+    relation_t* r = EntityAddRelation(w, e, "AggroTarget", tar);
     if(r)
       return BEHAVIOR_SUCCESS;
   }

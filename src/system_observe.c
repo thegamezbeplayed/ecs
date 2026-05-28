@@ -29,8 +29,8 @@ void ObserveReady(world_t* w, Entity e){
   component_observer_t* c = GET_COMPONENT(w, e, component_observer_t, OBSERVE_ID);
 
   Entity *o = GameCalloc("ObserveReady", 1, sizeof(Entity));
-  if(EntityHasRelation(w, e, REL_Observes))
-    *o = EntityGetRelationTarget(w, e, REL_Observes);
+  if(EntityHasRelation(w, e, "ObserverOf"))
+    *o = EntityGetRelationTarget(w, e, "ObserverOf");
   else
     *o = e;
 
@@ -66,7 +66,7 @@ void ObserveReady(world_t* w, Entity e){
 void SubjectLoad(world_t* w, Entity e){
   subject_component_t* sc = GET_COMPONENT(w, e, subject_component_t, SUBJECT_ID);
 
-  Entity rel = EntityGetRelationTarget(w, e, REL_SubjectOf);
+  Entity rel = EntityGetRelationTarget(w, e, "SubjectOf");
 
   sc->key = SubjectComponent(sc->name, rel.id, sc->comp);
 }
@@ -74,7 +74,7 @@ void SubjectLoad(world_t* w, Entity e){
 void SubjectSystem(world_t* w, Entity e){
   subject_component_t* sc = GET_COMPONENT(w, e, subject_component_t, SUBJECT_ID);
 
-  Entity rel = EntityGetRelationTarget(w, e, REL_SubjectOf);
+  Entity rel = EntityGetRelationTarget(w, e, "SubjectOf");
 
   if(!ComponentCheck(w, sc->comp, rel, sc->event))
     return;  
@@ -100,6 +100,6 @@ void SubjectCleanup(world_t* w, Entity e){
 
   sc->ran = false;
 
-  Entity rel = EntityGetRelationTarget(w, e, REL_SubjectOf);
+  Entity rel = EntityGetRelationTarget(w, e, "SubjectOf");
   ComponentClearUpdate(w, rel, sc->comp);
 }

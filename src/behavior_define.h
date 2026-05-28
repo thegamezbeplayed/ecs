@@ -1,9 +1,9 @@
 #ifndef __GAME_BEHAVE__
 #define __GAME_BEHAVE__
 #include "game_utils.h"
-#include "game_register.h"
 #include "game_strings.h"
 #include "behavior_enum.h"
+#include "world_define.h"
 
 #define DEFINE_BT_LEAF(name) \
 static inline behavior_tree_node_t* Leaf##name(behavior_params_t *params) { \
