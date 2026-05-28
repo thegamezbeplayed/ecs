@@ -506,13 +506,10 @@ bool ParseRelations(cJSON* root, game_t* out){
               break;
             }
             cr->pairs[pair_idx].name = GameCalloc("ParseRelations", MAX_NAME_LEN, sizeof(char));
+            cr->pairs[pair_idx].type = GameCalloc("ParseRelations", MAX_NAME_LEN, sizeof(char));
 
             Json_GetString(pair, "name", cr->pairs[pair_idx].name);
-            cJSON* ptype = cJSON_GetObjectItem(pair, "type");
-
-            if (cJSON_IsString(ptype))
-              cr->pairs[pair_idx].type = RelationTypeLookup(ptype->valuestring);
-
+            Json_GetString(pair, "type", cr->pairs[pair_idx].type);
             cJSON* relcomp_json = cJSON_GetObjectItem(pair, "components");
 
             int relidx = 0;

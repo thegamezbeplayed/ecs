@@ -52,7 +52,7 @@ void AnimRender(world_t* w, Entity e){
 
 void AnimReady(world_t* w, Entity e){
   anim_comp_t* ac = GET_COMPONENT(w, e, anim_comp_t, ANIM_ID);
-  Entity rel = EntityGetRelationTarget(w, e, REL_Target);
+  Entity rel = EntityGetRelationTarget(w, e, "EmitterOf");
   
   if(EntityValid(&w->manager, rel)){
     notification n = ParticleEvent_ToNotif(PARTICLE_EVENT_START);

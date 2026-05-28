@@ -19,31 +19,24 @@
 
 #define MAX_RELATIONS_PER_ENTITY 8 
 #define MAX_RELATIONS   32
-#define REL_AppliesTo   1u
-#define REL_ChildOf     2u          
-#define REL_Owner       3u         
-#define REL_Target      4u
-#define REL_Observes    5u
-#define REL_SubjectOf   6u
-#define REL_BehaviorOf  7u
-#define REL_StatOf      8u
-#define REL_TargetOf    9u
-#define REL_EventOf     10u
-#define REL_Debugs      69u
-
-typedef uint32_t RelationType;
-typedef struct {
-  char         name[MAX_NAME_LEN];  
-  Entity       target;      // INVALID_ENTITY = no relation
-  RelationType type;
-} relation_t;
 
 typedef struct world_s world_t;
-relation_t* EntityAddRelation(world_t*, Entity, RelationType, Entity);
+typedef uint64_t RelationId;
+typedef struct {
+  RelationId   id;
+  char         name[MAX_NAME_LEN];  
+  char         type[MAX_NAME_LEN];  
+  Entity       target;      // INVALID_ENTITY = no relation
+} relation_t;
+extern hash_map_t ENT_RELATIONS;
+
+uint32_t RelationBitRegister(world_t*, const char*);
+void InitRelationMap(int cap);
+relation_t* EntityAddRelation(world_t*, Entity, const char*, Entity);
 void EntityRemoveRelation(world_t*, Entity);
-Entity EntityGetRelationTarget(world_t*, Entity, RelationType);
-bool EntityHasRelation(world_t*, Entity, RelationType);
-relation_t* EntityGetRelation(world_t* w, Entity e);
+Entity EntityGetRelationTarget(world_t*, Entity, const char*);
+bool EntityHasRelation(world_t*, Entity, const char*);
+relation_t* EntityGetRelation(world_t* w, Entity e, const char*);
 void EntityRelationEnd(world_t*, Entity);
 
 typedef void (*SystemCB)(world_t* w, Entity e);
@@ -90,7 +83,6 @@ extern hash_map_t SYS_ITERS;
 void SystemIterInit(int cap);
 entity_iter_t* SystemGetIter(const char*);
 
-
 struct world_s {
   EntityManager       manager;
 
@@ -101,9 +93,10 @@ struct world_s {
   system_t*           systems;
   hash_map_t          sys_map;
   prefab_registry_t   prefabs;
+  uint32_t            next_relation_bit;
+  hash_map_t          relation_to_bit;             // RelationId (uint64) -> uint32_t bit
+  uint32_t            entity_relation_mask[MAX_ENTITIES];
   spacial_hash_grid_t grid;
-  relation_t          relations[MAX_ENTITIES];
-  bool                has_relation[MAX_ENTITIES];  
 };
 extern world_t world;
 

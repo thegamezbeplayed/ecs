@@ -16,10 +16,10 @@ void SubscriptionSystem(world_t* w, Entity e){
 
       break;
     case OBJ_REL:
-      if(!EntityHasRelation(w, e, REL_EventOf))
+      if(!EntityHasRelation(w, e, "EventOf"))
         return;
 
-      tar = EntityGetRelationTarget(w, e, REL_EventOf);
+      tar = EntityGetRelationTarget(w, e, "EventOf");
       break;
   }
 

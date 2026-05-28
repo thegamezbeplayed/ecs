@@ -37,13 +37,13 @@
       "list":[
        {"name": "Force",
           "sublist": [
-            {"name": "wiz-bump",    "type": "AppliesTo"}
+            {"name": "wiz-bump",    "type": "ForceOf"}
           ]
         },
         {"name": "Observer",
           "sublist": [
-            {"name": "rb-observer", "type": "Observes"},
-            {"name": "move-observer", "type": "Observes"}
+            {"name": "rb-observer", "type": "ObserverOf"},
+            {"name": "move-observer", "type": "ObserverOf"}
           ]
         },
         {"name": "Subject",
@@ -64,15 +64,15 @@
       "list":[
        {"name": "Force",
           "sublist": [
-            {"name": "rat-bump",    "type": "AppliesTo"}
+            {"name": "rat-bump",    "type": "ForceOf"}
           ]
         },
         {"name": "Observer",
           "sublist": [
-            {"name": "rb-observer", "type": "Observes"},
-            {"name": "pos-observer", "type": "Observes"},
-            {"name": "state-observer", "type": "Observes"},
-            {"name": "anim-observer", "type": "Observes"}
+            {"name": "rb-observer", "type": "ObserverOf"},
+            {"name": "pos-observer", "type": "ObserverOf"},
+            {"name": "state-observer", "type": "ObserverOf"},
+            {"name": "anim-observer", "type": "ObserverOf"}
           ]
         },
         {"name": "Subject",
@@ -93,12 +93,12 @@
         },
         {"name":  "Stat",
           "sublist":  [
-            {"name": "rat-aggro", "type": "StatOf"}
+            {"name": "rat-aggro", "type": "RangeOf"}
           ]
         },
         {"name": "Debug",
           "sublist":  [
-            {"name": "debug-state", "type": "Debugs"}
+            {"name": "debug-state", "type": "DebuggerOf"}
           ]
         },
         {"name": "Subscribe",
@@ -113,15 +113,15 @@
       "list":[
        {"name": "Force",
           "sublist": [
-            {"name": "orc-bump",    "type": "AppliesTo"}
+            {"name": "orc-bump",    "type": "ForceOf"}
           ]
         },
         {"name": "Observer",
           "sublist": [
-            {"name": "rb-observer", "type": "Observes"},
-            {"name": "pos-observer", "type": "Observes"},
-            {"name": "state-observer", "type": "Observes"},
-            {"name": "anim-observer", "type": "Observes"}
+            {"name": "rb-observer", "type": "ObserverOf"},
+            {"name": "pos-observer", "type": "ObserverOf"},
+            {"name": "state-observer", "type": "ObserverOf"},
+            {"name": "anim-observer", "type": "ObserverOf"}
           ]
         },
         {"name": "Subject",
@@ -142,7 +142,7 @@
        },
        {"name":  "Stat",
           "sublist":  [
-            {"name": "orc-aggro", "type": "StatOf"}
+            {"name": "orc-aggro", "type": "RangeOf"}
           ]
         },
          {"name": "Subscribe",
@@ -152,7 +152,7 @@
         },
         {"name": "Debug",
           "sublist":  [
-            {"name": "debug-state", "type": "Debugs"}
+            {"name": "debug-state", "type": "DebuggerOf"}
           ]
         }
       ]

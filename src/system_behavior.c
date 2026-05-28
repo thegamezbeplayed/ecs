@@ -15,10 +15,10 @@ void BehaviorRegister(world_t* w, Entity e){
 void BehaviorSystem(world_t* w, Entity e){
   behavior_t* b = GET_COMPONENT(w, e, behavior_t, BEHAVE_ID);
 
-  if(!EntityHasRelation(w, e, REL_BehaviorOf))
+  if(!EntityHasRelation(w, e, "BehaviorOf"))
     return;
 
-  Entity rel = EntityGetRelationTarget(w, e, REL_BehaviorOf);
+  Entity rel = EntityGetRelationTarget(w, e, "BehaviorOf");
 
   state_t* s = GET_COMPONENT(w, rel, state_t, STATE_ID);
 

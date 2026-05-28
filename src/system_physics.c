@@ -51,7 +51,7 @@ void OnForceEvent(event_t* ev, void* data){
           react->kill_on_end = true;
           force_t* f = ComponentAdd(&world, fent, FORCE_ID);
           memcpy(f, react , sizeof(force_t));
-          EntityAddRelation(&world, fent, REL_AppliesTo, *tar);
+          EntityAddRelation(&world, fent, "ForceOf", *tar);
           break;
         case REACT_BLOCK:
           break;
@@ -106,10 +106,10 @@ void PhysicsCollision(world_t* w, Entity e){
 
     Entity other = iter->current;
 
-    if(EntityGetRelationTarget(w, e, REL_ChildOf).id == other.id)
+    if(EntityGetRelationTarget(w, e, "CollisionOf").id == other.id)
       continue;
 
-    if(EntityGetRelationTarget(w, other, REL_ChildOf).id == e.id)
+    if(EntityGetRelationTarget(w, other, "CollisionOf").id == e.id)
       continue;
 
     if(e.id == other.id)
@@ -175,10 +175,10 @@ void ForceLoad(world_t* w, Entity e){
   if(f->event == PHYS_EVENT_NONE)
     return;
 
-  if(!EntityHasRelation(w, e, REL_AppliesTo))
+  if(!EntityHasRelation(w, e, "ForceOf"))
      return;
 
-  Entity rel = EntityGetRelationTarget(w, e, REL_AppliesTo);
+  Entity rel = EntityGetRelationTarget(w, e, "ForceOf");
 
   notification n = PhysEvent_ToNotif(f->event);
   SubscribeEntity(n, OnForceEvent, f, rel.id);
@@ -193,10 +193,10 @@ void ForceSystem(world_t* w, Entity e){
 
    Entity be = e;
    rigid_body_t* rb = GET_COMPONENT(w, e, rigid_body_t, PHYS_ID);
-   if(!rb && !EntityHasRelation(w, e, REL_AppliesTo))
+   if(!rb && !EntityHasRelation(w, e, "ForceOf"))
      return;
    else if(!rb){
-     be = EntityGetRelationTarget(w, e, REL_AppliesTo);
+     be = EntityGetRelationTarget(w, e, "ForceOf");
      rb = GET_COMPONENT(w, be, rigid_body_t, PHYS_ID);
    }
 
@@ -218,7 +218,7 @@ void ForceCleanup(world_t* w, Entity e){
   if(!f->kill_on_end)
     return;
 
-  Entity rel = EntityGetRelationTarget(w, e, REL_AppliesTo);
+  Entity rel = EntityGetRelationTarget(w, e, "ForceOf");
 
   notification n = PhysEvent_ToNotif(PHYS_EVENT_FORCE_END);
   GameEvent(n, f, rel.id);
