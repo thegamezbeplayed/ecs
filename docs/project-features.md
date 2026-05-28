@@ -24,14 +24,14 @@ Primary third-party libraries:
 
 ## Runtime Flow
 
-Desktop startup begins in [platform_app.c](../src/platform_app.c). Web startup begins in [platform_web.c](../src/platform_web.c).
+Desktop startup begins in [platform_app.c](../src/platform_app.c). Web startup begins in [platform_web.c](../src/platform_web.c). Both entrypoints delegate shared lifecycle work to [app_core.c](../src/app_core.c).
 
-The main desktop path is:
+The shared startup path is:
 
-1. Initialize the window, audio, splash, and process table.
-2. Call [InitGameProcess()](../src/process_game.c) to fill screen phase/update tables.
-3. Initialize scene loading, resources, and UI.
-4. Run the main loop through [GameProcessSync()](../src/process_game.c).
+1. [AppInit()](../src/app_core.c) initializes the window, stores the initial `"WINDOW"` subject, sets `SCREEN_LOGO`, initializes audio, splash, process tables, scene loading, resources, and UI.
+2. [InitGameProcess()](../src/process_game.c) fills screen phase/update tables.
+3. [SceneInit()](../src/scene_loader.c) queues generated resource references, then `PlatformLoaderStart()` begins platform-specific loading.
+4. [AppFrame()](../src/app_core.c) advances resource loading and runs [GameProcessSync()](../src/process_game.c).
 
 `GameProcessSync()` dispatches update steps for the active `GP.screen`. Screen transitions call [GameTransitionScreen()](../src/process_game.c), which finishes the current screen, switches `GP.screen`, initializes the next screen through `GameSetScreen()`, and starts that screen's music.
 
@@ -39,11 +39,12 @@ The main desktop path is:
 
 The web path keeps the same high-level lifecycle but uses web-specific mechanics:
 
-1. Initialize the window and store the `"WINDOW"` subject through [InitScreenWindow()](../src/screen_window.c).
-2. Set `SCREEN_LOGO`, initialize audio, splash, process tables, scene loading, resources, and UI.
-3. Load queued textures synchronously because Emscripten has already preloaded the `resources` package before C `main()` runs.
-4. Call [GameTransitionScreen()](../src/process_game.c) once web resources are ready.
-5. Register [UpdateDrawFrame()](../src/platform_web.c) with `emscripten_set_main_loop()`.
+1. [platform_web.c](../src/platform_web.c) calls [AppInit()](../src/app_core.c) with web dimensions.
+2. [platform_loader_web.c](../src/platform_loader_web.c) loads queued textures synchronously because Emscripten has already preloaded the `resources` package before C `main()` runs.
+3. [AppUpdateLoading()](../src/app_core.c) calls [GameTransitionScreen()](../src/process_game.c) once web resources are ready.
+4. [UpdateDrawFrame()](../src/platform_web.c) calls `AppFrame(false)` through `emscripten_set_main_loop()`.
+
+The desktop path uses [platform_loader_desktop.c](../src/platform_loader_desktop.c) to load images on a background pthread and upload textures on the main thread during `PlatformLoaderProgress()`.
 
 ## Gameplay Bootstrap
 
@@ -53,10 +54,12 @@ Gameplay screen initialization currently runs through [InitGameplay()](../src/ga
 2. [InitGameWorld()](../src/process_world.c) initializes the world and game definitions.
 3. [LoadGameDefine()](../src/game_load.c) parses [component_def.json](../resources/data/component_def.json), [system_def.json](../resources/data/system_def.json), and [prefab_def.json](../resources/data/prefab_def.json).
 4. Components from the definition file are registered through [ComponentRegisterCore()](../src/component_registry.c).
-5. Systems from the definition file are created through [SystemCreate()](../src/game_system.c).
+5. Systems from the definition file are created through [SystemCreate()](../src/gbm_system.c).
 6. [GameInitPrefabs()](../src/game_data.c) initializes prefab data.
 7. [SceneLoadByIndex()](../src/scene_loader.c) loads the selected scene from the generated scene registry and JSON scene file.
 8. [SceneSetup()](../src/scene_loader.c) spawns scene entities and tiles from the parsed scene data.
+
+[GameLoad()](../src/process_world.c) currently hardcodes scene index `2`, which maps to `Floor1` in [scene_data.h](../src/scene_data.h). Scene selection is still not data-driven at runtime.
 
 ## ECS
 
@@ -68,20 +71,21 @@ Core ECS files:
 - [component_define.h](../src/component_define.h): gameplay component structs
 - [game_register.h](../src/game_register.h): `world_t`, `system_t`, component pools, ECS macros
 - [component_registry.c](../src/component_registry.c): component registration/add/get logic
-- [game_system.c](../src/game_system.c): system registration and entity iteration
+- [gbm_system.c](../src/gbm_system.c): system registration and entity iteration
 - [game_data.c](../src/game_data.c): component definitions and prefab initialization
-- [game_parse.c](../src/game_parse.c): JSON definition parsing and string-to-enum conversion
+- [gbm_parse.c](../src/gbm_parse.c): gameplay definition and scene parsing
+- [parse_components.c](../src/parse_components.c), [parse_behaviors.c](../src/parse_behaviors.c), and [tool_strings.c](../src/tool_strings.c): component-specific parsing, behavior-tree definition parsing, and string-to-enum conversion
 
 Components are registered from the `"components"` list in [component_def.json](../resources/data/component_def.json). Each component type gets a `component_pool_t`, which stores dense component data plus sparse entity-to-index lookup.
 
-Systems are behavior plus a required component set. [SystemCreate()](../src/game_system.c) subscribes system callbacks to:
+Systems are behavior plus a required component set. [SystemCreate()](../src/gbm_system.c) subscribes system callbacks to:
 
 - `GAME_EVENT_STATE` for whole-system state callbacks
 - `GAME_EVENT_SET` for entity-iterating state callbacks
 - `GAME_EVENT_STEP` for whole-system update-step callbacks
 - `GAME_EVENT_SYNC` for entity-iterating update-step callbacks
 
-When sync events fire, [SystemTick()](../src/game_system.c) chooses a populated component pool, filters entities that have all required components, checks entity readiness, then invokes the system callback.
+When sync events fire, [SystemTick()](../src/gbm_system.c) chooses a populated component pool, filters entities that have all required components, checks entity readiness, then invokes the system callback.
 
 Systems communicate through:
 
@@ -132,7 +136,7 @@ Current users include:
 
 The web target uses a custom Emscripten shell at [web_shell.html](../web_shell.html), passed to Emscripten with `--shell-file` in [CMakeLists.txt](../CMakeLists.txt). The shell defines a full-page canvas, removes default Emscripten UI chrome, and uses `ResizeObserver` plus `window.resize` to detect browser or embed size changes.
 
-The shell calls `Module._OnCanvasResize(width, height)`. [OnCanvasResize()](../src/platform_web.c) is exported from C with `EMSCRIPTEN_KEEPALIVE`; it stores the latest dimensions, ignores invalid zero-sized events, updates raylib's window size after the window exists, and notifies the `"WINDOW"` subject with `window_resize_t`.
+The shell calls `Module._OnCanvasResize(width, height)`. [OnCanvasResize()](../src/platform_web.c) is exported from C with `EMSCRIPTEN_KEEPALIVE` and forwards to [AppOnResize()](../src/app_core.c), which stores the latest dimensions, ignores invalid zero-sized events, updates raylib's window size after the window exists, and notifies the `"WINDOW"` subject with `window_resize_t`.
 
 The current resize behavior updates camera offset through the existing observer path. Render textures created by [InitView()](../src/view_camera.c) are not recreated or letterboxed on resize yet.
 
@@ -160,14 +164,17 @@ The 9-slice button implementation is data-driven rather than an element type. `E
 
 ## Game Data And Scenes
 
-Gameplay definitions are split across [component_def.json](../resources/data/component_def.json), [system_def.json](../resources/data/system_def.json), and [prefab_def.json](../resources/data/prefab_def.json). They configure components, systems, prefabs, and relations that are parsed by [game_parse.c](../src/game_parse.c) and loaded by [game_load.c](../src/game_load.c).
+Gameplay definitions are split across [component_def.json](../resources/data/component_def.json), [system_def.json](../resources/data/system_def.json), and [prefab_def.json](../resources/data/prefab_def.json). They configure components, systems, prefabs, and relations that are parsed by [gbm_parse.c](../src/gbm_parse.c) and loaded by [game_load.c](../src/game_load.c). Behavior-tree definitions live in [behavior_def.json](../resources/data/behavior_def.json) and are loaded by [BehaviorLoad()](../src/system_behavior.c) through [ParseBehaviorDefs()](../src/parse_behaviors.c).
+
+Tile content is prefab-driven. The current data includes regular `Sprite` + `Position` prefabs for `autotile_0` through `autotile_47`, backed by `SHEET_AUTOTILE` and the generated [dungeon_autotile_47.json](../resources/dungeon_autotile_47.json) / [dungeon_autotile_47.png](../resources/dungeon_autotile_47.png) resource pair.
 
 Scene loading now uses a generated registry plus runtime JSON scene data:
 
 - [scene_data.h](../src/scene_data.h) is generated by the exporter and contains resource references plus `SCENE_HEADERS`.
-- Each `SceneHeader` maps a scene name to a JSON file path, currently [scene_01.json](../resources/data/scenes/scene_01.json).
+- Resource references currently load tile, wizard, mob, and dungeon-autotile sheets into the sprite sheet table.
+- Each `SceneHeader` maps a scene name to a JSON file path. The current registry includes [scene_01.json](../resources/data/scenes/scene_01.json), [autotile_test.json](../resources/data/scenes/autotile_test.json), and [floor1.json](../resources/data/scenes/floor1.json).
 - [SceneLoadHeader()](../src/scene_data_wrapper.c) looks up the header, parses the scene JSON, and fills `Scene`.
-- [ParseScene()](../src/game_parse.c) reads display/grid dimensions, tile instances, entity instances, and metadata from the JSON.
+- [ParseScene()](../src/gbm_parse.c) reads display/grid dimensions, tile instances, entity instances, and metadata from the JSON.
 - [SceneSetup()](../src/scene_loader.c) spawns prefabs for parsed entities and tiles.
 
 ## CI Workflows
@@ -179,5 +186,6 @@ GitHub Actions are split into independent workflow files so branch protection ca
 - [web.yml](../.github/workflows/web.yml): Emscripten build and artifact checks
 
 The `windows-desktop` workflow file remains in the repo, but the workflow is currently disabled in GitHub.
+The checked-in workflow files define `push` and `pull_request` triggers for `main`; any GitHub UI disabled state is external to the repository.
 
 The web workflow verifies build outputs (`index.html`, `index.js`, `index.wasm`, and `index.data`) but does not yet run a browser smoke test.
