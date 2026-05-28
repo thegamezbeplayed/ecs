@@ -5,18 +5,22 @@
 #include "scene.h"
 #include "asset_resources.h"
 
-#define NUM_SCENES  1
-#define NUM_RES     3 
 // Scene Registry
 
-static ResourceRef RESOURCES[NUM_RES] = {
+static ResourceRef RESOURCES[] = {
   {RES_JSON, RES_ASEPRITE, RES_SPRITE, "resources/tile-sheet.json", "resources/tile-sheet.png", SHEET_TILE},
   {RES_JSON, RES_ASEPRITE, RES_ANIM, "resources/wiz-sheet.json", "resources/wiz-sheet.png", SHEET_CHAR},
-  {RES_JSON, RES_ASEPRITE, RES_ANIM, "resources/mob-sheet.json", "resources/mob-sheet.png", SHEET_MOB}
+  {RES_JSON, RES_ASEPRITE, RES_ANIM, "resources/mob-sheet.json", "resources/mob-sheet.png", SHEET_MOB},
+  {RES_JSON, RES_ASEPRITE, RES_SPRITE, "resources/dungeon_autotile_47.json", "resources/dungeon_autotile_47.png", SHEET_AUTOTILE}
 };
 
-static const SceneHeader SCENE_HEADERS[NUM_SCENES] = {
-  {"stage_01", "resources/data/scenes/scene_01.json"}
+static const SceneHeader SCENE_HEADERS[] = {
+  {"stage_01", "resources/data/scenes/scene_01.json"},
+  {"autotile_test", "resources/data/scenes/autotile_test.json"},
+  {"Floor1", "resources/data/scenes/floor1.json"}
 };
+
+#define NUM_SCENES  sizeof(SCENE_HEADERS) / sizeof(SCENE_HEADERS[0])
+#define NUM_RES     sizeof(RESOURCES) / sizeof(RESOURCES[0])
 
 #endif
