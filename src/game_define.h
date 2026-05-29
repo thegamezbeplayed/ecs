@@ -2,11 +2,11 @@
 #define __GAME_DEF__
 #include "cJSON.h"
 
-#include "game_register.h"
+#include "world_define.h"
 
 #define NUM_SYS      18
-#define MAX_COMP_DEF 128
-#define MAX_PREF_DEF 64
+#define MAX_COMP_DEF 256
+#define MAX_PREF_DEF 128
 #define NUM_REL      24
 
 typedef struct tile_instance_t {
@@ -33,8 +33,7 @@ typedef struct{
 }prefab_entity_t;
 
 typedef struct{
-  char*         name;
-  RelationType  type;
+  char*         name, *type;
   int           num_comp;
   char*         components[MAX_COMPONENTS];
 }relation_pair_t;

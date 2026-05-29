@@ -10,23 +10,6 @@
 
 #define EVENT_LOOKUP_COUNT   (sizeof(EVENT_LOOKUP) / sizeof(EVENT_LOOKUP[0]))
 
-typedef struct{
-  RelationType    type;
-  const char      name[MAX_NAME_LEN];
-}relation_str_t;
-
-static const relation_str_t RELATION_LOOKUP[NUM_REL] = {
-  {REL_AppliesTo,   "AppliesTo"},
-  {REL_ChildOf,     "ChildOf"},
-  {REL_Owner,       "Owner"},
-  {REL_Target,      "Target"},
-  {REL_Observes,    "Observes"},
-  {REL_SubjectOf,   "SubjectOf"},
-  {REL_BehaviorOf,  "BehaviorOf"},
-  {REL_EventOf,     "EventOf"},
-  {REL_Debugs,      "Debugs"}
-};
-
 State StringToState(const char* str);
 BehaviorTreeType StringToBehaviorType(const char* str);
 BehaviorLeafInit StringToLeafFunc(const char* str);
@@ -83,7 +66,6 @@ UpdateType GetUpdateStep(const char* name);
 GameState GetGameState(const char* name);
 SystemFn SystemFunctionLookup(const char* name);
 ComponentInitFn ComponentFuncLookup(const char* name);
-RelationType RelationTypeLookup(const char* str);
 
 typedef struct{
   int         id;

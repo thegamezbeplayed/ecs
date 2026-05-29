@@ -28,6 +28,20 @@
       {
         "name": "tile_floor",
         "list": ["Sprite", "Position"]
+      },
+      {
+        "name": "autotile_map",
+        "list": ["Sprite","Position"],
+        "contains": [
+          "autotile_0", "autotile_1", "autotile_2", "autotile_3", "autotile_4", "autotile_5",
+          "autotile_6", "autotile_7", "autotile_8", "autotile_9", "autotile_10", "autotile_11",
+          "autotile_12", "autotile_13", "autotile_14", "autotile_15", "autotile_16", "autotile_17",
+          "autotile_18", "autotile_19", "autotile_20", "autotile_21", "autotile_22", "autotile_23",
+          "autotile_24", "autotile_25", "autotile_26", "autotile_27", "autotile_28", "autotile_29",
+          "autotile_30", "autotile_31", "autotile_32", "autotile_33", "autotile_34", "autotile_35",
+          "autotile_36", "autotile_37", "autotile_38", "autotile_39", "autotile_40", "autotile_41",
+          "autotile_42", "autotile_43", "autotile_44", "autotile_45", "autotile_46", "autotile_47"
+        ]
       }
     ]
   },
@@ -37,13 +51,13 @@
       "list":[
        {"name": "Force",
           "sublist": [
-            {"name": "wiz-bump",    "type": "AppliesTo"}
+            {"name": "wiz-bump",    "type": "ForceOf"}
           ]
         },
         {"name": "Observer",
           "sublist": [
-            {"name": "rb-observer", "type": "Observes"},
-            {"name": "move-observer", "type": "Observes"}
+            {"name": "rb-observer", "type": "ObserverOf"},
+            {"name": "move-observer", "type": "ObserverOf"}
           ]
         },
         {"name": "Subject",
@@ -64,15 +78,15 @@
       "list":[
        {"name": "Force",
           "sublist": [
-            {"name": "rat-bump",    "type": "AppliesTo"}
+            {"name": "rat-bump",    "type": "ForceOf"}
           ]
         },
         {"name": "Observer",
           "sublist": [
-            {"name": "rb-observer", "type": "Observes"},
-            {"name": "pos-observer", "type": "Observes"},
-            {"name": "state-observer", "type": "Observes"},
-            {"name": "anim-observer", "type": "Observes"}
+            {"name": "rb-observer", "type": "ObserverOf"},
+            {"name": "pos-observer", "type": "ObserverOf"},
+            {"name": "state-observer", "type": "ObserverOf"},
+            {"name": "anim-observer", "type": "ObserverOf"}
           ]
         },
         {"name": "Subject",
@@ -93,12 +107,12 @@
         },
         {"name":  "Stat",
           "sublist":  [
-            {"name": "rat-aggro", "type": "StatOf"}
+            {"name": "rat-aggro", "type": "RangeOf"}
           ]
         },
         {"name": "Debug",
           "sublist":  [
-            {"name": "debug-state", "type": "Debugs"}
+            {"name": "debug-state", "type": "DebuggerOf"}
           ]
         },
         {"name": "Subscribe",
@@ -113,15 +127,15 @@
       "list":[
        {"name": "Force",
           "sublist": [
-            {"name": "orc-bump",    "type": "AppliesTo"}
+            {"name": "orc-bump",    "type": "ForceOf"}
           ]
         },
         {"name": "Observer",
           "sublist": [
-            {"name": "rb-observer", "type": "Observes"},
-            {"name": "pos-observer", "type": "Observes"},
-            {"name": "state-observer", "type": "Observes"},
-            {"name": "anim-observer", "type": "Observes"}
+            {"name": "rb-observer", "type": "ObserverOf"},
+            {"name": "pos-observer", "type": "ObserverOf"},
+            {"name": "state-observer", "type": "ObserverOf"},
+            {"name": "anim-observer", "type": "ObserverOf"}
           ]
         },
         {"name": "Subject",
@@ -142,7 +156,7 @@
        },
        {"name":  "Stat",
           "sublist":  [
-            {"name": "orc-aggro", "type": "StatOf"}
+            {"name": "orc-aggro", "type": "RangeOf"}
           ]
         },
          {"name": "Subscribe",
@@ -152,7 +166,7 @@
         },
         {"name": "Debug",
           "sublist":  [
-            {"name": "debug-state", "type": "Debugs"}
+            {"name": "debug-state", "type": "DebuggerOf"}
           ]
         }
       ]

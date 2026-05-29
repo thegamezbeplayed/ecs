@@ -1,8 +1,8 @@
 #include "raylib.h"
 #include "process_event.h"
 #include "process_load.h"
+#include "world_define.h"
 
-#include "game_register.h"
 #include "asset_sfx.h"
 #include "screens.h"
 //----------------------------------------------------------------------------------

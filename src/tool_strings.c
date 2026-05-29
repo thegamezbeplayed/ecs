@@ -154,6 +154,7 @@ SheetID StringToSheetID(const char* str){
   if (strcmp(str, "SHEET_PLAYER") == 0) return SHEET_CHAR;
   if (strcmp(str, "SHEET_MOB") == 0)  return SHEET_MOB;
   if (strcmp(str, "SHEET_TILE") == 0) return SHEET_TILE;
+  if (strcmp(str, "SHEET_AUTOTILE") == 0) return SHEET_AUTOTILE;
   // ... add others
   return SHEET_ALL;
 }
@@ -173,13 +174,6 @@ ParticleDrawType StringToDrawType(const char* str){
   if(strcmp(str, "PIXEL") == 0) return PARTICLE_PIXEL;
 
   return PARTICLE_NONE;
-}
-
-RelationType RelationTypeLookup(const char* str){
-  for(int i = 0; i < NUM_REL; i++){
-    if (strcmp(str, RELATION_LOOKUP[i].name) == 0)
-      return RELATION_LOOKUP[i].type;
-  }
 }
 
 ComponentInitFn ComponentFuncLookup(const char* name){
@@ -272,5 +266,3 @@ notification EventIDLookup(const char* str){
 
   return -1;
 }
-
-

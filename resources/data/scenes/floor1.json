@@ -1,0 +1,615 @@
+{
+  "name": "Floor1",
+  "display_name": "Floor1",
+  "pixel_width": 1366,
+  "pixel_height": 768,
+  "grid_width": 43,
+  "grid_height": 24,
+  "cell_width": 64,
+  "cell_height": 64,
+  "tiles": [
+    {
+      "name": "autotile_34",
+      "cell_x": 13,
+      "cell_y": 2,
+      "x": 416,
+      "y": 64
+    },
+    {
+      "name": "autotile_20",
+      "cell_x": 14,
+      "cell_y": 2,
+      "x": 448,
+      "y": 64
+    },
+    {
+      "name": "autotile_20",
+      "cell_x": 15,
+      "cell_y": 2,
+      "x": 480,
+      "y": 64
+    },
+    {
+      "name": "autotile_36",
+      "cell_x": 16,
+      "cell_y": 2,
+      "x": 512,
+      "y": 64
+    },
+    {
+      "name": "autotile_42",
+      "cell_x": 7,
+      "cell_y": 3,
+      "x": 224,
+      "y": 96
+    },
+    {
+      "name": "autotile_35",
+      "cell_x": 9,
+      "cell_y": 3,
+      "x": 288,
+      "y": 96
+    },
+    {
+      "name": "autotile_45",
+      "cell_x": 10,
+      "cell_y": 3,
+      "x": 320,
+      "y": 96
+    },
+    {
+      "name": "autotile_16",
+      "cell_x": 13,
+      "cell_y": 3,
+      "x": 416,
+      "y": 96
+    },
+    {
+      "name": "autotile_47",
+      "cell_x": 14,
+      "cell_y": 3,
+      "x": 448,
+      "y": 96
+    },
+    {
+      "name": "autotile_47",
+      "cell_x": 15,
+      "cell_y": 3,
+      "x": 480,
+      "y": 96
+    },
+    {
+      "name": "autotile_24",
+      "cell_x": 16,
+      "cell_y": 3,
+      "x": 512,
+      "y": 96
+    },
+    {
+      "name": "autotile_42",
+      "cell_x": 3,
+      "cell_y": 4,
+      "x": 96,
+      "y": 128
+    },
+    {
+      "name": "autotile_19",
+      "cell_x": 7,
+      "cell_y": 4,
+      "x": 224,
+      "y": 128
+    },
+    {
+      "name": "autotile_33",
+      "cell_x": 8,
+      "cell_y": 4,
+      "x": 256,
+      "y": 128
+    },
+    {
+      "name": "autotile_27",
+      "cell_x": 9,
+      "cell_y": 4,
+      "x": 288,
+      "y": 128
+    },
+    {
+      "name": "autotile_42",
+      "cell_x": 11,
+      "cell_y": 4,
+      "x": 352,
+      "y": 128
+    },
+    {
+      "name": "autotile_16",
+      "cell_x": 13,
+      "cell_y": 4,
+      "x": 416,
+      "y": 128
+    },
+    {
+      "name": "autotile_47",
+      "cell_x": 14,
+      "cell_y": 4,
+      "x": 448,
+      "y": 128
+    },
+    {
+      "name": "autotile_47",
+      "cell_x": 15,
+      "cell_y": 4,
+      "x": 480,
+      "y": 128
+    },
+    {
+      "name": "autotile_24",
+      "cell_x": 16,
+      "cell_y": 4,
+      "x": 512,
+      "y": 128
+    },
+    {
+      "name": "autotile_41",
+      "cell_x": 3,
+      "cell_y": 5,
+      "x": 96,
+      "y": 160
+    },
+    {
+      "name": "autotile_33",
+      "cell_x": 4,
+      "cell_y": 5,
+      "x": 128,
+      "y": 160
+    },
+    {
+      "name": "autotile_33",
+      "cell_x": 5,
+      "cell_y": 5,
+      "x": 160,
+      "y": 160
+    },
+    {
+      "name": "autotile_33",
+      "cell_x": 6,
+      "cell_y": 5,
+      "x": 192,
+      "y": 160
+    },
+    {
+      "name": "autotile_27",
+      "cell_x": 7,
+      "cell_y": 5,
+      "x": 224,
+      "y": 160
+    },
+    {
+      "name": "autotile_19",
+      "cell_x": 9,
+      "cell_y": 5,
+      "x": 288,
+      "y": 160
+    },
+    {
+      "name": "autotile_33",
+      "cell_x": 10,
+      "cell_y": 5,
+      "x": 320,
+      "y": 160
+    },
+    {
+      "name": "autotile_15",
+      "cell_x": 11,
+      "cell_y": 5,
+      "x": 352,
+      "y": 160
+    },
+    {
+      "name": "autotile_33",
+      "cell_x": 12,
+      "cell_y": 5,
+      "x": 384,
+      "y": 160
+    },
+    {
+      "name": "autotile_9",
+      "cell_x": 13,
+      "cell_y": 5,
+      "x": 416,
+      "y": 160
+    },
+    {
+      "name": "autotile_47",
+      "cell_x": 14,
+      "cell_y": 5,
+      "x": 448,
+      "y": 160
+    },
+    {
+      "name": "autotile_47",
+      "cell_x": 15,
+      "cell_y": 5,
+      "x": 480,
+      "y": 160
+    },
+    {
+      "name": "autotile_24",
+      "cell_x": 16,
+      "cell_y": 5,
+      "x": 512,
+      "y": 160
+    },
+    {
+      "name": "autotile_19",
+      "cell_x": 7,
+      "cell_y": 6,
+      "x": 224,
+      "y": 192
+    },
+    {
+      "name": "autotile_33",
+      "cell_x": 8,
+      "cell_y": 6,
+      "x": 256,
+      "y": 192
+    },
+    {
+      "name": "autotile_27",
+      "cell_x": 9,
+      "cell_y": 6,
+      "x": 288,
+      "y": 192
+    },
+    {
+      "name": "autotile_32",
+      "cell_x": 11,
+      "cell_y": 6,
+      "x": 352,
+      "y": 192
+    },
+    {
+      "name": "autotile_16",
+      "cell_x": 13,
+      "cell_y": 6,
+      "x": 416,
+      "y": 192
+    },
+    {
+      "name": "autotile_47",
+      "cell_x": 14,
+      "cell_y": 6,
+      "x": 448,
+      "y": 192
+    },
+    {
+      "name": "autotile_47",
+      "cell_x": 15,
+      "cell_y": 6,
+      "x": 480,
+      "y": 192
+    },
+    {
+      "name": "autotile_24",
+      "cell_x": 16,
+      "cell_y": 6,
+      "x": 512,
+      "y": 192
+    },
+    {
+      "name": "autotile_32",
+      "cell_x": 7,
+      "cell_y": 7,
+      "x": 224,
+      "y": 224
+    },
+    {
+      "name": "autotile_32",
+      "cell_x": 9,
+      "cell_y": 7,
+      "x": 288,
+      "y": 224
+    },
+    {
+      "name": "autotile_32",
+      "cell_x": 11,
+      "cell_y": 7,
+      "x": 352,
+      "y": 224
+    },
+    {
+      "name": "autotile_16",
+      "cell_x": 13,
+      "cell_y": 7,
+      "x": 416,
+      "y": 224
+    },
+    {
+      "name": "autotile_47",
+      "cell_x": 14,
+      "cell_y": 7,
+      "x": 448,
+      "y": 224
+    },
+    {
+      "name": "autotile_47",
+      "cell_x": 15,
+      "cell_y": 7,
+      "x": 480,
+      "y": 224
+    },
+    {
+      "name": "autotile_24",
+      "cell_x": 16,
+      "cell_y": 7,
+      "x": 512,
+      "y": 224
+    },
+    {
+      "name": "autotile_42",
+      "cell_x": 2,
+      "cell_y": 8,
+      "x": 64,
+      "y": 256
+    },
+    {
+      "name": "autotile_42",
+      "cell_x": 4,
+      "cell_y": 8,
+      "x": 128,
+      "y": 256
+    },
+    {
+      "name": "autotile_17",
+      "cell_x": 7,
+      "cell_y": 8,
+      "x": 224,
+      "y": 256
+    },
+    {
+      "name": "autotile_20",
+      "cell_x": 8,
+      "cell_y": 8,
+      "x": 256,
+      "y": 256
+    },
+    {
+      "name": "autotile_26",
+      "cell_x": 9,
+      "cell_y": 8,
+      "x": 288,
+      "y": 256
+    },
+    {
+      "name": "autotile_32",
+      "cell_x": 11,
+      "cell_y": 8,
+      "x": 352,
+      "y": 256
+    },
+    {
+      "name": "autotile_40",
+      "cell_x": 13,
+      "cell_y": 8,
+      "x": 416,
+      "y": 256
+    },
+    {
+      "name": "autotile_28",
+      "cell_x": 14,
+      "cell_y": 8,
+      "x": 448,
+      "y": 256
+    },
+    {
+      "name": "autotile_28",
+      "cell_x": 15,
+      "cell_y": 8,
+      "x": 480,
+      "y": 256
+    },
+    {
+      "name": "autotile_30",
+      "cell_x": 16,
+      "cell_y": 8,
+      "x": 512,
+      "y": 256
+    },
+    {
+      "name": "autotile_33",
+      "cell_x": 17,
+      "cell_y": 8,
+      "x": 544,
+      "y": 256
+    },
+    {
+      "name": "autotile_33",
+      "cell_x": 18,
+      "cell_y": 8,
+      "x": 576,
+      "y": 256
+    },
+    {
+      "name": "autotile_33",
+      "cell_x": 19,
+      "cell_y": 8,
+      "x": 608,
+      "y": 256
+    },
+    {
+      "name": "autotile_45",
+      "cell_x": 20,
+      "cell_y": 8,
+      "x": 640,
+      "y": 256
+    },
+    {
+      "name": "autotile_43",
+      "cell_x": 0,
+      "cell_y": 9,
+      "x": 0,
+      "y": 288
+    },
+    {
+      "name": "autotile_33",
+      "cell_x": 1,
+      "cell_y": 9,
+      "x": 32,
+      "y": 288
+    },
+    {
+      "name": "autotile_15",
+      "cell_x": 2,
+      "cell_y": 9,
+      "x": 64,
+      "y": 288
+    },
+    {
+      "name": "autotile_33",
+      "cell_x": 3,
+      "cell_y": 9,
+      "x": 96,
+      "y": 288
+    },
+    {
+      "name": "autotile_15",
+      "cell_x": 4,
+      "cell_y": 9,
+      "x": 128,
+      "y": 288
+    },
+    {
+      "name": "autotile_33",
+      "cell_x": 5,
+      "cell_y": 9,
+      "x": 160,
+      "y": 288
+    },
+    {
+      "name": "autotile_33",
+      "cell_x": 6,
+      "cell_y": 9,
+      "x": 192,
+      "y": 288
+    },
+    {
+      "name": "autotile_13",
+      "cell_x": 7,
+      "cell_y": 9,
+      "x": 224,
+      "y": 288
+    },
+    {
+      "name": "autotile_28",
+      "cell_x": 8,
+      "cell_y": 9,
+      "x": 256,
+      "y": 288
+    },
+    {
+      "name": "autotile_14",
+      "cell_x": 9,
+      "cell_y": 9,
+      "x": 288,
+      "y": 288
+    },
+    {
+      "name": "autotile_33",
+      "cell_x": 10,
+      "cell_y": 9,
+      "x": 320,
+      "y": 288
+    },
+    {
+      "name": "autotile_27",
+      "cell_x": 11,
+      "cell_y": 9,
+      "x": 352,
+      "y": 288
+    },
+    {
+      "name": "autotile_44",
+      "cell_x": 2,
+      "cell_y": 10,
+      "x": 64,
+      "y": 320
+    },
+    {
+      "name": "autotile_44",
+      "cell_x": 4,
+      "cell_y": 10,
+      "x": 128,
+      "y": 320
+    },
+    {
+      "name": "autotile_44",
+      "cell_x": 7,
+      "cell_y": 10,
+      "x": 224,
+      "y": 320
+    },
+    {
+      "name": "autotile_44",
+      "cell_x": 9,
+      "cell_y": 10,
+      "x": 288,
+      "y": 320
+    },
+    {
+      "name": "autotile_44",
+      "cell_x": 11,
+      "cell_y": 10,
+      "x": 352,
+      "y": 320
+    }
+  ],
+  "entities": [
+    {
+      "name": "main_cam",
+      "pos_x": 0,
+      "pos_y": 0
+    },
+    {
+      "name": "LAYER_BACKGROUND",
+      "pos_x": 0,
+      "pos_y": 0
+    },
+    {
+      "name": "LAYER_FLOOR",
+      "pos_x": 0,
+      "pos_y": 0
+    },
+    {
+      "name": "LAYER_MAIN",
+      "pos_x": 0,
+      "pos_y": 0
+    },
+    {
+      "name": "LAYER_VFX",
+      "pos_x": 0,
+      "pos_y": 0
+    },
+    {
+      "name": "wiz",
+      "pos_x": 48,
+      "pos_y": 616
+    },
+    {
+      "name": "rat",
+      "pos_x": 580,
+      "pos_y": 200
+    },
+    {
+      "name": "rat",
+      "pos_x": 410,
+      "pos_y": 300
+    },
+    {
+      "name": "orc",
+      "pos_x": 210,
+      "pos_y": 300
+    }
+  ],
+  "metadata": {
+    "points": 10
+  }
+}

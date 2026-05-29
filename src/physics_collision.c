@@ -39,7 +39,7 @@ rigid_body_t* RigidBodyFromCollisionData(world_t* w, Entity e, collision_d* coll
   memcpy(p, InitPosition(pos), sizeof(position_t));
 
   rb->on_coll = PHYS_EVENT_HIT;
-  EntityAddRelation(w, b, REL_ChildOf, e);
+  EntityAddRelation(w, b, "CollisionOf", e);
 
   lifetime_t* lf = ComponentAdd(w, b, EXPIR_ID);
 
