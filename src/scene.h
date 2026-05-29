@@ -5,7 +5,8 @@
 
 typedef struct {
     const char* scene_name;
-    const char* json_path;        // ← New: relative path to rich data
+    const char* json_path;
+    const char* tile_path;
 } SceneHeader;
 const SceneHeader* SceneGetHeader(int index);
 const char* SceneGetJsonPath(int index);   
@@ -19,8 +20,10 @@ typedef struct Scene {
   int               grid_width, grid_height;
   int               cell_width, cell_height;
 
-  tile_instance_t*     tiles;
+  tile_instance_t*  tiles;
   int               tile_count;
+  int               num_tiles;
+  tile_define_t     *tile_defs;
 
   entity_instance_t*   entities;
   int               entity_count;
@@ -29,5 +32,6 @@ typedef struct Scene {
 bool SceneLoadHeader(int sceneIndex, Scene* out);
 void SceneLoadResources(void);
 bool ParseScene(cJSON* root, Scene* scene);
+bool ParseTiles(cJSON* root, Scene* out);
 
 #endif

@@ -38,6 +38,12 @@ bool SceneLoadHeader(int sceneIndex, Scene* out){
     if(!root)
       return false;
 
+    cJSON* tiles = ParseRoot(header->tile_path);
+
+    if(!tiles)
+      return false;
+
+    ParseTiles(tiles, out);
     return ParseScene(root, out);
 }
 

@@ -541,3 +541,43 @@ bool ParseRelations(cJSON* root, game_t* out){
 
   return false;
 }
+
+bool ParseTiles(cJSON* root, Scene* out){
+  cJSON* list_json = cJSON_GetObjectItem(root, "list");
+
+  if (!list_json || !cJSON_IsArray(list_json)) {
+    TraceLog(LOG_ERROR, "=== PARSE TILES ===\n Unable to get Tile List");
+    return false;
+  }
+
+  out->tile_defs = GameCalloc("ParseTiles", cJSON_GetArraySize(list_json), sizeof(tile_define_t));
+  cJSON* t;
+  cJSON_ArrayForEach(t, list_json){
+    tile_define_t* tdef = &out->tile_defs[out->num_tiles++];
+    Json_GetString(t, "name", tdef->name);
+    char sname[MAX_NAME_LEN];
+    Json_GetString(root, "sheet", sname);
+    tdef->sheet = StringToSheetID(sname);
+    char istr[4];
+    strcpy(istr, sub_string(tdef->name, "_", 1));
+    str_to_int(istr, &tdef->index);
+    cJSON* col_json = cJSON_GetObjectItem(t, "collisions");
+    if (!col_json || !cJSON_IsArray(col_json))
+      continue;
+
+    cJSON* cdat;
+    cJSON_ArrayForEach(cdat, col_json)
+      tdef->col_indexes[tdef->num_col++] = cdat->valueint;
+
+    cJSON* rel_json = cJSON_GetObjectItem(t, "relations");
+    if (!rel_json || !cJSON_IsArray(rel_json))
+      continue;
+
+    cJSON* rel;
+    cJSON_ArrayForEach(rel, rel_json)
+      strcpy(tdef->relation, rel->valuestring);
+
+  }
+
+  return out->num_tiles > 0;
+}

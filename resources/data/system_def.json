@@ -114,6 +114,7 @@
     "components": ["RigidBody", "Position"],
     "syncs": [
       {"step": "UPDATE_POST",  "fn": "PhysicsSystem"},
+      {"step": "UPDATE_DRAW",  "fn": "PhysicsDebug"},
       {"step": "UPDATE_PRE" ,  "fn": "PhysicsCollision", "iter": 1}
     ],
     "sets": [

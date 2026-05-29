@@ -106,60 +106,9 @@
       {"name": "orc", "layer": 2, "scale": 1,
         "sheet_id": "SHEET_MOB", "sheet_index": 0
       },
-      {"name": "tile_wall", "layer": 1,
-        "sheet_id": "SHEET_TILE", "sheet_index": 0
-      },
-      {"name": "tile_floor", "layer": 1,
-        "sheet_id": "SHEET_TILE", "sheet_index": 12
-      }, 
-      {"name":"autotile_0","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":0},
-      {"name":"autotile_1","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":1},
-      {"name":"autotile_2","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":2},
-      {"name":"autotile_3","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":3},
-      {"name":"autotile_4","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":4},
-      {"name":"autotile_5","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":5},
-      {"name":"autotile_6","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":6},
-      {"name":"autotile_7","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":7},
-      {"name":"autotile_8","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":8},
-      {"name":"autotile_9","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":9},
-      {"name":"autotile_10","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":10},
-      {"name":"autotile_11","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":11},
-      {"name":"autotile_12","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":12},
-      {"name":"autotile_13","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":13},
-      {"name":"autotile_14","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":14},
-      {"name":"autotile_15","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":15},
-      {"name":"autotile_16","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":16},
-      {"name":"autotile_17","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":17},
-      {"name":"autotile_18","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":18},
-      {"name":"autotile_19","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":19},
-      {"name":"autotile_20","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":20},
-      {"name":"autotile_21","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":21},
-      {"name":"autotile_22","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":22},
-      {"name":"autotile_23","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":23},
-      {"name":"autotile_24","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":24},
-      {"name":"autotile_25","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":25},
-      {"name":"autotile_26","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":26},
-      {"name":"autotile_27","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":27},
-      {"name":"autotile_28","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":28},
-      {"name":"autotile_29","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":29},
-      {"name":"autotile_30","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":30},
-      {"name":"autotile_31","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":31},
-      {"name":"autotile_32","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":32},
-      {"name":"autotile_33","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":33},
-      {"name":"autotile_34","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":34},
-      {"name":"autotile_35","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":35},
-      {"name":"autotile_36","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":36},
-      {"name":"autotile_37","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":37},
-      {"name":"autotile_38","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":38},
-      {"name":"autotile_39","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":39},
-      {"name":"autotile_40","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":40},
-      {"name":"autotile_41","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":41},
-      {"name":"autotile_42","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":42},
-      {"name":"autotile_43","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":43},
-      {"name":"autotile_44","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":44},
-      {"name":"autotile_45","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":45},
-      {"name":"autotile_46","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":46},
-      {"name":"autotile_47","layer":1,"sheet_id":"SHEET_AUTOTILE","sheet_index":47}
+      {"name": "autotile", "layer": 3, "scale": 1,
+        "sheet_id": "SHEET_AUTO_TILE"
+      }
     ]
   },
   "Animation": {
@@ -309,7 +258,8 @@
     "list": [
       {"name": "wiz", "event": "COLL", "rate": 6, "shape": "RECT", "width": 10, "height": 12},
       {"name": "rat", "event": "COLL", "rate": 8, "shape": "RECT", "width": 10, "height": 8},
-      {"name": "orc", "event": "COLL", "rate": 6, "shape": "RECT", "width": 10, "height": 8}
+      {"name": "orc", "event": "COLL", "rate": 6, "shape": "RECT", "width": 10, "height": 8},
+      {"name": "wall","event": "BLOCK", "rate": 3, "shape": "RECT", "width": 64, "height": 64}
     ]
   },
   "Force": {
@@ -385,59 +335,7 @@
         "posx": 200,
         "posy": 300
       },
-      {
-        "name": "tile_floor",
-        "posx": 0,
-        "posy": 0
-      }, 
-      {"name":"autotile_0","posx":0,"posy":0},
-      {"name":"autotile_1","posx":80,"posy":0},
-      {"name":"autotile_2","posx":160,"posy":0},
-      {"name":"autotile_3","posx":240,"posy":0},
-      {"name":"autotile_4","posx":320,"posy":0},
-      {"name":"autotile_5","posx":400,"posy":0},
-      {"name":"autotile_6","posx":480,"posy":0},
-      {"name":"autotile_7","posx":560,"posy":0},
-      {"name":"autotile_8","posx":0,"posy":80},
-      {"name":"autotile_9","posx":80,"posy":80},
-      {"name":"autotile_10","posx":160,"posy":80},
-      {"name":"autotile_11","posx":240,"posy":80},
-      {"name":"autotile_12","posx":320,"posy":80},
-      {"name":"autotile_13","posx":400,"posy":80},
-      {"name":"autotile_14","posx":480,"posy":80},
-      {"name":"autotile_15","posx":560,"posy":80},
-      {"name":"autotile_16","posx":0,"posy":160},
-      {"name":"autotile_17","posx":80,"posy":160},
-      {"name":"autotile_18","posx":160,"posy":160},
-      {"name":"autotile_19","posx":240,"posy":160},
-      {"name":"autotile_20","posx":320,"posy":160},
-      {"name":"autotile_21","posx":400,"posy":160},
-      {"name":"autotile_22","posx":480,"posy":160},
-      {"name":"autotile_23","posx":560,"posy":160},
-      {"name":"autotile_24","posx":0,"posy":240},
-      {"name":"autotile_25","posx":80,"posy":240},
-      {"name":"autotile_26","posx":160,"posy":240},
-      {"name":"autotile_27","posx":240,"posy":240},
-      {"name":"autotile_28","posx":320,"posy":240},
-      {"name":"autotile_29","posx":400,"posy":240},
-      {"name":"autotile_30","posx":480,"posy":240},
-      {"name":"autotile_31","posx":560,"posy":240},
-      {"name":"autotile_32","posx":0,"posy":320},
-      {"name":"autotile_33","posx":80,"posy":320},
-      {"name":"autotile_34","posx":160,"posy":320},
-      {"name":"autotile_35","posx":240,"posy":320},
-      {"name":"autotile_36","posx":320,"posy":320},
-      {"name":"autotile_37","posx":400,"posy":320},
-      {"name":"autotile_38","posx":480,"posy":320},
-      {"name":"autotile_39","posx":560,"posy":320},
-      {"name":"autotile_40","posx":0,"posy":400},
-      {"name":"autotile_41","posx":80,"posy":400},
-      {"name":"autotile_42","posx":160,"posy":400},
-      {"name":"autotile_43","posx":240,"posy":400},
-      {"name":"autotile_44","posx":320,"posy":400},
-      {"name":"autotile_45","posx":400,"posy":400},
-      {"name":"autotile_46","posx":480,"posy":400},
-      {"name":"autotile_47","posx":560,"posy":400}
+      {"name":"autotile","posx":0,"posy":0}
     ]
   },
   "Render": {
@@ -563,9 +461,8 @@
     "func": "DebugInit",
     "list": [
       {"name": "debug-state", "list": [
-        "State", "Position", "Stat"
-      ]
-      }
+        "Name"
+      ]}
     ]
   },
   "Expiry":{}

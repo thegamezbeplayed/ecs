@@ -15,6 +15,10 @@ void DebugGetCompData(world_t* w, Entity e, comp_id_t cid, char* buf){
     stat_t* s = ComponentGet(w, e, STAT_ID);
     sprintf(tmp, "%s: %i / %i", s->name, s->current, s->max);
   }
+  else if(cid == NAME_ID){
+    name_t* n = ComponentGet(w, e, NAME_ID);
+    strcpy(tmp, n->display);
+  }
   else
     return;
 

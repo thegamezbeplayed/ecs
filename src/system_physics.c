@@ -147,17 +147,17 @@ void PhysicsSystem(world_t* w, Entity e){
     GameEvent(n, b, e.id);
     ComponentUpdate(w, e, PHYS_ID, n);
   }
-  
+
   b->vel = VECTOR2_ZERO;
 }
 
 void PhysicsDebug(world_t* w, Entity e){
- rigid_body_t* b = GET_COMPONENT(w, e, rigid_body_t, PHYS_ID);
+  rigid_body_t* b = GET_COMPONENT(w, e, rigid_body_t, PHYS_ID);
 
- Color col = BLUE;
- if(b->on_coll == PHYS_EVENT_HIT)
-   col = RED;
- switch(b->bounds.shape){
+  Color col = BLUE;
+  if(b->on_coll == PHYS_EVENT_HIT)
+    col = RED;
+  switch(b->bounds.shape){
     case SHAPE_CIRCLE:
       DrawCircleLinesV(b->bounds.pos, b->bounds.radius, col);
       break;

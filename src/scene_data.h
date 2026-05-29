@@ -17,7 +17,7 @@ static ResourceRef RESOURCES[] = {
 static const SceneHeader SCENE_HEADERS[] = {
   {"stage_01", "resources/data/scenes/scene_01.json"},
   {"autotile_test", "resources/data/scenes/autotile_test.json"},
-  {"Floor1", "resources/data/scenes/floor1.json"}
+  {"Floor1", "resources/data/scenes/floor1.json", "resources/data/tile_def.json"}
 };
 
 #define NUM_SCENES  sizeof(SCENE_HEADERS) / sizeof(SCENE_HEADERS[0])
