@@ -16,11 +16,14 @@ bool ParseNameComponent(cJSON* j, name_t* out){
 bool ParseDebugComponent(cJSON* j, debug_t* out){
   if(!j)
     return false;
-
-  Json_GetString(j, "comp", out->name);
-  out->cid = ComponentGetID(out->name);
-
-  return out->cid != INVALID_COMPONENT;
+  cJSON* list = cJSON_GetObjectItem(j, "list");
+  int count = cJSON_GetArraySize(list);
+  out->comps = GameCalloc("ParseDebugComponent", count, sizeof(comp_id_t));
+  cJSON* c;
+  cJSON_ArrayForEach(c, list){
+    out->comps[out->num_comps++] = ComponentGetID(c->valuestring);
+  }
+  return out->num_comps > 0;
 }
 
 bool ParseParticleEmitterComponent(cJSON* j, particle_emitter_t* out){
@@ -179,7 +182,7 @@ bool ParsePositionComponent(cJSON* j, position_t* out){
   Vector2 pos = VEC_NEW(x,y);
   out->last_pos = out->pos = pos;
 
-  out->dir_step = out->dest = VEC_UNSET;
+  out->next = out->dir_step = out->dest = VEC_UNSET;
   out->rad = 0;
   out->angle = 0;
   return true;

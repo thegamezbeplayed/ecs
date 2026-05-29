@@ -7,13 +7,13 @@ void PositionSink(void* obs_data, void* sub, payload_t* pl ){
 
   Vector2 pos = b->bounds.pos;
 
-  PositionSet(p, pos);
+  PositionSetNext(p, pos);
 }
 
 void PositionPrep(world_t* w){
   component_pool_t* pos = w->pools[POS_ID];
 
-  if(!pos->dirty || !pos->updated)
+  if(!pos->dirty && !pos->updated)
     return;
 
   SpatialHashGridClear(&w->grid);
@@ -26,8 +26,20 @@ void PositionPrep(world_t* w){
      Entity e = iter->current;
      position_t* p = ComponentGet(w, e, POS_ID);
 
-     SpatialHashGridInsert(&w->grid, e.id, p->pos, 32);
+     p->grid_bucket = SpatialHashGridInsert(&w->grid, e.id, p->pos, 32);
    }
+   
+   pos->updated = false;
+   pos->dirty = false;
+}
+
+void PositionSystem(world_t* w, Entity e){
+  position_t* p = ComponentGet(w, e, POS_ID);
+
+  if(!PositionApplyNext(p))
+    return;
+
+  ComponentUpdate(w, e , POS_ID, PosEvent_ToNotif(POS_EVENT_SYNC));
 }
 
 void PositionLoad(world_t* w, Entity e){

@@ -19,7 +19,7 @@ static const Entity INVALID_ENTITY = {UINT32_MAX, -1};
 typedef struct {
     uint32_t generation[MAX_ENTITIES];
     uint8_t  alive[MAX_ENTITIES];
-
+    uint32_t alive_count;
     uint32_t free_list[MAX_ENTITIES];
     uint32_t free_count;
 } EntityManager;

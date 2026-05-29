@@ -8,6 +8,9 @@
     "components": ["Debug"],
     "syncs": [
        {"step": "UPDATE_DRAW", "fn": "DebugSystem"}
+    ],
+    "states": [
+      {"step": "GAME_LOADING", "fn": "DebugUse"}
     ]
   },
   "Event":  {
@@ -102,13 +105,15 @@
     "steps":  [
       {"step": "UPDATE_START", "fn": "PositionPrep"}
     ],
+    "syncs": [
+      {"step": "UPDATE_PRE", "fn": "PositionSystem"}
+    ],
     "iter": true
   },
   "Physics": {
     "components": ["RigidBody", "Position"],
     "syncs": [
       {"step": "UPDATE_POST",  "fn": "PhysicsSystem"},
-      {"step": "UPDATE_DRAW",  "fn": "PhysicsDebug"},
       {"step": "UPDATE_PRE" ,  "fn": "PhysicsCollision", "iter": 1}
     ],
     "sets": [

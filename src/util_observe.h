@@ -16,6 +16,7 @@ typedef enum{
   OBS_COMP,
   OBS_DEFINE,
   OBS_ENT,
+  OBS_REL,
   OBS_ALL
 }ObserveType;
 

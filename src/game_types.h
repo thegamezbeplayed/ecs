@@ -6,22 +6,27 @@
 #define ParamRead(o, T) ((T*)((o)->data))
 
 #define MAX_DIRECTIONS 4
-DEFINE_EVENT_SPACE(PosEvent, EVENT_POS_BASE)
+DEFINE_EVENT_SPACE(PosEvent, EVENT_POS_BASE);
 
 typedef enum{
   POS_EVENT_STEP,
+  POS_EVENT_SYNC,
   POS_EVENT_COUNT
 }PosEventID;
 
 typedef struct{
-  Vector2 pos, dest, last_pos, dir, dir_step;
+  Vector2 pos, next, dest, last_pos, dir, dir_step;
   int     angle;
+  Cell    grid_bucket;
   float   rad;
 }position_t;
 position_t* InitPosition(Vector2 pos);
 void PositionAddStep(position_t*, Vector2);
 void PositionSetDest(position_t* p, Vector2 v);
 void PositionSet(position_t* p, Vector2 pos);
+void PositionSetNext(position_t* p, Vector2 pos);
+bool PositionApplyNext(position_t* p);
+
 typedef struct{
   uint16_t type;
   uint8_t  flags;

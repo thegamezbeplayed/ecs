@@ -70,6 +70,11 @@
           "sublist":  [
             {"name": "on-hit",  "type": "EventOf"}
           ]
+        },
+         {"name": "Debug",
+          "sublist":  [
+            {"name": "debug-state", "type": "DebuggerOf"}
+          ]
         }
       ]
     },
@@ -107,7 +112,8 @@
         },
         {"name":  "Stat",
           "sublist":  [
-            {"name": "rat-aggro", "type": "RangeOf"}
+            {"name": "rat-aggro", "type": "RangeOf"},
+            {"name": "rat-dmg",   "type": "DamageOf"}
           ]
         },
         {"name": "Debug",
@@ -156,7 +162,8 @@
        },
        {"name":  "Stat",
           "sublist":  [
-            {"name": "orc-aggro", "type": "RangeOf"}
+            {"name": "orc-aggro", "type": "RangeOf"},
+            {"name": "orc-dmg",   "type": "DamageOf"}
           ]
         },
          {"name": "Subscribe",

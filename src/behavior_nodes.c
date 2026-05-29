@@ -92,11 +92,9 @@ BehaviorStatus BehaviorCheckAggro(world_t* w, behavior_params_t *params){
     if (t->id == other->id)
       continue;
 
-    float dx = list.items[i].pos.x - p->pos.x;
-    float dy = list.items[i].pos.y - p->pos.y;
+    Vector2 epos = list.items[i].pos;
 
-    if (dx*dx + dy*dy < 64 * 64.0f)
-    {
+    if (VEC_DIST(epos, p->pos) < 64 ){
       tar = EntityGet(&w->manager, id);
       TraceLog(LOG_INFO, "Found target! Entity %u -> %u", e.id, id);
       break;

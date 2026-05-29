@@ -30,6 +30,7 @@ Entity EntityCreate(EntityManager* em) {
 
   em->alive[id] = 1;
 
+  em->alive_count++;
   Entity e = {
     .id = id,
     .generation = em->generation[id]

@@ -36,7 +36,7 @@ spacial_hash_grid_t* SpatialHashGrid(float cell_size, uint32_t count);
 void SpatialHashGridDestroy(spacial_hash_grid_t* shg);
 void SpatialHashGridClear(spacial_hash_grid_t* shg);
 
-void SpatialHashGridInsert(spacial_hash_grid_t*, uint32_t, Vector2, float);
+Cell SpatialHashGridInsert(spacial_hash_grid_t*, uint32_t, Vector2, float);
 neighbor_list_t SpatialHashGridGetNeighbors(const spacial_hash_grid_t*, Vector2, float,uint32_t self_id);
 typedef struct {
     hash_key_t key;

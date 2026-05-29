@@ -562,7 +562,10 @@
   "Debug": {
     "func": "DebugInit",
     "list": [
-      {"name": "debug-state", "comp": "State"}
+      {"name": "debug-state", "list": [
+        "State", "Position", "Stat"
+      ]
+      }
     ]
   },
   "Expiry":{}

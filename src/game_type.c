@@ -19,9 +19,24 @@ position_t* InitPosition(Vector2 pos){
 
 }
 
+void PositionSetNext(position_t* p, Vector2 pos){
+  p->next = pos;
+
+}
+  
 void PositionSet(position_t* p, Vector2 pos){
   p->last_pos = p->pos;
   p->pos = pos;
+}
+
+bool PositionApplyNext(position_t* p){
+  if (vec_compare(p->next, VEC_UNSET) || vec_compare(p->pos, p->next))
+    return false;
+
+  PositionSet(p, p->next);
+  p->next = VEC_UNSET;
+
+  return true;
 }
 
 void PositionAddStep(position_t* p, Vector2 v){
