@@ -90,6 +90,7 @@ void ParseHitboxFromAseprite(cJSON* s, cJSON* k, collision_d* out, cJSON* f)
     out->y     = slice_y - trim_y;
     out->wid   = slice_w;
     out->hei   = slice_h;
+    out->duration = Json_GetInt(f, "duration", 0);
 }
 
 void ResourceMapAsepriteAnims(SheetID id, sprite_sheet_d* s, ase_sprite_sheet_d* ase){

@@ -189,7 +189,7 @@
           {"state": "ATTACK",
             "events":[
               {"phase":  "DONE", "event": "SUSPEND"},
-              {"phase":  "STEP", "event": "ATTACK"}
+              {"phase":  "ACTION", "event": "ATTACK"}
             ],
             "sequences": [
               {"tag": "attack0",   "dir": 0},
@@ -224,13 +224,13 @@
           {"state": "ATTACK",
             "events":[
               {"phase":  "DONE", "event": "SUSPEND"},
-              {"phase":  "STEP", "event": "ATTACK"}
+              {"phase":  "ACTION", "event": "ATTACK"}
             ],
             "sequences": [
-              {"tag": "attack0",   "dir": 0},
-              {"tag": "attack90",  "dir": 1},
-              {"tag": "attack180", "dir": 2},
-              {"tag": "attack270", "dir": 3}
+              {"tag": "attack0",   "dir": 0, "hurt_frame": 2},
+              {"tag": "attack90",  "dir": 1, "hurt_frame": 2},
+              {"tag": "attack180", "dir": 2, "hurt_frame": 2},
+              {"tag": "attack270", "dir": 3, "hurt_frame": 2}
             ]
           }
         ]
@@ -259,13 +259,13 @@
           {"state": "ATTACK",
             "events":[
               {"phase":  "DONE", "event": "SUSPEND"},
-              {"phase":  "STEP", "event": "ATTACK"}
+              {"phase":  "ACTION", "event": "ATTACK"}
             ],
             "sequences": [
-              {"tag": "attack0",   "dir": 0},
-              {"tag": "attack90",  "dir": 1},
-              {"tag": "attack180", "dir": 2},
-              {"tag": "attack270", "dir": 3}
+              {"tag": "attack0",   "dir": 0, "hurt_frame": 2},
+              {"tag": "attack90",  "dir": 1, "hurt_frame": 2},
+              {"tag": "attack180", "dir": 2, "hurt_frame": 2},
+              {"tag": "attack270", "dir": 3, "hurt_frame": 2}
             ]
           }
         ]

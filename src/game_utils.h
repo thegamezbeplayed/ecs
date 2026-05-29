@@ -162,7 +162,7 @@ typedef struct{
   interaction_t entries[MAX_INTERACTIONS];
   uint32_t      current_frame;
 }interaction_pool_t;
-void InteractionRegister(interaction_pool_t*, uint32_t, uint32_t, notification,  float);
+void InteractionRegister(interaction_pool_t*, uint32_t, uint32_t, notification,  int);
 bool InteractionCheck(interaction_pool_t*, uint32_t, uint32_t, notification);
 void InteractionStep(interaction_pool_t*);
 

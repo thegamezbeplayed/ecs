@@ -130,6 +130,7 @@ bool ParseAnimComponent(cJSON* j, anim_comp_t* out){
       Json_GetString(seq, "tag", tag);
       out->sequences[state][dir] = *AnimRegisterState(sheet_id, name, tag);
       out->sequences[state][dir].loop = loop;
+      out->sequences[state][dir].hurtbox_index = Json_GetInt(seq, "hurt_frame", -1);
       out->sequences[state][dir].interupt = interupt;
       cJSON* ev_json = cJSON_GetObjectItem(s, "events");
       if(!cJSON_IsArray(ev_json))

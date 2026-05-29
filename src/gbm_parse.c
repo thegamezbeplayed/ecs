@@ -240,12 +240,15 @@ bool ParseSystems(cJSON* root, game_t* out){
       cJSON_ArrayForEach(state, state_json){
         cJSON* step_json = cJSON_GetObjectItem(state, "step");
         cJSON* fn_json   = cJSON_GetObjectItem(state, "fn");
-        if (!cJSON_IsString(step_json) || !cJSON_IsString(fn_json))
+        if (!cJSON_IsString(step_json) || !cJSON_IsString(fn_json)){
+          TraceLog(LOG_WARNING, "=== PARSE SYSTEMS ===\n Unable to parse State Step for System %s", sys->name);
           continue;
-
+        }
         SystemFn callback = (SystemFn)SystemFunctionLookup(fn_json->valuestring);
-        if (!callback) continue;
-
+        if (!callback){
+          TraceLog(LOG_WARNING, "=== PARSE SYSTEMS ===\n System %s Function %s missing!", sys->name, fn_json->valuestring);
+          continue;
+        }
         GameState gs = GetGameState(step_json->valuestring);
         if (gs >= 0 && gs < GAME_DONE)
           sys->states[gs] = callback;
@@ -266,7 +269,10 @@ bool ParseSystems(cJSON* root, game_t* out){
           continue;
 
         SystemCB callback = (SystemCB)SystemFunctionLookup(fn_json->valuestring);
-        if (!callback) continue;
+        if (!callback){ 
+          TraceLog(LOG_WARNING, "=== PARSE SYSTEMS ===\n System %s Function %s missing!", sys->name, fn_json->valuestring);
+          continue;
+        }
 
         UpdateType step = GetUpdateStep(step_json->valuestring);
         if (step < 0 || step >= UPDATE_DONE)
@@ -288,8 +294,11 @@ bool ParseSystems(cJSON* root, game_t* out){
           continue;
 
         SystemCB callback = (SystemCB)SystemFunctionLookup(fn_json->valuestring);
-        if (!callback) continue;
-
+        if (!callback){ 
+          TraceLog(LOG_WARNING, "=== PARSE SYSTEMS ===\n System %s Function %s missing!", sys->name, fn_json->valuestring);
+          continue;
+        }
+        
         GameState gs = GetGameState(step_json->valuestring);
         if (gs >= 0 && gs < GAME_DONE)
           sys->sets[gs] = callback;
