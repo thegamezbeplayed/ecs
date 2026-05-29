@@ -17,10 +17,12 @@ EventCallback LookupSystemHandler(const char* str);
 system_t* SystemCreate(world_t* w, system_define_t* def);
 
 void DebugSystem(world_t* w, Entity e);
+void DebugUse(world_t* w);
 void SubscriptionSystem(world_t* w, Entity e);
 
 void PositionLoad(world_t* w, Entity e);
 void PositionPrep(world_t* w);
+void PositionSystem(world_t* w, Entity e);
 void PositionRegister(world_t* w);
 
 void AnimLoad(world_t* w, Entity e);
@@ -115,10 +117,13 @@ typedef struct{
 }system_function_lookup_t;
 
 static system_function_lookup_t FUNCTION_LOOKUP[] = {
-  {"DebugSystem",          DebugSystem},
+  {"DebugSystem",         DebugSystem},
+  {"DebugUse",         DebugUse},
+  
   {"PositionRegister",    PositionRegister},
   {"PositionLoad",        PositionLoad},
   {"PositionPrep",        PositionPrep},
+  {"PositionSystem",      PositionSystem},
 
   {"AnimLoad",            AnimLoad},
   {"AnimReady",           AnimReady},

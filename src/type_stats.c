@@ -7,3 +7,9 @@ bool StatInit(void* comp, component_entry_t* j){
 
   return ParseStatComponent(j->data, s);
 }
+
+bool StatChangeValue(stat_t* s, int amnt){
+  s->current -= amnt;
+
+  return true;
+}

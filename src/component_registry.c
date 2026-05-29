@@ -152,6 +152,7 @@ void ComponentUpdate(world_t* w, Entity e, comp_id_t cid, notification n){
   if(!p || cid >= w->next_component_id)
     return;
 
+  p->updated = true;
   p->updates[e.id] |= n;
 }
 

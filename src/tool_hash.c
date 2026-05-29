@@ -170,15 +170,19 @@ void SpatialHashGridClear(spacial_hash_grid_t* shg){
   }
 }
 
-void SpatialHashGridInsert(spacial_hash_grid_t* shg,
+Cell SpatialHashGridInsert(spacial_hash_grid_t* shg,
     uint32_t eid, Vector2 pos, float rad){
-  if (!shg) return;
+  if (!shg) return CELL_UNSET;
+  // === Calculate primary / majority cell (center-based) ===
+  int32_t main_x = (int32_t)floorf(pos.x / shg->cell_size);
+  int32_t main_y = (int32_t)floorf(pos.y / shg->cell_size);
 
   int32_t min_x = (int32_t)floorf((pos.x - rad) / shg->cell_size);
   int32_t min_y = (int32_t)floorf((pos.y - rad) / shg->cell_size);
   int32_t max_x = (int32_t)floorf((pos.x + rad) / shg->cell_size);
   int32_t max_y = (int32_t)floorf((pos.y + rad) / shg->cell_size);
-
+  Cell primary = { .x = main_x, .y = main_y };
+  
   for (int32_t y = min_y; y <= max_y; ++y) {
     for (int32_t x = min_x; x <= max_x; ++x) {
       uint32_t bucket = hash_cell(x, y, shg->num_buckets);
@@ -193,6 +197,8 @@ void SpatialHashGridInsert(spacial_hash_grid_t* shg,
       shg->buckets[bucket] = entry;
     }
   }
+
+  return primary;
 }
 
 void NeighborListInit(neighbor_list_t* list, int capacity) {

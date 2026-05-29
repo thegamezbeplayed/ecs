@@ -58,8 +58,9 @@ static bool NameInit(void* comp, component_entry_t* j){
 
 typedef struct{
   char        name[MAX_NAME_LEN];
-  char        str[MAX_NAME_LEN];
-  comp_id_t   cid;
+  char        str[MAX_LINE_LEN];
+  int         num_comps;
+  comp_id_t   *comps;
 }debug_t;
 bool ParseDebugComponent(cJSON* j, debug_t* out);
 

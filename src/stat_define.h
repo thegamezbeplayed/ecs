@@ -18,4 +18,9 @@ struct stat_s{
   StatCallback  on_change, on_full, on_empty;
 };
 
+static int StatRollRange(stat_t* s){
+  return rand_range_int(s->min, s->max);
+}
+
+bool StatChangeValue(stat_t* s, int amnt);
 #endif

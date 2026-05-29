@@ -115,7 +115,7 @@ Entity PrefabSpawn(world_t* w, const char* name, Vector2 world_pos){
     Entity r = PrefabInstantiate(w, rp->entity, VEC_UNSET);
 
     EntityAddRelation(w, r, rel->type, spawn);
-    EntityAddRelation(w, spawn, "RelationOf", r);
+    EntityAddRelation(w, spawn, str_concat("Owns", rel->type), r);
   }
 
   return spawn;
