@@ -9,7 +9,8 @@ void InitGameWorld(void){
 void GameLoad(void){
   Scene* test = GameCalloc("GameLoad", 1, sizeof(Scene));
 
-  bool scene = SceneLoadByIndex(0, test);
+  // TODO add more scenes? or make dynamic
+  bool scene = SceneLoadByIndex(2, test);
 
   SceneSetup(&world, test);
 
