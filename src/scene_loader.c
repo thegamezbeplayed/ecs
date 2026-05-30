@@ -99,6 +99,7 @@ void SceneSetup(world_t* w, Scene* s){
       PositionSet(colp, spos);
       rigid_body_t* rb = ComponentAdd(w, col_ent, PHYS_ID);
       rb->bounds.shape = SHAPE_REC;
+      rb->is_static = true;
       RigidBodySetBounds(rb, size);
       RigidBodySetPos(rb, spos);
       RigidBodySetOffset(rb, VEC_SCALE(size,2));
