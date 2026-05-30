@@ -101,14 +101,14 @@ void GameProcessStep(){
 }
 
 void GameProcessSync(bool wait){
+  if (wait)
+    return;
   if(GP.state[GP.screen] > GAME_RUNNING){
     GP.update_steps[SCREEN_GAMEPLAY][UPDATE_DRAW]();
     return;
   }
 
   for(int i = 0; i < UPDATE_DONE;i++){
-    if(i > UPDATE_DRAW_END && wait)
-      return;
 
     GP.update_steps[GP.screen][i]();
   }

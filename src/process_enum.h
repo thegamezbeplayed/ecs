@@ -11,14 +11,14 @@ typedef enum{
 
 typedef enum{
   UPDATE_FRAME,//update running at full fps
-  UPDATE_DRAW_BEGIN,
-  UPDATE_DRAW,
-  UPDATE_DRAW_END,
   UPDATE_START,
   UPDATE_PRE,
   UPDATE_FIXED,
   UPDATE_POST,
   UPDATE_FINAL,
+  UPDATE_DRAW_BEGIN,
+  UPDATE_DRAW,
+  UPDATE_DRAW_END,
   UPDATE_DONE
 }UpdateType;
 
