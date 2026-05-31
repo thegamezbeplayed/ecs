@@ -1,8 +1,10 @@
 {
-  "systems": ["Controller", "Animations", "Sprites", 
-    "Cameras", "Renderer", "Observe", "Subjects", "Combat",
-    "Forces", "Physics", "Positions", "Behavior", "State",
-    "Team", "Event", "Expiration", "Debug"
+  "systems": [
+    "Controller", "Forces", "Physics", "Positions",
+    "Cameras", "Animations", "Sprites", "Renderer",
+    "PhysicsDebug", "Observe", "Subjects", "Combat",
+    "Behavior", "State", "Team", "Event",
+    "Expiration", "Debug"
   ],
   "Debug":  {
     "components": ["Debug"],
@@ -106,15 +108,15 @@
       {"step": "UPDATE_START", "fn": "PositionPrep"}
     ],
     "syncs": [
-      {"step": "UPDATE_PRE", "fn": "PositionSystem"}
+      {"step": "UPDATE_POST", "fn": "PositionSystem"}
     ],
     "iter": true
   },
   "Physics": {
     "components": ["RigidBody", "Position"],
     "syncs": [
-      {"step": "UPDATE_POST",  "fn": "PhysicsSystem"},
-      {"step": "UPDATE_PRE" ,  "fn": "PhysicsCollision", "iter": 1}
+      {"step": "UPDATE_FIXED", "fn": "PhysicsSystem"},
+      {"step": "UPDATE_POST",  "fn": "PhysicsCollision", "iter": 1}
     ],
     "sets": [
       {"step": "GAME_READY",   "fn": "PhysicsLoad"}
@@ -127,11 +129,17 @@
     ],
     "iter": true
   },
+  "PhysicsDebug": {
+    "components": ["RigidBody", "Position"],
+    "syncs": [
+      {"step": "UPDATE_DRAW", "fn": "PhysicsDebug"}
+    ]
+  },
   "Forces": {
     "components": ["Force"],
     "syncs": [
-      {"step": "UPDATE_FIXED",  "fn": "ForceSystem"},
-      {"step": "UPDATE_FINAL",  "fn": "ForceCleanup"}
+      {"step": "UPDATE_PRE", "fn": "ForceSystem"},
+      {"step": "UPDATE_FINAL", "fn": "ForceCleanup"}
     ],
     "sets": [
       {"step": "GAME_READY",    "fn": "ForceLoad"}

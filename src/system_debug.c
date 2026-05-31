@@ -15,6 +15,10 @@ void DebugGetCompData(world_t* w, Entity e, comp_id_t cid, char* buf){
     stat_t* s = ComponentGet(w, e, STAT_ID);
     sprintf(tmp, "%s: %i / %i", s->name, s->current, s->max);
   }
+  else if(cid == NAME_ID){
+    name_t* n = ComponentGet(w, e, NAME_ID);
+    strcpy(tmp, n->display);
+  }
   else
     return;
 
@@ -32,12 +36,20 @@ void DebugSystem(world_t* w, Entity e){
   d->str[0] = '\0';
   position_t* p = ComponentGet(w, rel, POS_ID);
   for(int i = 0; i < d->num_comps; i++){
+    if(i > 0)
+      strcat(d->str,"\n");
     DebugGetCompData(w, rel, d->comps[i], d->str);
-    strcat(d->str,"\n");
+  }
+
+  Vector2 anchor = p->pos;
+  sprite_t* spr = ComponentGet(w, rel, SPR_ID);
+  if(spr){
+    sprite_slice_t* slice = &SHEETS[spr->sheet_id].sprites[spr->index].slice;
+    anchor = Vector2Add(anchor, slice->center);
   }
 
   Vector2 offset = VEC_NEW(16, 24);
-  Vector2 dpos = VEC_SUB(p->pos, offset);
+  Vector2 dpos = VEC_SUB(anchor, offset);
   DrawDebugText(d->str, 6, dpos, BLACK, BLUE);
 }
 

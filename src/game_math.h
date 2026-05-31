@@ -198,6 +198,13 @@ static inline bool is_perfect_square(int n) {
     return r * r == n;
 }
 
+static inline float i_safe_divide(int a, int b){
+  if(a == 0 || b == 0)
+    return a;
+
+  return (int)(a/b);
+}
+
 static inline float f_safe_divide(int a, int b){
   if(a == 0 || b == 0)
     return -1;

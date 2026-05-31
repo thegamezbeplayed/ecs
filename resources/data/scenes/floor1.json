@@ -595,18 +595,28 @@
     },
     {
       "name": "rat",
-      "pos_x": 580,
-      "pos_y": 200
+      "pos_x": 170,
+      "pos_y": 545
     },
     {
       "name": "rat",
-      "pos_x": 410,
-      "pos_y": 300
+      "pos_x": 170,
+      "pos_y": 670
+    },
+    {
+      "name": "rat",
+      "pos_x": 298,
+      "pos_y": 545
+    },
+    {
+      "name": "rat",
+      "pos_x": 298,
+      "pos_y": 670
     },
     {
       "name": "orc",
-      "pos_x": 210,
-      "pos_y": 300
+      "pos_x": 570,
+      "pos_y": 570
     }
   ],
   "metadata": {

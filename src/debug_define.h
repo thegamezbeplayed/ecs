@@ -13,18 +13,10 @@ static void DrawDebugText(const char* text, float fontSize, Vector2 pos, Color o
 {
     if (!text || text[0] == '\0') return;
 
-    // Draw outline (8 directions for good coverage)
-    for (int dx = -outlineThickness; dx <= outlineThickness; dx++)
-    {
-        for (int dy = -outlineThickness; dy <= outlineThickness; dy++)
-        {
-            if (dx == 0 && dy == 0) continue;   // skip center
-
-            DrawTextEx(dfont, text,
-                       (Vector2){ pos.x + dx, pos.y + dy },
-                       fontSize, 1, outlineColor);
-        }
-    }
+    // Draw background
+    Vector2 size = MeasureTextEx(dfont, text, fontSize, 1);
+    Rectangle bg = {pos.x - 2, pos.y - 2, size.x + 4, size.y + 4};
+    DrawRectangleRec(bg, Fade(BLACK, 0.55f));
 
     // Draw main text on top
     DrawTextEx(dfont, text, pos, fontSize, 1, textColor);

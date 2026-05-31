@@ -94,12 +94,21 @@ void PhysicsLoad(world_t* w, Entity e){
   Vector2 size = VEC_NEW(ac->hitbox.wid, ac->hitbox.hei);
   RigidBodySetBounds(rb, size);
 
+  sprite_t* spr = GET_COMPONENT(w, e, sprite_t, SPR_ID);
   Vector2 offset = VEC_NEW(ac->hitbox.x, ac->hitbox.y);
+
+  if (spr) {
+    sprite_slice_t* slice = &SHEETS[spr->sheet_id].sprites[spr->index].slice;
+    offset = Vector2Add(offset, slice->center);
+  }
+
   RigidBodySetOffset(rb, offset);
 }
 
 void PhysicsCollision(world_t* w, Entity e){
   rigid_body_t* body = GET_COMPONENT(w, e, rigid_body_t, PHYS_ID);
+  if (!body || body->is_static)
+    return;
   rigid_body_t* tar = NULL;
   entity_iter_t* iter = SystemGetIter("Physics");
   while(EntityIterNext(iter, w)){
@@ -115,10 +124,6 @@ void PhysicsCollision(world_t* w, Entity e){
     if(e.id == other.id)
       continue;
 
-    notification n = PhysEvent_ToNotif(body->on_coll);
-    if(!GameCheckInteraction(e.id, other.id, n))
-      continue;
-
     tar = GET_COMPONENT(w, other, rigid_body_t, PHYS_ID);
 
     if(!tar)
@@ -126,11 +131,23 @@ void PhysicsCollision(world_t* w, Entity e){
 
     if(!CheckCollision(body, tar, 0))
       continue;
-    
-    PhysHandleEvent(w, e, other, body->on_coll);
-    int rate = imax(body->col_rate, tar->col_rate);
-    
-    GameInteraction(e.id, other.id, n, rate);
+
+    PhysicsEventID event = body->on_coll;
+    if (tar->is_static && tar->on_coll == PHYS_EVENT_BLOCK)
+      event = PHYS_EVENT_BLOCK;
+
+    notification n = PhysEvent_ToNotif(event);
+    if(event != PHYS_EVENT_BLOCK && !GameCheckInteraction(e.id, other.id, n))
+      continue;
+
+    PhysHandleEvent(w, e, other, event);
+
+    if(event != PHYS_EVENT_BLOCK){
+      int rate = imax(body->col_rate, tar->col_rate);
+      GameInteraction(e.id, other.id, n, rate);
+    }
+
+    EntityIterReset(iter);
     return;
   }
 
@@ -147,17 +164,17 @@ void PhysicsSystem(world_t* w, Entity e){
     GameEvent(n, b, e.id);
     ComponentUpdate(w, e, PHYS_ID, n);
   }
-  
+
   b->vel = VECTOR2_ZERO;
 }
 
 void PhysicsDebug(world_t* w, Entity e){
- rigid_body_t* b = GET_COMPONENT(w, e, rigid_body_t, PHYS_ID);
+  rigid_body_t* b = GET_COMPONENT(w, e, rigid_body_t, PHYS_ID);
 
- Color col = BLUE;
- if(b->on_coll == PHYS_EVENT_HIT)
-   col = RED;
- switch(b->bounds.shape){
+  Color col = BLUE;
+  if(b->on_coll == PHYS_EVENT_HIT)
+    col = RED;
+  switch(b->bounds.shape){
     case SHAPE_CIRCLE:
       DrawCircleLinesV(b->bounds.pos, b->bounds.radius, col);
       break;

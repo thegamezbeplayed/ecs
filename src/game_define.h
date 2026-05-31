@@ -9,10 +9,18 @@
 #define MAX_PREF_DEF 128
 #define NUM_REL      24
 
+typedef struct{
+  char        name[MAX_NAME_LEN];
+  int         sheet;
+  int         index;
+  int         layer;
+  int         num_col;
+  char        relation[MAX_NAME_LEN];
+  int         col_indexes[16];
+}tile_define_t;
+
 typedef struct tile_instance_t {
   char* name;
-  int   tile_index;      // from tileset
-  int   prefab_index;    // optional
   int   start_x, start_y;
   int   cell_x, cell_y;
   int   rotation;
