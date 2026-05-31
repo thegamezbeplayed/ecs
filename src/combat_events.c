@@ -19,3 +19,7 @@ void CombatHandleEvent(notification n, Entity *tar, Entity agg){
       break;
   }
 }
+
+void CombatHandleBehavior(Entity e){
+
+}

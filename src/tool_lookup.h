@@ -7,6 +7,7 @@
 #include "process_enum.h"
 #include "behavior_define.h"
 #include "game_define.h"
+#include "team_define.h"
 
 #define EVENT_LOOKUP_COUNT   (sizeof(EVENT_LOOKUP) / sizeof(EVENT_LOOKUP[0]))
 
@@ -19,6 +20,7 @@ SheetID StringToSheetID(const char* str);
 ParticleDrawType StringToDrawType(const char* str);
 PhysicsEventID StringToPhysEvent(const char* str);
 AnimEventID StringToAnimEvent(const char* str);
+TeamEventID StringToTeamEvent(const char* str);
 ReactType StringToReaction(const char* str);
 CameraTracking StringToCameraMode(const char* str);
 ActionType StringToAction(const char* str);

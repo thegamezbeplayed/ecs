@@ -32,7 +32,9 @@ BehaviorLeafInit StringToLeafFunc(const char* str){
   if (strcmp(str, "MoveToTarget") == 0)        return LeafMoveToTarget;
   if (strcmp(str, "ChangeState") == 0)         return LeafChangeState;
   if (strcmp(str, "CheckAggro") == 0)          return LeafCheckAggro;
+  if (strcmp(str, "CheckDesignation") == 0)    return LeafCheckDesignation;
   if (strcmp(str, "Attack") == 0)              return LeafAttack;
+  if (strcmp(str, "Leash") == 0)               return LeafLeash;
 
   return NULL;
 }
@@ -79,6 +81,12 @@ ReactType StringToReaction(const char* str){
   if(strcmp(str, "BLOCK") == 0) return REACT_BLOCK;
 
   return REACT_NONE;
+}
+TeamEventID StringToTeamEvent(const char* str){
+  if (str == NULL) return TEAM_EVENT_NONE;
+  if (strcmp(str, "CHARM") == 0)        return TEAM_EVENT_CHARM;
+
+  return  TEAM_EVENT_NONE;
 }
 
 AnimEventID StringToAnimEvent(const char* str){

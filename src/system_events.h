@@ -3,6 +3,7 @@
 #include "component_define.h"
 
 void CombatHandleEvent(notification n, Entity *tar, Entity agg);
+void CombatHandleBehavior(Entity e);
 void StateHandleAnim(state_t* st, anim_comp_t* ac);
 
 void AnimHandleInput(anim_comp_t*, input_t*);

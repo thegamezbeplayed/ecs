@@ -408,6 +408,15 @@ bool ParseTeamComponent(cJSON* j, team_t* out){
   Json_GetString(j, "team", out->name);
   out->id = hash_str_64(out->name);
 
+  char ename[MAX_NAME_LEN];
+  Json_GetString(j, "event", ename);
+
+  out->event = StringToTeamEvent(ename);
+
+  char tname[MAX_NAME_LEN];
+  if(Json_GetString(j, "targets", tname))
+    out->target_id = hash_str_64(tname);
+
   return out->id > 0;
 }
 

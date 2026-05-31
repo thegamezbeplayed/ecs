@@ -515,10 +515,15 @@ bool ParseRelations(cJSON* root, game_t* out){
               break;
             }
             cr->pairs[pair_idx].name = GameCalloc("ParseRelations", MAX_NAME_LEN, sizeof(char));
-            cr->pairs[pair_idx].type = GameCalloc("ParseRelations", MAX_NAME_LEN, sizeof(char));
-
             Json_GetString(pair, "name", cr->pairs[pair_idx].name);
-            Json_GetString(pair, "type", cr->pairs[pair_idx].type);
+            cJSON* type_json = cJSON_GetObjectItem(pair,"types");
+            
+            cJSON* type;
+            cJSON_ArrayForEach(type, type_json){
+              cr->pairs[pair_idx].types[cr->pairs[pair_idx].num_types] = GameCalloc("ParseRelations", MAX_NAME_LEN, sizeof(char));
+              strcpy(cr->pairs[pair_idx].types[cr->pairs[pair_idx].num_types++], type->valuestring);
+            }
+            
             cJSON* relcomp_json = cJSON_GetObjectItem(pair, "components");
 
             int relidx = 0;

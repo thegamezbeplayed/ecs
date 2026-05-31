@@ -150,14 +150,16 @@ void GameInitPrefabs(world_t* w, game_t* g){
           comp_id_t add_cid = ComponentGetID(pair.components[l]);
           ComponentAdd(w, r, add_cid);
         }
-        relation_t* rt = EntityAddRelation(w, r, pair.type, tar->entity);
-        if(!rt){
-          TraceLog(LOG_WARNING, "=== PREFAB RELATION ===\n failed to add %s relation to %i", pair.name, r.id); 
-          continue;
-        }
+        for(int l = 0; l < pair.num_types; l++){
+          relation_t* rt = EntityAddRelation(w, r, pair.types[l], tar->entity);
+          if(!rt){
+            TraceLog(LOG_WARNING, "=== PREFAB RELATION ===\n failed to add %s relation to %i", pair.name, r.id); 
+            continue;
+          }
 
-        strcpy(rt->name, pair.name);
-        tar->relations[tar->rel_count++] = *rt;
+          strcpy(rt->name, pair.name);
+          tar->relations[tar->rel_count++] = *rt;
+        }
       }
     }
   }

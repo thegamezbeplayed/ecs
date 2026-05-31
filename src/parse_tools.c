@@ -1,6 +1,6 @@
 #include "util_parse.h"
 
-char* Json_GetString(cJSON* obj, const char* key, char* out)
+bool Json_GetString(cJSON* obj, const char* key, char* out)
 {
   size_t max_len = MAX_NAME_LEN -1;
 
@@ -8,10 +8,10 @@ char* Json_GetString(cJSON* obj, const char* key, char* out)
   if (item && cJSON_IsString(item) && out) {
     strncpy(out, item->valuestring, max_len);
     out[max_len] = '\0';
-    return out;
+    return true;
   }
   out[0] = '\0';
-  return out;
+  return false;
 }
 
 int Json_GetInt(cJSON* obj, const char* key, int default_val)

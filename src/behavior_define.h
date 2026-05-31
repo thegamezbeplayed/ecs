@@ -113,6 +113,12 @@ static inline behavior_tree_node_t* LeafChangeState(behavior_params_t *params)  
 BehaviorStatus BehaviorCheckAggro(world_t*, behavior_params_t *params);
 static inline behavior_tree_node_t* LeafCheckAggro(behavior_params_t *params)  { return BehaviorCreateLeaf(BehaviorCheckAggro,params); }
 
+BehaviorStatus BehaviorCheckDesignation(world_t*, behavior_params_t *params);
+static inline behavior_tree_node_t* LeafCheckDesignation(behavior_params_t *params)  { return BehaviorCreateLeaf(BehaviorCheckDesignation,params); }
+
+BehaviorStatus BehaviorLeash(world_t*, behavior_params_t *params);
+static inline behavior_tree_node_t* LeafLeash(behavior_params_t *params)  { return BehaviorCreateLeaf(BehaviorLeash,params); }
+
 BehaviorStatus BehaviorAttack(world_t*, behavior_params_t *params);
 static inline behavior_tree_node_t* LeafAttack(behavior_params_t *params)  { return BehaviorCreateLeaf(BehaviorAttack,params); }
 

@@ -131,3 +131,11 @@ BehaviorStatus BehaviorChangeState(world_t* w, behavior_params_t *params){
   }
   return BEHAVIOR_FAILURE;
 }
+
+BehaviorStatus BehaviorLeash(world_t*, behavior_params_t *params){
+
+}
+
+BehaviorStatus BehaviorCheckDesignation(world_t*, behavior_params_t *params){
+
+}

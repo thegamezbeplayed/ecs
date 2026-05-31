@@ -22,6 +22,11 @@
       "type": "SEQUENCE",
       "state":"ATTACK",
       "children": ["AttackEnemy"]
+    },
+    {
+      "name":     "await",
+      "type":     "SELECTOR",
+      "children": ["GetCommand","FindEnemy", "Loiter"]
     }
   ],
   "branches": [
@@ -36,6 +41,12 @@
     },
     {"name": "FindDest", "type": "SEQUENCE",  
       "children":["acquire-dest", "move-dest"]
+    },
+    {"name": "GetCommand", "type": "SEQUENCE",
+      "children": ["check-des", "change-state"]
+    },
+    {"name": "Loiter", "type": "SEQUENCE",
+      "children": ["update-leash", "acquire-dest", "move-dest"]
     }
   ],
   "leafs": [
@@ -59,9 +70,8 @@
       "name": "check-aggro",
       "fn":   "CheckAggro"
     },
-    {
-      "name": "start-attack",
-      "fn":   "Attack"
-    }
+    {"name": "start-attack", "fn": "Attack"},
+    {"name": "update-leash", "fn": "Leash"},
+    {"name": "check-des",    "fn": "CheckDesignation"]
   ]
 }

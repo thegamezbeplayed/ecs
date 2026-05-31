@@ -50,6 +50,13 @@
         "comp":       "Animation",
         "subjects":   ["ANIM-END"],
         "listeners":  ["State"]
+      },
+      {
+        "name":       "team-observer",
+        "type":       3,
+        "comp":       "Team",
+        "subjects":   ["TEAM-CHARM"],
+        "listeners":  ["Behavior"]
       }
     ]
   },
@@ -80,6 +87,11 @@
         "name":   "ANIM-END",
         "type":   1,
         "comp":   "Animation"
+      },
+      {
+        "name":  "TEAM-CHARM",
+        "type":  3,
+        "comp":  "Team"
       }
     ]
   },
@@ -540,7 +552,7 @@
   "Team": {
     "func": "TeamInit",
     "list": [
-      {"name": "wiz", "team": "TEAM-VENTURE"},
+      {"name": "wiz", "team": "TEAM-VENTURE", "event": "CHARM", "targets": "WILD-RATS"},
       {"name": "orc", "team": "LEGION-OF-DOOM"},
       {"name": "rat", "team": "WILD-RATS"}
     ]

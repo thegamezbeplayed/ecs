@@ -51,29 +51,29 @@
       "list":[
        {"name": "Force",
           "sublist": [
-            {"name": "wiz-bump",    "type": "ForceOf"}
+            {"name": "wiz-bump",    "types": ["ForceOf"]}
           ]
         },
         {"name": "Observer",
           "sublist": [
-            {"name": "rb-observer", "type": "ObserverOf"},
-            {"name": "move-observer", "type": "ObserverOf"}
+            {"name": "rb-observer", "types": ["ObserverOf"]},
+            {"name": "move-observer", "types": ["ObserverOf"]}
           ]
         },
         {"name": "Subject",
           "sublist": [
-            {"name": "PHYS-VEL",    "type": "SubjectOf"},
-            {"name": "INPUT-MOVE",  "type": "SubjectOf"}
+            {"name": "PHYS-VEL",    "types": ["SubjectOf"]},
+            {"name": "INPUT-MOVE",  "types": ["SubjectOf"]}
           ]
         },
         {"name": "Subscribe",
           "sublist":  [
-            {"name": "on-hit",  "type": "EventOf"}
+            {"name": "on-hit",  "types": ["EventOf"]}
           ]
         },
          {"name": "Debug",
           "sublist":  [
-            {"name": "debug-state", "type": "DebuggerOf"}
+            {"name": "debug-state", "types": ["DebuggerOf"]}
           ]
         }
       ]
@@ -83,47 +83,49 @@
       "list":[
        {"name": "Force",
           "sublist": [
-            {"name": "rat-bump",    "type": "ForceOf"}
+            {"name": "rat-bump",    "types": ["ForceOf"]}
           ]
         },
         {"name": "Observer",
           "sublist": [
-            {"name": "rb-observer", "type": "ObserverOf"},
-            {"name": "pos-observer", "type": "ObserverOf"},
-            {"name": "state-observer", "type": "ObserverOf"},
-            {"name": "anim-observer", "type": "ObserverOf"}
+            {"name": "rb-observer", "types": ["ObserverOf"]},
+            {"name": "pos-observer", "types": ["ObserverOf"]},
+            {"name": "state-observer", "types": ["ObserverOf"]},
+            {"name": "anim-observer", "types": ["ObserverOf"]},
+            {"name": "team-observer", "types": ["ObserverOf"]}
           ]
         },
         {"name": "Subject",
           "sublist": [
-            {"name": "PHYS-VEL",      "type": "SubjectOf"},
-            {"name": "POS-STEP",      "type": "SubjectOf"},
-            {"name": "ANIM-END",      "type": "SubjectOf"},
-            {"name": "BEHAVIOR-STATE","type": "SubjectOf"}
+            {"name": "PHYS-VEL",      "types": ["SubjectOf"]},
+            {"name": "POS-STEP",      "types": ["SubjectOf"]},
+            {"name": "ANIM-END",      "types": ["SubjectOf"]},
+            {"name": "TEAM-CHARM",    "types": ["SubjectOf"]},
+            {"name": "BEHAVIOR-STATE","types": ["SubjectOf"]}
           ]
         },
         {"name": "Behavior",
           "sublist": [
-            {"name": "spawn",   "type": "BehaviorOf"},
-            {"name": "wander",  "type": "BehaviorOf"},
-            {"name": "aggro",   "type": "BehaviorOf"},
-            {"name": "attack",   "type": "BehaviorOf"}
+            {"name": "spawn",   "types": ["BehaviorOf"]},
+            {"name": "wander",  "types": ["BehaviorOf"]},
+            {"name": "aggro",   "types": ["BehaviorOf"]},
+            {"name": "attack",   "types": ["BehaviorOf"]}
           ]
         },
         {"name":  "Stat",
           "sublist":  [
-            {"name": "rat-aggro", "type": "RangeOf"},
-            {"name": "rat-dmg",   "type": "DamageOf"}
+            {"name": "rat-aggro", "types": ["RangeOf"]},
+            {"name": "rat-dmg",   "types": ["DamageOf"]}
           ]
         },
         {"name": "Debug",
           "sublist":  [
-            {"name": "debug-state", "type": "DebuggerOf"}
+            {"name": "debug-state", "types": ["DebuggerOf"]}
           ]
         },
         {"name": "Subscribe",
           "sublist":  [
-            {"name": "on-hit",  "type": "EventOf"}
+            {"name": "on-hit",  "types": ["EventOf"]}
           ]
         }
       ]
@@ -133,47 +135,47 @@
       "list":[
        {"name": "Force",
           "sublist": [
-            {"name": "orc-bump",    "type": "ForceOf"}
+            {"name": "orc-bump",    "types": ["ForceOf"]}
           ]
         },
         {"name": "Observer",
           "sublist": [
-            {"name": "rb-observer", "type": "ObserverOf"},
-            {"name": "pos-observer", "type": "ObserverOf"},
-            {"name": "state-observer", "type": "ObserverOf"},
-            {"name": "anim-observer", "type": "ObserverOf"}
+            {"name": "rb-observer", "types": ["ObserverOf"]},
+            {"name": "pos-observer", "types": ["ObserverOf"]},
+            {"name": "state-observer", "types": ["ObserverOf"]},
+            {"name": "anim-observer", "types": ["ObserverOf"]}
           ]
         },
         {"name": "Subject",
           "sublist": [
-            {"name": "PHYS-VEL",      "type": "SubjectOf"},
-            {"name": "POS-STEP",      "type": "SubjectOf"},
-            {"name": "BEHAVIOR-STATE","type": "SubjectOf"},
-            {"name": "ANIM-END",      "type": "SubjectOf"}
+            {"name": "PHYS-VEL",      "types": ["SubjectOf"]},
+            {"name": "POS-STEP",      "types": ["SubjectOf"]},
+            {"name": "BEHAVIOR-STATE","types": ["SubjectOf"]},
+            {"name": "ANIM-END",      "types": ["SubjectOf"]}
           ]
         },
         {"name": "Behavior",
           "sublist": [
-            {"name": "spawn",  "type": "BehaviorOf"},
-            {"name": "wander", "type": "BehaviorOf"},
-            {"name": "aggro",  "type": "BehaviorOf"},
-            {"name": "attack",   "type": "BehaviorOf"}
+            {"name": "spawn",  "types": ["BehaviorOf", "SpawnBehavior"]},
+            {"name": "wander", "types": ["BehaviorOf", "IdleBehavior"]},
+            {"name": "aggro",  "types": ["BehaviorOf", "AggroBehavior"]},
+            {"name": "attack", "types": ["BehaviorOf", "AttackBehavior"]}
           ]
        },
        {"name":  "Stat",
           "sublist":  [
-            {"name": "orc-aggro", "type": "RangeOf"},
-            {"name": "orc-dmg",   "type": "DamageOf"}
+            {"name": "orc-aggro", "types": ["RangeOf"]},
+            {"name": "orc-dmg",   "types": ["DamageOf"]}
           ]
         },
          {"name": "Subscribe",
           "sublist":  [
-            {"name": "on-hit",  "type": "EventOf"}
+            {"name": "on-hit",  "types": ["EventOf"]}
           ]
         },
         {"name": "Debug",
           "sublist":  [
-            {"name": "debug-state", "type": "DebuggerOf"}
+            {"name": "debug-state", "types": ["DebuggerOf"]}
           ]
         }
       ]

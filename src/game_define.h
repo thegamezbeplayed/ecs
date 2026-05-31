@@ -33,8 +33,8 @@ typedef struct{
 }prefab_entity_t;
 
 typedef struct{
-  char*         name, *type;
-  int           num_comp;
+  char*         name, **types;
+  int           num_comp, num_types;
   char*         components[MAX_COMPONENTS];
 }relation_pair_t;
 
